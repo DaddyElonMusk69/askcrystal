@@ -91,6 +91,100 @@ class DifyConsoleClient:
     def get_app(self, app_id: str) -> dict[str, Any]:
         return self.request("GET", f"/console/api/apps/{app_id}")
 
+    def import_app_dsl(
+        self,
+        *,
+        yaml_content: str,
+        name: str | None = None,
+        description: str | None = None,
+        icon_type: str | None = None,
+        icon: str | None = None,
+        icon_background: str | None = None,
+        app_id: str | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "mode": "yaml-content",
+            "yaml_content": yaml_content,
+        }
+        if name:
+            payload["name"] = name
+        if description:
+            payload["description"] = description
+        if icon_type:
+            payload["icon_type"] = icon_type
+        if icon:
+            payload["icon"] = icon
+        if icon_background:
+            payload["icon_background"] = icon_background
+        if app_id:
+            payload["app_id"] = app_id
+
+        response = self.request(
+            "POST",
+            "/console/api/apps/imports",
+            json_body=payload,
+            allow_status_codes={202},
+        )
+        if not isinstance(response, dict):
+            raise DifyConsoleError("Unexpected app import payload", payload=response)
+        return response
+
+    def confirm_app_import(self, import_id: str) -> dict[str, Any]:
+        response = self.request("POST", f"/console/api/apps/imports/{import_id}/confirm", json_body={})
+        if not isinstance(response, dict):
+            raise DifyConsoleError("Unexpected app import confirmation payload", payload=response)
+        return response
+
+    def get_published_workflow(self, app_id: str) -> dict[str, Any]:
+        response = self.request("GET", f"/console/api/apps/{app_id}/workflows/publish")
+        if not isinstance(response, dict):
+            raise DifyConsoleError("Unexpected published workflow payload", payload=response)
+        return response
+
+    def publish_workflow(
+        self,
+        app_id: str,
+        *,
+        marked_name: str = "",
+        marked_comment: str = "",
+    ) -> dict[str, Any]:
+        payload = {
+            "marked_name": marked_name,
+            "marked_comment": marked_comment,
+        }
+        response = self.request("POST", f"/console/api/apps/{app_id}/workflows/publish", json_body=payload)
+        if not isinstance(response, dict):
+            raise DifyConsoleError("Unexpected publish workflow payload", payload=response)
+        return response
+
+    def list_app_api_keys(self, app_id: str) -> dict[str, Any]:
+        response = self.request("GET", f"/console/api/apps/{app_id}/api-keys")
+        if not isinstance(response, dict):
+            raise DifyConsoleError("Unexpected app api keys payload", payload=response)
+        return response
+
+    def create_app_api_key(self, app_id: str) -> dict[str, Any]:
+        response = self.request("POST", f"/console/api/apps/{app_id}/api-keys")
+        if not isinstance(response, dict):
+            raise DifyConsoleError("Unexpected create app api key payload", payload=response)
+        return response
+
+    def ensure_app_api_key(self, app_id: str) -> str:
+        existing_keys = self.list_app_api_keys(app_id)
+        existing_token = (
+            existing_keys.get("data", [{}])[0].get("token")
+            if isinstance(existing_keys.get("data"), list) and existing_keys.get("data")
+            else None
+        )
+        if isinstance(existing_token, str) and existing_token:
+            return existing_token
+
+        created_key = self.create_app_api_key(app_id)
+        token = created_key.get("token") or created_key.get("data", {}).get("token")
+        if not isinstance(token, str) or not token:
+            raise DifyConsoleError("Dify did not return an app API key", payload=created_key)
+        return token
+
     def export_app_dsl(
         self,
         app_id: str,
@@ -178,6 +272,70 @@ class DifyConsoleClient:
         if provider_type:
             params["type"] = provider_type
         return self.request("GET", "/console/api/workspaces/current/tool-providers", params=params)
+
+    def create_workflow_tool(
+        self,
+        *,
+        workflow_app_id: str,
+        name: str,
+        label: str,
+        description: str,
+        parameters: list[dict[str, Any]],
+        icon: dict[str, Any] | None = None,
+        privacy_policy: str = "",
+        labels: list[str] | None = None,
+    ) -> dict[str, Any]:
+        payload = {
+            "workflow_app_id": workflow_app_id,
+            "name": name,
+            "label": label,
+            "icon": icon or {"type": "emoji", "emoji": "🧩"},
+            "description": description,
+            "parameters": parameters,
+            "privacy_policy": privacy_policy,
+            "labels": labels or [],
+        }
+        response = self.request(
+            "POST",
+            "/console/api/workspaces/current/tool-provider/workflow/create",
+            json_body=payload,
+        )
+        if not isinstance(response, dict):
+            raise DifyConsoleError("Unexpected workflow tool creation payload", payload=response)
+        return response
+
+    def get_workflow_tool(
+        self,
+        *,
+        workflow_tool_id: str | None = None,
+        workflow_app_id: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {}
+        if workflow_tool_id:
+            params["workflow_tool_id"] = workflow_tool_id
+        if workflow_app_id:
+            params["workflow_app_id"] = workflow_app_id
+        if not params:
+            raise ValueError("workflow_tool_id or workflow_app_id is required")
+
+        response = self.request(
+            "GET",
+            "/console/api/workspaces/current/tool-provider/workflow/get",
+            params=params,
+        )
+        if not isinstance(response, dict):
+            raise DifyConsoleError("Unexpected workflow tool payload", payload=response)
+        return response
+
+    def list_workflow_tool_tools(self, workflow_tool_id: str) -> list[dict[str, Any]]:
+        response = self.request(
+            "GET",
+            "/console/api/workspaces/current/tool-provider/workflow/tools",
+            params={"workflow_tool_id": workflow_tool_id},
+        )
+        if not isinstance(response, list):
+            raise DifyConsoleError("Unexpected workflow tool tools payload", payload=response)
+        return response
 
     def get_api_tool_provider(self, provider: str) -> dict[str, Any]:
         return self.request(

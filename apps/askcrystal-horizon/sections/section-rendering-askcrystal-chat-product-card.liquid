@@ -1,0 +1,283 @@
+{% comment %}
+  AskCrystal chat product card renderer.
+
+  Preferred path:
+  - reuse the Horizon `_product-card` preset so chat cards stay on the native product-card framework.
+
+  Fallback path:
+  - if preset-backed static block rendering is unavailable in this detached Section Rendering API context,
+    render a slimmer native card shell with the same Shopify primitives (`product-card`, `product-title`,
+    `product-price`, `variant-swatches`, `product-sku-component`).
+{% endcomment %}
+
+{% liquid
+  if product == blank
+    assign product = closest.product
+  endif
+
+  if product != blank
+    assign product_url = product.selected_or_first_available_variant.url
+    unless product_url
+      assign product_url = product.first_available_variant.url
+    endunless
+    unless product_url
+      assign product_url = product.url
+    endunless
+
+    assign featured_media = product.selected_or_first_available_variant.featured_media
+    if featured_media == blank
+      assign featured_media = product.featured_media
+    endif
+
+    assign featured_image = featured_media.preview_image | default: product.featured_image
+    assign sku = product.selected_or_first_available_variant.sku
+  endif
+%}
+
+{% capture native_product_card %}
+  {% if product != blank %}
+    {% content_for 'block', type: '_product-card', id: 'static-product-card', closest.product: product %}
+  {% endif %}
+{% endcapture %}
+
+{% assign native_product_card = native_product_card | strip %}
+
+<div
+  class="askcrystal-chat-product-card"
+  data-askcrystal-native-product-card
+  data-section-rendering-id="section-rendering-askcrystal-chat-product-card"
+>
+  {% if native_product_card != blank %}
+    {{ native_product_card }}
+  {% elsif product != blank %}
+    <product-card
+      class="product-card askcrystal-chat-product-card__card"
+      data-product-id="{{ product.id }}"
+    >
+      <a
+        href="{{ product_url }}"
+        class="product-card__link"
+        ref="productCardLink"
+      >
+        <span class="visually-hidden">
+          {{ product.title }}
+        </span>
+      </a>
+
+      <div
+        class="product-card__content product-grid__card askcrystal-chat-product-card__content"
+        style="
+          --product-card-gap: 12px;
+          --product-card-alignment: stretch;
+          --padding-block-start: 0px;
+          --padding-block-end: 0px;
+          --padding-inline-start: 0px;
+          --padding-inline-end: 0px;
+        "
+      >
+        <div class="askcrystal-chat-product-card__media" ref="cardGallery">
+          <a
+            class="askcrystal-chat-product-card__media-link"
+            ref="cardGalleryLink"
+            href="{{ product_url }}"
+            aria-hidden="true"
+            tabindex="-1"
+          >
+            {% if featured_image != blank %}
+              {{
+                featured_image
+                | image_url: width: 960
+                | image_tag:
+                  class: 'askcrystal-chat-product-card__image',
+                  loading: 'lazy',
+                  widths: '320, 480, 640, 960',
+                  sizes: '(min-width: 750px) 420px, 100vw',
+                  alt: featured_image.alt | default: product.title,
+                  ref: 'imagesToTransition'
+              }}
+            {% else %}
+              <div class="askcrystal-chat-product-card__placeholder">
+                {{ 'content.product_card_placeholder' | t }}
+              </div>
+            {% endif %}
+          </a>
+        </div>
+
+        <product-title class="askcrystal-chat-product-card__title">
+          <a
+            class="contents user-select-text"
+            ref="productTitleLink"
+            href="{{ product_url }}"
+          >
+            <span class="title-text">
+              {{ product.title }}
+            </span>
+          </a>
+        </product-title>
+
+        <product-price
+          class="askcrystal-chat-product-card__price"
+          data-product-id="{{ product.id }}"
+        >
+          {% render 'price', product_resource: product, show_unit_price: true, show_sale_price_first: true %}
+        </product-price>
+
+        {% unless product.has_only_default_variant %}
+          <div class="askcrystal-chat-product-card__swatches">
+            {% render 'variant-swatches', product_resource: product, has_option_selected: true %}
+          </div>
+        {% endunless %}
+
+        <product-sku-component
+          class="askcrystal-chat-product-card__sku"
+          data-product-id="{{ product.id }}"
+          style="{% if sku == blank %}display: none;{% else %}display: block;{% endif %}"
+        >
+          {% render 'sku', product_resource: product %}
+        </product-sku-component>
+      </div>
+    </product-card>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "AskCrystal chat card",
+  "tag": "div",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [
+    {
+      "type": "_product-card"
+    }
+  ],
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "AskCrystal chat card",
+      "blocks": {
+        "static-product-card": {
+          "type": "_product-card",
+          "name": "Product card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 10,
+            "inherit_color_scheme": true,
+            "border": "none",
+            "border_width": 0,
+            "border_opacity": 0,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "product-card-gallery": {
+              "type": "_product-card-gallery",
+              "name": "Product media",
+              "settings": {
+                "image_ratio": "adapt",
+                "border": "none",
+                "border_width": 0,
+                "border_opacity": 0,
+                "border_radius": 18,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "product_title": {
+              "type": "product-title",
+              "name": "Product title",
+              "settings": {
+                "width": "100%",
+                "max_width": "none",
+                "alignment": "left",
+                "type_preset": "paragraph",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "price": {
+              "type": "price",
+              "name": "Product price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "paragraph",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "color": "var(--color-foreground)",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "swatches": {
+              "type": "swatches",
+              "name": "Swatches",
+              "settings": {
+                "product_swatches_alignment": "flex-start",
+                "product_swatches_alignment_mobile": "flex-start",
+                "product_swatches_padding_top": 0,
+                "product_swatches_padding_bottom": 0,
+                "product_swatches_padding_left": 0,
+                "product_swatches_padding_right": 0
+              }
+            },
+            "sku": {
+              "type": "sku",
+              "name": "SKU",
+              "settings": {
+                "type_preset": "paragraph",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "0.8125rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "color": "rgba(var(--color-foreground-rgb) / 0.68)",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            }
+          },
+          "block_order": ["product-card-gallery", "product_title", "price", "swatches", "sku"]
+        }
+      },
+      "block_order": []
+    }
+  ]
+}
+{% endschema %}

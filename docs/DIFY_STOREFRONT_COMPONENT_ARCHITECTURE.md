@@ -29,6 +29,32 @@ The Shopify proxy remains the trust boundary that:
 3. emits safe `component` SSE payloads,
 4. lets the theme convert those payloads into `assistant-ui` tool-call parts.
 
+## Current Bootstrap Status
+
+As of April 24, 2026, the repository now includes a working render bootstrap for this architecture:
+
+- Shopify proxy support in `apps/shopify/app/src/server/dify/local-dify-gateway.mjs`
+  - forwards structured component payloads from Dify `node_finished` and `workflow_finished` events
+  - emits first-class `component` SSE events
+  - replays normalized components on the final `complete` payload
+- A local Dify bootstrap app snapshot in `agent/dify/dsl/askcrystal-storefront-components-chatflow-2026-04-24.dsl.yml`
+  - advanced-chat app
+  - deterministic code-node output
+  - no model dependency required
+- Provisioning automation in `scripts/provision_storefront_component_flow.py`
+- Proxy smoke test in `scripts/smoke_storefront_component_proxy.py`
+
+This bootstrap path is intentionally narrower than the long-term architecture below.
+
+It validates:
+
+- Dify can stream structured component intents
+- the Shopify proxy can hydrate those intents into normalized storefront payloads
+- the proxy can fall back to preview hydration when Storefront API credentials are absent
+- the theme can render them inline through `assistant-ui`
+
+With `SHOPIFY_STORE_DOMAIN` and `SHOPIFY_STOREFRONT_ACCESS_TOKEN`, the same path can hydrate canonical Shopify Storefront API data. Without those credentials, the proxy derives preview product and collection payloads from the intent references so local rendering can still be validated end to end.
+
 ## Why This Is The Right Dify-Native Path
 
 ### Why not the skill bridge

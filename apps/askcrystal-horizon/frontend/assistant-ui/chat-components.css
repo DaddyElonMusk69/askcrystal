@@ -75,6 +75,113 @@
   text-underline-offset: 0.18em;
 }
 
+.ac-tool-product-native {
+  display: block;
+  min-width: 0;
+}
+
+.ac-tool-product-native--loading {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(23, 23, 23, 0.08);
+  background: rgba(23, 23, 23, 0.03);
+}
+
+.ac-tool-product-native__loading-label {
+  color: var(--ac-color-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.ac-tool-product-native .askcrystal-chat-product-card {
+  display: block;
+}
+
+.ac-tool-product-native .product-card {
+  display: block;
+  width: 100%;
+}
+
+.ac-tool-product-native .product-card__content {
+  min-width: 0;
+}
+
+.ac-tool-product-native .askcrystal-chat-product-card__content {
+  gap: 12px;
+  background: transparent;
+}
+
+.ac-tool-product-native .askcrystal-chat-product-card__media {
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--ac-color-paper-muted);
+}
+
+.ac-tool-product-native .askcrystal-chat-product-card__media-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ac-tool-product-native .askcrystal-chat-product-card__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 0.95;
+  object-fit: cover;
+}
+
+.ac-tool-product-native .askcrystal-chat-product-card__placeholder {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 0.95;
+  padding: 16px;
+  text-align: center;
+  font-family: var(--font-heading--family), serif;
+  color: rgba(23, 23, 23, 0.4);
+}
+
+.ac-tool-product-native .askcrystal-chat-product-card__title {
+  display: block;
+}
+
+.ac-tool-product-native .askcrystal-chat-product-card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ac-tool-product-native .askcrystal-chat-product-card__title .title-text {
+  display: block;
+  font-size: 1rem;
+  line-height: 1.28;
+  letter-spacing: -0.02em;
+}
+
+.ac-tool-product-native .askcrystal-chat-product-card__price {
+  display: block;
+}
+
+.ac-tool-product-native .askcrystal-chat-product-card__swatches,
+.ac-tool-product-native .askcrystal-chat-product-card__sku {
+  min-width: 0;
+}
+
+.ac-tool-product-native .askcrystal-chat-product-card__sku {
+  color: var(--ac-color-muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.ac-tool-product-native product-swatches {
+  width: 100%;
+}
+
+.ac-tool-product-native swatches-variant-picker-component {
+  justify-content: flex-start;
+}
+
 .ac-tool-product {
   display: grid;
   gap: 14px;

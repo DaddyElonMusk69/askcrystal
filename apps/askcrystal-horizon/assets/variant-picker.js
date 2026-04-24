@@ -279,6 +279,16 @@ export default class VariantPicker extends Component {
       }
     }
 
+    const inheritedSectionRenderingId =
+      this.dataset.sectionRenderingId || this.closest('[data-section-rendering-id]')?.getAttribute('data-section-rendering-id');
+
+    if (inheritedSectionRenderingId) {
+      if (productUrl?.includes('?')) {
+        productUrl = productUrl.split('?')[0];
+      }
+      return `${productUrl}?section_id=${inheritedSectionRenderingId}&${params.join('&')}`;
+    }
+
     // If variant-picker is a child of some specific sections, we need to append section_id=xxxx to the URL
     const SECTION_ID_MAP = {
       'quick-add-component': 'section-rendering-product-card',

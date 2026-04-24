@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { startTransition, useEffect, useState } from 'react'
 import {
   CHAT_COMPONENT_TOOL_NAMES,
   readChatComponentToolPayload,
 } from '../../../shopify/packages/storefront-ui/src/chat-components.mjs'
+
+const NATIVE_PRODUCT_CARD_SECTION_ID = 'section-rendering-askcrystal-chat-product-card'
+const nativeProductCardMarkupCache = new Map()
+const nativeProductCardRequestCache = new Map()
 
 function resolveComponentPayload(part) {
   return readChatComponentToolPayload({
@@ -11,6 +15,76 @@ function resolveComponentPayload(part) {
     args: part.args,
     toolCallId: part.toolCallId,
   })
+}
+
+function asShopifyVariantQueryId(value) {
+  const normalized = typeof value === 'string' ? value.trim() : ''
+  if (!normalized)
+    return null
+
+  if (/^\d+$/.test(normalized))
+    return normalized
+
+  const match = normalized.match(/\/(\d+)(?:\?.*)?$/)
+  return match ? match[1] : null
+}
+
+function buildNativeProductCardRequestUrl(product) {
+  const productPath = product?.url || (product?.handle ? `/products/${product.handle}` : null)
+  if (!productPath || typeof window === 'undefined')
+    return null
+
+  const requestUrl = new URL(productPath, window.location.origin)
+  requestUrl.searchParams.set('section_id', NATIVE_PRODUCT_CARD_SECTION_ID)
+
+  const variantQueryId = asShopifyVariantQueryId(product?.variantId || product?.merchandiseId)
+  if (variantQueryId)
+    requestUrl.searchParams.set('variant', variantQueryId)
+
+  return requestUrl.toString()
+}
+
+function extractNativeProductCardMarkup(responseText) {
+  const document = new DOMParser().parseFromString(responseText, 'text/html')
+  const nativeCard = document.querySelector('[data-askcrystal-native-product-card]')
+  return nativeCard?.outerHTML?.trim() || null
+}
+
+async function loadNativeProductCardMarkup(requestUrl) {
+  if (!requestUrl)
+    throw new Error('Missing product card request URL')
+
+  const cachedMarkup = nativeProductCardMarkupCache.get(requestUrl)
+  if (cachedMarkup)
+    return cachedMarkup
+
+  if (!nativeProductCardRequestCache.has(requestUrl)) {
+    const request = fetch(requestUrl, {
+      headers: {
+        accept: 'text/html',
+      },
+      credentials: 'same-origin',
+    })
+      .then(async (response) => {
+        if (!response.ok)
+          throw new Error(`Failed to load native product card (${response.status})`)
+
+        const responseText = await response.text()
+        const markup = extractNativeProductCardMarkup(responseText)
+        if (!markup)
+          throw new Error('Native product card markup was not found in the section response')
+
+        nativeProductCardMarkupCache.set(requestUrl, markup)
+        return markup
+      })
+      .finally(() => {
+        nativeProductCardRequestCache.delete(requestUrl)
+      })
+
+    nativeProductCardRequestCache.set(requestUrl, request)
+  }
+
+  return nativeProductCardRequestCache.get(requestUrl)
 }
 
 function ToolShell({ eyebrow, title, children, className = '' }) {
@@ -47,6 +121,116 @@ function ProductMeta({ product, ctaLabel }) {
   )
 }
 
+function FallbackProductCard({ product, ctaLabel }) {
+  const content = (
+    <>
+      <ProductMedia image={product.image} title={product.title} />
+      <div className="ac-tool-product__body">
+        <div className="ac-tool-product__heading">
+          {product.badge ? <p className="ac-tool-product__badge">{product.badge}</p> : null}
+          <h4 className="ac-tool-product__title">{product.title}</h4>
+        </div>
+        <ProductMeta product={product} ctaLabel={ctaLabel} />
+      </div>
+    </>
+  )
+
+  return product.url
+    ? (
+        <a className="ac-tool-product ac-tool-product--single" href={product.url}>
+          {content}
+        </a>
+      )
+    : (
+        <div className="ac-tool-product ac-tool-product--single">
+          {content}
+        </div>
+      )
+}
+
+function NativeProductCard({ product, ctaLabel }) {
+  const requestUrl = buildNativeProductCardRequestUrl(product)
+  const [markup, setMarkup] = useState(() => (requestUrl ? nativeProductCardMarkupCache.get(requestUrl) || null : null))
+  const [loadError, setLoadError] = useState(null)
+
+  useEffect(() => {
+    let isActive = true
+
+    if (!requestUrl) {
+      startTransition(() => {
+        setMarkup(null)
+        setLoadError(new Error('Missing product card request URL'))
+      })
+      return () => {
+        isActive = false
+      }
+    }
+
+    const cachedMarkup = nativeProductCardMarkupCache.get(requestUrl)
+    if (cachedMarkup) {
+      startTransition(() => {
+        setMarkup(cachedMarkup)
+        setLoadError(null)
+      })
+      return () => {
+        isActive = false
+      }
+    }
+
+    startTransition(() => {
+      setMarkup(null)
+      setLoadError(null)
+    })
+
+    loadNativeProductCardMarkup(requestUrl)
+      .then((nextMarkup) => {
+        if (!isActive)
+          return
+
+        startTransition(() => {
+          setMarkup(nextMarkup)
+          setLoadError(null)
+        })
+      })
+      .catch((error) => {
+        if (!isActive)
+          return
+
+        startTransition(() => {
+          setMarkup(null)
+          setLoadError(error)
+        })
+      })
+
+    return () => {
+      isActive = false
+    }
+  }, [requestUrl])
+
+  if (markup) {
+    return (
+      <div
+        className="ac-tool-product-native"
+        dangerouslySetInnerHTML={{ __html: markup }}
+      />
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div className="ac-tool-product-native">
+        <FallbackProductCard product={product} ctaLabel={ctaLabel} />
+      </div>
+    )
+  }
+
+  return (
+    <div className="ac-tool-product-native ac-tool-product-native--loading" aria-busy="true" aria-live="polite">
+      <span className="ac-tool-product-native__loading-label">Loading product card...</span>
+    </div>
+  )
+}
+
 function ProductCardTool(part) {
   const payload = resolveComponentPayload(part)
   if (!payload)
@@ -60,36 +244,12 @@ function ProductCardTool(part) {
     product,
   } = payload.props
 
-  const content = (
-    <>
-      <ProductMedia image={product.image} title={product.title} />
-      <div className="ac-tool-product__body">
-        <div className="ac-tool-product__heading">
-          {product.badge ? <p className="ac-tool-product__badge">{product.badge}</p> : null}
-          <h4 className="ac-tool-product__title">{product.title}</h4>
-        </div>
-
-        {reason ? <p className="ac-tool-product__reason">{reason}</p> : null}
-        {product.summary ? <p className="ac-tool-product__summary">{product.summary}</p> : null}
-        {note ? <p className="ac-tool-product__note">{note}</p> : null}
-        <ProductMeta product={product} ctaLabel={ctaLabel} />
-      </div>
-    </>
-  )
-
   return (
     <ToolShell eyebrow={eyebrow} className="ac-tool--product-card">
-      {product.url
-        ? (
-            <a className="ac-tool-product ac-tool-product--single" href={product.url}>
-              {content}
-            </a>
-          )
-        : (
-            <div className="ac-tool-product ac-tool-product--single">
-              {content}
-            </div>
-          )}
+      {reason ? <p className="ac-tool-product__reason">{reason}</p> : null}
+      <NativeProductCard product={product} ctaLabel={ctaLabel} />
+      {product.summary ? <p className="ac-tool-product__summary">{product.summary}</p> : null}
+      {note ? <p className="ac-tool-product__note">{note}</p> : null}
     </ToolShell>
   )
 }

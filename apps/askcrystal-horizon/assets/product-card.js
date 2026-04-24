@@ -585,7 +585,11 @@ class SwatchesVariantPickerComponent extends VariantPicker {
 
       const url = new URL(productUrl, window.location.origin);
       url.searchParams.set('variant', firstAvailableVariantId);
-      url.searchParams.set('section_id', 'section-rendering-product-card');
+      const inheritedSectionRenderingId =
+        this.dataset.sectionRenderingId
+        || this.closest('[data-section-rendering-id]')?.getAttribute('data-section-rendering-id')
+        || 'section-rendering-product-card';
+      url.searchParams.set('section_id', inheritedSectionRenderingId);
 
       const requestUrl = url.href;
 

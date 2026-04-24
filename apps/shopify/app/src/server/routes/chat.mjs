@@ -158,6 +158,8 @@ export const handleChat = async (body) => {
       answer: difyResult.data.answer,
       references: difyResult.data.references,
       metadata: difyResult.data.metadata,
+      components: difyResult.data.components || [],
+      storefrontHydration: difyResult.data.storefrontHydration || null,
       products: [],
     },
   }

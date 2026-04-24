@@ -26,6 +26,7 @@ const DEFAULT_THREAD_ID = 'askcrystal-main-thread';
 const LOCAL_PROXY_ORIGIN = 'http://localhost:8787';
 const SESSION_STORAGE_KEY = 'askcrystal-theme-session-id';
 let messageSequence = 0;
+const COMPOSER_MAX_ROWS = 7;
 
 function readJsonScript(id) {
   const element = document.getElementById(id);
@@ -1283,14 +1284,43 @@ function WelcomeState({ config }) {
 }
 
 function Composer() {
+  const textareaRef = useRef(null);
+  const [isInputOverflowing, setIsInputOverflowing] = useState(false);
+
+  const syncComposerOverflow = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) {
+      setIsInputOverflowing(false);
+      return;
+    }
+
+    const nextOverflowing = textarea.scrollHeight > textarea.clientHeight + 2;
+    setIsInputOverflowing((current) => (current === nextOverflowing ? current : nextOverflowing));
+  }, []);
+
+  useEffect(() => {
+    const rafId = window.requestAnimationFrame(syncComposerOverflow);
+    return () => window.cancelAnimationFrame(rafId);
+  }, [syncComposerOverflow]);
+
   return (
     <ComposerPrimitive.Root className="ac-homepage__composer" aria-label="Message AskCrystal">
-      <div className="ac-homepage__composer-shell">
+      <div
+        className={`ac-homepage__composer-shell${isInputOverflowing ? ' ac-homepage__composer-shell--overflowing' : ''}`}
+      >
         <ComposerPrimitive.Input
+          ref={textareaRef}
           className="ac-homepage__composer-input"
           placeholder="What guidance or crystal do you need today?"
-          rows={1}
+          minRows={1}
+          maxRows={COMPOSER_MAX_ROWS}
           autoFocus={false}
+          onChange={() => {
+            window.requestAnimationFrame(syncComposerOverflow);
+          }}
+          onHeightChange={() => {
+            window.requestAnimationFrame(syncComposerOverflow);
+          }}
         />
 
         <div className="ac-homepage__composer-actions">

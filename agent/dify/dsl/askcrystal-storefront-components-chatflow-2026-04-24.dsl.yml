@@ -1,0 +1,315 @@
+app:
+  description: Advanced chatflow for validating storefront component intent hydration
+    in AskCrystal chat.
+  icon: 🔮
+  icon_background: '#1f2937'
+  icon_type: emoji
+  mode: advanced-chat
+  name: AskCrystal Storefront Components
+  use_icon_as_answer_icon: false
+dependencies: []
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: code
+      id: start-node-source-build-components-target
+      source: start_node
+      sourceHandle: source
+      target: build_components
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: answer
+      id: build-components-source-answer-target
+      source: build_components
+      sourceHandle: source
+      target: answer_node
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: Start
+        type: start
+        variables: []
+      height: 54
+      id: start_node
+      position:
+        x: 40
+        y: 242
+      positionAbsolute:
+        x: 40
+        y: 242
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "def main(query: str) -> dict:\n    normalized = (query or \"\").strip()\n\
+          \    lowered = normalized.lower()\n\n    def reading_summary(component_id:\
+          \ str, summary: str, focus: str, highlights: list[str]) -> dict:\n     \
+          \   return {\n            \"component\": \"reading_summary\",\n        \
+          \    \"id\": component_id,\n            \"priority\": \"primary\",\n   \
+          \         \"props\": {\n                \"eyebrow\": \"Energy blueprint\"\
+          ,\n                \"title\": \"What your energy is asking for\",\n    \
+          \            \"summary\": summary,\n                \"energy_focus\": focus,\n\
+          \                \"highlights\": highlights,\n            },\n        }\n\
+          \n    def product_card(component_id: str, handle: str, reason: str, note:\
+          \ str) -> dict:\n        return {\n            \"component\": \"product_card\"\
+          ,\n            \"id\": component_id,\n            \"priority\": \"primary\"\
+          ,\n            \"props\": {\n                \"eyebrow\": \"Prescription\"\
+          ,\n                \"reason\": reason,\n                \"note\": note,\n\
+          \                \"cta_label\": \"View crystal\",\n                \"product_ref\"\
+          : {\n                    \"handle\": handle,\n                },\n     \
+          \       },\n        }\n\n    def product_carousel(component_id: str, title:\
+          \ str, reason: str, handles: list[str]) -> dict:\n        return {\n   \
+          \         \"component\": \"product_carousel\",\n            \"id\": component_id,\n\
+          \            \"priority\": \"primary\",\n            \"props\": {\n    \
+          \            \"eyebrow\": \"Matched for you\",\n                \"title\"\
+          : title,\n                \"reason\": reason,\n                \"browse_collection\"\
+          : {\n                    \"handle\": \"all\",\n                },\n    \
+          \            \"browse_label\": \"Browse more crystals\",\n             \
+          \   \"product_refs\": [\n                    {\n                       \
+          \ \"handle\": handle,\n                    }\n                    for handle\
+          \ in handles\n                ],\n            },\n        }\n\n    def ritual_card(\n\
+          \        component_id: str,\n        title: str,\n        summary: str,\n\
+          \        steps: list[str],\n        note: str,\n        handles: list[str]\
+          \ | None = None,\n    ) -> dict:\n        return {\n            \"component\"\
+          : \"ritual_card\",\n            \"id\": component_id,\n            \"priority\"\
+          : \"supporting\",\n            \"props\": {\n                \"eyebrow\"\
+          : \"Ritual\",\n                \"title\": title,\n                \"summary\"\
+          : summary,\n                \"duration\": \"2 minute reset\",\n        \
+          \        \"steps\": steps,\n                \"note\": note,\n          \
+          \      \"linked_product_refs\": [\n                    {\n             \
+          \           \"handle\": handle,\n                    }\n               \
+          \     for handle in (handles or [])\n                ],\n            },\n\
+          \        }\n\n    def next_steps(component_id: str, steps: list[str], closing:\
+          \ str) -> dict:\n        return {\n            \"component\": \"next_steps\"\
+          ,\n            \"id\": component_id,\n            \"priority\": \"supporting\"\
+          ,\n            \"props\": {\n                \"eyebrow\": \"Next steps\"\
+          ,\n                \"title\": \"What to do next\",\n                \"steps\"\
+          : steps,\n                \"closing\": closing,\n            },\n      \
+          \  }\n\n    def collection_link(component_id: str, title: str, description:\
+          \ str, handle: str, label: str) -> dict:\n        return {\n           \
+          \ \"component\": \"collection_link\",\n            \"id\": component_id,\n\
+          \            \"priority\": \"supporting\",\n            \"props\": {\n \
+          \               \"eyebrow\": \"Browse deeper\",\n                \"title\"\
+          : title,\n                \"description\": description,\n              \
+          \  \"label\": label,\n                \"collection_ref\": {\n          \
+          \          \"handle\": handle,\n                },\n            },\n   \
+          \     }\n\n    def wants_shop_components(text: str) -> bool:\n        return\
+          \ any(\n            term in text\n            for term in [\n          \
+          \      \"recommend\",\n                \"show me\",\n                \"\
+          which crystal\",\n                \"what crystal\",\n                \"\
+          compare\",\n                \"options\",\n                \"product\",\n\
+          \                \"shop\",\n                \"browse\",\n              \
+          \  \"buy\",\n                \"best crystal\",\n            ]\n        )\n\
+          \n    notes = [\n        \"Emit component intents only when recommendation\
+          \ confidence is high or the user is explicitly shopping.\",\n        \"\
+          Shopify proxy is responsible for hydration and final rendering payloads.\"\
+          ,\n    ]\n\n    if any(term in lowered for term in [\"sleep\", \"calm\"\
+          , \"anxious\", \"anxiety\", \"rest\", \"overthink\"]):\n        answer_copy\
+          \ = (\n            \"Your field reads more overstimulated than depleted,\
+          \ so I would begin with a softer calming stone \"\n            \"instead\
+          \ of anything too activating. I am pairing that with a bedtime grounding\
+          \ sequence so the \"\n            \"recommendation feels actionable, not\
+          \ just symbolic.\"\n        )\n        components = [\n            reading_summary(\n\
+          \                \"sleep-reading\",\n                \"The main pattern\
+          \ here is nervous-system static that wants quiet repetition and sensory\
+          \ softening.\",\n                \"Calm, sleep, emotional decompression\"\
+          ,\n                [\n                    \"Favor gentle containment over\
+          \ big energetic clears tonight.\",\n                    \"Create one repeatable\
+          \ cue your body can associate with rest.\",\n                    \"Keep\
+          \ the recommendation close to the bed so the ritual stays easy.\",\n   \
+          \             ],\n            ),\n            product_card(\n          \
+          \      \"sleep-product\",\n                \"amethyst-pendant\",\n     \
+          \           \"Best fit for dialing down mental noise before sleep.\",\n\
+          \                \"Place it beside the bed and take three long exhales before\
+          \ lights out.\",\n            ),\n            ritual_card(\n           \
+          \     \"sleep-ritual\",\n                \"Bedside exhale ritual\",\n  \
+          \              \"Use this when your thoughts are still moving at bedtime\
+          \ and you want a softer landing into rest.\",\n                [\n     \
+          \               \"Set the stone beside the bed before you reach for one\
+          \ more scroll.\",\n                    \"Hold it in one hand and take three\
+          \ long exhales, each one slower than the last.\",\n                    \"\
+          Say: tonight I soften, and the day can end here.\",\n                ],\n\
+          \                \"Keep the same words and sequence for three nights so\
+          \ your body starts recognizing the cue for rest.\",\n                [\"\
+          amethyst-pendant\"],\n            ),\n        ]\n    elif any(term in lowered\
+          \ for term in [\"protect\", \"protection\", \"ground\", \"grounding\", \"\
+          shield\", \"heavy\"]):\n        answer_copy = (\n            \"This reads\
+          \ like energetic leakage and heaviness rather than simple fatigue. I would\
+          \ start with a more \"\n            \"protective crystal, then pair it with\
+          \ a short reset ritual that helps you separate your own energy from \"\n\
+          \            \"what you picked up around you.\"\n        )\n        components\
+          \ = [\n            reading_summary(\n                \"protect-reading\"\
+          ,\n                \"The pattern here is boundary fatigue: too much input,\
+          \ not enough energetic separation.\",\n                \"Protection, grounding,\
+          \ steadiness\",\n                [\n                    \"Choose dense,\
+          \ stabilizing stones over airy mood-lifters.\",\n                    \"\
+          Use physical placement and repetition to make the ritual stick.\",\n   \
+          \                 \"End with a simple release phrase so the session feels\
+          \ complete.\",\n                ],\n            ),\n            product_card(\n\
+          \                \"protect-product\",\n                \"black-tourmaline-tower\"\
+          ,\n                \"A stronger match when the need is shielding, grounding,\
+          \ and energetic containment.\",\n                \"Keep it by the door or\
+          \ workspace and touch it before and after draining interactions.\",\n  \
+          \          ),\n            ritual_card(\n                \"protect-ritual\"\
+          ,\n                \"Doorway reset\",\n                \"Use this when you\
+          \ want a fast boundary ritual after a heavy interaction or crowded day.\"\
+          ,\n                [\n                    \"Set the stone near the doorway\
+          \ or desk edge.\",\n                    \"Place one hand on the stone and\
+          \ one on your chest.\",\n                    \"Say: what is mine stays,\
+          \ what is not mine leaves.\",\n                ],\n                \"Repeat\
+          \ the same phrase each time so the boundary cue becomes easier to access\
+          \ under stress.\",\n                [\"black-tourmaline-tower\"],\n    \
+          \        ),\n        ]\n    else:\n        answer_copy = (\n           \
+          \ \"I would start broad here instead of overcommitting to one stone too\
+          \ early. The best next move is to \"\n            \"clarify whether the\
+          \ real need is grounding, softness, or clarity before making the storefront\
+          \ carry the \"\n            \"recommendation.\"\n        )\n\n        if\
+          \ wants_shop_components(lowered):\n            components = [\n        \
+          \        reading_summary(\n                    \"general-reading\",\n  \
+          \                  \"The signal is mixed enough that a small comparison\
+          \ shelf is more useful than a single hard recommendation.\",\n         \
+          \           \"Clarity, softness, and grounding in balance\",\n         \
+          \           [\n                        \"Try one clarity stone, one heart-opening\
+          \ stone, and one grounding stone.\",\n                        \"Notice which\
+          \ description feels relieving rather than impressive.\",\n             \
+          \           \"Browse by intention before committing to a single form factor.\"\
+          ,\n                    ],\n                ),\n                product_carousel(\n\
+          \                    \"general-carousel\",\n                    \"Three\
+          \ crystal directions to compare\",\n                    \"Each option supports\
+          \ a different lane so you can feel whether clarity, softness, or grounding\
+          \ is the real need.\",\n                    [\n                        \"\
+          clear-quartz-point\",\n                        \"rose-quartz-palm-stone\"\
+          ,\n                        \"smoky-quartz-generator\",\n               \
+          \     ],\n                ),\n                collection_link(\n       \
+          \             \"general-collection\",\n                    \"Browse the\
+          \ full crystal shelf\",\n                    \"If you want to compare shapes,\
+          \ budgets, or intentions before deciding, open the broader collection next.\"\
+          ,\n                    \"all\",\n                    \"Browse collection\"\
+          ,\n                ),\n            ]\n        else:\n            components\
+          \ = []\n\n    return {\n        \"answer_copy\": answer_copy,\n        \"\
+          schema_version\": 1,\n        \"components\": components,\n        \"notes\"\
+          : notes,\n    }"
+        code_language: python3
+        desc: Storefront component intent bootstrap for the Shopify proxy hydrator.
+        outputs:
+          answer_copy:
+            children: null
+            type: string
+          components:
+            children: null
+            type: array[object]
+          notes:
+            children: null
+            type: array[string]
+          schema_version:
+            children: null
+            type: number
+        selected: false
+        title: Build Storefront Components
+        type: code
+        variables:
+        - value_selector:
+          - sys
+          - query
+          value_type: string
+          variable: query
+      height: 84
+      id: build_components
+      position:
+        x: 344
+        y: 227
+      positionAbsolute:
+        x: 344
+        y: 227
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#build_components.answer_copy#}}'
+        desc: ''
+        selected: true
+        title: Answer
+        type: answer
+        variables: []
+      height: 105
+      id: answer_node
+      position:
+        x: 648
+        y: 227
+      positionAbsolute:
+        x: 648
+        y: 227
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.7
+  rag_pipeline_variables: []

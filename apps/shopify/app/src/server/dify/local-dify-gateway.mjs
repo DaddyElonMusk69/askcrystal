@@ -1,6 +1,14 @@
 import { Buffer } from 'node:buffer'
 import { gzipSync } from 'node:zlib'
 
+import {
+  mergeChatComponents,
+} from '../../../../packages/storefront-ui/src/chat-components.mjs'
+import {
+  createStorefrontComponentHydrationContext,
+  describeStorefrontHydrationStatus,
+  hydrateChatComponentsFromPayload,
+} from './storefront-component-hydrator.mjs'
 import { config, requireDifyChatConfig, requireDifyConsoleDevConfig } from '../config.mjs'
 
 const TERMINAL_EVENTS = new Set([
@@ -132,6 +140,17 @@ const getEventTaskId = (event) => {
   return null
 }
 
+const getChatComponentKey = (component) => {
+  const toolName = typeof component?.toolName === 'string' ? component.toolName : ''
+  const id = typeof component?.id === 'string' ? component.id : ''
+  return `${toolName}:${id}`
+}
+
+const diffChatComponents = (current = [], incoming = []) => {
+  const existingKeys = new Set(current.map(getChatComponentKey))
+  return incoming.filter(component => !existingKeys.has(getChatComponentKey(component)))
+}
+
 const getToolName = (event) => {
   if (!event || typeof event !== 'object')
     return ''
@@ -236,10 +255,12 @@ const buildStatusPayload = ({ stage, event = null } = {}) => {
   }
 }
 
-const normalizeDifyAnswer = (payload) => {
+const normalizeDifyAnswer = async (payload, hydrationContext) => {
   const references = payload?.retriever_resources
     || payload?.metadata?.retriever_resources
     || []
+  const components = await hydrateChatComponentsFromPayload(payload, hydrationContext)
+  const storefrontHydration = describeStorefrontHydrationStatus(hydrationContext)
 
   if (typeof payload?.answer === 'string') {
     return {
@@ -247,6 +268,8 @@ const normalizeDifyAnswer = (payload) => {
       conversationId: payload.conversation_id || null,
       metadata: payload.metadata || {},
       references,
+      components,
+      storefrontHydration,
     }
   }
 
@@ -255,6 +278,8 @@ const normalizeDifyAnswer = (payload) => {
     conversationId: payload?.conversation_id || null,
     metadata: payload?.metadata || {},
     references,
+    components,
+    storefrontHydration,
   }
 }
 
@@ -295,13 +320,13 @@ const normalizeDifyStream = (events) => {
 
   const metadata = messageEndEvent?.metadata || {}
   const references = metadata?.retriever_resources || messageEndEvent?.retriever_resources || []
-
   return {
     answer: answer || null,
     conversationId,
     taskId,
     metadata,
     references,
+    components: [],
   }
 }
 
@@ -327,8 +352,9 @@ const fetchTextWithTimeout = async (url, options, timeoutMs) => {
   }
 }
 
-const appendStreamMetadata = (payload, events) => ({
+const appendStreamMetadata = (payload, events, storefrontHydration = null) => ({
   ...payload,
+  ...(storefrontHydration ? { storefrontHydration } : {}),
   metadata: {
     ...(payload.metadata || {}),
     streamEvents: events.length,
@@ -429,6 +455,8 @@ const sendServiceApiChat = async ({
   externalAbortSignal = null,
 }) => {
   const controller = new AbortController()
+  const hydrationContext = createStorefrontComponentHydrationContext()
+  const storefrontHydration = describeStorefrontHydrationStatus(hydrationContext)
   const timeoutHandle = setTimeout(() => controller.abort(), config.difyRequestTimeoutMs)
   const handleExternalAbort = () => controller.abort()
   const throwIfAborted = () => {
@@ -472,7 +500,7 @@ const sendServiceApiChat = async ({
 
     if (!contentType.includes('text/event-stream') || !response.body) {
       const text = await response.text()
-      const payload = normalizeDifyAnswer(parseTextPayload(text))
+      const payload = await normalizeDifyAnswer(parseTextPayload(text), hydrationContext)
       onProgress?.({
         type: 'complete',
         payload,
@@ -490,6 +518,7 @@ const sendServiceApiChat = async ({
     let buffer = ''
     let emittedResponseStatus = false
     let forwardedAnswer = ''
+    let forwardedComponents = []
     let lastStatusKey = ''
 
     const emitStatus = (payload) => {
@@ -521,6 +550,27 @@ const sendServiceApiChat = async ({
       for (const event of parsed.events) {
         throwIfAborted()
         events.push(event)
+
+        const eventComponents = await hydrateChatComponentsFromPayload(event, hydrationContext)
+        if (eventComponents.length > 0) {
+          const nextComponents = diffChatComponents(forwardedComponents, eventComponents)
+          forwardedComponents = mergeChatComponents(forwardedComponents, eventComponents)
+
+          if (nextComponents.length > 0) {
+            onProgress?.({
+              type: 'component',
+              payload: {
+                conversationId: getEventConversationId(event),
+                taskId: getEventTaskId(event),
+                sourceEvent: event.event || null,
+                nodeId: event?.data?.node_id || null,
+                nodeType: event?.data?.node_type || null,
+                storefrontHydration,
+                components: nextComponents,
+              },
+            })
+          }
+        }
 
         if (event?.event === 'agent_thought') {
           throwIfAborted()
@@ -587,9 +637,11 @@ const sendServiceApiChat = async ({
         }
 
         if (['message_end', 'advanced_chat_message_end', 'workflow_finished'].includes(event?.event)) {
-          const payload = appendStreamMetadata(normalizeDifyStream(events), events)
+          const payload = appendStreamMetadata(normalizeDifyStream(events), events, storefrontHydration)
           if (!payload.answer && forwardedAnswer)
             payload.answer = forwardedAnswer
+          if (forwardedComponents.length > 0)
+            payload.components = mergeChatComponents(payload.components, forwardedComponents)
           onProgress?.({
             type: 'complete',
             payload,
@@ -611,9 +663,11 @@ const sendServiceApiChat = async ({
       events.push(...parsed.events)
     }
 
-    const payload = appendStreamMetadata(normalizeDifyStream(events), events)
+    const payload = appendStreamMetadata(normalizeDifyStream(events), events, storefrontHydration)
     if (!payload.answer && forwardedAnswer)
       payload.answer = forwardedAnswer
+    if (forwardedComponents.length > 0)
+      payload.components = mergeChatComponents(payload.components, forwardedComponents)
     onProgress?.({
       type: 'complete',
       payload,
