@@ -1,0 +1,6789 @@
+{
+  "crystals": {
+    "rose-quartz": {
+      "name": "Rose Quartz",
+      "aliases": [
+        "Pink Quartz",
+        "Hyaline Quartz"
+      ],
+      "color": "Pink",
+      "chakra": "Heart",
+      "zodiac": [
+        "Taurus",
+        "Scorpio",
+        "Cancer"
+      ],
+      "element": "Water",
+      "hardness": 7,
+      "vibration": 9,
+      "numerology": 7,
+      "affirmation": "I am worthy of love",
+      "healing_properties": {
+        "spiritual": [
+          "Love",
+          "Compassion",
+          "Emotional Healing"
+        ],
+        "emotional": [
+          "Self-love",
+          "Inner peace",
+          "Forgiveness",
+          "Grief healing"
+        ],
+        "physical": [
+          "Heart health",
+          "Circulatory system",
+          "Skin",
+          "Fertility"
+        ],
+        "mental": [
+          "Calming",
+          "Anxiety relief",
+          "Emotional balance"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on heart chakra during meditation for emotional healing",
+        "wearing": "Wear as pendant near heart for continuous loving energy",
+        "placement": "Place beside bed for restful sleep and emotional comfort",
+        "grid": "Center of love and compassion crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Amethyst",
+            "benefit": "Enhances intuition while opening the heart"
+          },
+          {
+            "crystal": "Black Tourmaline",
+            "benefit": "Grounds emotional energy, provides protection"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies love energy and intentions"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water"
+        ],
+        "charging": [
+          "Moonlight",
+          "Selenite plate",
+          "Rose quartz cluster"
+        ],
+        "avoid": [
+          "Prolonged sunlight (may fade)",
+          "Harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "love",
+        "compassion",
+        "heart",
+        "emotional",
+        "healing",
+        "relationships",
+        "self-love"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Cluster",
+        "Geode",
+        "Point",
+        "Jewelry",
+        "Sphere"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "planetary_ruler": "Venus",
+      "planetary_energy": "feminine, loving, harmonious, attractive, compassionate",
+      "optimal_timing": {
+        "day_of_week": "Friday",
+        "zodiac_season": [
+          "Taurus (April 20 - May 20)",
+          "Libra (September 23 - October 22)"
+        ],
+        "moon_phases": [
+          "New Moon",
+          "Full Moon"
+        ],
+        "best_time": "evening, during love work or relationship rituals"
+      },
+      "scientific_notes": {
+        "chemical_composition": "SiO₂ (Silicon Dioxide) with trace amounts of titanium, iron, or manganese",
+        "crystal_system": "Hexagonal (Trigonal)",
+        "hardness": 7,
+        "specific_gravity": 2.65,
+        "luster": "Vitreous to waxy",
+        "transparency": "Transparent to translucent",
+        "fracture": "Conchoidal",
+        "cleavage": "None (indistinct)",
+        "piezoelectric": true,
+        "pyroelectric": true,
+        "refractive_index": "1.544-1.553",
+        "formation_conditions": "hydrothermal veins at temperatures of 100-450°C under high pressure",
+        "geological_age": "formed in Paleozoic era (300-500 million years ago)",
+        "color_cause": "Trace amounts of titanium, iron, or manganese",
+        "notable_localities": [
+          "Brazil (Minas Gerais)",
+          "Madagascar",
+          "India",
+          "South Dakota (USA)",
+          "Maine (USA)"
+        ]
+      },
+      "avoid_pairings": [
+        {
+          "avoid_crystal": "moldavite",
+          "reason": "Moldavites extremely high vibration can overwhelm rose quartzs gentle energy",
+          "severity": "major",
+          "alternative": "Use separately or with grounding crystal like black tourmaline",
+          "symptoms": [
+            "overstimulation",
+            "emotional overwhelm",
+            "anxiety",
+            "disorientation"
+          ]
+        },
+        {
+          "avoid_crystal": "black-tourmaline",
+          "reason": "Black tourmalines grounding can completely neutralize rose quartzs gentle energy",
+          "severity": "moderate",
+          "alternative": "Use with clear quartz as buffer"
+        }
+      ],
+      "varieties": [
+        {
+          "name": "Madagascar Rose Quartz",
+          "origin": "Madagascar",
+          "color_description": "pale to medium pink, often transparent",
+          "unique_properties": [
+            "high_transparency",
+            "gentle_energy",
+            "affordable"
+          ],
+          "energy_difference": "softer_more_accessible_energy",
+          "rarity": "available"
+        },
+        {
+          "name": "Brazilian Rose Quartz",
+          "origin": "Brazil (Minas Gerais)",
+          "color_description": "medium to dark pink, often opaque",
+          "unique_properties": [
+            "rich_color",
+            "stronger_energy",
+            "popular_choice"
+          ],
+          "energy_difference": "deeper_more_intense_love_energy",
+          "rarity": "available"
+        }
+      ]
+    },
+    "amethyst": {
+      "name": "Amethyst",
+      "aliases": [
+        "Purple Quartz"
+      ],
+      "color": "Purple",
+      "chakra": "Third Eye, Crown",
+      "zodiac": [
+        "Pisces",
+        "Aquarius",
+        "Capricorn",
+        "Virgo",
+        "Sagittarius"
+      ],
+      "element": "Air, Water",
+      "hardness": 7,
+      "vibration": 7,
+      "numerology": 3,
+      "affirmation": "I am aligned with my highest self",
+      "healing_properties": {
+        "spiritual": [
+          "Intuition",
+          "Psychic abilities",
+          "Spiritual connection",
+          "Meditation"
+        ],
+        "emotional": [
+          "Calming",
+          "Stress relief",
+          "Anxiety reduction",
+          "Emotional balance"
+        ],
+        "physical": [
+          "Sleep",
+          "Headaches",
+          "Hormonal balance",
+          "Immune system"
+        ],
+        "mental": [
+          "Clarity",
+          "Focus",
+          "Decision making",
+          "Mental peace"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on third eye or crown chakra during meditation",
+        "wearing": "Wear as necklace or bracelet for continuous spiritual connection",
+        "placement": "Place near bed for peaceful sleep and dreams",
+        "grid": "Use in crystal grids for spiritual protection and intuition"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Combines love and intuition"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies spiritual energy"
+          },
+          {
+            "crystal": "Selenite",
+            "benefit": "Cleanses and elevates vibration"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Selenite"
+        ],
+        "charging": [
+          "Moonlight",
+          "Amethyst cluster",
+          "Clear quartz cluster"
+        ],
+        "avoid": [
+          "Prolonged sunlight (may fade)",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "intuition",
+        "calm",
+        "spiritual",
+        "meditation",
+        "protection",
+        "third eye",
+        "crown"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Cluster",
+        "Geode",
+        "Point",
+        "Jewelry",
+        "Cathedral"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: heat_treatment"
+        ]
+      },
+      "planetary_ruler": "Saturn",
+      "planetary_energy": "masculine, disciplined, grounding, transformative, karmic",
+      "optimal_timing": {
+        "day_of_week": "Saturday",
+        "zodiac_season": [
+          "Capricorn (December 22 - January 19)",
+          "Aquarius (January 20 - February 18)"
+        ],
+        "best_time": "during meditation, karmic work, or discipline-building"
+      },
+      "scientific_notes": {
+        "chemical_composition": "SiO₂ (Silicon Dioxide) with iron impurities",
+        "crystal_system": "Hexagonal (Trigonal)",
+        "hardness": 7,
+        "specific_gravity": 2.65,
+        "luster": "Vitreous",
+        "transparency": "Transparent to translucent",
+        "fracture": "Conchoidal",
+        "cleavage": "None",
+        "piezoelectric": true,
+        "pyroelectric": true,
+        "refractive_index": "1.544-1.553",
+        "formation_conditions": "hydrothermal veins, pegmatite dikes, volcanic cavities",
+        "geological_age": "formed in various geological periods (100-300 million years)",
+        "color_cause": "Iron impurities (Fe³⁺) and irradiation damage",
+        "color_stability": "can fade with prolonged sunlight exposure",
+        "notable_localities": [
+          "Brazil",
+          "Uruguay",
+          "Russia (Siberia)",
+          "Zambia",
+          "South Korea",
+          "Mexico (Veracruz)"
+        ]
+      },
+      "avoid_pairings": [
+        {
+          "avoid_crystal": "citrine",
+          "reason": "Opposing energies: citrine is activating while amethyst is calming",
+          "severity": "minor",
+          "alternative": "Use at different times of day or with clear quartz buffer"
+        },
+        {
+          "avoid_crystal": "carnelian",
+          "reason": "Carnelian is highly activating while amethyst is deeply calming",
+          "severity": "minor",
+          "alternative": "Use in separate sessions or time apart"
+        }
+      ],
+      "varieties": [
+        {
+          "name": "Brandberg Amethyst",
+          "origin": "Namibia (Brandberg Mountain)",
+          "color_description": "deep purple with red phantom inclusions",
+          "unique_properties": [
+            "extremely_high_vibration",
+            "phantom_inclusions",
+            "rare"
+          ],
+          "energy_difference": "more_intense_phantom_transformation",
+          "rarity": "scarce"
+        },
+        {
+          "name": "Veracruz Amethyst",
+          "origin": "Mexico (Veracruz region)",
+          "color_description": "light to medium purple, highly transparent",
+          "unique_properties": [
+            "high_clarity",
+            "affordable",
+            "gentle_energy"
+          ],
+          "energy_difference": "gentler_purple_energy",
+          "rarity": "common"
+        },
+        {
+          "name": "Chevron Amethyst",
+          "origin": "India, Brazil, Russia",
+          "color_description": "banded purple and white layers in chevron pattern",
+          "unique_properties": [
+            "layered_formation",
+            "patterned_energy",
+            "amplifying"
+          ],
+          "energy_difference": "layered_energy_flow",
+          "rarity": "uncommon"
+        }
+      ]
+    },
+    "clear-quartz": {
+      "name": "Clear Quartz",
+      "aliases": [
+        "Rock Crystal",
+        "Ice Crystal"
+      ],
+      "color": "Clear, White",
+      "chakra": "All",
+      "zodiac": [
+        "All signs"
+      ],
+      "element": "All",
+      "hardness": 7,
+      "vibration": 10,
+      "numerology": 4,
+      "affirmation": "I am clear and focused",
+      "healing_properties": {
+        "spiritual": [
+          "Amplification",
+          "Clarity",
+          "Manifestation",
+          "Programming"
+        ],
+        "emotional": [
+          "Balance",
+          "Clarity",
+          "Energy amplification"
+        ],
+        "physical": [
+          "Immune system",
+          "Pain relief",
+          "Healing acceleration"
+        ],
+        "mental": [
+          "Focus",
+          "Concentration",
+          "Memory",
+          "Clarity"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Hold or place on any chakra to amplify intentions",
+        "wearing": "Wear for continuous energy amplification and clarity",
+        "placement": "Place anywhere to amplify energy of space",
+        "grid": "Use as amplifier in all crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Any crystal",
+            "benefit": "Amplifies properties of paired crystal"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Enhances spiritual energy"
+          },
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Amplifies love energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Sunlight (brief)"
+        ],
+        "charging": [
+          "Sunlight",
+          "Moonlight",
+          "Quartz cluster"
+        ],
+        "avoid": [
+          "Prolonged exposure to harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "amplify",
+        "clarity",
+        "focus",
+        "energy",
+        "master",
+        "healing",
+        "program"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Cluster",
+        "Geode",
+        "Point",
+        "Jewelry",
+        "Sphere",
+        "Generator"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: varies"
+        ]
+      },
+      "planetary_ruler": "Uranus",
+      "planetary_energy": "innovative, amplifying, universal, transformative",
+      "optimal_timing": {
+        "day_of_week": "any day",
+        "zodiac_season": "any season",
+        "best_time": "any time, especially during new moon or full moon"
+      },
+      "avoid_pairings": []
+    },
+    "citrine": {
+      "name": "Citrine",
+      "aliases": [
+        "Merchant Stone",
+        "Success Stone"
+      ],
+      "color": "Yellow, Orange, Gold",
+      "chakra": "Solar Plexus",
+      "zodiac": [
+        "Leo",
+        "Aries",
+        "Gemini",
+        "Libra"
+      ],
+      "element": "Fire",
+      "hardness": 7,
+      "vibration": 6,
+      "numerology": 6,
+      "affirmation": "I am abundant and successful",
+      "healing_properties": {
+        "spiritual": [
+          "Manifestation",
+          "Abundance",
+          "Personal power",
+          "Confidence"
+        ],
+        "emotional": [
+          "Joy",
+          "Optimism",
+          "Happiness",
+          "Confidence"
+        ],
+        "physical": [
+          "Digestion",
+          "Metabolism",
+          "Energy levels",
+          "Endocrine system"
+        ],
+        "mental": [
+          "Focus",
+          "Motivation",
+          "Success mindset",
+          "Creativity"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on solar plexus for abundance and confidence",
+        "wearing": "Wear as ring or bracelet for success and prosperity",
+        "placement": "Place in wealth corner of home or office",
+        "grid": "Use in abundance and prosperity crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Pyrite",
+            "benefit": "Enhances manifestation and abundance"
+          },
+          {
+            "crystal": "Tigers Eye",
+            "benefit": "Combines confidence and protection"
+          },
+          {
+            "crystal": "Green Aventurine",
+            "benefit": "Amplifies prosperity energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Sunlight"
+        ],
+        "charging": [
+          "Sunlight",
+          "Citrine cluster",
+          "Pyrite"
+        ],
+        "avoid": [
+          "Water (if heat-treated)",
+          "Harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "abundance",
+        "prosperity",
+        "success",
+        "confidence",
+        "solar plexus",
+        "joy",
+        "manifestation"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Cluster",
+        "Point",
+        "Jewelry",
+        "Sphere"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: heat_treatment_amethyst"
+        ]
+      },
+      "planetary_ruler": "Sun",
+      "planetary_energy": "masculine, expansive, active, outward",
+      "optimal_timing": {
+        "day_of_week": "Sunday",
+        "zodiac_season": "Leo (July 23 - August 22)",
+        "best_time": "daytime (sunrise to sunset)"
+      },
+      "scientific_notes": {
+        "chemical_composition": "SiO₂ (Silicon Dioxide) with trace iron",
+        "crystal_system": "Hexagonal (Trigonal)",
+        "hardness": 7,
+        "specific_gravity": 2.65,
+        "luster": "Vitreous",
+        "transparency": "Transparent to translucent",
+        "fracture": "Conchoidal",
+        "cleavage": "None",
+        "piezoelectric": true,
+        "pyroelectric": true,
+        "refractive_index": "1.544-1.553",
+        "formation_conditions": "hydrothermal veins, formed by heat treatment of amethyst",
+        "geological_age": "same as parent amethyst deposits (100-300 million years)",
+        "color_cause": "Iron impurities (Fe³⁺) - natural or heat-induced",
+        "color_origin": "most citrine is heat-treated amethyst",
+        "notable_localities": [
+          "Brazil (from heat-treated amethyst)",
+          "Madagascar",
+          "Congo (natural citrine rare)"
+        ]
+      },
+      "avoid_pairings": [],
+      "varieties": [
+        {
+          "name": "Natural Citrine",
+          "origin": "Brazil, Madagascar, Congo",
+          "color_description": "pale yellow to amber, often with smoky undertones",
+          "unique_properties": [
+            "natural_coloration",
+            "rare_in_natural_form",
+            "earth_connection"
+          ],
+          "energy_difference": "more_gentle_natural_energy",
+          "rarity": "rare"
+        },
+        {
+          "name": "Heat-Treated Citrine",
+          "origin": "Brazil (from amethyst smoky quartz)",
+          "color_description": "bright orange to yellow-orange",
+          "unique_properties": [
+            "artificial_coloration",
+            "more_available",
+            "affordable"
+          ],
+          "energy_difference": "more_intense_manifestation_energy",
+          "rarity": "available"
+        }
+      ]
+    },
+    "black-tourmaline": {
+      "name": "Black Tourmaline",
+      "aliases": [
+        "Schorl",
+        "Aphrizite"
+      ],
+      "color": "Black",
+      "chakra": "Root",
+      "zodiac": [
+        "Capricorn",
+        "Scorpio",
+        "Sagittarius"
+      ],
+      "element": "Earth",
+      "hardness": -0.5,
+      "vibration": 3,
+      "numerology": 1,
+      "affirmation": "I am protected and grounded",
+      "healing_properties": {
+        "spiritual": [
+          "Protection",
+          "Grounding",
+          "Energy shielding",
+          "Negative energy clearing"
+        ],
+        "emotional": [
+          "Security",
+          "Stability",
+          "Stress reduction",
+          "Fear relief"
+        ],
+        "physical": [
+          "Immune system",
+          "Detoxification",
+          "Pain relief",
+          "Radiation protection"
+        ],
+        "mental": [
+          "Focus",
+          "Clarity",
+          "Emotional stability",
+          "Peace of mind"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Hold or place near root chakra for grounding",
+        "wearing": "Wear as bracelet or pendant for continuous protection",
+        "placement": "Place at entrance of home or office for protection",
+        "grid": "Use in protection grids and EMF shielding"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Selenite",
+            "benefit": "Clears negative energy while protecting"
+          },
+          {
+            "crystal": "Hematite",
+            "benefit": "Enhances grounding and protection"
+          },
+          {
+            "crystal": "Smoky Quartz",
+            "benefit": "Provides comprehensive shielding"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Earth"
+        ],
+        "charging": [
+          "Earth",
+          "Clear quartz cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged sunlight",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "protection",
+        "grounding",
+        "shielding",
+        "security",
+        "root",
+        "emf",
+        "negative energy"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Point",
+        "Jewelry",
+        "Sphere"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "planetary_ruler": "Saturn",
+      "planetary_energy": "masculine, protective, grounding, stabilizing",
+      "optimal_timing": {
+        "day_of_week": "Saturday",
+        "zodiac_season": [
+          "Capricorn",
+          "Aquarius"
+        ],
+        "best_time": "during protection or grounding work"
+      },
+      "scientific_notes": {
+        "chemical_composition": "NaFe³⁺₃Al₆(BO₃)₃Si₆O₁₈(OH)₄ (Complex borosilicate)",
+        "crystal_system": "Trigonal",
+        "hardness": 7,
+        "specific_gravity": "3.06-3.25",
+        "luster": "Vitreous to resinous",
+        "transparency": "Opaque to translucent",
+        "fracture": "Uneven to conchoidal",
+        "cleavage": "Poor",
+        "piezoelectric": true,
+        "pyroelectric": true,
+        "refractive_index": "1.614-1.655",
+        "formation_conditions": "metamorphic rocks, pegmatites, granitic intrusions",
+        "geological_age": "formed in Precambrian to Paleozoic eras (500M+ years)",
+        "color_cause": "High iron content (Fe³⁺)",
+        "notable_localities": [
+          "Brazil",
+          "Pakistan",
+          "Afghanistan",
+          "USA (Maine, California)",
+          "Madagascar",
+          "Sri Lanka"
+        ]
+      },
+      "avoid_pairings": [
+        {
+          "avoid_crystal": "citrine",
+          "reason": "Black tourmalines grounding can suppress citrines uplifting energy",
+          "severity": "moderate",
+          "alternative": "Use with intention and awareness"
+        },
+        {
+          "avoid_crystal": "selenite",
+          "reason": "Selenites high vibration can be neutralized by black tourmalines grounding",
+          "severity": "minor",
+          "alternative": "Use separately or in different locations"
+        }
+      ]
+    },
+    "lapis-lazuli": {
+      "name": "Lapis Lazuli",
+      "aliases": [
+        "Lazurite",
+        "Blue Stone"
+      ],
+      "color": "Blue with gold pyrite flecks",
+      "chakra": "Throat, Third Eye",
+      "zodiac": [
+        "Sagittarius",
+        "Libra",
+        "Virgo"
+      ],
+      "element": "Water, Air",
+      "hardness": -1,
+      "vibration": 5,
+      "numerology": 3,
+      "affirmation": "I speak my truth",
+      "healing_properties": {
+        "spiritual": [
+          "Truth",
+          "Wisdom",
+          "Inner vision",
+          "Spiritual connection"
+        ],
+        "emotional": [
+          "Authenticity",
+          "Self-expression",
+          "Communication",
+          "Clarity"
+        ],
+        "physical": [
+          "Throat",
+          "Voice",
+          "Thyroid",
+          "Immune system"
+        ],
+        "mental": [
+          "Insight",
+          "Intuition",
+          "Mental clarity",
+          "Decision making"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on throat or third eye for truth and wisdom",
+        "wearing": "Wear as pendant near throat for authentic communication",
+        "placement": "Place on desk for clear communication and wisdom",
+        "grid": "Use in truth and wisdom crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Blue Lace Agate",
+            "benefit": "Enhances communication"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies truth energy"
+          },
+          {
+            "crystal": "Sodalite",
+            "benefit": "Combines truth and mental clarity"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Moonlight"
+        ],
+        "charging": [
+          "Moonlight",
+          "Clear quartz cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged sunlight",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "truth",
+        "wisdom",
+        "communication",
+        "throat",
+        "third eye",
+        "authenticity",
+        "insight"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Point",
+        "Jewelry",
+        "Sphere",
+        "Cabochon"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: dye_polymers"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "selenite": {
+      "name": "Selenite",
+      "aliases": [
+        "Satellite Stone",
+        "Gypsum Flower"
+      ],
+      "color": "White, Transparent",
+      "chakra": "Crown, Third Eye",
+      "zodiac": [
+        "Taurus",
+        "Cancer"
+      ],
+      "element": "Air",
+      "hardness": 2,
+      "vibration": 8,
+      "numerology": 8,
+      "affirmation": "I am connected to higher wisdom",
+      "healing_properties": {
+        "spiritual": [
+          "Connection to divine",
+          "Angel guidance",
+          "Higher consciousness",
+          "Past life access"
+        ],
+        "emotional": [
+          "Peace",
+          "Serenity",
+          "Emotional clearing",
+          "Tranquility"
+        ],
+        "physical": [
+          "Spine alignment",
+          "Flexibility",
+          "Nervous system",
+          "Detoxification"
+        ],
+        "mental": [
+          "Clarity",
+          "Mental focus",
+          "Decision making",
+          "Spiritual insight"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on crown or third eye chakra for spiritual connection",
+        "wearing": "Not recommended for jewelry (too soft)",
+        "placement": "Place in any room to cleanse and purify energy",
+        "grid": "Use in protection and cleansing crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Black Tourmaline",
+            "benefit": "Cleanses while protecting"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Enhances spiritual energy"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies cleansing properties"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Self-cleansing",
+          "Moonlight",
+          "Sound"
+        ],
+        "charging": [
+          "Moonlight",
+          "Selenite plate",
+          "Clear quartz cluster"
+        ],
+        "avoid": [
+          "Water",
+          "Prolonged sunlight",
+          "Physical damage (soft stone)"
+        ]
+      },
+      "keywords": [
+        "cleansing",
+        "peace",
+        "spiritual",
+        "divine",
+        "crown",
+        "angel",
+        "wisdom"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Stick",
+        "Wand",
+        "Tower",
+        "Plate",
+        "Sphere",
+        "Raw"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "scientific_notes": {
+        "chemical_composition": "CaSO₄·2H₂O (Calcium Sulfate Dihydrate - Gypsum)",
+        "crystal_system": "Monoclinic",
+        "hardness": 2,
+        "specific_gravity": "2.31-2.33",
+        "luster": "Vitreous to pearly",
+        "transparency": "Transparent to translucent",
+        "fracture": "Uneven",
+        "cleavage": "Perfect on [010]",
+        "refractive_index": "1.519-1.523",
+        "formation_conditions": "evaporite deposits, sedimentary basins, hydrothermal veins",
+        "geological_age": "formed in various periods (100-200 million years)",
+        "color_cause": "pure gypsum is colorless; inclusions cause variations",
+        "solubility": "slightly soluble in water (handle carefully)",
+        "notable_localities": [
+          "Mexico",
+          "Morocco",
+          "USA (Oklahoma, New Mexico)",
+          "Australia",
+          "France"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "tigers-eye": {
+      "name": "Tigers Eye",
+      "aliases": [
+        "Tiger Eye",
+        "Tigerite"
+      ],
+      "color": "Golden, Brown, Red",
+      "chakra": "Solar Plexus, Root",
+      "zodiac": [
+        "Leo",
+        "Capricorn"
+      ],
+      "element": "Earth, Fire",
+      "hardness": -0.5,
+      "vibration": 4,
+      "numerology": 4,
+      "affirmation": "I am courageous and grounded",
+      "healing_properties": {
+        "spiritual": [
+          "Grounding",
+          "Protection",
+          "Courage",
+          "Personal power"
+        ],
+        "emotional": [
+          "Confidence",
+          "Courage",
+          "Willpower",
+          "Motivation"
+        ],
+        "physical": [
+          "Eyes",
+          "Throat",
+          "Reproductive system",
+          "Digestion"
+        ],
+        "mental": [
+          "Focus",
+          "Clarity",
+          "Decision making",
+          "Mental balance"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on solar plexus for confidence and willpower",
+        "wearing": "Wear as bracelet or ring for continuous protection and courage",
+        "placement": "Place near entrance for protection",
+        "grid": "Use in protection and grounding crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Citrine",
+            "benefit": "Enhances confidence and abundance"
+          },
+          {
+            "crystal": "Hematite",
+            "benefit": "Strengthens grounding and protection"
+          },
+          {
+            "crystal": "Red Jasper",
+            "benefit": "Enhances physical vitality and protection"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Sunlight"
+        ],
+        "charging": [
+          "Sunlight",
+          "Earth",
+          "Clear quartz cluster"
+        ],
+        "avoid": [
+          "Prolonged water (may dull shine)",
+          "Harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "courage",
+        "protection",
+        "grounding",
+        "confidence",
+        "solar plexus",
+        "focus",
+        "willpower"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Carvings"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "planetary_ruler": "Sun",
+      "planetary_energy": "masculine, protective, grounding, empowering",
+      "optimal_timing": {
+        "day_of_week": "Sunday",
+        "zodiac_season": "Leo",
+        "best_time": "morning"
+      },
+      "avoid_pairings": []
+    },
+    "moonstone": {
+      "name": "Moonstone",
+      "aliases": [
+        "Healer Stone",
+        "Traveler Stone"
+      ],
+      "color": "White, Cream, Peach, Gray, Rainbow",
+      "chakra": "Crown, Third Eye",
+      "zodiac": [
+        "Cancer",
+        "Libra",
+        "Scorpio"
+      ],
+      "element": "Water",
+      "hardness": -0.5,
+      "vibration": 4,
+      "numerology": 4,
+      "affirmation": "I embrace my inner wisdom",
+      "healing_properties": {
+        "spiritual": [
+          "Intuition",
+          "Psychic abilities",
+          "Feminine energy",
+          "Moon cycles"
+        ],
+        "emotional": [
+          "Emotional balance",
+          "Calm",
+          "Stress relief",
+          "Hormonal balance"
+        ],
+        "physical": [
+          "Hormonal balance",
+          "Menstrual cycle",
+          "Fertility",
+          "Digestive system"
+        ],
+        "mental": [
+          "Intuition",
+          "Dream recall",
+          "Emotional insight",
+          "Creativity"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on third eye or crown for intuition and dream work",
+        "wearing": "Wear as pendant or ring for emotional balance and intuition",
+        "placement": "Place near bed for peaceful sleep and dream enhancement",
+        "grid": "Use in intuition and emotional balance crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Enhances emotional healing and intuition"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Combines intuition with spiritual connection"
+          },
+          {
+            "crystal": "Labradorite",
+            "benefit": "Enhances psychic abilities and magic"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Full moon ritual",
+          "Selenite plate"
+        ],
+        "avoid": [
+          "Prolonged sunlight",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "intuition",
+        "emotional",
+        "moon",
+        "feminine",
+        "dreams",
+        "balance",
+        "cycles"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Cabochon",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "planetary_ruler": "Moon",
+      "planetary_energy": "feminine, receptive, intuitive, emotional, nurturing",
+      "optimal_timing": {
+        "day_of_week": "Monday",
+        "moon_phases": [
+          "New Moon",
+          "Full Moon",
+          "Waxing Crescent",
+          "Waning Gibbous"
+        ],
+        "best_time": "nighttime, moonlight"
+      },
+      "scientific_notes": {
+        "chemical_composition": "KAlSi₃O₈ (Potassium Aluminum Silicate)",
+        "crystal_system": "Monoclinic",
+        "hardness": 6,
+        "specific_gravity": "2.56-2.59",
+        "luster": "Pearly to vitreous",
+        "transparency": "Translucent to opaque",
+        "fracture": "Uneven to conchoidal",
+        "cleavage": "Perfect on [001], good on [010]",
+        "pleochroism": null,
+        "refractive_index": "1.518-1.526",
+        "formation_conditions": "pegmatite dikes, metamorphic rocks",
+        "geological_age": "formed in Precambrian to Paleozoic eras (500M+ years)",
+        "color_cause": "adularescence from alternating layers of orthoclase and albite",
+        "notable_localities": [
+          "India",
+          "Madagascar",
+          "Sri Lanka",
+          "USA (New Mexico, Virginia)",
+          "Myanmar"
+        ]
+      },
+      "avoid_pairings": [
+        {
+          "avoid_crystal": "obsidian",
+          "reason": "Obsidians intense shadow work energy can be too harsh for moonstones gentle energy",
+          "severity": "moderate",
+          "alternative": "Use separately, not in same ritual"
+        }
+      ]
+    },
+    "labradorite": {
+      "name": "Labradorite",
+      "aliases": [
+        "Spectrolite",
+        "Falcon Eye"
+      ],
+      "color": "Dark gray with blue/green/gold flash",
+      "chakra": "Third Eye, Throat",
+      "zodiac": [
+        "Sagittarius",
+        "Scorpio",
+        "Leo"
+      ],
+      "element": "Water, Air",
+      "hardness": -0.5,
+      "vibration": 6,
+      "numerology": 7,
+      "affirmation": "I trust my intuition",
+      "healing_properties": {
+        "spiritual": [
+          "Magic",
+          "Transformation",
+          "Psychic abilities",
+          "Past life recall"
+        ],
+        "emotional": [
+          "Protection",
+          "Strength",
+          "Perseverance",
+          "Self-discovery"
+        ],
+        "physical": [
+          "Eyes",
+          "Brain",
+          "Respiratory system",
+          "Hormones"
+        ],
+        "mental": [
+          "Intuition",
+          "Imagination",
+          "Creativity",
+          "Mental clarity"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on third eye for enhanced intuition and psychic work",
+        "wearing": "Wear as pendant or earrings for continuous magical protection",
+        "placement": "Place in sacred space for magical energy",
+        "grid": "Use in transformation and magic crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Moonstone",
+            "benefit": "Enhances intuition and feminine energy"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Combines magic with spiritual wisdom"
+          },
+          {
+            "crystal": "Black Tourmaline",
+            "benefit": "Provides protection during magical work"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water"
+        ],
+        "charging": [
+          "Moonlight",
+          "Labradorite cluster",
+          "Full moon"
+        ],
+        "avoid": [
+          "Prolonged sunlight (may fade flash)",
+          "Harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "magic",
+        "intuition",
+        "transformation",
+        "protection",
+        "psychic",
+        "flash",
+        "mystery"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Sphere",
+        "Cabochon",
+        "Jewelry",
+        "Freeform"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "hematite": {
+      "name": "Hematite",
+      "aliases": [
+        "Bloodstone",
+        "Kidney Ore"
+      ],
+      "color": "Metallic gray, Silver, Black",
+      "chakra": "Root",
+      "zodiac": [
+        "Aries",
+        "Aquarius"
+      ],
+      "element": "Earth, Fire",
+      "hardness": -1.0,
+      "vibration": 1,
+      "numerology": 9,
+      "affirmation": "I am grounded and protected",
+      "healing_properties": {
+        "spiritual": [
+          "Grounding",
+          "Protection",
+          "Earth connection",
+          "Energy balancing"
+        ],
+        "emotional": [
+          "Calm",
+          "Stability",
+          "Confidence",
+          "Courage"
+        ],
+        "physical": [
+          "Blood",
+          "Iron absorption",
+          "Circulation",
+          "Kidneys"
+        ],
+        "mental": [
+          "Focus",
+          "Concentration",
+          "Memory",
+          "Mental clarity"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Hold or place near root chakra for deep grounding",
+        "wearing": "Wear as bracelet or ring for continuous grounding",
+        "placement": "Place near entrance or office for grounding and protection",
+        "grid": "Use in grounding and protection crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Black Tourmaline",
+            "benefit": "Enhances grounding and protection"
+          },
+          {
+            "crystal": "Red Jasper",
+            "benefit": "Combines grounding with physical vitality"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies grounding energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Earth",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Earth",
+          "Hematite tumbles",
+          "Full moon"
+        ],
+        "avoid": [
+          "Water (may rust)",
+          "Prolonged sunlight",
+          "Harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "grounding",
+        "protection",
+        "blood",
+        "iron",
+        "root",
+        "stability",
+        "courage"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Pyramid",
+        "Magnetic"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": [
+        {
+          "avoid_crystal": "moonstone",
+          "reason": "Hematites heavy grounding can dampen moonstones emotional sensitivity",
+          "severity": "minor",
+          "alternative": "Use with clear quartz as amplifier"
+        }
+      ]
+    },
+    " aventurine": {
+      "name": "Aventurine",
+      "aliases": [
+        "Green Aventurine",
+        "Indian Jade"
+      ],
+      "color": "Green (most common), Blue, Peach",
+      "chakra": "Heart",
+      "zodiac": [
+        "Aries",
+        "Leo",
+        "Virgo"
+      ],
+      "element": "Earth, Fire",
+      "hardness": -0.5,
+      "vibration": 7,
+      "numerology": 3,
+      "affirmation": "I am open to abundance",
+      "healing_properties": {
+        "spiritual": [
+          "Healing",
+          "Growth",
+          "Prosperity",
+          "Heart opening"
+        ],
+        "emotional": [
+          "Optimism",
+          "Joy",
+          "Emotional recovery",
+          "Balance"
+        ],
+        "physical": [
+          "Heart",
+          "Lungs",
+          "Eyes",
+          "Skin"
+        ],
+        "mental": [
+          "Creativity",
+          "Decision making",
+          "Leadership",
+          "Confidence"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on heart chakra for emotional healing and abundance",
+        "wearing": "Wear as bracelet or pendant for continuous prosperity energy",
+        "placement": "Place in wealth corner of home or office",
+        "grid": "Use in abundance and prosperity crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Citrine",
+            "benefit": "Enhances prosperity and abundance"
+          },
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Combines heart healing with prosperity"
+          },
+          {
+            "crystal": "Pyrite",
+            "benefit": "Amplifies manifestation and wealth energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Moonlight"
+        ],
+        "charging": [
+          "Sunlight",
+          "Moonlight",
+          "Aventurine cluster"
+        ],
+        "avoid": [
+          "Prolonged sunlight (may fade)",
+          "Harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "prosperity",
+        "abundance",
+        "heart",
+        "healing",
+        "optimism",
+        "growth",
+        "luck"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Carvings",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.3,
+        "sources": [],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "Not found in expert validation database - requires manual verification"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "bloodstone": {
+      "name": "Bloodstone",
+      "aliases": [
+        "Heliotrope",
+        "Sun Stone"
+      ],
+      "color": "Dark green with red spots",
+      "chakra": "Root, Heart",
+      "zodiac": [
+        "Aries",
+        "Pisces",
+        "Libra"
+      ],
+      "element": "Earth, Fire",
+      "hardness": -0.5,
+      "vibration": 6,
+      "numerology": 4,
+      "affirmation": "I am strong and resilient",
+      "healing_properties": {
+        "spiritual": [
+          "Courage",
+          "Protection",
+          "Purification",
+          "Spiritual strength"
+        ],
+        "emotional": [
+          "Courage",
+          "Resilience",
+          "Emotional strength",
+          "Willpower"
+        ],
+        "physical": [
+          "Blood",
+          "Circulation",
+          "Detoxification",
+          "Immune system"
+        ],
+        "mental": [
+          "Focus",
+          "Determination",
+          "Mental strength",
+          "Courage"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on root or heart chakra for courage and strength",
+        "wearing": "Wear as pendant or ring for protection and courage",
+        "placement": "Place near entrance for protection",
+        "grid": "Use in protection and courage crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Black Tourmaline",
+            "benefit": "Enhances protection"
+          },
+          {
+            "crystal": "Red Jasper",
+            "benefit": "Combines courage with vitality"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies protective energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Sunlight"
+        ],
+        "charging": [
+          "Sunlight",
+          "Earth",
+          "Full moon"
+        ],
+        "avoid": [
+          "Harsh chemicals",
+          "Hot water",
+          "Prolonged water exposure"
+        ]
+      },
+      "keywords": [
+        "courage",
+        "protection",
+        "blood",
+        "strength",
+        "vitality",
+        "root",
+        "resilience"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Cabochon",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "carnelian": {
+      "name": "Carnelian",
+      "aliases": [
+        "Cornelian",
+        "Mecca Stone"
+      ],
+      "color": "Orange, Red-Orange",
+      "chakra": "Sacral, Root",
+      "zodiac": [
+        "Leo",
+        "Virgo",
+        "Taurus"
+      ],
+      "element": "Fire, Earth",
+      "hardness": -0.5,
+      "vibration": 5,
+      "numerology": 5,
+      "affirmation": "I am creative and confident",
+      "healing_properties": {
+        "spiritual": [
+          "Creativity",
+          "Passion",
+          "Vitality",
+          "Sexual energy"
+        ],
+        "emotional": [
+          "Courage",
+          "Confidence",
+          "Motivation",
+          "Emotional balance"
+        ],
+        "physical": [
+          "Reproductive system",
+          "Lower back",
+          "Kidneys",
+          "Circulation"
+        ],
+        "mental": [
+          "Creativity",
+          "Focus",
+          "Motivation",
+          "Confidence"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on sacral chakra for creativity and passion",
+        "wearing": "Wear as bracelet or ring for continuous creative energy",
+        "placement": "Place near workspace for creativity and motivation",
+        "grid": "Use in creativity and vitality crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Citrine",
+            "benefit": "Enhances creativity and abundance"
+          },
+          {
+            "crystal": "Red Jasper",
+            "benefit": "Combines creativity with vitality"
+          },
+          {
+            "crystal": "Moonstone",
+            "benefit": "Balances passion with intuition"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Sunlight"
+        ],
+        "charging": [
+          "Sunlight",
+          "Earth",
+          "Full moon"
+        ],
+        "avoid": [
+          "Prolonged water (may fade)",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "creativity",
+        "passion",
+        "vitality",
+        "courage",
+        "sacral",
+        "motivation",
+        "energy"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Carvings",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: heat_treatment"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "fluorite": {
+      "name": "Fluorite",
+      "aliases": [
+        "Fluorspar",
+        "Genius Stone"
+      ],
+      "color": "Purple, Green, Blue, Rainbow, Yellow",
+      "chakra": "Third Eye, Heart, Throat",
+      "zodiac": [
+        "Pisces",
+        "Capricorn"
+      ],
+      "element": "Air, Water",
+      "hardness": 4,
+      "vibration": 7,
+      "numerology": 7,
+      "affirmation": "I am clear and focused",
+      "healing_properties": {
+        "spiritual": [
+          "Clarity",
+          "Focus",
+          "Mental order",
+          "Spiritual growth"
+        ],
+        "emotional": [
+          "Calm",
+          "Clarity",
+          "Emotional balance",
+          "Peace"
+        ],
+        "physical": [
+          "Teeth",
+          "Bones",
+          "Respiratory system",
+          "Skin"
+        ],
+        "mental": [
+          "Focus",
+          "Concentration",
+          "Memory",
+          "Mental clarity"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on third eye for mental clarity and focus",
+        "wearing": "Wear as pendant or earrings for mental clarity",
+        "placement": "Place on desk for focus and concentration",
+        "grid": "Use in focus and clarity crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies clarity and focus"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Enhances spiritual and mental clarity"
+          },
+          {
+            "crystal": "Sodalite",
+            "benefit": "Combines mental clarity with truth"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Moonlight"
+        ],
+        "charging": [
+          "Moonlight",
+          "Clear quartz cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged sunlight (may fade)",
+          "Hot water",
+          "Harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "clarity",
+        "focus",
+        "concentration",
+        "mental",
+        "third eye",
+        "order",
+        "peace"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Cube",
+        "Octahedron",
+        "Sphere",
+        "Point"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "sodalite": {
+      "name": "Sodalite",
+      "aliases": [
+        "Blue Stone",
+        "Princess Stone"
+      ],
+      "color": "Deep blue with white veins",
+      "chakra": "Throat, Third Eye",
+      "zodiac": [
+        "Sagittarius",
+        "Virgo"
+      ],
+      "element": "Air, Water",
+      "hardness": -0.5,
+      "vibration": 4,
+      "numerology": 4,
+      "affirmation": "I speak my truth clearly",
+      "healing_properties": {
+        "spiritual": [
+          "Truth",
+          "Wisdom",
+          "Communication",
+          "Mental clarity"
+        ],
+        "emotional": [
+          "Calm",
+          "Emotional balance",
+          "Self-expression",
+          "Confidence"
+        ],
+        "physical": [
+          "Throat",
+          "Voice",
+          "Thyroid",
+          "Immune system"
+        ],
+        "mental": [
+          "Logic",
+          "Rationality",
+          "Truth-seeking",
+          "Mental clarity"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on throat or third eye for truth and wisdom",
+        "wearing": "Wear as pendant or bracelet for clear communication",
+        "placement": "Place on desk for clear thinking and communication",
+        "grid": "Use in truth and wisdom crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Lapis Lazuli",
+            "benefit": "Enhances truth and wisdom"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies truth energy"
+          },
+          {
+            "crystal": "Blue Lace Agate",
+            "benefit": "Enhances communication and truth"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Moonlight"
+        ],
+        "charging": [
+          "Moonlight",
+          "Clear quartz cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged sunlight",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "truth",
+        "communication",
+        "wisdom",
+        "throat",
+        "logic",
+        "clarity",
+        "expression"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Sphere",
+        "Cabochon",
+        "Jewelry",
+        "Carvings"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "pyrite": {
+      "name": "Pyrite",
+      "aliases": [
+        "Fool's Gold",
+        "Iron Pyrite"
+      ],
+      "color": "Metallic gold, Brass",
+      "chakra": "Solar Plexus",
+      "zodiac": [
+        "Leo",
+        "Pisces"
+      ],
+      "element": "Fire, Earth",
+      "hardness": -0.5,
+      "vibration": 3,
+      "numerology": 6,
+      "affirmation": "I am abundant and successful",
+      "healing_properties": {
+        "spiritual": [
+          "Manifestation",
+          "Abundance",
+          "Protection",
+          "Willpower"
+        ],
+        "emotional": [
+          "Confidence",
+          "Willpower",
+          "Motivation",
+          "Success mindset"
+        ],
+        "physical": [
+          "Circulation",
+          "Lungs",
+          "Immune system",
+          "Energy levels"
+        ],
+        "mental": [
+          "Focus",
+          "Determination",
+          "Manifestation",
+          "Success"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on solar plexus for manifestation and willpower",
+        "wearing": "Wear as bracelet or pendant for abundance energy",
+        "placement": "Place in wealth corner of home or office",
+        "grid": "Use in abundance and manifestation crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Citrine",
+            "benefit": "Enhances abundance and manifestation"
+          },
+          {
+            "crystal": "Green Aventurine",
+            "benefit": "Amplifies prosperity energy"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies manifestation intentions"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Earth",
+          "Sage",
+          "Sound",
+          "Moonlight"
+        ],
+        "charging": [
+          "Sunlight",
+          "Pyrite cluster",
+          "Earth"
+        ],
+        "avoid": [
+          "Water (oxidizes)",
+          "Prolonged sunlight",
+          "Harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "abundance",
+        "manifestation",
+        "protection",
+        "solar plexus",
+        "wealth",
+        "willpower",
+        "gold"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Raw",
+        "Cluster",
+        "Cube",
+        "Tumbled (rare)",
+        "Sculptures"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "malachite": {
+      "name": "Malachite",
+      "aliases": [
+        "Stone of Transformation"
+      ],
+      "color": "Green with swirling patterns",
+      "chakra": "Heart",
+      "zodiac": [
+        "Scorpio",
+        "Capricorn"
+      ],
+      "element": "Earth, Water",
+      "hardness": -0.5,
+      "vibration": 9,
+      "numerology": 9,
+      "affirmation": "I transform and grow",
+      "healing_properties": {
+        "spiritual": [
+          "Transformation",
+          "Growth",
+          "Protection",
+          "Spiritual evolution"
+        ],
+        "emotional": [
+          "Emotional healing",
+          "Release",
+          "Growth",
+          "Protection"
+        ],
+        "physical": [
+          "Heart",
+          "Lungs",
+          "Detoxification",
+          "Immune system"
+        ],
+        "mental": [
+          "Emotional clarity",
+          "Release",
+          "Transformation",
+          "Growth"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on heart chakra for emotional transformation",
+        "wearing": "Wear as pendant for emotional protection and transformation",
+        "placement": "Place in sacred space for transformation energy",
+        "grid": "Use in transformation and protection crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Combines transformation with heart healing"
+          },
+          {
+            "crystal": "Black Tourmaline",
+            "benefit": "Provides protection during transformation"
+          },
+          {
+            "crystal": "Azurite",
+            "benefit": "Enhances spiritual transformation"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Earth"
+        ],
+        "charging": [
+          "Moonlight",
+          "Malachite cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Water (toxic if dissolved)",
+          "Sunlight (fades)",
+          "Harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "transformation",
+        "protection",
+        "heart",
+        "healing",
+        "growth",
+        "release",
+        "change"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Sphere",
+        "Cabochon",
+        "Carvings",
+        "Slabs"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: stabilization"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "obsidian": {
+      "name": "Obsidian",
+      "aliases": [
+        "Volcanic Glass",
+        "Apache Tear"
+      ],
+      "color": "Black, Snowflake, Mahogany",
+      "chakra": "Root",
+      "zodiac": [
+        "Scorpio",
+        "Sagittarius"
+      ],
+      "element": "Fire, Earth",
+      "hardness": -0.5,
+      "vibration": 1,
+      "numerology": 1,
+      "affirmation": "I release what no longer serves me",
+      "healing_properties": {
+        "spiritual": [
+          "Grounding",
+          "Protection",
+          "Shadow work",
+          "Energy clearing"
+        ],
+        "emotional": [
+          "Emotional release",
+          "Protection",
+          "Grounding",
+          "Truth"
+        ],
+        "physical": [
+          "Digestion",
+          "Detoxification",
+          "Pain relief",
+          "Circulation"
+        ],
+        "mental": [
+          "Clarity",
+          "Shadow work",
+          "Truth-seeking",
+          "Mental protection"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Hold or place near root chakra for shadow work and grounding",
+        "wearing": "Wear as bracelet or pendant for protection and grounding",
+        "placement": "Place near entrance for protection",
+        "grid": "Use in protection and shadow work crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Selenite",
+            "benefit": "Clears negative energy during shadow work"
+          },
+          {
+            "crystal": "Black Tourmaline",
+            "benefit": "Enhances protection and grounding"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies protection and clarity"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Earth"
+        ],
+        "charging": [
+          "Earth",
+          "Moonlight",
+          "Obsidian cluster"
+        ],
+        "avoid": [
+          "Prolonged sunlight",
+          "Harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "protection",
+        "grounding",
+        "shadow",
+        "release",
+        "truth",
+        "root",
+        "transformation"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Sphere",
+        "Arrowheads",
+        "Carvings",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "planetary_ruler": "Pluto",
+      "planetary_energy": "transformative, regenerative, deep, powerful, shadow",
+      "optimal_timing": {
+        "day_of_week": "Tuesday",
+        "zodiac_season": "Scorpio",
+        "moon_phases": [
+          "New Moon",
+          "Waning Moon"
+        ],
+        "best_time": "during shadow work, deep transformation, or protection rituals"
+      },
+      "scientific_notes": {
+        "chemical_composition": "SiO₂ (Silicon Dioxide) - high silica content (70-75%)",
+        "crystal_system": "Amorphous (volcanic glass)",
+        "hardness": 5,
+        "specific_gravity": "2.35-2.60",
+        "luster": "Vitreous to resinous",
+        "transparency": "Opaque to translucent",
+        "fracture": "Conchoidal",
+        "cleavage": "None",
+        "refractive_index": "1.48-1.51",
+        "formation_conditions": "rapid cooling of rhyolitic lava (less than 100°C/hour)",
+        "geological_age": "formed in recent geological time (less than 100,000 years)",
+        "color_cause": "inclusions (magnetite, cristobalite, etc.)",
+        "glass_transition": "no crystalline structure - true volcanic glass",
+        "notable_localities": [
+          "USA (Oregon, California)",
+          "Mexico",
+          "Iceland",
+          "Peru",
+          "Turkey",
+          "Italy"
+        ]
+      },
+      "avoid_pairings": [],
+      "varieties": [
+        {
+          "name": "Black Obsidian",
+          "origin": "Worldwide volcanic regions",
+          "color_description": "deep black, glass-like volcanic glass",
+          "unique_properties": [
+            "pure_black",
+            "grounding_energy",
+            "powerful_protection"
+          ],
+          "energy_difference": "deepest_shadow_work_protection",
+          "rarity": "available"
+        },
+        {
+          "name": "Snowflake Obsidian",
+          "origin": "USA, Mexico, Turkey",
+          "color_description": "black with white cristobalite crystal inclusions",
+          "unique_properties": [
+            "snowflake_patterns",
+            "balanced_energy",
+            "gentle_grounding"
+          ],
+          "energy_difference": "more_gentle_grounding_protection",
+          "rarity": "available"
+        },
+        {
+          "name": "Rainbow Obsidian",
+          "origin": "Mexico, USA, Iceland",
+          "color_description": "black with rainbow sheen when polished",
+          "unique_properties": [
+            "iridescent_colors",
+            "gentle_transformation",
+            "beauty"
+          ],
+          "energy_difference": "gentle_emotional_transformation",
+          "rarity": "uncommon"
+        },
+        {
+          "name": "Apache Tears",
+          "origin": "USA (Arizona, Nevada)",
+          "color_description": "small rounded black obsidian nodules",
+          "unique_properties": [
+            "historical_significance",
+            "emotional_healing",
+            "portable_comfort"
+          ],
+          "energy_difference": "emotional_comfort_healing",
+          "rarity": "available"
+        }
+      ]
+    },
+    "amber": {
+      "name": "Amber",
+      "aliases": [
+        "Golden Tears",
+        "Sun Stone"
+      ],
+      "color": "Yellow, Orange, Brown, Red",
+      "chakra": "Solar Plexus, Sacral",
+      "zodiac": [
+        "Leo",
+        "Aquarius",
+        "Capricorn"
+      ],
+      "element": "Fire, Earth",
+      "hardness": -0.5,
+      "vibration": 5,
+      "numerology": 3,
+      "affirmation": "I am protected and joyful",
+      "healing_properties": {
+        "spiritual": [
+          "Protection",
+          "Purification",
+          "Joy",
+          "Light energy"
+        ],
+        "emotional": [
+          "Joy",
+          "Optimism",
+          "Emotional healing",
+          "Protection"
+        ],
+        "physical": [
+          "Immune system",
+          "Pain relief",
+          "Throat",
+          "Digestion"
+        ],
+        "mental": [
+          "Positivity",
+          "Optimism",
+          "Clarity",
+          "Memory"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Hold or place on solar plexus for joy and protection",
+        "wearing": "Wear as necklace or bracelet for continuous protection and joy",
+        "placement": "Place in living space for uplifting energy",
+        "grid": "Use in protection and joy crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Citrine",
+            "benefit": "Enhances joy and abundance"
+          },
+          {
+            "crystal": "Sunstone",
+            "benefit": "Combines joy with vitality"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies protective energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Sunlight",
+          "Moonlight",
+          "Clear quartz cluster"
+        ],
+        "avoid": [
+          "Hot water",
+          "Harsh chemicals",
+          "Prolonged heat",
+          "Alcohol"
+        ]
+      },
+      "keywords": [
+        "protection",
+        "joy",
+        "purification",
+        "solar plexus",
+        "optimism",
+        "light",
+        "healing"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Raw",
+        "Beads",
+        "Cabochon",
+        "Carvings",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "jade": {
+      "name": "Jade",
+      "aliases": [
+        "Nephrite Jade",
+        "Imperial Jade"
+      ],
+      "color": "Green, White, Lavender, Yellow",
+      "chakra": "Heart",
+      "zodiac": [
+        "Libra",
+        "Taurus",
+        "Pisces"
+      ],
+      "element": "Earth, Water",
+      "hardness": -1,
+      "vibration": 11,
+      "numerology": 4,
+      "affirmation": "I am in harmony with life",
+      "healing_properties": {
+        "spiritual": [
+          "Harmony",
+          "Balance",
+          "Peace",
+          "Longevity"
+        ],
+        "emotional": [
+          "Balance",
+          "Calm",
+          "Emotional healing",
+          "Protection"
+        ],
+        "physical": [
+          "Kidneys",
+          "Heart",
+          "Immune system",
+          "Longevity"
+        ],
+        "mental": [
+          "Calm",
+          "Balance",
+          "Wisdom",
+          "Peace of mind"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on heart chakra for harmony and balance",
+        "wearing": "Wear as bracelet or pendant for continuous harmony and protection",
+        "placement": "Place in bedroom for peaceful sleep",
+        "grid": "Use in harmony and balance crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Enhances harmony and love"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Combines harmony with spiritual peace"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies harmonious energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Moonlight"
+        ],
+        "charging": [
+          "Moonlight",
+          "Jade bracelet",
+          "Clear quartz cluster"
+        ],
+        "avoid": [
+          "Prolonged sunlight",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "harmony",
+        "balance",
+        "peace",
+        "longevity",
+        "heart",
+        "protection",
+        "wisdom"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Carvings",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "topaz": {
+      "name": "Topaz",
+      "aliases": [
+        "Fire Stone",
+        "Stone of Strength"
+      ],
+      "color": "Blue, Yellow, Pink, Clear",
+      "chakra": "Throat, Solar Plexus",
+      "zodiac": [
+        "Sagittarius",
+        "Scorpio",
+        "Aries"
+      ],
+      "element": "Fire, Air",
+      "hardness": 8,
+      "vibration": 6,
+      "numerology": 6,
+      "affirmation": "I am confident and aligned",
+      "healing_properties": {
+        "spiritual": [
+          "Truth",
+          "Manifestation",
+          "Personal power",
+          "Alignment"
+        ],
+        "emotional": [
+          "Joy",
+          "Confidence",
+          "Optimism",
+          "Emotional balance"
+        ],
+        "physical": [
+          "Throat",
+          "Digestion",
+          "Nervous system",
+          "Vision"
+        ],
+        "mental": [
+          "Clarity",
+          "Focus",
+          "Confidence",
+          "Manifestation"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on throat or solar plexus for truth and confidence",
+        "wearing": "Wear as pendant or ring for confidence and truth",
+        "placement": "Place near workspace for focus and clarity",
+        "grid": "Use in manifestation and truth crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Citrine",
+            "benefit": "Enhances confidence and abundance"
+          },
+          {
+            "crystal": "Aquamarine",
+            "benefit": "Combines truth with communication"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies manifestation energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Moonlight"
+        ],
+        "charging": [
+          "Sunlight",
+          "Moonlight",
+          "Topaz cluster"
+        ],
+        "avoid": [
+          "Prolonged sunlight (may fade colored topaz)",
+          "Harsh chemicals",
+          "Sudden temperature changes"
+        ]
+      },
+      "keywords": [
+        "truth",
+        "confidence",
+        "manifestation",
+        "alignment",
+        "joy",
+        "power",
+        "strength"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Faceted",
+        "Beads",
+        "Sphere",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: irradiation_heat"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "aquamarine": {
+      "name": "Aquamarine",
+      "aliases": [
+        "Water Stone",
+        "Sailor Stone"
+      ],
+      "color": "Light blue to blue-green",
+      "chakra": "Throat, Heart",
+      "zodiac": [
+        "Pisces",
+        "Aquarius",
+        "Gemini"
+      ],
+      "element": "Water",
+      "hardness": -0.5,
+      "vibration": 1,
+      "numerology": 1,
+      "affirmation": "I communicate with clarity and truth",
+      "healing_properties": {
+        "spiritual": [
+          "Communication",
+          "Clarity",
+          "Courage",
+          "Truth"
+        ],
+        "emotional": [
+          "Calm",
+          "Peace",
+          "Emotional clarity",
+          "Courage"
+        ],
+        "physical": [
+          "Throat",
+          "Voice",
+          "Thyroid",
+          "Immune system"
+        ],
+        "mental": [
+          "Clarity",
+          "Focus",
+          "Communication",
+          "Mental peace"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on throat chakra for clear communication",
+        "wearing": "Wear as pendant or ring for clarity and communication",
+        "placement": "Place near workspace for clear communication",
+        "grid": "Use in communication and clarity crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Blue Lace Agate",
+            "benefit": "Enhances communication and calm"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies clarity and communication"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Combines communication with intuition"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Moonlight",
+          "Sage",
+          "Sound"
+        ],
+        "charging": [
+          "Moonlight",
+          "Water ritual",
+          "Clear quartz cluster"
+        ],
+        "avoid": [
+          "Harsh chemicals",
+          "Sudden temperature changes",
+          "Prolonged heat"
+        ]
+      },
+      "keywords": [
+        "communication",
+        "clarity",
+        "courage",
+        "throat",
+        "truth",
+        "water",
+        "peace"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Faceted",
+        "Beads",
+        "Sphere",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: heat_treatment"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "emerald": {
+      "name": "Emerald",
+      "aliases": [
+        "Stone of Successful Love"
+      ],
+      "color": "Rich green",
+      "chakra": "Heart",
+      "zodiac": [
+        "Taurus",
+        "Gemini",
+        "Cancer"
+      ],
+      "element": "Earth",
+      "hardness": -0.5,
+      "vibration": 4,
+      "numerology": 4,
+      "affirmation": "I am open to love and abundance",
+      "healing_properties": {
+        "spiritual": [
+          "Love",
+          "Abundance",
+          "Prosperity",
+          "Heart opening"
+        ],
+        "emotional": [
+          "Love",
+          "Emotional balance",
+          "Joy",
+          "Peace"
+        ],
+        "physical": [
+          "Heart",
+          "Eyes",
+          "Immune system",
+          "Fertility"
+        ],
+        "mental": [
+          "Clarity",
+          "Wisdom",
+          "Peace",
+          "Emotional balance"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on heart chakra for love and abundance",
+        "wearing": "Wear as ring or pendant for love and prosperity",
+        "placement": "Place in wealth corner for abundance",
+        "grid": "Use in love and abundance crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Enhances love and emotional healing"
+          },
+          {
+            "crystal": "Green Aventurine",
+            "benefit": "Amplifies abundance energy"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies love and prosperity"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Emerald cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged sunlight",
+          "Harsh chemicals",
+          "Hot water",
+          "Steam cleaning"
+        ]
+      },
+      "keywords": [
+        "love",
+        "abundance",
+        "prosperity",
+        "heart",
+        "wisdom",
+        "peace",
+        "success"
+      ],
+      "rarity": "Rare",
+      "formation_types": [
+        "Faceted",
+        "Raw",
+        "Beads",
+        "Cabochon",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: oils_resins"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "garnet": {
+      "name": "Garnet",
+      "aliases": [
+        "Stone of Commitment",
+        "Fire Stone"
+      ],
+      "color": "Red, Green, Orange, Purple",
+      "chakra": "Root, Heart",
+      "zodiac": [
+        "Aquarius",
+        "Leo",
+        "Capricorn"
+      ],
+      "element": "Fire, Earth",
+      "hardness": -1.0,
+      "vibration": 2,
+      "numerology": 2,
+      "affirmation": "I am grounded and passionate",
+      "healing_properties": {
+        "spiritual": [
+          "Grounding",
+          "Protection",
+          "Passion",
+          "Devotion"
+        ],
+        "emotional": [
+          "Passion",
+          "Commitment",
+          "Love",
+          "Emotional balance"
+        ],
+        "physical": [
+          "Blood",
+          "Heart",
+          "Circulation",
+          "Reproductive system"
+        ],
+        "mental": [
+          "Focus",
+          "Determination",
+          "Passion",
+          "Commitment"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on root or heart chakra for grounding and passion",
+        "wearing": "Wear as ring or pendant for passion and protection",
+        "placement": "Place near entrance for protection",
+        "grid": "Use in grounding and passion crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Black Tourmaline",
+            "benefit": "Enhances grounding and protection"
+          },
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Combines passion with love"
+          },
+          {
+            "crystal": "Red Jasper",
+            "benefit": "Enhances vitality and passion"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Moonlight"
+        ],
+        "charging": [
+          "Sunlight",
+          "Moonlight",
+          "Garnet cluster"
+        ],
+        "avoid": [
+          "Prolonged sunlight (may fade)",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "passion",
+        "grounding",
+        "protection",
+        "root",
+        "devotion",
+        "love",
+        "vitality"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Faceted",
+        "Beads",
+        "Sphere",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "turquoise": {
+      "name": "Turquoise",
+      "aliases": [
+        "Sky Stone",
+        "Stone of Protection"
+      ],
+      "color": "Blue-green with matrix",
+      "chakra": "Throat, Third Eye",
+      "zodiac": [
+        "Sagittarius",
+        "Pisces",
+        "Scorpio"
+      ],
+      "element": "Earth, Water",
+      "hardness": -1,
+      "vibration": 1,
+      "numerology": 1,
+      "affirmation": "I speak my truth with wisdom",
+      "healing_properties": {
+        "spiritual": [
+          "Protection",
+          "Truth",
+          "Wisdom",
+          "Spiritual connection"
+        ],
+        "emotional": [
+          "Calm",
+          "Peace",
+          "Emotional balance",
+          "Protection"
+        ],
+        "physical": [
+          "Throat",
+          "Respiratory system",
+          "Immune system",
+          "Detoxification"
+        ],
+        "mental": [
+          "Wisdom",
+          "Truth",
+          "Communication",
+          "Mental clarity"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on throat or third eye for truth and wisdom",
+        "wearing": "Wear as pendant or bracelet for protection and truth",
+        "placement": "Place near entrance for protection",
+        "grid": "Use in protection and truth crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Lapis Lazuli",
+            "benefit": "Enhances truth and wisdom"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Combines truth with spiritual wisdom"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies protective energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Turquoise cluster",
+          "Earth"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Sunlight (fades)"
+        ]
+      },
+      "keywords": [
+        "protection",
+        "truth",
+        "wisdom",
+        "throat",
+        "calm",
+        "healing",
+        "sacred"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Cabochon",
+        "Carvings",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: stabilization_dye"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "ruby": {
+      "name": "Ruby",
+      "aliases": [
+        "Stone of Kings",
+        "Rajnapura"
+      ],
+      "color": "Red to pink-red",
+      "chakra": "Root, Heart",
+      "zodiac": [
+        "Leo",
+        "Cancer",
+        "Capricorn"
+      ],
+      "element": "Fire",
+      "hardness": 9,
+      "vibration": 1,
+      "numerology": 3,
+      "affirmation": "I am passionate and alive",
+      "healing_properties": {
+        "spiritual": [
+          "Passion",
+          "Vitality",
+          "Protection",
+          "Life force"
+        ],
+        "emotional": [
+          "Passion",
+          "Love",
+          "Courage",
+          "Vitality"
+        ],
+        "physical": [
+          "Heart",
+          "Blood",
+          "Circulation",
+          "Reproductive system"
+        ],
+        "mental": [
+          "Courage",
+          "Focus",
+          "Passion",
+          "Leadership"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on root or heart chakra for passion and vitality",
+        "wearing": "Wear as ring or pendant for passion and protection",
+        "placement": "Place in workspace for vitality and leadership",
+        "grid": "Use in passion and vitality crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Combines passion with love"
+          },
+          {
+            "crystal": "Black Tourmaline",
+            "benefit": "Provides protection during passionate work"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies passionate energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Sunlight",
+          "Ruby cluster",
+          "Full moon"
+        ],
+        "avoid": [
+          "Prolonged sunlight (may fade)",
+          "Harsh chemicals",
+          "Hot water",
+          "Steam cleaning"
+        ]
+      },
+      "keywords": [
+        "passion",
+        "vitality",
+        "love",
+        "protection",
+        "root",
+        "courage",
+        "leadership"
+      ],
+      "rarity": "Rare",
+      "formation_types": [
+        "Faceted",
+        "Raw",
+        "Beads",
+        "Cabochon",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: heat_treatment"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "sunstone": {
+      "name": "Sunstone",
+      "aliases": [
+        "Heliolite",
+        "Stone of Leadership"
+      ],
+      "color": "Orange, Red, Brown with sparkle",
+      "chakra": "Solar Plexus, Sacral",
+      "zodiac": [
+        "Leo",
+        "Libra"
+      ],
+      "element": "Fire",
+      "hardness": -0.5,
+      "vibration": 3,
+      "numerology": 1,
+      "affirmation": "I am radiant and confident",
+      "healing_properties": {
+        "spiritual": [
+          "Joy",
+          "Vitality",
+          "Leadership",
+          "Personal power"
+        ],
+        "emotional": [
+          "Joy",
+          "Optimism",
+          "Confidence",
+          "Enthusiasm"
+        ],
+        "physical": [
+          "Energy levels",
+          "Digestion",
+          "Immune system",
+          "Vitality"
+        ],
+        "mental": [
+          "Confidence",
+          "Leadership",
+          "Optimism",
+          "Motivation"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on solar plexus for joy and vitality",
+        "wearing": "Wear as pendant or bracelet for radiant energy",
+        "placement": "Place in living space for uplifting energy",
+        "grid": "Use in joy and vitality crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Citrine",
+            "benefit": "Enhances joy and abundance"
+          },
+          {
+            "crystal": "Amber",
+            "benefit": "Combines joy with protection"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies radiant energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Sunlight"
+        ],
+        "charging": [
+          "Sunlight",
+          "Sunstone cluster",
+          "Full moon"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "joy",
+        "vitality",
+        "confidence",
+        "solar plexus",
+        "leadership",
+        "optimism",
+        "radiance"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Faceted",
+        "Beads",
+        "Sphere",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "moss-agate": {
+      "name": "Moss Agate",
+      "aliases": [
+        "Mocha Stone",
+        "Stone of New Beginnings"
+      ],
+      "color": "Green with moss-like inclusions",
+      "chakra": "Heart",
+      "zodiac": [
+        "Virgo",
+        "Gemini"
+      ],
+      "element": "Earth",
+      "hardness": -0.5,
+      "vibration": 1,
+      "numerology": 1,
+      "affirmation": "I grow and flourish",
+      "healing_properties": {
+        "spiritual": [
+          "Growth",
+          "New beginnings",
+          "Grounding",
+          "Nature connection"
+        ],
+        "emotional": [
+          "Calm",
+          "Stability",
+          "Growth",
+          "Emotional balance"
+        ],
+        "physical": [
+          "Digestion",
+          "Immune system",
+          "Skin",
+          "Detoxification"
+        ],
+        "mental": [
+          "Focus",
+          "Growth",
+          "New perspectives",
+          "Calm"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on heart chakra for growth and new beginnings",
+        "wearing": "Wear as bracelet or pendant for grounding and growth",
+        "placement": "Place in garden or near plants for vitality",
+        "grid": "Use in growth and grounding crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Green Aventurine",
+            "benefit": "Enhances growth and prosperity"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies growth energy"
+          },
+          {
+            "crystal": "Jade",
+            "benefit": "Combines growth with harmony"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Moonlight"
+        ],
+        "charging": [
+          "Moonlight",
+          "Earth",
+          "Moss agate cluster"
+        ],
+        "avoid": [
+          "Prolonged sunlight",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "growth",
+        "grounding",
+        "new beginnings",
+        "heart",
+        "nature",
+        "calm",
+        "stability"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Carvings",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "smoky-quartz": {
+      "name": "Smoky Quartz",
+      "aliases": [
+        "Stone of Power",
+        "Spiritual Grounding"
+      ],
+      "color": "Brown to black, transparent",
+      "chakra": "Root, Solar Plexus",
+      "zodiac": [
+        "Sagittarius",
+        "Capricorn",
+        "Scorpio"
+      ],
+      "element": "Earth",
+      "hardness": 7,
+      "vibration": 4,
+      "numerology": 4,
+      "affirmation": "I am grounded and protected",
+      "healing_properties": {
+        "spiritual": [
+          "Grounding",
+          "Protection",
+          "Transformation",
+          "Energy clearing"
+        ],
+        "emotional": [
+          "Calm",
+          "Grounding",
+          "Stress relief",
+          "Emotional release"
+        ],
+        "physical": [
+          "Detoxification",
+          "Pain relief",
+          "Reproductive system",
+          "Energy"
+        ],
+        "mental": [
+          "Clarity",
+          "Focus",
+          "Grounding",
+          "Mental protection"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on root or solar plexus for grounding and protection",
+        "wearing": "Wear as bracelet or pendant for continuous protection",
+        "placement": "Place near entrance or workspace for protection",
+        "grid": "Use in grounding and protection crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Black Tourmaline",
+            "benefit": "Enhances protection and grounding"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies grounding and clarity"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Combines grounding with spiritual wisdom"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Moonlight"
+        ],
+        "charging": [
+          "Sunlight",
+          "Earth",
+          "Smoky quartz cluster"
+        ],
+        "avoid": [
+          "Prolonged sunlight (may darken)",
+          "Harsh chemicals"
+        ]
+      },
+      "keywords": [
+        "grounding",
+        "protection",
+        "transformation",
+        "root",
+        "detox",
+        "stress relief",
+        "clarity"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Point",
+        "Beads",
+        "Sphere",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: irradiation"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "kyanite": {
+      "name": "Kyanite",
+      "aliases": [
+        "Discipline Stone"
+      ],
+      "color": "Blue, Green, Black, Orange",
+      "chakra": "Throat, Third Eye",
+      "zodiac": [
+        "Pisces",
+        "Aries",
+        "Taurus"
+      ],
+      "element": "Air, Water",
+      "hardness": "4.5-7 (variable)",
+      "vibration": 4,
+      "numerology": 4,
+      "affirmation": "I am aligned with truth",
+      "healing_properties": {
+        "spiritual": [
+          "Alignment",
+          "Truth",
+          "Communication",
+          "Bridge between realms"
+        ],
+        "emotional": [
+          "Calm",
+          "Balance",
+          "Communication",
+          "Alignment"
+        ],
+        "physical": [
+          "Throat",
+          "Voice",
+          "Muscles",
+          "Nervous system"
+        ],
+        "mental": [
+          "Focus",
+          "Alignment",
+          "Communication",
+          "Clarity"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on throat or third eye for alignment and truth",
+        "wearing": "Wear as pendant for communication and alignment",
+        "placement": "Place near workspace for focus and alignment",
+        "grid": "Use in alignment and communication crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Blue Lace Agate",
+            "benefit": "Enhances communication and calm"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies alignment and clarity"
+          },
+          {
+            "crystal": "Sodalite",
+            "benefit": "Combines truth with communication"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Kyanite blade",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "alignment",
+        "truth",
+        "communication",
+        "throat",
+        "balance",
+        "calm",
+        "bridge"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Raw",
+        "Blade",
+        "Tumbled (rare)",
+        "Beads (rare)"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "rhodonite": {
+      "name": "Rhodonite",
+      "aliases": [
+        "Rescue Stone",
+        "Stone of Compassion"
+      ],
+      "color": "Pink with black manganese veins",
+      "chakra": "Heart",
+      "zodiac": [
+        "Taurus",
+        "Scorpio"
+      ],
+      "element": "Earth, Water",
+      "hardness": -1.0,
+      "vibration": 7,
+      "numerology": 9,
+      "affirmation": "I love and forgive myself",
+      "healing_properties": {
+        "spiritual": [
+          "Compassion",
+          "Forgiveness",
+          "Love",
+          "Emotional healing"
+        ],
+        "emotional": [
+          "Forgiveness",
+          "Love",
+          "Emotional healing",
+          "Compassion"
+        ],
+        "physical": [
+          "Heart",
+          "Lungs",
+          "Immune system",
+          "Emotional balance"
+        ],
+        "mental": [
+          "Forgiveness",
+          "Compassion",
+          "Emotional clarity",
+          "Love"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on heart chakra for forgiveness and love",
+        "wearing": "Wear as pendant or bracelet for emotional healing",
+        "placement": "Place in bedroom for emotional healing and forgiveness",
+        "grid": "Use in forgiveness and love crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Enhances love and emotional healing"
+          },
+          {
+            "crystal": "Pink Mangano Calcite",
+            "benefit": "Combines forgiveness with self-love"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies loving energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Moonlight"
+        ],
+        "charging": [
+          "Moonlight",
+          "Rhodonite cluster",
+          "Rose quartz cluster"
+        ],
+        "avoid": [
+          "Prolonged sunlight",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "forgiveness",
+        "compassion",
+        "love",
+        "heart",
+        "healing",
+        "emotional",
+        "rescue"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Cabochon",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "unakite": {
+      "name": "Unakite",
+      "aliases": [
+        "Unakite Jasper",
+        "Epidote Granite"
+      ],
+      "color": "Green and pink mottled",
+      "chakra": "Heart",
+      "zodiac": [
+        "Scorpio"
+      ],
+      "element": "Earth",
+      "hardness": -1,
+      "vibration": 9,
+      "numerology": 5,
+      "affirmation": "I release and grow",
+      "healing_properties": {
+        "spiritual": [
+          "Release",
+          "Growth",
+          "Balance",
+          "Transformation"
+        ],
+        "emotional": [
+          "Release",
+          "Growth",
+          "Emotional balance",
+          "Forgiveness"
+        ],
+        "physical": [
+          "Heart",
+          "Reproductive system",
+          "Recovery",
+          "Growth"
+        ],
+        "mental": [
+          "Release",
+          "Growth",
+          "Emotional clarity",
+          "Balance"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on heart chakra for release and growth",
+        "wearing": "Wear as bracelet or pendant for emotional balance",
+        "placement": "Place near bed for peaceful sleep and release",
+        "grid": "Use in release and growth crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Enhances love and release"
+          },
+          {
+            "crystal": "Green Aventurine",
+            "benefit": "Combines growth with release"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies release energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Moonlight"
+        ],
+        "charging": [
+          "Moonlight",
+          "Earth",
+          "Unakite cluster"
+        ],
+        "avoid": [
+          "Prolonged sunlight",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "release",
+        "growth",
+        "balance",
+        "heart",
+        "transformation",
+        "emotional",
+        "recovery"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Cabochon",
+        "Carvings"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "chrysocolla": {
+      "name": "Chrysocolla",
+      "aliases": [
+        "Teaching Stone",
+        "Stone of Communication"
+      ],
+      "color": "Blue, green, turquoise",
+      "chakra": "Throat, Heart",
+      "zodiac": [
+        "Gemini",
+        "Taurus",
+        "Virgo"
+      ],
+      "element": "Water, Earth",
+      "hardness": "2-7 (variable)",
+      "vibration": 5,
+      "numerology": 5,
+      "affirmation": "I communicate with wisdom and compassion",
+      "healing_properties": {
+        "spiritual": [
+          "Communication",
+          "Wisdom",
+          "Teaching",
+          "Balance"
+        ],
+        "emotional": [
+          "Calm",
+          "Emotional balance",
+          "Wisdom",
+          "Peace"
+        ],
+        "physical": [
+          "Throat",
+          "Voice",
+          "Thyroid",
+          "Lungs"
+        ],
+        "mental": [
+          "Communication",
+          "Wisdom",
+          "Truth",
+          "Teaching"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on throat or heart chakra for communication and wisdom",
+        "wearing": "Wear as pendant for clear communication",
+        "placement": "Place near workspace for clear communication",
+        "grid": "Use in communication and wisdom crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Malachite",
+            "benefit": "Combines wisdom with transformation"
+          },
+          {
+            "crystal": "Turquoise",
+            "benefit": "Enhances communication and wisdom"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies wisdom energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Chrysocolla cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Salt"
+        ]
+      },
+      "keywords": [
+        "communication",
+        "wisdom",
+        "teaching",
+        "throat",
+        "calm",
+        "balance",
+        "peace"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Cabochon",
+        "Carvings"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: stabilization"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "azurite": {
+      "name": "Azurite",
+      "aliases": [
+        "Stone of Heaven",
+        "Blue Stone"
+      ],
+      "color": "Deep blue",
+      "chakra": "Third Eye, Throat",
+      "zodiac": [
+        "Sagittarius",
+        "Aquarius"
+      ],
+      "element": "Water, Air",
+      "hardness": -0.5,
+      "vibration": 1,
+      "numerology": 1,
+      "affirmation": "I access higher wisdom",
+      "healing_properties": {
+        "spiritual": [
+          "Wisdom",
+          "Intuition",
+          "Third eye activation",
+          "Psychic abilities"
+        ],
+        "emotional": [
+          "Clarity",
+          "Insight",
+          "Emotional release",
+          "Wisdom"
+        ],
+        "physical": [
+          "Brain",
+          "Thyroid",
+          "Nervous system",
+          "Vision"
+        ],
+        "mental": [
+          "Insight",
+          "Wisdom",
+          "Mental clarity",
+          "Intuition"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on third eye for wisdom and intuition",
+        "wearing": "Wear as pendant for insight and wisdom",
+        "placement": "Place near workspace for mental clarity",
+        "grid": "Use in wisdom and intuition crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Malachite",
+            "benefit": "Combines wisdom with transformation"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Enhances intuition and wisdom"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies wisdom energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Azurite cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Sunlight (fades)"
+        ]
+      },
+      "keywords": [
+        "wisdom",
+        "intuition",
+        "third eye",
+        "insight",
+        "clarity",
+        "psychic",
+        "heaven"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Cluster",
+        "Beads (rare)",
+        "Cabochon"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: stabilization"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "lepidolite": {
+      "name": "Lepidolite",
+      "aliases": [
+        "Stone of Transition",
+        "Peace Stone"
+      ],
+      "color": "Pink, purple, lilac",
+      "chakra": "Heart, Crown",
+      "zodiac": [
+        "Libra",
+        "Pisces"
+      ],
+      "element": "Water, Air",
+      "hardness": -1.0,
+      "vibration": 8,
+      "numerology": 8,
+      "affirmation": "I am calm and at peace",
+      "healing_properties": {
+        "spiritual": [
+          "Peace",
+          "Transition",
+          "Emotional balance",
+          "Stress relief"
+        ],
+        "emotional": [
+          "Calm",
+          "Peace",
+          "Stress relief",
+          "Emotional balance"
+        ],
+        "physical": [
+          "Stress relief",
+          "Sleep",
+          "Nervous system",
+          "Emotional balance"
+        ],
+        "mental": [
+          "Calm",
+          "Clarity",
+          "Mental peace",
+          "Stress relief"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on heart or crown chakra for peace and calm",
+        "wearing": "Wear as bracelet or pendant for stress relief",
+        "placement": "Place near bed for peaceful sleep",
+        "grid": "Use in peace and stress relief crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Enhances love and peace"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Combines peace with spiritual wisdom"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies peaceful energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Lepidolite cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Sunlight (fades)"
+        ]
+      },
+      "keywords": [
+        "peace",
+        "calm",
+        "stress relief",
+        "transition",
+        "heart",
+        "serenity",
+        "balance"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Sphere",
+        "Plate",
+        "Mica sheets"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "kunzite": {
+      "name": "Kunzite",
+      "aliases": [
+        "Stone of Emotion",
+        "Bridal Stone"
+      ],
+      "color": "Pink, purple, lilac",
+      "chakra": "Heart, Crown",
+      "zodiac": [
+        "Taurus",
+        "Leo",
+        "Scorpio"
+      ],
+      "element": "Water, Fire",
+      "hardness": -0.5,
+      "vibration": 7,
+      "numerology": 7,
+      "affirmation": "I open my heart to love",
+      "healing_properties": {
+        "spiritual": [
+          "Love",
+          "Divine love",
+          "Emotional healing",
+          "Heart opening"
+        ],
+        "emotional": [
+          "Love",
+          "Emotional healing",
+          "Self-love",
+          "Compassion"
+        ],
+        "physical": [
+          "Heart",
+          "Circulatory system",
+          "Immune system",
+          "Emotional balance"
+        ],
+        "mental": [
+          "Emotional clarity",
+          "Love",
+          "Compassion",
+          "Peace"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on heart or crown chakra for love and emotional healing",
+        "wearing": "Wear as pendant or ring for love and emotional healing",
+        "placement": "Place in bedroom for love and peaceful energy",
+        "grid": "Use in love and emotional healing crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Enhances love and emotional healing"
+          },
+          {
+            "crystal": "Morganite",
+            "benefit": "Combines divine love with emotional healing"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies loving energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Kunzite cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged sunlight (fades)",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "love",
+        "emotional healing",
+        "heart",
+        "divine love",
+        "compassion",
+        "peace",
+        "self-love"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Faceted",
+        "Beads",
+        "Sphere",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: irradiation"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "mookaite": {
+      "name": "Mookaite",
+      "aliases": [
+        "Mookaite Jasper",
+        "Australian Jasper"
+      ],
+      "color": "Red, yellow, purple, brown",
+      "chakra": "Root, Sacral, Solar Plexus",
+      "zodiac": [
+        "Virgo",
+        "Scorpio"
+      ],
+      "element": "Earth, Fire",
+      "hardness": -1,
+      "vibration": 6,
+      "numerology": 8,
+      "affirmation": "I am grounded and vital",
+      "healing_properties": {
+        "spiritual": [
+          "Grounding",
+          "Vitality",
+          "Youthful energy",
+          "Adventure"
+        ],
+        "emotional": [
+          "Courage",
+          "Adventure",
+          "Vitality",
+          "Emotional balance"
+        ],
+        "physical": [
+          "Vitality",
+          "Immune system",
+          "Healing",
+          "Energy"
+        ],
+        "mental": [
+          "Courage",
+          "Adventure",
+          "Decision making",
+          "Flexibility"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on root or sacral chakra for vitality and grounding",
+        "wearing": "Wear as bracelet or pendant for vitality and adventure",
+        "placement": "Place near workspace for adventure energy",
+        "grid": "Use in vitality and grounding crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Red Jasper",
+            "benefit": "Enhances vitality and grounding"
+          },
+          {
+            "crystal": "Carnelian",
+            "benefit": "Combines vitality with passion"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies vital energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Running water",
+          "Sage",
+          "Sound",
+          "Sunlight"
+        ],
+        "charging": [
+          "Sunlight",
+          "Earth",
+          "Mookaite cluster"
+        ],
+        "avoid": [
+          "Prolonged sunlight",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "vitality",
+        "grounding",
+        "adventure",
+        "courage",
+        "root",
+        "energy",
+        "youthful"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Carvings",
+        "Slabs"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "prehnite": {
+      "name": "Prehnite",
+      "aliases": [
+        "Stone of Prophecy",
+        "Stone of Dreams"
+      ],
+      "color": "Pale green, yellow-green",
+      "chakra": "Heart, Third Eye",
+      "zodiac": [
+        "Libra"
+      ],
+      "element": "Earth, Water",
+      "hardness": -0.5,
+      "vibration": 5,
+      "numerology": 5,
+      "affirmation": "I trust my inner guidance",
+      "healing_properties": {
+        "spiritual": [
+          "Intuition",
+          "Prophecy",
+          "Dreams",
+          "Divine connection"
+        ],
+        "emotional": [
+          "Calm",
+          "Peace",
+          "Unconditional love",
+          "Emotional healing"
+        ],
+        "physical": [
+          "Kidneys",
+          "Bladder",
+          "Lungs",
+          "Gout"
+        ],
+        "mental": [
+          "Intuition",
+          "Dream recall",
+          "Insight",
+          "Peace"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on heart or third eye for intuition and dreams",
+        "wearing": "Wear as pendant for intuitive guidance",
+        "placement": "Place near bed for enhanced dreams",
+        "grid": "Use in intuition and dream crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Amethyst",
+            "benefit": "Enhances intuition and dreams"
+          },
+          {
+            "crystal": "Moonstone",
+            "benefit": "Combines intuition with dream work"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies intuitive energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Prehnite cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Sunlight (fades)"
+        ]
+      },
+      "keywords": [
+        "intuition",
+        "dreams",
+        "prophecy",
+        "calm",
+        "peace",
+        "heart",
+        "guidance"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Cluster",
+        "Cabochon"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "angelite": {
+      "name": "Angelite",
+      "aliases": [
+        "Blue Anhydrite",
+        "Stone of Awareness"
+      ],
+      "color": "Pale blue, blue-white",
+      "chakra": "Throat, Third Eye",
+      "zodiac": [
+        "Aquarius"
+      ],
+      "element": "Air, Water",
+      "hardness": -0.5,
+      "vibration": 1,
+      "numerology": 1,
+      "affirmation": "I am connected to angelic guidance",
+      "healing_properties": {
+        "spiritual": [
+          "Angel connection",
+          "Divine communication",
+          "Peace",
+          "Awareness"
+        ],
+        "emotional": [
+          "Calm",
+          "Peace",
+          "Angelic support",
+          "Emotional balance"
+        ],
+        "physical": [
+          "Throat",
+          "Thyroid",
+          "Nervous system",
+          "Sleep"
+        ],
+        "mental": [
+          "Communication",
+          "Peace",
+          "Awareness",
+          "Clarity"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on throat or third eye for angelic connection",
+        "wearing": "Wear as pendant for angelic guidance",
+        "placement": "Place in sacred space for angelic energy",
+        "grid": "Use in angelic connection and communication crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Celestite",
+            "benefit": "Enhances angelic connection"
+          },
+          {
+            "crystal": "Selenite",
+            "benefit": "Combines angelic with spiritual cleansing"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies angelic energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Angelite cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged water (converts to gypsum)",
+          "Harsh chemicals",
+          "Hot water"
+        ]
+      },
+      "keywords": [
+        "angels",
+        "communication",
+        "peace",
+        "throat",
+        "divine",
+        "awareness",
+        "guidance"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Sphere",
+        "Heart",
+        "Cabochon",
+        "Carvings"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "celestite": {
+      "name": "Celestite",
+      "aliases": [
+        "Celestine",
+        "Stone of Angels"
+      ],
+      "color": "Pale blue, sky blue",
+      "chakra": "Throat, Third Eye, Crown",
+      "zodiac": [
+        "Gemini"
+      ],
+      "element": "Air, Water",
+      "hardness": -0.5,
+      "vibration": 8,
+      "numerology": 8,
+      "affirmation": "I am connected to higher realms",
+      "healing_properties": {
+        "spiritual": [
+          "Angel connection",
+          "Higher realms",
+          "Divine communication",
+          "Peace"
+        ],
+        "emotional": [
+          "Calm",
+          "Peace",
+          "Spiritual connection",
+          "Emotional balance"
+        ],
+        "physical": [
+          "Throat",
+          "Voice",
+          "Eyes",
+          "Sleep"
+        ],
+        "mental": [
+          "Peace",
+          "Communication",
+          "Spiritual insight",
+          "Calm"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on throat or crown for angelic connection",
+        "wearing": "Wear as pendant for spiritual communication",
+        "placement": "Place in sacred space for peaceful energy",
+        "grid": "Use in angelic connection and peace crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Angelite",
+            "benefit": "Enhances angelic connection"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Combines angelic with spiritual wisdom"
+          },
+          {
+            "crystal": "Selenite",
+            "benefit": "Enhances spiritual connection and peace"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Celestite cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Sunlight (fades)"
+        ]
+      },
+      "keywords": [
+        "angels",
+        "peace",
+        "higher realms",
+        "throat",
+        "divine",
+        "communication",
+        "calm"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Raw",
+        "Cluster",
+        "Geode",
+        "Tumbled",
+        "Sphere"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "howlite": {
+      "name": "Howlite",
+      "aliases": [
+        "White Turquoise",
+        "Buffalo Stone"
+      ],
+      "color": "White with gray/black veins",
+      "chakra": "Crown, Third Eye",
+      "zodiac": [
+        "Gemini",
+        "Virgo"
+      ],
+      "element": "Water",
+      "hardness": 3.5,
+      "vibration": 2,
+      "numerology": 2,
+      "affirmation": "I am calm and clear",
+      "healing_properties": {
+        "spiritual": [
+          "Calm",
+          "Clarity",
+          "Patience",
+          "Wisdom"
+        ],
+        "emotional": [
+          "Calm",
+          "Patience",
+          "Emotional balance",
+          "Stress relief"
+        ],
+        "physical": [
+          "Insomnia",
+          "Sleep",
+          "Bones",
+          "Calcium absorption"
+        ],
+        "mental": [
+          "Clarity",
+          "Focus",
+          "Patience",
+          "Wisdom"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on crown or third eye for calm and clarity",
+        "wearing": "Wear as bracelet or pendant for calm and patience",
+        "placement": "Place near bed for peaceful sleep",
+        "grid": "Use in calm and clarity crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Amethyst",
+            "benefit": "Enhances calm and clarity"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies calm energy"
+          },
+          {
+            "crystal": "Blue Lace Agate",
+            "benefit": "Combines calm with communication"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Howlite cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Sunlight (fades)"
+        ]
+      },
+      "keywords": [
+        "calm",
+        "patience",
+        "clarity",
+        "sleep",
+        "stress relief",
+        "wisdom",
+        "insomnia"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Cabochon",
+        "Carvings"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: dye"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "calcite": {
+      "name": "Calcite",
+      "aliases": [
+        "Energy Amplifier",
+        "Stone of Spirituality"
+      ],
+      "color": "Orange, Green, Blue, Pink, Yellow, Clear",
+      "chakra": "Varies by color",
+      "zodiac": [
+        "Cancer"
+      ],
+      "element": "Fire, Earth, Water, Air (varies)",
+      "hardness": 3,
+      "vibration": 8,
+      "numerology": 8,
+      "affirmation": "I amplify positive energy",
+      "healing_properties": {
+        "spiritual": [
+          "Energy amplification",
+          "Spirituality",
+          "Clarity",
+          "Transformation"
+        ],
+        "emotional": [
+          "Emotional balance",
+          "Calm",
+          "Clarity",
+          "Energy amplification"
+        ],
+        "physical": [
+          "Bones",
+          "Calcium absorption",
+          "Energy levels",
+          "Detoxification"
+        ],
+        "mental": [
+          "Clarity",
+          "Focus",
+          "Learning",
+          "Memory"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on corresponding chakra for energy amplification",
+        "wearing": "Wear as bracelet for energy amplification",
+        "placement": "Place in any room to amplify energy",
+        "grid": "Use in energy amplification and transformation crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies energy amplification"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Enhances spiritual amplification"
+          },
+          {
+            "crystal": "Any crystal",
+            "benefit": "Amplifies paired crystal properties"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Calcite cluster",
+          "Clear quartz cluster"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Acid"
+        ]
+      },
+      "keywords": [
+        "amplify",
+        "energy",
+        "clarity",
+        "transformation",
+        "spiritual",
+        "learning",
+        "focus"
+      ],
+      "rarity": "Common",
+      "formation_types": [
+        "Raw",
+        "Tumbled",
+        "Cluster",
+        "Sphere",
+        "Carvings",
+        "Points"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "apatite": {
+      "name": "Apatite",
+      "aliases": [
+        "Stone of Manifestation",
+        "Hunger Stone"
+      ],
+      "color": "Blue, Green, Yellow, Pink",
+      "chakra": "Throat, Third Eye",
+      "zodiac": [
+        "Gemini"
+      ],
+      "element": "Air, Water",
+      "hardness": 5,
+      "vibration": 9,
+      "numerology": 9,
+      "affirmation": "I manifest my desires",
+      "healing_properties": {
+        "spiritual": [
+          "Manifestation",
+          "Intuition",
+          "Spiritual growth",
+          "Communication"
+        ],
+        "emotional": [
+          "Motivation",
+          "Ambition",
+          "Clarity",
+          "Focus"
+        ],
+        "physical": [
+          "Bones",
+          "Teeth",
+          "Weight management",
+          "Metabolism"
+        ],
+        "mental": [
+          "Focus",
+          "Clarity",
+          "Manifestation",
+          "Motivation"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on throat or third eye for manifestation and clarity",
+        "wearing": "Wear as pendant for motivation and manifestation",
+        "placement": "Place near workspace for focus and motivation",
+        "grid": "Use in manifestation and focus crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies manifestation"
+          },
+          {
+            "crystal": "Citrine",
+            "benefit": "Enhances abundance and manifestation"
+          },
+          {
+            "crystal": "Amethyst",
+            "benefit": "Combines manifestation with intuition"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Apatite cluster",
+          "Clear quartz cluster"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Sunlight (fades colored varieties)"
+        ]
+      },
+      "keywords": [
+        "manifestation",
+        "focus",
+        "motivation",
+        "throat",
+        "ambition",
+        "clarity",
+        "intuition"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Faceted",
+        "Beads",
+        "Sphere",
+        "Cabochon"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: heat_treatment"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "charoite": {
+      "name": "Charoite",
+      "aliases": [
+        "Stone of Transformation",
+        "Lilac Stone"
+      ],
+      "color": "Purple with black and white patterns",
+      "chakra": "Third Eye, Crown, Heart",
+      "zodiac": [
+        "Scorpio",
+        "Sagittarius"
+      ],
+      "element": "Water, Fire",
+      "hardness": -1,
+      "vibration": 7,
+      "numerology": 7,
+      "affirmation": "I embrace transformation",
+      "healing_properties": {
+        "spiritual": [
+          "Transformation",
+          "Spiritual growth",
+          "Courage",
+          "Soul evolution"
+        ],
+        "emotional": [
+          "Courage",
+          "Transformation",
+          "Emotional release",
+          "Strength"
+        ],
+        "physical": [
+          "Liver",
+          "Heart",
+          "Nervous system",
+          "Detoxification"
+        ],
+        "mental": [
+          "Courage",
+          "Transformation",
+          "Insight",
+          "Emotional clarity"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on third eye or crown for transformation",
+        "wearing": "Wear as pendant for courage and transformation",
+        "placement": "Place in sacred space for transformation energy",
+        "grid": "Use in transformation and courage crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Amethyst",
+            "benefit": "Enhances spiritual transformation"
+          },
+          {
+            "crystal": "Black Tourmaline",
+            "benefit": "Provides protection during transformation"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies transformation energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Charoite cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Sunlight (fades)"
+        ]
+      },
+      "keywords": [
+        "transformation",
+        "courage",
+        "spiritual growth",
+        "soul",
+        "release",
+        "strength",
+        "evolution"
+      ],
+      "rarity": "Rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Sphere",
+        "Cabochon",
+        "Carvings",
+        "Slabs"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "iolite": {
+      "name": "Iolite",
+      "aliases": [
+        "Water Sapphire",
+        "Viking Stone"
+      ],
+      "color": "Blue-violet, indigo",
+      "chakra": "Third Eye, Throat",
+      "zodiac": [
+        "Libra",
+        "Sagittarius"
+      ],
+      "element": "Water, Air",
+      "hardness": -0.5,
+      "vibration": 4,
+      "numerology": 7,
+      "affirmation": "I trust my inner vision",
+      "healing_properties": {
+        "spiritual": [
+          "Vision",
+          "Intuition",
+          "Inner guidance",
+          "Navigation"
+        ],
+        "emotional": [
+          "Self-discovery",
+          "Inner guidance",
+          "Clarity",
+          "Balance"
+        ],
+        "physical": [
+          "Vision",
+          "Eyes",
+          "Respiratory system",
+          "Liver"
+        ],
+        "mental": [
+          "Intuition",
+          "Vision",
+          "Clarity",
+          "Focus"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on third eye or throat for vision and intuition",
+        "wearing": "Wear as pendant or ring for inner guidance",
+        "placement": "Place near workspace for vision and clarity",
+        "grid": "Use in intuition and vision crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Amethyst",
+            "benefit": "Enhances intuition and vision"
+          },
+          {
+            "crystal": "Lapis Lazuli",
+            "benefit": "Combines vision with wisdom"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies visionary energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Iolite cluster",
+          "Clear quartz cluster"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Ultrasonic cleaners"
+        ]
+      },
+      "keywords": [
+        "vision",
+        "intuition",
+        "inner guidance",
+        "third eye",
+        "navigation",
+        "clarity",
+        "focus"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Faceted",
+        "Beads",
+        "Sphere",
+        "Jewelry"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "rhodochrosite": {
+      "name": "Rhodochrosite",
+      "aliases": [
+        "Stone of Love and Balance",
+        "Inca Rose"
+      ],
+      "color": "Pink with white bands",
+      "chakra": "Heart",
+      "zodiac": [
+        "Scorpio",
+        "Leo"
+      ],
+      "element": "Water, Fire",
+      "hardness": -0.5,
+      "vibration": 4,
+      "numerology": 4,
+      "affirmation": "I love myself unconditionally",
+      "healing_properties": {
+        "spiritual": [
+          "Love",
+          "Self-love",
+          "Emotional healing",
+          "Balance"
+        ],
+        "emotional": [
+          "Self-love",
+          "Compassion",
+          "Emotional healing",
+          "Love"
+        ],
+        "physical": [
+          "Heart",
+          "Circulatory system",
+          "Immune system",
+          "Nervous system"
+        ],
+        "mental": [
+          "Self-love",
+          "Compassion",
+          "Emotional clarity",
+          "Love"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on heart chakra for self-love and emotional healing",
+        "wearing": "Wear as pendant for self-love and compassion",
+        "placement": "Place in bedroom for love and healing",
+        "grid": "Use in self-love and emotional healing crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Rose Quartz",
+            "benefit": "Enhances love and self-love"
+          },
+          {
+            "crystal": "Pink Mangano Calcite",
+            "benefit": "Combines self-love with emotional healing"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies loving energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Rhodochrosite cluster",
+          "Rose quartz cluster"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Sunlight (fades)"
+        ]
+      },
+      "keywords": [
+        "self-love",
+        "love",
+        "compassion",
+        "heart",
+        "healing",
+        "emotional",
+        "balance"
+      ],
+      "rarity": "Semi-rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Beads",
+        "Sphere",
+        "Cabochon",
+        "Carvings"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: acid_treatment"
+        ]
+      },
+      "avoid_pairings": []
+    },
+    "sugilite": {
+      "name": "Sugilite",
+      "aliases": [
+        "Royal Azel",
+        "Luvulite"
+      ],
+      "color": "Purple, pink-purple",
+      "chakra": "Third Eye, Crown",
+      "zodiac": [
+        "Virgo",
+        "Pisces"
+      ],
+      "element": "Water, Fire",
+      "hardness": -1.0,
+      "vibration": 7,
+      "numerology": 7,
+      "affirmation": "I am connected to divine love",
+      "healing_properties": {
+        "spiritual": [
+          "Divine love",
+          "Spiritual protection",
+          "Wisdom",
+          "Healing"
+        ],
+        "emotional": [
+          "Love",
+          "Forgiveness",
+          "Emotional healing",
+          "Spiritual protection"
+        ],
+        "physical": [
+          "Nervous system",
+          "Headaches",
+          "Immune system",
+          "Pain relief"
+        ],
+        "mental": [
+          "Wisdom",
+          "Focus",
+          "Spiritual insight",
+          "Emotional balance"
+        ]
+      },
+      "usage_methods": {
+        "meditation": "Place on third eye or crown for divine love and wisdom",
+        "wearing": "Wear as pendant for spiritual protection and love",
+        "placement": "Place in sacred space for divine energy",
+        "grid": "Use in divine love and protection crystal grids"
+      },
+      "pairings": {
+        "compatible": [
+          {
+            "crystal": "Amethyst",
+            "benefit": "Enhances divine love and wisdom"
+          },
+          {
+            "crystal": "Charoite",
+            "benefit": "Combines divine love with transformation"
+          },
+          {
+            "crystal": "Clear Quartz",
+            "benefit": "Amplifies divine energy"
+          }
+        ],
+        "avoid": []
+      },
+      "care": {
+        "cleansing": [
+          "Moonlight",
+          "Sage",
+          "Sound",
+          "Running water (brief)"
+        ],
+        "charging": [
+          "Moonlight",
+          "Sugilite cluster",
+          "Selenite"
+        ],
+        "avoid": [
+          "Prolonged water",
+          "Harsh chemicals",
+          "Hot water",
+          "Sunlight (fades)"
+        ]
+      },
+      "keywords": [
+        "divine love",
+        "wisdom",
+        "protection",
+        "third eye",
+        "crown",
+        "healing",
+        "forgiveness"
+      ],
+      "rarity": "Rare",
+      "formation_types": [
+        "Tumbled",
+        "Raw",
+        "Sphere",
+        "Cabochon",
+        "Carvings"
+      ],
+      "validation": {
+        "confidence_score": 0.6499999999999999,
+        "sources": [
+          "Michael Gienger",
+          "Judy Hall",
+          "Karen Frazier",
+          "GIA",
+          "Traditional Healing Systems"
+        ],
+        "last_validated": "2026-04-21T18:52:27.634370",
+        "expert_notes": [
+          "GIA indicates treatment: none"
+        ]
+      },
+      "avoid_pairings": []
+    }
+  },
+  "zodiac_mapping": {
+    "AQUARIUS": {
+      "dates": "January 20 - February 18",
+      "crystals": [
+        "Aquamarine",
+        "Amethyst",
+        "Amber",
+        "Angelite",
+        "Fluorite",
+        "Hematite",
+        "Labradorite",
+        "Moonstone",
+        "Quartz",
+        "Rose Quartz",
+        "Sodalite",
+        "Garnet",
+        "Azurite"
+      ],
+      "element": "Air"
+    },
+    "PISCES": {
+      "dates": "February 19 - March 20",
+      "crystals": [
+        "Amethyst",
+        "Aquamarine",
+        "Beryl",
+        "Bloodstone",
+        "Blue Lace Agate",
+        "Calcite",
+        "Fluorite",
+        "Labradorite",
+        "Mookaite",
+        "Moonstone",
+        "Quartz",
+        "Sunstone",
+        "Turquoise",
+        "Pyrite",
+        "Jade",
+        "Kyanite",
+        "Lepidolite",
+        "Sugilite"
+      ],
+      "element": "Water"
+    },
+    "ARIES": {
+      "dates": "March 21 - April 19",
+      "crystals": [
+        "Amethyst",
+        "Aquamarine",
+        "Aventurine",
+        "Bloodstone",
+        "Carnelian",
+        "Citrine",
+        "Garnet",
+        "Hematite",
+        "Jasper",
+        "Kunzite",
+        "Mookaite",
+        "Quartz",
+        "Red Coral",
+        "Topaz",
+        "Kyanite"
+      ],
+      "element": "Fire"
+    },
+    "TAURUS": {
+      "dates": "April 20 - May 20",
+      "crystals": [
+        "Aquamarine",
+        "Aventurine",
+        "Azurite",
+        "Jasper",
+        "Kunzite",
+        "Lapis Lazuli",
+        "Malachite",
+        "Quartz",
+        "Rose Quartz",
+        "Rhodonite",
+        "Seraphinite",
+        "Selenite",
+        "Tigers Eye",
+        "Topaz",
+        "Tourmaline",
+        "Carnelian",
+        "Jade",
+        "Emerald",
+        "Kyanite",
+        "Chrysocolla"
+      ],
+      "element": "Earth"
+    },
+    "GEMINI": {
+      "dates": "May 21 - June 20",
+      "crystals": [
+        "Agate",
+        "Moss Agate",
+        "Apatite",
+        "Aquamarine",
+        "Calcite",
+        "Chrysocolla",
+        "Citrine",
+        "Hematite",
+        "Howlite",
+        "Quartz",
+        "Tigers Eye",
+        "Topaz",
+        "Tourmaline",
+        "Emerald",
+        "Celestite"
+      ],
+      "element": "Air"
+    },
+    "CANCER": {
+      "dates": "June 21 - July 22",
+      "crystals": [
+        "Amber",
+        "Aventurine",
+        "Beryl",
+        "Calcite",
+        "Carnelian",
+        "Chalcedony",
+        "Moonstone",
+        "Moss Agate",
+        "Quartz",
+        "Rhodonite",
+        "Selenite",
+        "Emerald",
+        "Ruby"
+      ],
+      "element": "Water"
+    },
+    "LEO": {
+      "dates": "July 23 - August 22",
+      "crystals": [
+        "Amber",
+        "Calcite",
+        "Carnelian",
+        "Chrysocolla",
+        "Citrine",
+        "Garnet",
+        "Jade",
+        "Kunzite",
+        "Onyx",
+        "Quartz",
+        "Tigers Eye",
+        "Topaz",
+        "Turquoise",
+        "Labradorite",
+        "Aventurine",
+        "Pyrite",
+        "Ruby",
+        "Sunstone",
+        "Rhodochrosite"
+      ],
+      "element": "Fire"
+    },
+    "VIRGO": {
+      "dates": "August 23 - September 22",
+      "crystals": [
+        "Agate",
+        "Moss Agate",
+        "Amazonite",
+        "Amber",
+        "Aventurine",
+        "Carnelian",
+        "Chrysocolla",
+        "Citrine",
+        "Garnet",
+        "Moonstone",
+        "Quartz",
+        "Sodalite",
+        "Sugilite",
+        "Mookaite",
+        "Howlite"
+      ],
+      "element": "Earth"
+    },
+    "LIBRA": {
+      "dates": "September 23 - October 22",
+      "crystals": [
+        "Ametrine",
+        "Aquamarine",
+        "Aventurine",
+        "Bloodstone",
+        "Jade",
+        "Kunzite",
+        "Lapis Lazuli",
+        "Lepidolite",
+        "Moonstone",
+        "Prehnite",
+        "Quartz",
+        "Sunstone",
+        "Topaz",
+        "Iolite"
+      ],
+      "element": "Air"
+    },
+    "SCORPIO": {
+      "dates": "October 23 - November 21",
+      "crystals": [
+        "Aquamarine",
+        "Beryl",
+        "Carnelian",
+        "Red Coral",
+        "Kunzite",
+        "Garnet",
+        "Malachite",
+        "Moonstone",
+        "Obsidian",
+        "Quartz",
+        "Rose Quartz",
+        "Topaz",
+        "Turquoise",
+        "Unakite",
+        "Labradorite",
+        "Smoky Quartz",
+        "Rhodonite",
+        "Mookaite",
+        "Charoite",
+        "Rhodochrosite"
+      ],
+      "element": "Water"
+    },
+    "SAGITTARIUS": {
+      "dates": "November 22 - December 21",
+      "crystals": [
+        "Amazonite",
+        "Amethyst",
+        "Azurite",
+        "Blue Lace Agate",
+        "Chalcedony",
+        "Garnet",
+        "Labradorite",
+        "Lapis Lazuli",
+        "Malachite",
+        "Snowflake Obsidian",
+        "Quartz",
+        "Sodalite",
+        "Sugilite",
+        "Topaz",
+        "Turquoise",
+        "Obsidian",
+        "Smoky Quartz",
+        "Charoite",
+        "Iolite"
+      ],
+      "element": "Fire"
+    },
+    "CAPRICORN": {
+      "dates": "December 22 - January 19",
+      "crystals": [
+        "Amber",
+        "Azurite",
+        "Carnelian",
+        "Fluorite",
+        "Garnet",
+        "Labradorite",
+        "Malachite",
+        "Snowflake Obsidian",
+        "Onyx",
+        "Quartz",
+        "Rose Quartz",
+        "Tigers Eye",
+        "Tourmaline",
+        "Turquoise",
+        "Ruby",
+        "Smoky Quartz"
+      ],
+      "element": "Earth"
+    },
+    "Taurus": {
+      "crystals": [
+        "Rose Quartz"
+      ],
+      "element": "Water",
+      "dates": ""
+    },
+    "Scorpio": {
+      "crystals": [
+        "Rose Quartz",
+        "Black Tourmaline"
+      ],
+      "element": "Water",
+      "dates": ""
+    },
+    "Cancer": {
+      "crystals": [
+        "Rose Quartz"
+      ],
+      "element": "Water",
+      "dates": ""
+    },
+    "Pisces": {
+      "crystals": [
+        "Amethyst"
+      ],
+      "element": "Air, Water",
+      "dates": ""
+    },
+    "Aquarius": {
+      "crystals": [
+        "Amethyst"
+      ],
+      "element": "Air, Water",
+      "dates": ""
+    },
+    "Capricorn": {
+      "crystals": [
+        "Amethyst",
+        "Black Tourmaline"
+      ],
+      "element": "Air, Water",
+      "dates": ""
+    },
+    "Virgo": {
+      "crystals": [
+        "Amethyst",
+        "Lapis Lazuli"
+      ],
+      "element": "Air, Water",
+      "dates": ""
+    },
+    "Sagittarius": {
+      "crystals": [
+        "Amethyst",
+        "Black Tourmaline",
+        "Lapis Lazuli"
+      ],
+      "element": "Air, Water",
+      "dates": ""
+    },
+    "All signs": {
+      "crystals": [
+        "Clear Quartz"
+      ],
+      "element": "All",
+      "dates": ""
+    },
+    "Leo": {
+      "crystals": [
+        "Citrine"
+      ],
+      "element": "Fire",
+      "dates": ""
+    },
+    "Aries": {
+      "crystals": [
+        "Citrine"
+      ],
+      "element": "Fire",
+      "dates": ""
+    },
+    "Gemini": {
+      "crystals": [
+        "Citrine"
+      ],
+      "element": "Fire",
+      "dates": ""
+    },
+    "Libra": {
+      "crystals": [
+        "Citrine",
+        "Lapis Lazuli"
+      ],
+      "element": "Fire",
+      "dates": ""
+    }
+  },
+  "chakra_mapping": {
+    "Heart": {
+      "crystals": [
+        "Rose Quartz",
+        "Aventurine",
+        "Bloodstone",
+        "Fluorite",
+        "Malachite",
+        "Jade",
+        "Aquamarine",
+        "Emerald",
+        "Garnet",
+        "Ruby",
+        "Moss Agate",
+        "Rhodonite",
+        "Unakite",
+        "Chrysocolla",
+        "Lepidolite",
+        "Kunzite",
+        "Prehnite",
+        "Charoite",
+        "Rhodochrosite"
+      ],
+      "element": "Water",
+      "description": ""
+    },
+    "Third Eye": {
+      "crystals": [
+        "Amethyst",
+        "Lapis Lazuli",
+        "Selenite",
+        "Moonstone",
+        "Labradorite",
+        "Fluorite",
+        "Sodalite",
+        "Turquoise",
+        "Kyanite",
+        "Azurite",
+        "Prehnite",
+        "Angelite",
+        "Celestite",
+        "Howlite",
+        "Apatite",
+        "Charoite",
+        "Iolite",
+        "Sugilite"
+      ],
+      "element": "Air, Water",
+      "description": ""
+    },
+    "Crown": {
+      "crystals": [
+        "Amethyst",
+        "Selenite",
+        "Moonstone",
+        "Lepidolite",
+        "Kunzite",
+        "Celestite",
+        "Howlite",
+        "Charoite",
+        "Sugilite"
+      ],
+      "element": "Air, Water",
+      "description": ""
+    },
+    "All": {
+      "crystals": [
+        "Clear Quartz"
+      ],
+      "element": "All",
+      "description": ""
+    },
+    "Solar Plexus": {
+      "crystals": [
+        "Citrine",
+        "Tigers Eye",
+        "Pyrite",
+        "Amber",
+        "Topaz",
+        "Sunstone",
+        "Smoky Quartz",
+        "Mookaite"
+      ],
+      "element": "Fire",
+      "description": ""
+    },
+    "Root": {
+      "crystals": [
+        "Black Tourmaline",
+        "Tigers Eye",
+        "Hematite",
+        "Bloodstone",
+        "Carnelian",
+        "Obsidian",
+        "Garnet",
+        "Ruby",
+        "Smoky Quartz",
+        "Mookaite"
+      ],
+      "element": "Earth",
+      "description": ""
+    },
+    "Throat": {
+      "crystals": [
+        "Lapis Lazuli",
+        "Labradorite",
+        "Fluorite",
+        "Sodalite",
+        "Topaz",
+        "Aquamarine",
+        "Turquoise",
+        "Kyanite",
+        "Chrysocolla",
+        "Azurite",
+        "Angelite",
+        "Celestite",
+        "Apatite",
+        "Iolite"
+      ],
+      "element": "Water, Air",
+      "description": ""
+    },
+    "Sacral": {
+      "crystals": [
+        "Carnelian",
+        "Amber",
+        "Sunstone",
+        "Mookaite"
+      ],
+      "element": "Fire, Earth",
+      "description": ""
+    },
+    "Varies by color": {
+      "crystals": [
+        "Calcite"
+      ],
+      "element": "Fire, Earth, Water, Air (varies)",
+      "description": ""
+    }
+  },
+  "element_mapping": {
+    "Water": {
+      "crystals": [
+        "Rose Quartz",
+        "Amethyst",
+        "Lapis Lazuli",
+        "Moonstone",
+        "Labradorite",
+        "Fluorite",
+        "Sodalite",
+        "Malachite",
+        "Jade",
+        "Aquamarine",
+        "Turquoise",
+        "Kyanite",
+        "Rhodonite",
+        "Chrysocolla",
+        "Azurite",
+        "Lepidolite",
+        "Kunzite",
+        "Prehnite",
+        "Angelite",
+        "Celestite",
+        "Howlite",
+        "Calcite",
+        "Apatite",
+        "Charoite",
+        "Iolite",
+        "Rhodochrosite",
+        "Sugilite"
+      ],
+      "zodiac_signs": [],
+      "description": ""
+    },
+    "Air": {
+      "crystals": [
+        "Amethyst",
+        "Lapis Lazuli",
+        "Selenite",
+        "Labradorite",
+        "Fluorite",
+        "Sodalite",
+        "Topaz",
+        "Kyanite",
+        "Azurite",
+        "Lepidolite",
+        "Angelite",
+        "Celestite",
+        "Apatite",
+        "Iolite"
+      ],
+      "zodiac_signs": [],
+      "description": ""
+    },
+    "All": {
+      "crystals": [
+        "Clear Quartz"
+      ],
+      "zodiac_signs": [],
+      "description": ""
+    },
+    "Fire": {
+      "crystals": [
+        "Citrine",
+        "Tigers Eye",
+        "Hematite",
+        "Aventurine",
+        "Bloodstone",
+        "Carnelian",
+        "Pyrite",
+        "Obsidian",
+        "Amber",
+        "Topaz",
+        "Garnet",
+        "Ruby",
+        "Sunstone",
+        "Kunzite",
+        "Mookaite",
+        "Calcite",
+        "Charoite",
+        "Rhodochrosite",
+        "Sugilite"
+      ],
+      "zodiac_signs": [],
+      "description": ""
+    },
+    "Earth": {
+      "crystals": [
+        "Black Tourmaline",
+        "Tigers Eye",
+        "Hematite",
+        "Aventurine",
+        "Bloodstone",
+        "Carnelian",
+        "Pyrite",
+        "Malachite",
+        "Obsidian",
+        "Amber",
+        "Jade",
+        "Emerald",
+        "Garnet",
+        "Turquoise",
+        "Moss Agate",
+        "Smoky Quartz",
+        "Rhodonite",
+        "Unakite",
+        "Chrysocolla",
+        "Mookaite",
+        "Prehnite",
+        "Calcite"
+      ],
+      "zodiac_signs": [],
+      "description": ""
+    },
+    "Air (varies)": {
+      "crystals": [
+        "Calcite"
+      ],
+      "zodiac_signs": [],
+      "description": ""
+    }
+  },
+  "sources": {
+    "tribes_vibes": {
+      "url": "https://www.tribesandvibes.co.uk/zodiaccrystalbirthstones.html",
+      "scraped_at": "2026-04-21T18:33:38.157255",
+      "data_points": 12
+    },
+    "expert_curated": {
+      "source": "Expert validation and crystal research",
+      "created": "2026-04-21T18:33:40.157667",
+      "data_points": 6
+    },
+    "phase2_expansion": {
+      "source": "Expert validation and crystal research - Phase 2",
+      "created": "2026-04-21T18:37:21.700063",
+      "crystals_added": 42
+    }
+  },
+  "metadata": {
+    "created": "2026-04-21T18:33:35.540502",
+    "last_updated": "2026-04-21T18:37:21.699082",
+    "total_crystals": 48,
+    "sources_used": [],
+    "validation": {
+      "timestamp": "2026-04-21T18:52:27.634370",
+      "expert_sources": [
+        {
+          "name": "Michael Gienger",
+          "credibility": "high"
+        },
+        {
+          "name": "Judy Hall",
+          "credibility": "high"
+        },
+        {
+          "name": "Karen Frazier",
+          "credibility": "high"
+        },
+        {
+          "name": "GIA (Gemological Institute of America)",
+          "credibility": "high"
+        },
+        {
+          "name": "Traditional Healing Systems",
+          "credibility": "medium"
+        }
+      ],
+      "statistics": {
+        "total": 48,
+        "validated": 47,
+        "high_confidence": 0,
+        "medium_confidence": 47,
+        "low_confidence": 1
+      }
+    }
+  }
+}

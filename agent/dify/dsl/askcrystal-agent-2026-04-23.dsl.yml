@@ -1,0 +1,268 @@
+app:
+  description: Mythology-oriented crystal guidance agent
+  icon: 🔮
+  icon_background: '#1f2937'
+  icon_type: emoji
+  mode: agent-chat
+  name: AskCrystal
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.44@2f65e26c22dd4ae2c6133f14461dceac4eeb8abdd103f1ab6c9f03618db73313
+    version: null
+kind: app
+model_config:
+  agent_mode:
+    enabled: true
+    max_iteration: 3
+    strategy: react
+    tools:
+    - enabled: true
+      provider_id: shopify_storefront
+      provider_type: mcp
+      tool_name: get_cart
+      tool_parameters: {}
+    - enabled: true
+      provider_id: shopify_storefront
+      provider_type: mcp
+      tool_name: get_product_details
+      tool_parameters: {}
+    - enabled: true
+      provider_id: shopify_storefront
+      provider_type: mcp
+      tool_name: search_catalog
+      tool_parameters: {}
+    - enabled: true
+      provider_id: shopify_storefront
+      provider_type: mcp
+      tool_name: search_shop_policies_and_faqs
+      tool_parameters: {}
+    - enabled: true
+      provider_id: shopify_storefront
+      provider_type: mcp
+      tool_name: update_cart
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_astro_crystal_synthesis_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_astrology_transit_checkin_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_bazi_chart_analysis_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_cross_mythology_synthesis_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_crystal_chakra_balance_plan_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_crystal_cleansing_and_charging_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_crystal_grid_manifestation_design_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_crystal_intention_matcher_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_deity_alignment_lookup_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_fengshui_space_audit_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_moon_ritual_designer_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_mythic_archetype_mapping_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_mythic_story_reframe_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_qimen_timing_direction_read_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_shushu_numerology_profile_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_symbolic_omen_reader_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_synastry_relationship_map_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_taibu_structured_divination_router_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_tarot_spread_interpretation_cn_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_western_natal_archetype_read_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_yinyuan_matchmaking_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: run_ziwei_palace_theme_read_skill_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: search_crystals_crystals_search_post
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: get_crystal_crystals__slug__get
+      tool_parameters: {}
+    - enabled: true
+      provider_id: a3eae901-0d3e-4274-8f7b-55d68f424c79
+      provider_type: api
+      tool_name: list_crystals_crystals_get
+      tool_parameters: {}
+  annotation_reply:
+    enabled: false
+  chat_prompt_config: {}
+  completion_prompt_config: {}
+  dataset_configs:
+    datasets:
+      datasets:
+      - dataset:
+          enabled: true
+          id: 57dfcd7b-19a9-4471-b988-636f7b3719d7
+      strategy: router
+    reranking_enabled: false
+    reranking_mode: reranking_model
+    retrieval_model: multiple
+    score_threshold_enabled: false
+    top_k: 6
+  dataset_query_variable: null
+  external_data_tools: []
+  file_upload:
+    image:
+      detail: high
+      enabled: false
+      number_limits: 3
+      transfer_methods:
+      - remote_url
+      - local_file
+  model:
+    completion_params:
+      stop: []
+    mode: chat
+    name: minimaxai/minimax-m2.7
+    provider: langgenius/openai_api_compatible/openai_api_compatible
+  more_like_this:
+    enabled: false
+  opening_statement: I can help with mythology-guided readings, astrology, and crystal
+    recommendations grounded in your intention.
+  pre_prompt: "You are Numen, AskCrystal's AI energy guide and crystal curator.\n\n\
+    Mission:\n- Blend Eastern metaphysics (Bazi/Five Elements) and Western spiritual\
+    \ psychology (chakras/archetypes) to support self-reflection and crystal shopping\
+    \ decisions.\n- Keep guidance empathetic, practical, and modern.\n\nConversation\
+    \ flow (default):\n1) Onboarding (2-3 turns): gather emotional state, intention,\
+    \ and optional birth details.\n2) Diagnosis (3-5 turns): summarize the user's\
+    \ energy pattern in grounded language.\n3) Recommendation: offer 1-3 crystal products\
+    \ as an \"energy prescription\".\n4) Post-purchase care: provide simple cleansing,\
+    \ charging, and intention-setting guidance.\n\nTool grounding policy:\n- Product\
+    \ recommendations must be grounded in real catalog tools before finalizing:\n\
+    \  - Shopify MCP tools: search_catalog, get_product_details (and get_cart/update_cart\
+    \ only when relevant).\n  - Crystal bridge retrieval tools may be used for supporting\
+    \ logic.\n- Never invent product names, prices, availability, or URLs.\n- If catalog\
+    \ results are weak, ask one concise clarifying question instead of guessing.\n\
+    - Only call update_cart after explicit user consent.\n\nShopify tool playbook\
+    \ (strict):\n1) Intent: product discovery/recommendation\n   - First call search_catalog\
+    \ with the user's intention and constraints (budget, form factor, material, style).\n\
+    \   - Then call get_product_details for shortlisted items before final answer.\n\
+    \   - Recommend 1-3 products only, using real tool-returned names/prices.\n2)\
+    \ Intent: product comparison/FAQ\n   - Use get_product_details on each candidate\
+    \ and compare only fields returned by tools.\n3) Intent: policy/store questions\n\
+    \   - Use search_shop_policies_and_faqs when available.\n4) Intent: cart status\n\
+    \   - Use get_cart.\n5) Intent: cart mutation\n   - Use update_cart only after\
+    \ explicit confirmation from user.\n   - If quantity/variant is ambiguous, ask\
+    \ one short clarification first.\n6) Failure handling\n   - If tools return no\
+    \ useful products, say so clearly, ask one focused follow-up question, and retry\
+    \ search_catalog.\n   - Never \"fill in\" missing catalog facts from memory.\n\
+    \nSkill routing policy:\n- Use one primary skill first for domain depth.\n- For\
+    \ mixed metaphysics requests, route through taibu_structured_divination_router\
+    \ then one follow-up skill if needed.\n- Do not call unnecessary skills; keep\
+    \ interactions focused.\n\nResponse contract:\n- Start with a concise \"Energy\
+    \ Blueprint\" summary.\n- Provide 1-3 recommended products with a personalized\
+    \ reason for each.\n- Include practical next steps (daily/weekly ritual).\n- Include\
+    \ a gentle safety boundary note.\n\nSafety and compliance:\n- No medical diagnosis,\
+    \ treatment, or guaranteed outcomes.\n- No deterministic fate language.\n- Frame\
+    \ all advice as wellness/self-reflection support.\n- Include this disclaimer when\
+    \ giving guidance: \"For wellness and self-reflection purposes only.\"\n\nStyle:\n\
+    - Never reveal hidden reasoning, chain-of-thought, or tool-selection narration.\n\
+    - Avoid meta lines such as \"I will use tool...\" or \"Based on internal analysis...\"\
+    .\n- Keep tone calm, warm, and confidence-building.\n"
+  prompt_type: simple
+  retriever_resource:
+    enabled: true
+  sensitive_word_avoidance:
+    config: {}
+    enabled: false
+    type: ''
+  speech_to_text:
+    enabled: false
+  suggested_questions:
+  - Recommend crystals for Aries energy and emotional balance
+  - Give me a mythology-themed reading for love and timing
+  - Combine my zodiac sign with a crystal ritual plan
+  suggested_questions_after_answer:
+    enabled: true
+  text_to_speech:
+    enabled: false
+    language: ''
+    voice: ''
+  user_input_form: []
+version: 0.6.0

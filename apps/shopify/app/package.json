@@ -1,0 +1,13 @@
+{
+  "name": "@askcrystal/shopify-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev:proxy": "node src/server/dev-server.mjs",
+    "check": "find src -name '*.mjs' -print0 | xargs -0 -n1 node --check"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

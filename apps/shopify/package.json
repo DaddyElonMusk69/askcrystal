@@ -1,0 +1,17 @@
+{
+  "name": "@askcrystal/shopify-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "app",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:proxy": "npm --workspace @askcrystal/shopify-app run dev:proxy",
+    "check": "npm --workspace @askcrystal/shopify-app run check",
+    "smoke:stop": "node ../../scripts/shopify_stop_smoke.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

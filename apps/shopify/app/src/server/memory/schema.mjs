@@ -1,0 +1,62 @@
+export const memoryTables = {
+  users: [
+    'id',
+    'shop_id',
+    'shopify_customer_id',
+    'email',
+    'locale',
+    'timezone',
+    'created_at',
+    'updated_at',
+  ],
+  guestSessions: [
+    'id',
+    'shop_id',
+    'session_token',
+    'created_at',
+    'last_seen_at',
+    'merged_into_user_id',
+  ],
+  conversationThreads: [
+    'id',
+    'user_id',
+    'guest_session_id',
+    'dify_conversation_id',
+    'storefront_session_id',
+    'status',
+    'last_summary_snapshot',
+    'last_active_at',
+  ],
+  memoryRecords: [
+    'id',
+    'user_id',
+    'type',
+    'key',
+    'value',
+    'confidence',
+    'source',
+    'created_at',
+    'last_confirmed_at',
+  ],
+  userProfileSnapshots: [
+    'id',
+    'user_id',
+    'profile_summary_short',
+    'profile_summary_full',
+    'current_focus',
+    'created_at',
+  ],
+  dailyGuidanceJobs: [
+    'id',
+    'user_id',
+    'timezone',
+    'delivery_channel',
+    'next_run_at',
+    'status',
+  ],
+}
+
+export const memoryApproach = {
+  phaseOne: 'Inject concise memory context into each Dify call from the backend.',
+  phaseTwo: 'Promote memory access to dedicated backend tools once the profile grows.',
+}

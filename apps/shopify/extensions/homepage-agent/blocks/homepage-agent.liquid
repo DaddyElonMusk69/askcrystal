@@ -1,0 +1,125 @@
+{{ 'homepage-agent.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'homepage-agent.js' | asset_url }}" defer></script>
+
+<div
+  id="askcrystal-homepage-agent-{{ block.id }}"
+  class="askcrystal-homepage-agent"
+  data-askcrystal-agent
+  data-proxy-base="{{ block.settings.proxy_base | escape }}"
+  data-title="{{ block.settings.title | escape }}"
+  data-subtitle="{{ block.settings.subtitle | escape }}"
+>
+  <div class="askcrystal-shell">
+    <header class="askcrystal-masthead">
+      <p class="askcrystal-masthead__eyebrow">AskCrystal</p>
+      <h2 class="askcrystal-title">{{ block.settings.title }}</h2>
+    </header>
+
+    <section class="askcrystal-chat-shell">
+      <div class="askcrystal-welcome" data-askcrystal-welcome>
+        <div class="askcrystal-welcome__grid">
+          <section class="askcrystal-welcome__guide">
+            <p class="askcrystal-section-label">Start with the guide</p>
+            <h3 class="askcrystal-welcome__title">Tell the guide what feels most important right now.</h3>
+            <p class="askcrystal-welcome__body">Choose a prompt or ask directly. Once the first answer comes back, this welcome layer gets out of the way and the chat takes over.</p>
+
+            <div class="askcrystal-guided-prompts" aria-label="Guided starters">
+              <button type="button" class="askcrystal-guided-prompt" data-askcrystal-message="Help me find a grounding crystal for an overwhelming week.">
+                Grounding support
+              </button>
+              <button type="button" class="askcrystal-guided-prompt" data-askcrystal-message="Show me protection crystals and tell me how to use them.">
+                Protection crystals
+              </button>
+              <button type="button" class="askcrystal-guided-prompt" data-askcrystal-message="Help me choose a crystal for love, softness, and emotional healing.">
+                Love and healing
+              </button>
+              <button type="button" class="askcrystal-guided-prompt" data-askcrystal-message="Give me a quick reading and then suggest something from the store.">
+                Reading first
+              </button>
+            </div>
+          </section>
+
+          <section class="askcrystal-welcome__feed">
+            <div class="askcrystal-feed-header">
+              <p class="askcrystal-section-label">Bestsellers</p>
+              <p class="askcrystal-feed-header__text">A short feed of easy starting points if you want to shop before you chat.</p>
+            </div>
+
+            <div class="askcrystal-bestsellers" aria-label="Short bestsellers feed">
+              <button type="button" class="askcrystal-bestseller-card" data-askcrystal-message="Tell me whether Black Tourmaline is the right crystal for me right now.">
+                <span class="askcrystal-bestseller-card__tag">Protection</span>
+                <strong class="askcrystal-bestseller-card__title">Black Tourmaline</strong>
+                <span class="askcrystal-bestseller-card__body">For heavy rooms, overstimulation, and stronger energetic boundaries.</span>
+                <span class="askcrystal-bestseller-card__price">$24</span>
+              </button>
+
+              <button type="button" class="askcrystal-bestseller-card" data-askcrystal-message="Tell me whether Rose Quartz fits what I need emotionally right now.">
+                <span class="askcrystal-bestseller-card__tag">Heart</span>
+                <strong class="askcrystal-bestseller-card__title">Rose Quartz</strong>
+                <span class="askcrystal-bestseller-card__body">A softer starting point for comfort, repair, tenderness, and receiving care.</span>
+                <span class="askcrystal-bestseller-card__price">$22</span>
+              </button>
+
+              <button type="button" class="askcrystal-bestseller-card" data-askcrystal-message="Would Citrine be a good crystal for confidence and abundance for me right now?">
+                <span class="askcrystal-bestseller-card__tag">Abundance</span>
+                <strong class="askcrystal-bestseller-card__title">Citrine</strong>
+                <span class="askcrystal-bestseller-card__body">Often chosen for brighter momentum, confidence, and forward energy.</span>
+                <span class="askcrystal-bestseller-card__price">$26</span>
+              </button>
+
+              <button type="button" class="askcrystal-bestseller-card" data-askcrystal-message="Would Moonstone be a good crystal for intuition and emotional balance for me?">
+                <span class="askcrystal-bestseller-card__tag">Intuition</span>
+                <strong class="askcrystal-bestseller-card__title">Moonstone</strong>
+                <span class="askcrystal-bestseller-card__body">Used when you want softer intuition, emotional steadiness, and reflective calm.</span>
+                <span class="askcrystal-bestseller-card__price">$28</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="askcrystal-stage" data-askcrystal-stage aria-live="polite"></div>
+      <div class="askcrystal-embed" data-askcrystal-embed hidden></div>
+    </section>
+
+    <form class="askcrystal-composer" data-askcrystal-form>
+      <label class="visually-hidden" for="askcrystal-input-{{ block.id }}">Ask AskCrystal</label>
+      <div class="askcrystal-composer__field">
+        <textarea
+          id="askcrystal-input-{{ block.id }}"
+          name="message"
+          rows="1"
+          placeholder="Ask about your mood, intention, or the crystal you want help choosing."
+        ></textarea>
+        <button type="submit">Send</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "AskCrystal Homepage Agent",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Headline",
+      "default": "A spiritual crystal boutique guided by conversation"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Supporting copy",
+      "default": "Find a crystal, get a grounded reading, or browse by intention with a resident guide who understands both ritual and shopping intent."
+    },
+    {
+      "type": "text",
+      "id": "proxy_base",
+      "label": "App proxy base path",
+      "default": "/apps/askcrystal"
+    }
+  ]
+}
+{% endschema %}

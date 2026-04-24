@@ -1,0 +1,451 @@
+.askcrystal-homepage-agent {
+  --ac-ink: oklch(24% 0.018 35);
+  --ac-ink-soft: oklch(43% 0.018 35);
+  --ac-ink-faint: oklch(58% 0.012 40);
+  --ac-cream: oklch(98% 0.012 80);
+  --ac-sand: oklch(93% 0.018 74);
+  --ac-stone: oklch(86% 0.028 68);
+  --ac-clay: oklch(63% 0.08 40);
+  --ac-forest: oklch(46% 0.05 154);
+  --ac-border: color-mix(in oklab, var(--ac-ink) 10%, white);
+  --ac-font-display: "Avenir Next Condensed", "Trebuchet MS", "Segoe UI", sans-serif;
+  --ac-font-body: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  --ac-page-max: 1120px;
+  --ac-shell-pad: clamp(1rem, 3.5vw, 1.5rem);
+  color: var(--ac-ink);
+  font-family: var(--ac-font-body);
+}
+
+.askcrystal-homepage-agent *,
+.askcrystal-homepage-agent *::before,
+.askcrystal-homepage-agent *::after {
+  box-sizing: border-box;
+}
+
+.askcrystal-shell {
+  display: grid;
+  gap: 1.15rem;
+  padding: var(--ac-shell-pad);
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  background:
+    radial-gradient(circle at top left, rgba(224, 199, 176, 0.4), transparent 26%),
+    linear-gradient(180deg, #faf4ec 0%, #f3e9dc 100%);
+}
+
+.askcrystal-masthead,
+.askcrystal-chat-shell {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.askcrystal-masthead__eyebrow,
+.askcrystal-section-label,
+.askcrystal-stage__kicker,
+.askcrystal-product-card__tag,
+.askcrystal-bestseller-card__tag {
+  margin: 0;
+  font: 700 0.72rem/1.1 var(--ac-font-display);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ac-clay) 76%, var(--ac-ink));
+}
+
+.askcrystal-title,
+.askcrystal-welcome__title,
+.askcrystal-product-card__title,
+.askcrystal-bestseller-card__title {
+  margin: 0;
+  font-family: var(--ac-font-display);
+  color: var(--ac-ink);
+}
+
+.askcrystal-title {
+  max-width: 12ch;
+  font-size: clamp(2.3rem, 7vw, 4rem);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.askcrystal-welcome {
+  padding: 0.15rem 0 0.35rem;
+}
+
+.askcrystal-homepage-agent[data-welcome='dismissed'] .askcrystal-welcome {
+  display: none;
+}
+
+.askcrystal-welcome__grid {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.askcrystal-welcome__guide,
+.askcrystal-welcome__feed {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.askcrystal-welcome__title {
+  font-size: clamp(1.45rem, 4.6vw, 1.95rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+.askcrystal-welcome__body,
+.askcrystal-feed-header__text,
+.askcrystal-stage__body,
+.askcrystal-product-card__body,
+.askcrystal-bestseller-card__body {
+  margin: 0;
+  color: var(--ac-ink-soft);
+  font-size: 0.99rem;
+  line-height: 1.55;
+}
+
+.askcrystal-guided-prompts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.askcrystal-guided-prompt,
+.askcrystal-bestseller-card {
+  width: 100%;
+  border: 1px solid color-mix(in oklab, var(--ac-ink) 7%, white);
+  background: rgba(255, 251, 246, 0.9);
+  color: var(--ac-ink);
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+
+.askcrystal-guided-prompt:hover,
+.askcrystal-guided-prompt:focus-visible,
+.askcrystal-bestseller-card:hover,
+.askcrystal-bestseller-card:focus-visible {
+  transform: translateY(-1px);
+  border-color: color-mix(in oklab, var(--ac-clay) 46%, white);
+}
+
+.askcrystal-guided-prompt {
+  min-height: 4rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 16px;
+  text-align: left;
+  font: 600 0.95rem/1.28 var(--ac-font-display);
+}
+
+.askcrystal-feed-header {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.askcrystal-bestsellers {
+  columns: 2 9rem;
+  column-gap: 0.75rem;
+}
+
+.askcrystal-bestseller-card {
+  display: block;
+  break-inside: avoid;
+  margin: 0 0 0.75rem;
+  padding: 0.9rem;
+  border-radius: 16px;
+  text-align: left;
+}
+
+.askcrystal-bestseller-card__title,
+.askcrystal-product-card__title {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 1.05rem;
+  line-height: 1.04;
+}
+
+.askcrystal-bestseller-card__body,
+.askcrystal-bestseller-card__price,
+.askcrystal-product-card__body,
+.askcrystal-product-card__price {
+  display: block;
+  margin-top: 0.45rem;
+}
+
+.askcrystal-bestseller-card__price,
+.askcrystal-product-card__price {
+  color: var(--ac-forest);
+  font: 700 0.9rem/1.2 var(--ac-font-display);
+}
+
+.askcrystal-stage {
+  display: grid;
+  gap: 1.15rem;
+  padding-top: 0.2rem;
+}
+
+.askcrystal-embed {
+  display: none;
+}
+
+.askcrystal-homepage-agent[data-mode='embedding'] .askcrystal-embed,
+.askcrystal-homepage-agent[data-mode='embedded'] .askcrystal-embed {
+  display: block;
+}
+
+.askcrystal-homepage-agent[data-mode='embedded'] .askcrystal-stage,
+.askcrystal-homepage-agent[data-mode='embedded'] .askcrystal-welcome,
+.askcrystal-homepage-agent[data-mode='embedded'] .askcrystal-composer {
+  display: none;
+}
+
+.askcrystal-homepage-agent[data-mode='embedded'] .askcrystal-shell {
+  padding-bottom: 1rem;
+}
+
+.askcrystal-homepage-agent[data-mode='embedded'] .askcrystal-chat-shell {
+  min-height: calc(100vh - 9rem);
+}
+
+.askcrystal-stage:empty {
+  min-height: 0;
+}
+
+.askcrystal-stage__message,
+.askcrystal-stage__insert {
+  animation: askcrystal-rise 240ms ease;
+}
+
+.askcrystal-stage__message {
+  display: grid;
+  gap: 0.45rem;
+  width: min(100%, 46rem);
+}
+
+.askcrystal-stage__message--assistant {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.askcrystal-stage__message--assistant .askcrystal-stage__body {
+  color: var(--ac-ink);
+  font-size: 1.02rem;
+}
+
+.askcrystal-stage__message--user {
+  margin-left: auto;
+  padding: 0.8rem 0.9rem;
+  border-radius: 16px;
+  border: 1px solid color-mix(in oklab, var(--ac-forest) 18%, white);
+  background: color-mix(in oklab, var(--ac-forest) 10%, white);
+}
+
+.askcrystal-stage__message--user .askcrystal-stage__body {
+  color: var(--ac-ink);
+}
+
+.askcrystal-stage__message--user .askcrystal-stage__kicker {
+  display: none;
+}
+
+.askcrystal-stage__body {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.askcrystal-stage__body p {
+  margin: 0;
+}
+
+.askcrystal-stage__insert {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0.15rem;
+}
+
+.askcrystal-stage__insert-header {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.askcrystal-stage__insert-title {
+  margin: 0;
+  font: 700 1rem/1.1 var(--ac-font-display);
+  color: var(--ac-ink);
+}
+
+.askcrystal-product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.askcrystal-product-card {
+  display: grid;
+  gap: 0.32rem;
+  padding: 0.8rem;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--ac-ink) 7%, white);
+  background: rgba(255, 252, 248, 0.92);
+}
+
+.askcrystal-product-card__link {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 0.2rem;
+  text-decoration: none;
+  color: var(--ac-clay);
+  font: 700 0.82rem/1 var(--ac-font-display);
+}
+
+.askcrystal-embed__loading {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.35rem 0 0.4rem;
+}
+
+.askcrystal-embed__status {
+  margin: 0;
+  color: var(--ac-ink-soft);
+  font-size: 0.99rem;
+  line-height: 1.5;
+}
+
+.askcrystal-embed__frame {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 9.75rem);
+  height: calc(100vh - 9.75rem);
+  border: 0;
+  background: transparent;
+}
+
+.askcrystal-composer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  padding: 0.6rem 0.9rem calc(0.65rem + env(safe-area-inset-bottom));
+  border-top: 1px solid color-mix(in oklab, var(--ac-ink) 10%, white);
+  background: rgba(248, 241, 232, 0.94);
+  backdrop-filter: blur(18px);
+}
+
+.askcrystal-composer__field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+  max-width: var(--ac-page-max);
+  margin: 0 auto;
+}
+
+.askcrystal-composer textarea {
+  width: 100%;
+  min-height: 2.9rem;
+  height: 2.9rem;
+  resize: none;
+  border: 1px solid color-mix(in oklab, var(--ac-ink) 9%, white);
+  border-radius: 18px;
+  background: rgba(255, 255, 252, 0.98);
+  padding: 0.82rem 1rem;
+  color: var(--ac-ink);
+  font: 400 0.97rem/1.35 var(--ac-font-body);
+}
+
+.askcrystal-composer textarea::placeholder {
+  color: color-mix(in oklab, var(--ac-ink-soft) 68%, white);
+}
+
+.askcrystal-composer button {
+  min-width: 5.35rem;
+  height: 2.9rem;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--ac-clay), color-mix(in oklab, var(--ac-clay) 65%, var(--ac-forest)));
+  color: #fffaf5;
+  font: 700 0.9rem/1 var(--ac-font-display);
+  cursor: pointer;
+}
+
+.askcrystal-composer textarea:focus-visible,
+.askcrystal-guided-prompt:focus-visible,
+.askcrystal-bestseller-card:focus-visible,
+.askcrystal-composer button:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--ac-clay) 60%, white);
+  outline-offset: 2px;
+}
+
+.askcrystal-homepage-agent[data-busy='true'] .askcrystal-composer button {
+  opacity: 0.72;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes askcrystal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 900px) {
+  .askcrystal-welcome__grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.95fr);
+    align-items: start;
+  }
+
+  .askcrystal-title {
+    max-width: 14ch;
+  }
+
+  .askcrystal-composer {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .askcrystal-homepage-agent[data-mode='embedded'] .askcrystal-chat-shell {
+    min-height: calc(100vh - 10.5rem);
+  }
+
+  .askcrystal-embed__frame {
+    min-height: calc(100vh - 11.25rem);
+    height: calc(100vh - 11.25rem);
+  }
+}
+
+@media (max-width: 639px) {
+  .askcrystal-guided-prompts,
+  .askcrystal-product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .askcrystal-composer {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .askcrystal-composer button {
+    min-width: 4.75rem;
+  }
+
+  .askcrystal-embed__frame {
+    min-height: calc(100vh - 8.9rem);
+    height: calc(100vh - 8.9rem);
+  }
+}

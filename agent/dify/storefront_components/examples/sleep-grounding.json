@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "components": [
+    {
+      "component": "reading_summary",
+      "id": "sleep-blueprint",
+      "priority": "primary",
+      "props": {
+        "eyebrow": "Energy blueprint",
+        "title": "Your system wants softness before sleep",
+        "summary": "The main pattern is overstimulation and mental carryover from the day, so the right crystal should calm the nervous system before it tries to energize anything else.",
+        "energy_focus": "Calm and rest",
+        "highlights": [
+          "Too much mental charge at night",
+          "Needs grounding before ritual complexity",
+          "Best matched to gentle, repeatable support"
+        ],
+        "disclaimer": "For wellness and self-reflection purposes only."
+      }
+    },
+    {
+      "component": "product_card",
+      "id": "sleep-primary-product",
+      "priority": "primary",
+      "props": {
+        "eyebrow": "Prescription",
+        "reason": "Amethyst is the cleanest first recommendation when the goal is calmer evenings and easier sleep onset.",
+        "note": "Keep it on the nightstand and pair it with three slow breaths.",
+        "cta_label": "View crystal",
+        "product_ref": {
+          "handle": "amethyst-pendant"
+        }
+      }
+    },
+    {
+      "component": "next_steps",
+      "id": "sleep-next-steps",
+      "priority": "supporting",
+      "props": {
+        "eyebrow": "Next steps",
+        "title": "How to use it tonight",
+        "steps": [
+          "Place the crystal beside your bed before sunset if possible.",
+          "Hold it for three breaths and set one calming intention.",
+          "Repeat the same ritual for three nights before switching stones."
+        ],
+        "closing": "If the heaviness feels more emotional than mental, the next turn can compare amethyst with rose quartz."
+      }
+    }
+  ],
+  "notes": [
+    "Use Shopify hydration to resolve product title, image, price, and URL."
+  ]
+}

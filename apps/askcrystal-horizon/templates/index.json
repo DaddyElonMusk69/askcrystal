@@ -1,0 +1,27 @@
+{
+  "sections": {
+    "askcrystal_homepage_agent": {
+      "type": "askcrystal-home",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "eyebrow": "AskCrystal",
+        "heading": "Find the crystal, ritual, or reading that meets you where you are.",
+        "description": "A guided crystal boutique with a resident spiritual companion. Begin with a feeling, a question, or a life situation, and let the storefront respond with care and curation.",
+        "note": "This scaffold keeps the store visible from the first screen. The guide can listen first, recommend later, and eventually hand off to richer catalog and ritual surfaces.",
+        "shelf_heading": "Start with the shelf",
+        "product_limit": 8,
+        "runtime_mode": "proxy",
+        "api_endpoint": "/apps/askcrystal/chat",
+        "suggestion_1": "Sleep & calm",
+        "suggestion_2": "Love reading",
+        "suggestion_3": "Protection",
+        "suggestion_4": "Work focus",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    }
+  },
+  "order": [
+    "askcrystal_homepage_agent"
+  ]
+}

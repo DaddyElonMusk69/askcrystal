@@ -1,0 +1,153 @@
+skills:
+  - id: mythic_archetype_mapping
+    name: Mythic Archetype Mapping
+    description: Map a user's emotional state to mythic archetypes and growth tasks.
+    when_to_use: Use when the user shares a life challenge, identity shift, fear, or decision paralysis.
+    tags: [mythology, counseling, framing]
+    inputs:
+      - name: user_context
+        description: User's emotional situation and recent events.
+        required: true
+      - name: cultural_preference
+        description: Preferred myth systems (Greek, Chinese, Norse, mixed).
+        required: false
+        default: mixed
+      - name: desired_outcome
+        description: What the user wants to feel or achieve.
+        required: false
+        default: clarity and steady progress
+    template: |
+      Analyze the following context through a mythology lens and return:
+      1) Top 2 archetypes,
+      2) Shadow pattern to watch,
+      3) One practical daily ritual,
+      4) Crystal energy profile (element, chakra, emotional theme).
+
+      User context:
+      {user_context}
+
+      Cultural preference: {cultural_preference}
+      Desired outcome: {desired_outcome}
+
+  - id: deity_alignment_lookup
+    name: Deity Alignment Lookup
+    description: Identify deity energies that resonate with a user's current intention.
+    when_to_use: Use when the user asks for symbolic guidance, blessings, or intention setting.
+    tags: [mythology, deity, intention]
+    inputs:
+      - name: intention
+        description: Main intention such as wealth, protection, love, healing.
+        required: true
+      - name: user_context
+        description: Optional additional background.
+        required: false
+        default: not provided
+    template: |
+      Recommend 2-3 deity-energy alignments for the intention below.
+      For each alignment include:
+      - why it fits,
+      - one symbol/mantra,
+      - one safe reflective practice,
+      - crystal attributes that pair well.
+
+      Intention: {intention}
+      User context: {user_context}
+
+  - id: symbolic_omen_reader
+    name: Symbolic Omen Reader
+    description: Interpret recurring symbols, dreams, or signs in a grounded non-fatalistic way.
+    when_to_use: Use when users mention repeating numbers, dreams, omens, animals, or symbolic coincidences.
+    tags: [mythology, symbols, interpretation]
+    inputs:
+      - name: symbol_report
+        description: The symbols or dream motifs reported by the user.
+        required: true
+      - name: emotional_state
+        description: Current emotional tone.
+        required: false
+        default: uncertain
+    template: |
+      Interpret the symbolic report below without deterministic fortune claims.
+      Return:
+      - likely mythic meaning themes,
+      - psychological mirror (what this reflects internally),
+      - grounding action for the next 24 hours,
+      - crystal support recommendation by intention.
+
+      Symbol report: {symbol_report}
+      Emotional state: {emotional_state}
+
+  - id: moon_ritual_designer
+    name: Moon Ritual Designer
+    description: Generate short ritual guidance aligned to moon phase and user intention.
+    when_to_use: Use when the user asks for rituals, cleansing routines, manifestation timing, or lunar guidance.
+    tags: [mythology, moon, ritual]
+    inputs:
+      - name: moon_phase
+        description: Moon phase (new, waxing, full, waning).
+        required: true
+      - name: intention
+        description: User intention.
+        required: true
+      - name: constraints
+        description: Time or lifestyle constraints.
+        required: false
+        default: 10 minutes max, beginner-friendly
+    template: |
+      Design a brief moon-phase ritual with the inputs below.
+      Include:
+      - opening intention line,
+      - 3 ritual steps,
+      - crystal charging/cleansing note,
+      - post-ritual reflection prompt.
+
+      Moon phase: {moon_phase}
+      Intention: {intention}
+      Constraints: {constraints}
+
+  - id: mythic_story_reframe
+    name: Mythic Story Reframe
+    description: Reframe user struggle into a hero-journey narrative with actionable next steps.
+    when_to_use: Use when users feel stuck, lost confidence, or ask for motivation and direction.
+    tags: [mythology, narrative, transformation]
+    inputs:
+      - name: current_story
+        description: How the user describes their current struggle.
+        required: true
+      - name: strength_signals
+        description: Existing strengths the user already has.
+        required: false
+        default: resilience, curiosity
+    template: |
+      Reframe this situation as a mythic growth arc (call, trial, ally, next threshold).
+      Return:
+      - the current chapter,
+      - hidden strength,
+      - next courageous action in 48 hours,
+      - crystal pairing logic with element/chakra rationale.
+
+      Current story: {current_story}
+      Strength signals: {strength_signals}
+
+  - id: cross_mythology_synthesis
+    name: Cross-Mythology Synthesis
+    description: Blend Eastern and Western symbolic systems into a coherent recommendation.
+    when_to_use: Use when the user requests Bazi/Five Elements + chakra/archetype synthesis.
+    tags: [mythology, synthesis, east-west]
+    inputs:
+      - name: user_context
+        description: User profile and current challenge.
+        required: true
+      - name: elemental_bias
+        description: Known elemental bias if available.
+        required: false
+        default: unknown
+    template: |
+      Provide a balanced East-West mythology synthesis:
+      - Five Elements interpretation,
+      - chakra/archetype interpretation,
+      - where they agree,
+      - one recommendation set for crystals and daily practice.
+
+      User context: {user_context}
+      Elemental bias: {elemental_bias}

@@ -1,0 +1,14 @@
+.DS_Store
+.venv/
+__pycache__/
+*.pyc
+
+dify-local/
+external_skills/
+
+node_modules/
+.shopify/
+
+.env
+.env.*
+*.log

@@ -1,0 +1,414 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://askcrystal.dev/schemas/dify/storefront-component-intent.schema.json",
+  "title": "AskCrystal Dify storefront component intent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "components"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Intent schema version emitted by Dify."
+    },
+    "components": {
+      "type": "array",
+      "description": "Ordered storefront component intents that Shopify will hydrate and render.",
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/componentIntent"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "description": "Optional non-user-facing notes for debugging or observability.",
+      "maxItems": 6,
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stringList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "productRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "product_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "handle": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "variant_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "product_id"
+          ]
+        },
+        {
+          "required": [
+            "handle"
+          ]
+        }
+      ]
+    },
+    "collectionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "handle": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "url": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "handle"
+          ]
+        },
+        {
+          "required": [
+            "url"
+          ]
+        }
+      ]
+    },
+    "componentBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component",
+        "id",
+        "props"
+      ],
+      "properties": {
+        "component": {
+          "type": "string"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "primary",
+            "supporting",
+            "optional"
+          ]
+        },
+        "props": {
+          "type": "object"
+        }
+      }
+    },
+    "productCardComponent": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/componentBase"
+        },
+        {
+          "properties": {
+            "component": {
+              "const": "product_card"
+            },
+            "props": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "product_ref",
+                "reason"
+              ],
+              "properties": {
+                "eyebrow": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "reason": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "note": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "cta_label": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "product_ref": {
+                  "$ref": "#/$defs/productRef"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "productCarouselComponent": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/componentBase"
+        },
+        {
+          "properties": {
+            "component": {
+              "const": "product_carousel"
+            },
+            "props": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "product_refs"
+              ],
+              "properties": {
+                "eyebrow": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "title": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "reason": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "browse_collection": {
+                  "$ref": "#/$defs/collectionRef"
+                },
+                "browse_label": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "product_refs": {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 8,
+                  "items": {
+                    "$ref": "#/$defs/productRef"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ritualCardComponent": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/componentBase"
+        },
+        {
+          "properties": {
+            "component": {
+              "const": "ritual_card"
+            },
+            "props": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title"
+              ],
+              "properties": {
+                "eyebrow": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "title": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "summary": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "duration": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "steps": {
+                  "$ref": "#/$defs/stringList"
+                },
+                "note": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "disclaimer": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "linked_product_refs": {
+                  "type": "array",
+                  "maxItems": 3,
+                  "items": {
+                    "$ref": "#/$defs/productRef"
+                  }
+                }
+              },
+              "anyOf": [
+                {
+                  "required": [
+                    "summary"
+                  ]
+                },
+                {
+                  "required": [
+                    "steps"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "readingSummaryComponent": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/componentBase"
+        },
+        {
+          "properties": {
+            "component": {
+              "const": "reading_summary"
+            },
+            "props": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "summary"
+              ],
+              "properties": {
+                "eyebrow": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "title": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "summary": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "energy_focus": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "highlights": {
+                  "$ref": "#/$defs/stringList"
+                },
+                "disclaimer": {
+                  "$ref": "#/$defs/nonEmptyString"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "collectionLinkComponent": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/componentBase"
+        },
+        {
+          "properties": {
+            "component": {
+              "const": "collection_link"
+            },
+            "props": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "label",
+                "collection_ref"
+              ],
+              "properties": {
+                "eyebrow": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "title": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "description": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "label": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "collection_ref": {
+                  "$ref": "#/$defs/collectionRef"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "nextStepsComponent": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/componentBase"
+        },
+        {
+          "properties": {
+            "component": {
+              "const": "next_steps"
+            },
+            "props": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "steps"
+              ],
+              "properties": {
+                "eyebrow": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "title": {
+                  "$ref": "#/$defs/nonEmptyString"
+                },
+                "steps": {
+                  "$ref": "#/$defs/stringList"
+                },
+                "closing": {
+                  "$ref": "#/$defs/nonEmptyString"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "componentIntent": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/productCardComponent"
+        },
+        {
+          "$ref": "#/$defs/productCarouselComponent"
+        },
+        {
+          "$ref": "#/$defs/ritualCardComponent"
+        },
+        {
+          "$ref": "#/$defs/readingSummaryComponent"
+        },
+        {
+          "$ref": "#/$defs/collectionLinkComponent"
+        },
+        {
+          "$ref": "#/$defs/nextStepsComponent"
+        }
+      ]
+    }
+  }
+}
