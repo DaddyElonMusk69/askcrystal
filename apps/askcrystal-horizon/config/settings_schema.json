@@ -345,6 +345,71 @@
     ]
   },
   {
+    "name": "AskCrystal theme",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Controls the midnight canvas, surface gradients, and metallic borders used across the AskCrystal storefront."
+      },
+      {
+        "type": "color",
+        "id": "askcrystal_canvas_top",
+        "label": "Canvas top",
+        "default": "#020C14",
+        "alpha": true
+      },
+      {
+        "type": "color",
+        "id": "askcrystal_canvas_bottom",
+        "label": "Canvas bottom",
+        "default": "#01070D",
+        "alpha": true
+      },
+      {
+        "type": "color",
+        "id": "askcrystal_canvas_bloom_primary",
+        "label": "Canvas bloom (primary)",
+        "default": "#1D334A59",
+        "alpha": true
+      },
+      {
+        "type": "color",
+        "id": "askcrystal_canvas_bloom_secondary",
+        "label": "Canvas bloom (secondary)",
+        "default": "#B995601F",
+        "alpha": true
+      },
+      {
+        "type": "color",
+        "id": "askcrystal_surface_top",
+        "label": "Surface top",
+        "default": "#07131CE6",
+        "alpha": true
+      },
+      {
+        "type": "color",
+        "id": "askcrystal_surface_bottom",
+        "label": "Surface bottom",
+        "default": "#041018EB",
+        "alpha": true
+      },
+      {
+        "type": "color",
+        "id": "askcrystal_surface_outline",
+        "label": "Surface outline",
+        "default": "#B9956059",
+        "alpha": true
+      },
+      {
+        "type": "color",
+        "id": "askcrystal_surface_shadow",
+        "label": "Surface shadow",
+        "default": "#01060EA6",
+        "alpha": true
+      }
+    ]
+  },
+  {
     "name": "t:names.typography",
     "settings": [
       {
@@ -354,25 +419,25 @@
       {
         "type": "font_picker",
         "id": "type_body_font",
-        "default": "work_sans_n4",
+        "default": "libre_baskerville_n4",
         "label": "t:options.body"
       },
       {
         "type": "font_picker",
         "id": "type_subheading_font",
-        "default": "work_sans_n5",
+        "default": "libre_baskerville_n4",
         "label": "t:options.subheading"
       },
       {
         "type": "font_picker",
         "id": "type_heading_font",
-        "default": "anonymous_pro_n4",
+        "default": "libre_baskerville_n4",
         "label": "t:options.heading"
       },
       {
         "type": "font_picker",
         "id": "type_accent_font",
-        "default": "anonymous_pro_n4",
+        "default": "libre_baskerville_n4",
         "label": "t:options.accent"
       },
       {
@@ -413,7 +478,7 @@
             "label": "18px"
           }
         ],
-        "default": "14"
+        "default": "16"
       },
       {
         "type": "select",

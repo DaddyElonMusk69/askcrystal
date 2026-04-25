@@ -1,0 +1,89 @@
+{% doc %}
+  Renders the AskCrystal account action button.
+
+  @param {object} [section] - The header section object used for font settings.
+  @param {string} [display_style] - The desired account action style.
+  @param {string} [customer_account_menu] - The menu handle passed to the shopify-account component.
+  @param {string} [wrapper_class] - Additional classes for the wrapper.
+  @param {boolean} [icon_only] - Forces the action to render as icon-only.
+{% enddoc %}
+
+{% capture account_icon %}
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="15"
+    height="17"
+    viewBox="0 0 15 17"
+    fill="none"
+    slot="signed-out-avatar"
+    class="account-button__icon"
+  >
+    <path
+      stroke="currentColor"
+      stroke-linejoin="round"
+      stroke-width="var(--icon-stroke-width)"
+      d="M10.375 3.813a3.063 3.063 0 1 1-6.125 0 3.063 3.063 0 0 1 6.125 0ZM7.313 9.5c-3.667 0-6.24 2.691-6.563 6.125h13.125C13.552 12.191 10.979 9.5 7.312 9.5Z"
+    />
+  </svg>
+{% endcapture %}
+
+{% liquid
+  assign account_actions_style = ''
+  if display_style == 'text' and section
+    assign actions_font = section.settings.actions_font | default: 'body'
+    assign font_obj = settings.type_heading_font
+    case actions_font
+      when 'body'
+        assign font_obj = settings.type_body_font
+      when 'subheading'
+        assign font_obj = settings.type_subheading_font
+      when 'accent'
+        assign font_obj = settings.type_accent_font
+    endcase
+    assign font_family = font_obj.family | append: ', ' | append: font_obj.fallback_families
+    assign font_family_safe = font_family | replace: '"', "'"
+    assign account_actions_style = '--header-actions-font-family: ' | append: font_family_safe | append: '; --header-actions-font-weight: ' | append: font_obj.weight | append: ';'
+  endif
+
+  assign text_visibility_class = ''
+  assign icon_visibility_class = ''
+
+  if icon_only
+    assign text_visibility_class = 'hidden'
+  elsif display_style == 'icon'
+    assign text_visibility_class = 'hidden'
+  else
+    assign text_visibility_class = 'mobile:hidden'
+    assign icon_visibility_class = 'desktop:hidden'
+  endif
+%}
+
+<div
+  class="account-button header-actions__action header-actions__action--account{% if display_style == 'text' and icon_only != true %} account-button--text{% endif %}{% if wrapper_class != blank %} {{ wrapper_class | strip }}{% endif %} color-{{ settings.popover_color_scheme }}"
+>
+  <shopify-account
+    menu="{{ customer_account_menu }}"
+    {% if account_actions_style != blank %}
+      style="{{ account_actions_style }}"
+    {% endif %}
+  >
+    {% if customer %}
+      <div class="account-button__fallback"></div>
+    {% else %}
+      <span
+        slot="signed-out-avatar"
+        class="account-button__text header-actions__text-style {{ text_visibility_class }}"
+      >
+        {{ 'content.account_title' | t }}
+      </span>
+
+      <span
+        slot="signed-out-avatar"
+        class="{{ icon_visibility_class }}"
+        aria-hidden="true"
+      >
+        {{ account_icon }}
+      </span>
+    {% endif %}
+  </shopify-account>
+</div>

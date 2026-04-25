@@ -1,0 +1,54 @@
+{% doc %}
+  Renders the AskCrystal storefront mode switch.
+
+  @param {string} [class] - Additional classes for the switch link.
+{% enddoc %}
+
+{% liquid
+  assign is_home_view = false
+  if template.name == 'index' or request.path == routes.root_url
+    assign is_home_view = true
+  endif
+
+  if is_home_view
+    assign switch_url = '/collections'
+    assign switch_label = 'Shop'
+    assign switch_description = 'Browse the crystal collection'
+  else
+    assign switch_url = routes.root_url
+    assign switch_label = 'Chat'
+    assign switch_description = 'Return to the AskCrystal chat'
+  endif
+%}
+
+<a
+  href="{{ switch_url }}"
+  class="askcrystal-header-switch{% if class != blank %} {{ class | strip }}{% endif %}"
+  aria-label="{{ switch_description }}"
+  data-mode="{% if is_home_view %}shop{% else %}reading{% endif %}"
+>
+  <span
+    class="askcrystal-header-switch__icon"
+    aria-hidden="true"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 16 12"
+      fill="none"
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        d="M7.354 0a.57.57 0 0 1 .556.441l.73 3.14a.57.57 0 0 0 .426.427l3.14.729a.57.57 0 0 1 0 1.112l-3.14.73a.57.57 0 0 0-.426.426l-.73 3.14a.57.57 0 0 1-1.111 0l-.73-3.14a.57.57 0 0 0-.426-.426l-3.14-.73a.57.57 0 0 1 0-1.112l3.14-.73a.57.57 0 0 0 .427-.426L6.798.44A.57.57 0 0 1 7.354 0Z"
+      />
+      <circle
+        cx="13.793"
+        cy="2.385"
+        r=".923"
+        fill="currentColor"
+        opacity=".7"
+      />
+    </svg>
+  </span>
+  <span class="askcrystal-header-switch__label">{{ switch_label }}</span>
+</a>

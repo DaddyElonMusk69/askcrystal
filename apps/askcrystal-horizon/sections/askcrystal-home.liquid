@@ -60,6 +60,10 @@
       "apiEndpoint": {{ section.settings.api_endpoint | json }},
       "eyebrow": {{ section.settings.eyebrow | json }},
       "heading": {{ section.settings.heading | json }},
+      "headingLine1": {{ section.settings.heading_line_1 | default: 'Find the crystal, ritual, or reading' | json }},
+      "headingLine2Prefix": {{ section.settings.heading_line_2_prefix | default: 'that meets' | json }},
+      "headingAccent": {{ section.settings.heading_accent | default: 'you' | json }},
+      "headingSuffix": {{ section.settings.heading_suffix | default: 'where you are.' | json }},
       "description": {{ section.settings.description | json }},
       "note": {{ section.settings.note | json }},
       "shelfHeading": {{ section.settings.shelf_heading | json }},
@@ -107,6 +111,30 @@
       "id": "heading",
       "label": "Heading",
       "default": "Find the crystal, ritual, or reading that meets you where you are."
+    },
+    {
+      "type": "text",
+      "id": "heading_line_1",
+      "label": "Heading line 1",
+      "default": "Find the crystal, ritual, or reading"
+    },
+    {
+      "type": "text",
+      "id": "heading_line_2_prefix",
+      "label": "Heading line 2 prefix",
+      "default": "that meets"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading accent",
+      "default": "you"
+    },
+    {
+      "type": "text",
+      "id": "heading_suffix",
+      "label": "Heading suffix",
+      "default": "where you are."
     },
     {
       "type": "textarea",

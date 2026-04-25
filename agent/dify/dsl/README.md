@@ -50,6 +50,41 @@ Current local default:
 - this bootstrap flow emits component intents with `product_ref` / `collection_ref`, not render-ready props
 - broad conversational turns now stay text-only unless the prompt is explicitly shopping/comparison oriented
 - when `SHOPIFY_STORE_DOMAIN` and `SHOPIFY_STOREFRONT_ACCESS_TOKEN` are not configured, the Shopify proxy hydrates preview fallback cards from those refs so rendering can still be validated locally
+- the retained local bootstrap app id is `609d694c-7064-425d-bdc8-6f76d9f62141`
+
+## Live Agent Component Bridge
+
+The real AskCrystal app remains:
+
+- `askcrystal-agent-2026-04-23.dsl.yml`
+
+For April 24, 2026, that agent snapshot now carries the temporary storefront-component bridge contract:
+
+- the agent stays `agent-chat`
+- shopping/comparison turns may append one inline ````askcrystal-ui` fenced manifest at the end of the answer
+- the Shopify proxy extracts and hydrates `product_ref` / `collection_ref` from that manifest
+- the visible answer is stripped back to prose before the theme renders it
+
+To sync the original local AskCrystal `agent-chat` app in place without breaking its existing app id, update the app model config directly from the snapshot:
+
+```bash
+python3 scripts/sync_dify_prompt_from_dsl.py \
+  --dsl agent/dify/dsl/askcrystal-agent-2026-04-23.dsl.yml \
+  --app-id 385c285a-0e61-4cf1-ba49-afde28c5ce12
+```
+
+Current local workspace expectation:
+
+- one live agent app: `385c285a-0e61-4cf1-ba49-afde28c5ce12`
+- one retained bootstrap app: `609d694c-7064-425d-bdc8-6f76d9f62141`
+
+After that, smoke-test an explicit storefront turn through the Shopify proxy:
+
+```bash
+python3 scripts/smoke_storefront_component_proxy.py \
+  --proxy-base-url http://localhost:8787 \
+  --message "I am shopping for a crystal for sleep. Recommend one real product and show it as a product card."
+```
 
 ## How to use in Cloud Dify
 

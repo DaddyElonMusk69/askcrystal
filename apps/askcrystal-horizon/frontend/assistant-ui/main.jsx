@@ -27,6 +27,13 @@ const rootRegistry = new Map();
 const DEFAULT_THREAD_ID = 'askcrystal-main-thread';
 const LOCAL_PROXY_ORIGIN = 'http://localhost:8787';
 const SESSION_STORAGE_KEY = 'askcrystal-theme-session-id';
+const CHAT_SESSIONS_STORAGE_KEY = 'askcrystal-theme-chat-sessions-v1';
+const ACTIVE_CHAT_SESSION_STORAGE_KEY = 'askcrystal-theme-active-session-id';
+const SESSION_REGISTRY_EVENT = 'askcrystal:session-registry';
+const SESSION_SELECT_EVENT = 'askcrystal:session-select';
+const SESSION_CREATE_EVENT = 'askcrystal:session-create';
+const MAX_STORED_CHAT_SESSIONS = 24;
+const HOMEPAGE_BACKDROP_URL = 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/backdrop.png?v=1777102538';
 let messageSequence = 0;
 const COMPOSER_MAX_ROWS = 7;
 
@@ -112,6 +119,318 @@ function getPayloadSuggestions(payload) {
       payload?.data?.suggested_questions ||
       [],
   );
+}
+
+function canUseLocalStorage() {
+  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+}
+
+function readLocalStorageValue(key) {
+  if (!canUseLocalStorage()) return '';
+
+  try {
+    return window.localStorage.getItem(key) || '';
+  } catch {
+    return '';
+  }
+}
+
+function writeLocalStorageValue(key, value) {
+  if (!canUseLocalStorage()) return;
+
+  try {
+    if (value === '' || value === null || value === undefined) {
+      window.localStorage.removeItem(key);
+      return;
+    }
+
+    window.localStorage.setItem(key, value);
+  } catch {}
+}
+
+function parseJsonValue(source, fallback) {
+  if (typeof source !== 'string' || !source.trim()) return fallback;
+
+  try {
+    return JSON.parse(source);
+  } catch {
+    return fallback;
+  }
+}
+
+function truncateText(value, maxLength = 52) {
+  const normalized = typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
+  if (!normalized) return '';
+  if (normalized.length <= maxLength) return normalized;
+  return `${normalized.slice(0, Math.max(1, maxLength - 1)).trimEnd()}…`;
+}
+
+function normalizeMessageForStorage(message) {
+  if (!message || typeof message !== 'object') return null;
+
+  const createdAt = message.createdAt
+    ? new Date(message.createdAt)
+    : new Date();
+  const baseMessage = {
+    ...message,
+    createdAt: Number.isNaN(createdAt.getTime()) ? new Date() : createdAt,
+    content: Array.isArray(message.content)
+      ? message.content
+      : Array.isArray(message.parts)
+        ? message.parts
+        : [],
+    attachments: Array.isArray(message.attachments) ? message.attachments : [],
+    metadata: message.metadata && typeof message.metadata === 'object'
+      ? message.metadata
+      : { custom: {} },
+  };
+
+  if (baseMessage.role === 'assistant' && baseMessage.status?.type === 'running') {
+    return {
+      ...baseMessage,
+      status: {
+        type: 'incomplete',
+        reason: 'interrupted',
+      },
+      metadata: {
+        ...(baseMessage.metadata || {}),
+        custom: {
+          ...(baseMessage.metadata?.custom || {}),
+        },
+      },
+    };
+  }
+
+  return baseMessage;
+}
+
+function normalizeStoredMessages(messages) {
+  if (!Array.isArray(messages)) return [];
+
+  return messages
+    .map(normalizeMessageForStorage)
+    .filter(Boolean);
+}
+
+function getMessagePreviewText(message) {
+  if (!message || typeof message !== 'object') return '';
+
+  const parts = message.content || message.parts || [];
+  const text = extractTextFromParts(Array.isArray(parts) ? parts : []);
+  if (text) return text;
+
+  if (Array.isArray(message.metadata?.unstable_data) && message.metadata.unstable_data.length > 0) {
+    return message.role === 'assistant'
+      ? 'Shared storefront picks and guidance.'
+      : '';
+  }
+
+  return '';
+}
+
+function deriveSessionTitle(messages, fallback = 'New reading') {
+  const firstUserMessage = Array.isArray(messages)
+    ? messages.find(message => message?.role === 'user' && getMessagePreviewText(message))
+    : null;
+  const preview = getMessagePreviewText(firstUserMessage);
+  return preview ? truncateText(preview, 42) : fallback;
+}
+
+function deriveSessionPreview(messages) {
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return 'No messages yet.';
+  }
+
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const preview = getMessagePreviewText(messages[index]);
+    if (preview) return truncateText(preview, 78);
+  }
+
+  return 'No messages yet.';
+}
+
+function getLatestMessageTimestamp(messages, fallback = null) {
+  if (!Array.isArray(messages) || messages.length === 0) return fallback;
+
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const candidate = messages[index]?.createdAt;
+    if (!candidate) continue;
+    const timestamp = new Date(candidate).toISOString();
+    if (timestamp) return timestamp;
+  }
+
+  return fallback;
+}
+
+function sortSessionsByRecent(sessions) {
+  return [...sessions].sort((left, right) => {
+    const rightTime = new Date(right?.updatedAt || 0).getTime();
+    const leftTime = new Date(left?.updatedAt || 0).getTime();
+    return rightTime - leftTime;
+  });
+}
+
+function createStoredChatSession(overrides = {}) {
+  const now = new Date().toISOString();
+  const messages = normalizeStoredMessages(overrides.messages || []);
+
+  return {
+    id: typeof overrides.id === 'string' && overrides.id ? overrides.id : createMessageId('thread'),
+    title: typeof overrides.title === 'string' && overrides.title.trim()
+      ? overrides.title.trim()
+      : deriveSessionTitle(messages),
+    createdAt: typeof overrides.createdAt === 'string' && overrides.createdAt ? overrides.createdAt : now,
+    updatedAt: typeof overrides.updatedAt === 'string' && overrides.updatedAt ? overrides.updatedAt : now,
+    conversationId: typeof overrides.conversationId === 'string' && overrides.conversationId
+      ? overrides.conversationId
+      : null,
+    messages,
+    suggestions: normalizeThreadSuggestions(overrides.suggestions || []),
+  };
+}
+
+function normalizeStoredSession(value) {
+  if (!value || typeof value !== 'object') return null;
+
+  const normalizedMessages = normalizeStoredMessages(value.messages || []);
+  const createdAt = typeof value.createdAt === 'string' && value.createdAt
+    ? value.createdAt
+    : new Date().toISOString();
+  const updatedAt = typeof value.updatedAt === 'string' && value.updatedAt
+    ? value.updatedAt
+    : (getLatestMessageTimestamp(normalizedMessages, createdAt) || createdAt);
+
+  return createStoredChatSession({
+    ...value,
+    createdAt,
+    updatedAt,
+    messages: normalizedMessages,
+    suggestions: normalizeThreadSuggestions(value.suggestions || []),
+    title: typeof value.title === 'string' && value.title.trim()
+      ? value.title.trim()
+      : deriveSessionTitle(normalizedMessages),
+  });
+}
+
+function loadStoredChatState() {
+  const storedSessions = parseJsonValue(readLocalStorageValue(CHAT_SESSIONS_STORAGE_KEY), []);
+  const normalizedSessions = Array.isArray(storedSessions)
+    ? storedSessions.map(normalizeStoredSession).filter(Boolean)
+    : [];
+  const sessions = normalizedSessions.length > 0
+    ? sortSessionsByRecent(normalizedSessions).slice(0, MAX_STORED_CHAT_SESSIONS)
+    : [createStoredChatSession()];
+  const storedActiveSessionId = readLocalStorageValue(ACTIVE_CHAT_SESSION_STORAGE_KEY);
+  const activeSessionId = sessions.some(session => session.id === storedActiveSessionId)
+    ? storedActiveSessionId
+    : sessions[0].id;
+
+  return {
+    sessions,
+    activeSessionId,
+  };
+}
+
+function persistChatState({ sessions, activeSessionId }) {
+  writeLocalStorageValue(
+    CHAT_SESSIONS_STORAGE_KEY,
+    JSON.stringify(sortSessionsByRecent(sessions).slice(0, MAX_STORED_CHAT_SESSIONS)),
+  );
+  writeLocalStorageValue(ACTIVE_CHAT_SESSION_STORAGE_KEY, activeSessionId);
+}
+
+function getSessionById(sessions, sessionId) {
+  if (!Array.isArray(sessions)) return null;
+  return sessions.find(session => session.id === sessionId) || null;
+}
+
+function touchStoredSession(session) {
+  if (!session) return null;
+
+  return {
+    ...session,
+    title: deriveSessionTitle(session.messages, session.title || 'New reading'),
+    updatedAt: getLatestMessageTimestamp(session.messages, new Date().toISOString()) || new Date().toISOString(),
+  };
+}
+
+function upsertStoredSessionSnapshot(sessions, sessionId, updates = {}) {
+  const nextSessions = [];
+  let matched = false;
+
+  for (const session of Array.isArray(sessions) ? sessions : []) {
+    if (session.id !== sessionId) {
+      nextSessions.push(session);
+      continue;
+    }
+
+    matched = true;
+    const nextMessages = updates.messages !== undefined
+      ? normalizeStoredMessages(updates.messages)
+      : session.messages;
+    const nextSession = touchStoredSession({
+      ...session,
+      ...updates,
+      messages: nextMessages,
+      suggestions: updates.suggestions !== undefined
+        ? normalizeThreadSuggestions(updates.suggestions)
+        : session.suggestions,
+      conversationId: updates.conversationId !== undefined
+        ? updates.conversationId || null
+        : session.conversationId,
+    });
+    nextSessions.push(nextSession);
+  }
+
+  if (!matched) {
+    nextSessions.push(touchStoredSession(createStoredChatSession({
+      id: sessionId,
+      ...updates,
+    })));
+  }
+
+  return sortSessionsByRecent(nextSessions).slice(0, MAX_STORED_CHAT_SESSIONS);
+}
+
+function getChatSessionSummaries(sessions) {
+  return sortSessionsByRecent(Array.isArray(sessions) ? sessions : []).map((session) => ({
+    id: session.id,
+    title: deriveSessionTitle(session.messages, session.title || 'New reading'),
+    preview: deriveSessionPreview(session.messages),
+    createdAt: session.createdAt,
+    updatedAt: session.updatedAt,
+    isEmpty: !Array.isArray(session.messages) || session.messages.length === 0,
+  }));
+}
+
+function publishChatSessionRegistry({ sessions, activeSessionId, isRunning }) {
+  if (typeof window === 'undefined') return;
+
+  window.dispatchEvent(new CustomEvent(SESSION_REGISTRY_EVENT, {
+    detail: {
+      sessions: getChatSessionSummaries(sessions),
+      activeSessionId,
+      isRunning: Boolean(isRunning),
+    },
+  }));
+}
+
+function closeHeaderDrawer() {
+  if (typeof document === 'undefined') return;
+
+  const container = document.getElementById('Details-menu-drawer-container');
+  if (!container) return;
+
+  const closeButton = container.querySelector('.menu-drawer__close-button');
+  if (closeButton instanceof HTMLElement) {
+    closeButton.click();
+    return;
+  }
+
+  if ('open' in container) {
+    container.open = false;
+  }
+  container.removeAttribute('open');
 }
 
 function isSafeHref(href) {
@@ -631,8 +950,22 @@ function looksLikeInternalReasoningParagraph(value) {
     /^(question:?|continue\b|the user wants\b|the user has provided\b|the user asked\b|user wants\b|analysis:|thought:|thinking:|observation:|action:)/.test(normalized)
     || /^(i am thinking about how to\b|i need to\b|i should\b|i have the skill guidance\b|i have the information needed\b|i have gathered information\b|i have found\b|i've found\b|i can now\b|let me\b|since the skill tool isn't available\b)/.test(normalized)
     || /^(the catalog|catalog search|previous catalog searches|the search results|searching with broader terms)\b/.test(normalized)
-    || /\b(search results|search_catalog|get_product_details|tool_call|catalog lookup|parameter name=)\b/.test(normalized)
+    || /^(search results:?|search_catalog\b|get_product_details\b|tool_call\b|catalog lookup:?|parameter name=)/.test(normalized)
     || /\bi have \w+ products?\b/.test(normalized)
+  );
+}
+
+function looksLikeInternalFinalParagraph(value) {
+  if (typeof value !== 'string') return false;
+
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) return false;
+
+  return (
+    /^(question:?|the user wants\b|user wants\b|i need to\b|first,\s*i\b|thought:|analysis:|observation:|action:)/.test(normalized)
+    || /^```(?:json|xml)?\s*[\[{<]/.test(normalized)
+    || /^<(?:invoke|action_input|parameter|minimax:tool_call)\b/.test(normalized)
+    || /^"(?:action|tool|tool_name|action_input)"\s*:/.test(normalized)
   );
 }
 
@@ -1298,11 +1631,11 @@ function sanitizeAssistantText(rawAnswer) {
       .filter(Boolean);
 
     const visibleParagraphs = paragraphs.filter((paragraph) => {
-      return !looksLikeInternalReasoningParagraph(paragraph);
+      return !looksLikeInternalFinalParagraph(paragraph);
     });
 
     const visibleAnswer = (visibleParagraphs.length > 0 ? visibleParagraphs.join('\n\n') : candidateAnswer).trim();
-    if (visibleAnswer && !looksLikeInternalReasoningParagraph(visibleAnswer)) {
+    if (visibleAnswer && !looksLikeInternalFinalParagraph(visibleAnswer)) {
       return visibleAnswer;
     }
   }
@@ -1929,8 +2262,6 @@ function createAssistantMessage({
   statusTool = '',
   statusHistory = [],
   ambientStatusText = '',
-  revealPulse = 0,
-  revealMode = '',
 }) {
   const statusHistoryText = parseStatusHistory(statusHistory).join('\n');
 
@@ -1952,8 +2283,6 @@ function createAssistantMessage({
         ...(statusTool ? { statusTool } : {}),
         ...(statusHistoryText ? { statusHistoryText } : {}),
         ...(ambientStatusText ? { ambientStatusText } : {}),
-        ...(revealPulse ? { revealPulse } : {}),
-        ...(revealMode ? { revealMode } : {}),
       },
     },
   };
@@ -2054,20 +2383,125 @@ async function resolveReply({ config, messages, abortSignal, conversationId, ses
 }
 
 function useAskCrystalRuntime(config) {
-  const [messages, setMessages] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
+  const initialChatState = useMemo(() => loadStoredChatState(), []);
+  const initialSession = getSessionById(initialChatState.sessions, initialChatState.activeSessionId) || initialChatState.sessions[0];
+  const [sessions, setSessions] = useState(initialChatState.sessions);
+  const [activeSessionId, setActiveSessionId] = useState(initialSession.id);
+  const [messages, setMessages] = useState(initialSession.messages);
+  const [suggestions, setSuggestions] = useState(initialSession.suggestions);
   const [isRunning, setIsRunning] = useState(false);
   const activeRunRef = useRef(null);
   const activeAssistantIdRef = useRef('');
   const activeTaskIdRef = useRef('');
   const cancelRequestedRef = useRef(false);
-  const conversationIdRef = useRef(null);
+  const conversationIdRef = useRef(initialSession.conversationId || null);
   const messagesRef = useRef(messages);
+  const sessionsRef = useRef(sessions);
+  const activeSessionIdRef = useRef(activeSessionId);
+  const isRunningRef = useRef(isRunning);
   const sessionIdRef = useRef(getBrowserSessionId());
 
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+
+  useEffect(() => {
+    sessionsRef.current = sessions;
+  }, [sessions]);
+
+  useEffect(() => {
+    activeSessionIdRef.current = activeSessionId;
+  }, [activeSessionId]);
+
+  useEffect(() => {
+    isRunningRef.current = isRunning;
+  }, [isRunning]);
+
+  useEffect(() => {
+    setSessions(currentSessions => upsertStoredSessionSnapshot(currentSessions, activeSessionId, {
+      messages: normalizeMessagesAfterCancel(messages, cancelRequestedRef.current),
+      suggestions,
+      conversationId: conversationIdRef.current,
+      updatedAt: new Date().toISOString(),
+    }));
+  }, [activeSessionId, messages, suggestions]);
+
+  useEffect(() => {
+    persistChatState({
+      sessions,
+      activeSessionId,
+    });
+    publishChatSessionRegistry({
+      sessions,
+      activeSessionId,
+      isRunning,
+    });
+  }, [activeSessionId, isRunning, sessions]);
+
+  const applySession = useCallback((nextSession) => {
+    if (!nextSession) return;
+
+    conversationIdRef.current = nextSession.conversationId || null;
+    cancelRequestedRef.current = false;
+    activeTaskIdRef.current = '';
+    setActiveSessionId(nextSession.id);
+    setMessages(normalizeStoredMessages(nextSession.messages));
+    setSuggestions(normalizeThreadSuggestions(nextSession.suggestions));
+  }, []);
+
+  const switchToSession = useCallback((nextSessionId) => {
+    if (!nextSessionId || isRunningRef.current) {
+      return;
+    }
+
+    if (nextSessionId === activeSessionIdRef.current) {
+      closeHeaderDrawer();
+      return;
+    }
+
+    const nextSession = getSessionById(sessionsRef.current, nextSessionId);
+    if (!nextSession) return;
+
+    const touchedSession = {
+      ...nextSession,
+      updatedAt: new Date().toISOString(),
+    };
+
+    setSessions(currentSessions => upsertStoredSessionSnapshot(currentSessions, nextSessionId, {
+      updatedAt: touchedSession.updatedAt,
+    }));
+    applySession(touchedSession);
+    closeHeaderDrawer();
+  }, [applySession]);
+
+  const createSessionAndSwitch = useCallback(() => {
+    if (isRunningRef.current) return;
+
+    const nextSession = createStoredChatSession();
+    setSessions(currentSessions =>
+      sortSessionsByRecent([nextSession, ...currentSessions]).slice(0, MAX_STORED_CHAT_SESSIONS),
+    );
+    applySession(nextSession);
+    closeHeaderDrawer();
+  }, [applySession]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    const handleSessionSelect = (event) => {
+      switchToSession(event.detail?.sessionId || '');
+    };
+    const handleSessionCreate = () => {
+      createSessionAndSwitch();
+    };
+
+    window.addEventListener(SESSION_SELECT_EVENT, handleSessionSelect);
+    window.addEventListener(SESSION_CREATE_EVENT, handleSessionCreate);
+    return () => {
+      window.removeEventListener(SESSION_SELECT_EVENT, handleSessionSelect);
+      window.removeEventListener(SESSION_CREATE_EVENT, handleSessionCreate);
+    };
+  }, [createSessionAndSwitch, switchToSession]);
 
   const replaceMessages = useCallback((nextMessages) => {
     setMessages(normalizeMessagesAfterCancel(nextMessages, cancelRequestedRef.current));
@@ -2144,7 +2578,7 @@ function useAskCrystalRuntime(config) {
       setMessages([...conversationForReply, assistantSeed]);
       let revealedAnswer = '';
       let bufferedComponents = [];
-      let revealPulse = 0;
+      let bufferedSuggestions = [];
 
       try {
         const result = await resolveReply({
@@ -2190,7 +2624,7 @@ function useAskCrystalRuntime(config) {
           },
           onSuggestions: (nextSuggestions) => {
             if (abortController.signal.aborted) return;
-            setSuggestions(nextSuggestions);
+            bufferedSuggestions = normalizeThreadSuggestions(nextSuggestions);
           },
         });
 
@@ -2198,7 +2632,9 @@ function useAskCrystalRuntime(config) {
         activeTaskIdRef.current = '';
         cancelRequestedRef.current = false;
         const finalComponents = result.components || bufferedComponents;
-        const finalSuggestions = normalizeThreadSuggestions(result.suggestions);
+        const finalSuggestions = normalizeThreadSuggestions(
+          result.suggestions?.length ? result.suggestions : bufferedSuggestions,
+        );
 
         updateAssistantMessage(assistantId, () =>
           createAssistantMessage({
@@ -2241,8 +2677,6 @@ function useAskCrystalRuntime(config) {
                 statusStage: '',
                 statusTool: '',
                 statusHistory: [],
-                revealPulse: (revealPulse += 1),
-                revealMode: /\n/.test(_delta || '') ? 'newline' : 'inline',
               }),
             );
           },
@@ -2253,7 +2687,7 @@ function useAskCrystalRuntime(config) {
           createAssistantMessage({
             id: assistantId,
             parts: buildAssistantParts({
-              text: result.sourceText || revealedAnswer,
+              text: revealedAnswer || result.answer || result.sourceText,
               components: finalComponents,
             }),
             components: finalComponents,
@@ -2261,8 +2695,6 @@ function useAskCrystalRuntime(config) {
               type: 'complete',
               reason: 'stop',
             },
-            revealPulse,
-            revealMode: '',
           }),
         ]);
         setSuggestions(finalSuggestions);
@@ -2325,23 +2757,22 @@ function useAskCrystalRuntime(config) {
       onCancel,
       adapters: {
         threadList: {
-          threadId: DEFAULT_THREAD_ID,
-          threads: [
-            {
-              id: DEFAULT_THREAD_ID,
-              remoteId: DEFAULT_THREAD_ID,
-              title: 'AskCrystal',
-            },
-          ],
+          threadId: activeSessionId || DEFAULT_THREAD_ID,
+          threads: getChatSessionSummaries(sessions).map(session => ({
+            id: session.id,
+            remoteId: session.id,
+            title: session.title,
+          })),
         },
       },
     }),
-    [isRunning, messages, onCancel, onNew, replaceMessages, suggestions],
+    [activeSessionId, isRunning, messages, onCancel, onNew, replaceMessages, sessions, suggestions],
   );
 
   return {
     runtime: useExternalStoreRuntime(store),
     hasUserMessages: messages.some(message => message.role === 'user'),
+    activeSessionId,
   };
 }
 
@@ -2396,9 +2827,15 @@ function WelcomeGuideCard({ card }) {
   const className = [
     'ac-homepage__guide-card',
     card.layout ? `ac-homepage__guide-card--${card.layout}` : '',
+    card.emblemUrl ? 'ac-homepage__guide-card--has-emblem' : '',
   ].filter(Boolean).join(' ');
   const content = (
     <>
+      {card.emblemUrl ? (
+        <div className="ac-homepage__guide-card-emblem" aria-hidden="true">
+          <img src={card.emblemUrl} alt="" loading="lazy" decoding="async" />
+        </div>
+      ) : null}
       <div className="ac-homepage__guide-card-copy">
         <p className="ac-homepage__guide-card-eyebrow">{card.eyebrow}</p>
         <h3>{card.title}</h3>
@@ -2406,6 +2843,7 @@ function WelcomeGuideCard({ card }) {
       </div>
       <div className="ac-homepage__guide-card-footer">
         <span className="ac-homepage__guide-card-action">{card.cta}</span>
+        <span className="ac-homepage__guide-card-arrow" aria-hidden="true">→</span>
       </div>
     </>
   );
@@ -2430,14 +2868,64 @@ function WelcomeGuideCard({ card }) {
 }
 
 function WelcomeState({ config }) {
+  const headingLine1 = typeof config.headingLine1 === 'string' ? config.headingLine1.trim() : '';
+  const headingLine2Prefix = typeof config.headingLine2Prefix === 'string' ? config.headingLine2Prefix.trim() : '';
+  const headingAccent = typeof config.headingAccent === 'string' ? config.headingAccent.trim() : '';
+  const rawHeadingSuffix = typeof config.headingSuffix === 'string' ? config.headingSuffix.trim() : '';
+  const headingSuffix = headingAccent && rawHeadingSuffix.toLowerCase().startsWith(`${headingAccent.toLowerCase()} `)
+    ? rawHeadingSuffix.slice(headingAccent.length).trimStart()
+    : rawHeadingSuffix;
+  const hasStructuredHeading = Boolean(headingLine1 || headingLine2Prefix || headingAccent || headingSuffix);
+  const headingLead = [headingLine1, headingLine2Prefix].filter(Boolean).join(' ');
+  const renderAccentedYouText = (text, keyPrefix) => {
+    if (!text) return null;
+
+    const matches = Array.from(text.matchAll(/\byou\b/gi));
+    if (!matches.length) {
+      return text;
+    }
+
+    const nodes = [];
+    let cursor = 0;
+
+    matches.forEach((match, index) => {
+      const start = match.index ?? 0;
+      if (start > cursor) {
+        nodes.push(
+          <span key={`${keyPrefix}-copy-${index}`} className="ac-homepage__guide-title-copy">
+            {text.slice(cursor, start)}
+          </span>,
+        );
+      }
+
+      nodes.push(
+        <span key={`${keyPrefix}-accent-${index}`} className="ac-homepage__guide-title-accent">
+          {match[0]}
+        </span>,
+      );
+
+      cursor = start + match[0].length;
+    });
+
+    if (cursor < text.length) {
+      nodes.push(
+        <span key={`${keyPrefix}-copy-tail`} className="ac-homepage__guide-title-copy">
+          {text.slice(cursor)}
+        </span>,
+      );
+    }
+
+    return nodes;
+  };
   const guidedCards = [
     {
       id: 'compatibility',
       layout: 'portrait',
-      eyebrow: 'Relationships',
-      title: 'Read love and compatibility',
-      description: 'Explore soulmate patterns, synastry, and relationship guidance through East-meets-West metaphysics.',
-      cta: 'Open compatibility',
+      eyebrow: 'Connections',
+      title: 'Read love and synastry',
+      description: 'Explore soulmate, synastry, and relationship guidance.',
+      cta: 'Cosmic match',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_1.png?v=1777105421',
       prompt: 'Can you do a love and compatibility reading for me?',
     },
     {
@@ -2445,8 +2933,9 @@ function WelcomeState({ config }) {
       layout: 'portrait',
       eyebrow: 'Readings',
       title: 'Tarot, Bazi, and energy readings',
-      description: 'Use tarot, destiny reading, astrology, or a daily check-in to understand the pattern before you shop.',
+      description: 'Use tarot, Bazi, or a daily check-in before you shop.',
       cta: 'Start a reading',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_2.png?v=1777105421',
       prompt: 'Give me a reading using the best method for my current situation.',
     },
     {
@@ -2454,26 +2943,29 @@ function WelcomeState({ config }) {
       layout: 'wide',
       eyebrow: 'Open chat',
       title: 'Ask anything about crystals, rituals, or life',
-      description: 'Start with a question, a feeling, or a life situation. AskCrystal can guide, explain, and recommend without hiding the store.',
+      description: 'Start with a question, a feeling, or a life situation.',
       cta: 'Ask AskCrystal',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_3.png?v=1777105421',
       prompt: 'I have a situation in my life and want guidance plus crystal recommendations.',
     },
     {
       id: 'ritual-plan',
-      layout: 'compact',
+      layout: 'wide',
       eyebrow: 'Daily support',
       title: 'Build a practical ritual',
-      description: 'Get a simple cleansing, charging, or intention-setting plan around the stones you choose.',
+      description: 'Get a simple cleansing, charging, or intention-setting plan.',
       cta: 'Build my ritual',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_4.png?v=1777105421',
       prompt: 'Help me build a simple crystal ritual for what I need right now.',
     },
     {
       id: 'browse-store',
-      layout: 'strip',
+      layout: 'wide',
       eyebrow: 'Storefront',
       title: 'Browse the full crystal shop',
-      description: 'Open the wider shelf, then return to the conversation whenever you want guidance.',
+      description: 'Open the wider shelf, then return whenever you want guidance.',
       cta: 'Browse all products',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_5.png?v=1777105421',
       href: config.browseUrl,
     },
   ];
@@ -2483,7 +2975,27 @@ function WelcomeState({ config }) {
       <section className="ac-homepage__guide" aria-label="Guided AskCrystal paths">
         <div className="ac-homepage__guide-header">
           <p className="ac-homepage__guide-kicker">{config.eyebrow}</p>
-          <h1 className="ac-homepage__guide-title">{config.heading}</h1>
+          <h1 className="ac-homepage__guide-title">
+            {hasStructuredHeading ? (
+              <>
+                {headingLead ? (
+                  <span className="ac-homepage__guide-title-copy">
+                    {headingLead}
+                    {headingAccent || headingSuffix ? ' ' : ''}
+                  </span>
+                ) : null}
+                {headingAccent ? (
+                  <span className="ac-homepage__guide-title-accent">{headingAccent}</span>
+                ) : null}
+                {headingSuffix ? (
+                  <span className="ac-homepage__guide-title-copy">
+                    {headingLead || headingAccent ? ' ' : ''}
+                    {renderAccentedYouText(headingSuffix, 'heading-suffix')}
+                  </span>
+                ) : null}
+              </>
+            ) : config.heading}
+          </h1>
         </div>
 
         <div className="ac-homepage__guide-grid">
@@ -2525,7 +3037,7 @@ function Composer() {
         <ComposerPrimitive.Input
           ref={textareaRef}
           className="ac-homepage__composer-input"
-          placeholder="What guidance or crystal do you need today?"
+          placeholder="ask me anything"
           minRows={1}
           maxRows={COMPOSER_MAX_ROWS}
           autoFocus={false}
@@ -2622,15 +3134,8 @@ function AssistantMessage() {
   const statusTool = useMessage((message) => message.metadata?.custom?.statusTool || '');
   const statusHistoryText = useMessage((message) => message.metadata?.custom?.statusHistoryText || '');
   const ambientStatusText = useMessage((message) => message.metadata?.custom?.ambientStatusText || '');
-  const revealPulse = useMessage((message) => Number(message.metadata?.custom?.revealPulse || 0));
-  const revealMode = useMessage((message) => message.metadata?.custom?.revealMode || '');
-  const prefersReducedMotion = usePrefersReducedMotion();
   const isThinking = isRunning && !assistantText && !hasToolParts;
   const showInlineStatus = isRunning && (Boolean(assistantText) || hasToolParts) && statusStage === 'tool' && Boolean(statusText);
-  const revealAnimationClass = !prefersReducedMotion && revealPulse > 0
-    ? (revealPulse % 2 === 0 ? ' is-revealing-a' : ' is-revealing-b')
-    : '';
-  const revealModeClass = !prefersReducedMotion && revealMode ? ` is-reveal-${revealMode}` : '';
 
   return (
     <MessagePrimitive.Root className="ac-message ac-message--assistant">
@@ -2645,7 +3150,7 @@ function AssistantMessage() {
             ambientStatusText={ambientStatusText}
           />
         ) : (
-          <div className={`ac-message__content-layer${revealAnimationClass}${revealModeClass}`}>
+          <div className="ac-message__content-layer">
             <MessagePrimitive.Parts
               components={{
                 Text: ({ text }) => <MarkdownContent text={text} />,
@@ -2669,7 +3174,8 @@ function AssistantMessage() {
 }
 
 function AskCrystalThread({ config }) {
-  const { runtime, hasUserMessages } = useAskCrystalRuntime(config);
+  const { runtime, hasUserMessages, activeSessionId } = useAskCrystalRuntime(config);
+  const homepageRef = useRef(null);
   const viewportRef = useRef(null);
   const hasAutoScrolledIntoConversationRef = useRef(false);
 
@@ -2693,11 +3199,49 @@ function AskCrystalThread({ config }) {
     });
 
     return () => window.cancelAnimationFrame(rafId);
-  }, [hasUserMessages]);
+  }, [activeSessionId, hasUserMessages]);
+
+  useEffect(() => {
+    const homepage = homepageRef.current;
+    const viewport = viewportRef.current;
+    if (!homepage || !viewport || typeof window === 'undefined') return;
+
+    const reduceMotionMedia = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    let rafId = 0;
+
+    const syncBackdropPresentation = () => {
+      rafId = 0;
+
+      const fadeDistance = Math.max(180, Math.min(320, viewport.clientHeight * 0.4));
+      const nextOffset = reduceMotionMedia?.matches
+        ? 0
+        : Math.min(54, viewport.scrollTop * 0.18);
+      const nextOpacity = Math.max(0, 1 - viewport.scrollTop / fadeDistance);
+
+      homepage.style.setProperty('--ac-homepage-backdrop-offset', `${nextOffset.toFixed(2)}px`);
+      homepage.style.setProperty('--ac-homepage-backdrop-opacity', nextOpacity.toFixed(3));
+    };
+
+    const requestBackdropPresentationSync = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(syncBackdropPresentation);
+    };
+
+    syncBackdropPresentation();
+    viewport.addEventListener('scroll', requestBackdropPresentationSync, { passive: true });
+
+    return () => {
+      viewport.removeEventListener('scroll', requestBackdropPresentationSync);
+      if (rafId) window.cancelAnimationFrame(rafId);
+    };
+  }, [activeSessionId]);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
-      <div className="ac-homepage">
+      <div ref={homepageRef} className="ac-homepage">
+        <div className="ac-homepage__backdrop" aria-hidden="true">
+          <img src={HOMEPAGE_BACKDROP_URL} alt="" loading="eager" decoding="async" />
+        </div>
         <ThreadPrimitive.Root className="ac-homepage__thread">
           <ThreadPrimitive.Viewport
             ref={viewportRef}

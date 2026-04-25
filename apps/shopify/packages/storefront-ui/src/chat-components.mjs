@@ -26,6 +26,10 @@ export const CHAT_COMPONENT_BY_TOOL_NAME = Object.freeze(
 
 const createInlineFencePattern = () => /```askcrystal-ui\s*([\s\S]*?)```/gi
 const createInlineTagPattern = () => /<askcrystal-ui>\s*([\s\S]*?)<\/askcrystal-ui>/gi
+const INLINE_MANIFEST_MARKERS = Object.freeze([
+  { marker: '```askcrystal-ui', minPrefixLength: 3 },
+  { marker: '<askcrystal-ui>', minPrefixLength: 4 },
+])
 
 const isRecord = (value) => typeof value === 'object' && value !== null && !Array.isArray(value)
 
@@ -376,9 +380,9 @@ const parseInlineJson = (raw) => {
   }
 }
 
-export const extractInlineChatComponentManifest = (answer = '') => {
+export const extractInlineChatComponentPayloads = (answer = '') => {
   let cleanedAnswer = String(answer || '')
-  let components = []
+  const payloads = []
 
   const extractMatches = (pattern) => {
     const matches = [...cleanedAnswer.matchAll(pattern)]
@@ -388,7 +392,7 @@ export const extractInlineChatComponentManifest = (answer = '') => {
     for (const match of matches) {
       const parsed = parseInlineJson(match[1])
       if (parsed)
-        components = mergeChatComponents(components, extractChatComponentsFromPayload(parsed))
+        payloads.push(parsed)
     }
 
     cleanedAnswer = cleanedAnswer.replace(pattern, '').trim()
@@ -399,8 +403,86 @@ export const extractInlineChatComponentManifest = (answer = '') => {
 
   return {
     answer: cleanedAnswer.replace(/\n{3,}/g, '\n\n').trim(),
+    payloads,
+  }
+}
+
+export const extractInlineChatComponentSegments = (answer = '') => {
+  const source = String(answer || '')
+  const segments = []
+  const pattern = /```askcrystal-ui\s*([\s\S]*?)```|<askcrystal-ui>\s*([\s\S]*?)<\/askcrystal-ui>/gi
+  let lastIndex = 0
+  let match
+
+  while ((match = pattern.exec(source)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({
+        type: 'text',
+        value: source.slice(lastIndex, match.index),
+      })
+    }
+
+    const raw = match[0]
+    const parsed = parseInlineJson(match[1] || match[2] || '')
+
+    if (parsed) {
+      segments.push({
+        type: 'payload',
+        value: parsed,
+      })
+    }
+    else {
+      segments.push({
+        type: 'text',
+        value: raw,
+      })
+    }
+
+    lastIndex = match.index + raw.length
+  }
+
+  if (lastIndex < source.length) {
+    segments.push({
+      type: 'text',
+      value: source.slice(lastIndex),
+    })
+  }
+
+  return segments
+}
+
+export const extractInlineChatComponentManifest = (answer = '') => {
+  const { answer: cleanedAnswer, payloads } = extractInlineChatComponentPayloads(answer)
+
+  let components = []
+  for (const payload of payloads)
+    components = mergeChatComponents(components, extractChatComponentsFromPayload(payload))
+
+  return {
+    answer: cleanedAnswer,
     components,
   }
+}
+
+const findInlineManifestBoundary = (value = '') => {
+  const preview = String(value || '').toLowerCase()
+
+  for (let index = 0; index < preview.length; index += 1) {
+    for (const { marker, minPrefixLength } of INLINE_MANIFEST_MARKERS) {
+      if (preview[index] !== marker[0])
+        continue
+
+      const tail = preview.slice(index)
+      if (tail.startsWith(marker))
+        return index
+
+      const candidate = tail.slice(0, marker.length)
+      if (candidate.length >= minPrefixLength && marker.startsWith(candidate))
+        return index
+    }
+  }
+
+  return -1
 }
 
 export const stripInlineChatComponentManifestPreview = (answer = '') => {
@@ -410,14 +492,9 @@ export const stripInlineChatComponentManifestPreview = (answer = '') => {
     .replace(fencePattern, '')
     .replace(tagPattern, '')
 
-  const lowerPreview = preview.toLowerCase()
-  const fenceIndex = lowerPreview.indexOf('```askcrystal-ui')
-  if (fenceIndex !== -1)
-    preview = preview.slice(0, fenceIndex)
-
-  const tagIndex = lowerPreview.indexOf('<askcrystal-ui>')
-  if (tagIndex !== -1)
-    preview = preview.slice(0, tagIndex)
+  const markerIndex = findInlineManifestBoundary(preview)
+  if (markerIndex !== -1)
+    preview = preview.slice(0, markerIndex)
 
   return preview.trimEnd()
 }

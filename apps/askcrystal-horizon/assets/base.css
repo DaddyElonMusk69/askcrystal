@@ -5,11 +5,18 @@
 body {
   color: var(--color-foreground);
   background: var(--color-background);
+  background-image: var(--askcrystal-page-gradient);
+  background-attachment: fixed;
   display: flex;
   flex-direction: column;
   margin: 0;
   min-height: 100svh;
   font-variation-settings: 'slnt' 0;
+}
+
+::selection {
+  background: rgb(var(--color-primary-rgb) / 0.24);
+  color: var(--color-foreground-heading);
 }
 
 :root {
@@ -189,6 +196,7 @@ dialog {
   --backdrop-color-rgb: var(--color-shadow-rgb);
 
   background-color: var(--color-background);
+  background-image: var(--askcrystal-surface-gradient);
   color: var(--color-foreground);
 }
 
@@ -982,6 +990,10 @@ body:has(.header[transparent]) #header-group > *:not(.header-section) {
 
 .product-grid__item {
   border: var(--product-card-border-width) solid rgb(var(--color-border-rgb) / var(--product-card-border-opacity));
+  border-radius: max(var(--style-border-radius-card), 1rem);
+  background: var(--askcrystal-surface-gradient);
+  box-shadow: var(--askcrystal-surface-shadow-soft);
+  overflow: clip;
 }
 
 .product-grid--organic[product-grid-view='default'] .product-grid__item {
@@ -998,6 +1010,7 @@ body:has(.header[transparent]) #header-group > *:not(.header-section) {
   padding-block: var(--padding-block-start) var(--padding-block-end);
   padding-inline: var(--padding-inline-start) var(--padding-inline-end);
   overflow: hidden;
+  border-radius: inherit;
 }
 
 [product-grid-view='zoom-out'] .product-grid__card {

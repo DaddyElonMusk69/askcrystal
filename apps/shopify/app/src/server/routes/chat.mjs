@@ -113,6 +113,30 @@ const validateChatStopBody = (body) => {
   }
 }
 
+export const handleChatParameters = async (_req) => {
+  const difyResult = await gateway.getChatParameters()
+
+  if (!difyResult.ok) {
+    return {
+      statusCode: difyResult.status,
+      payload: {
+        ok: false,
+        error: difyResult.message,
+        code: difyResult.code,
+        details: difyResult.details || null,
+      },
+    }
+  }
+
+  return {
+    statusCode: 200,
+    payload: {
+      ok: true,
+      ...difyResult.data,
+    },
+  }
+}
+
 export const handleChat = async (body) => {
   const validation = validateChatBody(body)
   if (!validation.ok) {
@@ -155,10 +179,12 @@ export const handleChat = async (body) => {
       ok: true,
       mode: difyResult.mode || 'dify-live',
       conversationId: difyResult.data.conversationId,
+      messageId: difyResult.data.messageId || null,
       answer: difyResult.data.answer,
       references: difyResult.data.references,
       metadata: difyResult.data.metadata,
       components: difyResult.data.components || [],
+      suggestions: difyResult.data.suggestions || [],
       storefrontHydration: difyResult.data.storefrontHydration || null,
       products: [],
     },
@@ -228,7 +254,7 @@ export const handleChatStream = async (body, res, req = null) => {
   sseEvent(res, 'status', {
     stage: 'listen',
     tool: null,
-    message: 'Tuning in...',
+    message: 'Settling into your energy...',
   })
 
   const clientAbortController = new AbortController()
@@ -236,6 +262,12 @@ export const handleChatStream = async (body, res, req = null) => {
   req?.on?.('close', abortUpstream)
   res?.on?.('close', abortUpstream)
   let activeTaskId = ''
+  let streamedAnswer = ''
+  let streamedComponents = []
+  let sawVisibleStream = false
+  let latestConversationId = validation.conversationId
+  let latestMetadata = null
+  let latestSuggestions = []
 
   const difyResult = await gateway.streamChat({
     message: validation.message,
@@ -262,6 +294,41 @@ export const handleChatStream = async (body, res, req = null) => {
       if (clientAbortController.signal.aborted || res.writableEnded || res.destroyed)
         return
 
+      if (payload?.conversationId || payload?.conversation_id)
+        latestConversationId = payload.conversationId || payload.conversation_id
+
+      if (type === 'delta' || type === 'message' || type === 'agent_message') {
+        const deltaText = payload?.answer || payload?.text || ''
+        if (typeof deltaText === 'string' && deltaText) {
+          streamedAnswer += deltaText
+          sawVisibleStream = true
+        }
+      }
+
+      if (type === 'replace') {
+        const replacementText = payload?.answer || payload?.text || ''
+        if (typeof replacementText === 'string') {
+          streamedAnswer = replacementText
+          sawVisibleStream = Boolean(replacementText)
+        }
+      }
+
+      if (type === 'component') {
+        const nextComponents = Array.isArray(payload?.components) ? payload.components : []
+        if (nextComponents.length > 0)
+          streamedComponents = nextComponents
+      }
+
+      if (type === 'suggestions') {
+        latestSuggestions = Array.isArray(payload?.suggestions) ? payload.suggestions : latestSuggestions
+      }
+
+      if (type === 'complete' && payload && typeof payload === 'object')
+        latestMetadata = payload.metadata || latestMetadata
+
+      if (type === 'complete' && Array.isArray(payload?.suggestions))
+        latestSuggestions = payload.suggestions
+
       sseEvent(res, type, payload)
     },
   })
@@ -280,6 +347,25 @@ export const handleChatStream = async (body, res, req = null) => {
   }
 
   if (!difyResult.ok) {
+    if (sawVisibleStream || streamedComponents.length > 0) {
+      sseEvent(res, 'complete', {
+        answer: streamedAnswer,
+        conversationId: latestConversationId,
+        metadata: {
+          ...(latestMetadata || {}),
+          fallback: 'partial-upstream-failure',
+          partial: true,
+          upstreamError: difyResult.message,
+          upstreamCode: difyResult.code || null,
+        },
+        references: [],
+        components: streamedComponents,
+        suggestions: latestSuggestions,
+      })
+      res.end()
+      return
+    }
+
     if (isTimeoutLikeFailure(difyResult)) {
       sseEvent(res, 'complete', {
         answer: buildTimeoutFallbackAnswer(validation.message),
@@ -289,6 +375,7 @@ export const handleChatStream = async (body, res, req = null) => {
           upstreamError: difyResult.message,
         },
         references: [],
+        suggestions: [],
       })
       res.end()
       return

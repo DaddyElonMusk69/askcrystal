@@ -121,6 +121,8 @@ You sound overstimulated, so I would begin with something gentler and easier to 
 
 The theme now strips this block from visible copy, parses the JSON, validates the component, and renders it safely.
 
+For the current live AskCrystal `agent-chat` bridge, the Shopify proxy also reads this inline manifest, hydrates `product_ref` / `collection_ref` into canonical Shopify payloads, and re-emits them as standard `component` SSE events so the Horizon theme still receives the same render contract as the structured-event path.
+
 This fallback is for bridge mode only. The long-term contract should be structured events, not text parsing.
 
 ## Component Suite

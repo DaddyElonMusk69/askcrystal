@@ -5,6 +5,7 @@ export const ROUTES = {
   previewAssets: '/preview-assets',
   health: '/api/health',
   chat: `${APP_PROXY_PREFIX}/chat`,
+  chatParameters: `${APP_PROXY_PREFIX}/chat/parameters`,
   chatStream: `${APP_PROXY_PREFIX}/chat/stream`,
   chatStop: `${APP_PROXY_PREFIX}/chat/stop`,
   chatEmbed: `${APP_PROXY_PREFIX}/chat/embed`,

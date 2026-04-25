@@ -55,6 +55,37 @@ It validates:
 
 With `SHOPIFY_STORE_DOMAIN` and `SHOPIFY_STOREFRONT_ACCESS_TOKEN`, the same path can hydrate canonical Shopify Storefront API data. Without those credentials, the proxy derives preview product and collection payloads from the intent references so local rendering can still be validated end to end.
 
+## Current Live-Agent Bridge Status
+
+As of April 24, 2026, the real AskCrystal app is still the `agent-chat` app exported in:
+
+- `agent/dify/dsl/askcrystal-agent-2026-04-23.dsl.yml`
+
+To make rich storefront rendering work before the full chatflow migration, the live agent now uses a bridge contract:
+
+1. the real agent answers normally in prose,
+2. on explicit recommendation or comparison turns only, it appends one inline ````askcrystal-ui` fenced manifest at the end,
+3. the Shopify proxy extracts that manifest from answer text,
+4. the proxy hydrates `product_ref` / `collection_ref` into canonical Shopify storefront payloads,
+5. the proxy strips the manifest from the visible answer text and emits first-class `component` SSE payloads to the theme.
+
+This is intentionally a compatibility bridge, not the final Dify-native contract.
+
+The long-term target remains:
+
+- `chatflow` as the main app
+- `build_storefront_components` as a reusable workflow tool
+- structured `components` outputs instead of answer-text manifests
+
+Operational note:
+
+- Dify import cannot overwrite an existing `agent-chat` app.
+- For the local real-agent bridge, update the original app in place through `POST /console/api/apps/{app_id}/model-config`.
+- The repo helper for that is `scripts/sync_dify_prompt_from_dsl.py`.
+- The local workspace should normally stay trimmed to two apps:
+  - live agent app `385c285a-0e61-4cf1-ba49-afde28c5ce12`
+  - retained bootstrap app `609d694c-7064-425d-bdc8-6f76d9f62141`
+
 ## Why This Is The Right Dify-Native Path
 
 ### Why not the skill bridge
@@ -74,11 +105,11 @@ It is not the long-term contract because:
 - Dify cannot reason cleanly about schema validity in plain prose,
 - proxy and theme observability become weaker.
 
-### Why not a bare `agent-chat` app
+### Why not a bare `agent-chat` app for the final architecture
 
 The current exported app is still `agent-chat`.
 
-That is fine for pure conversational output, but it is awkward for this feature because we now need a reliable non-text output path. The richer the UI payload becomes, the more important it is to return structured workflow variables instead of hiding everything in answer text.
+That is fine for pure conversational output and it is acceptable for the bridge mode above, but it is awkward as the final architecture because we now need a reliable non-text output path. The richer the UI payload becomes, the more important it is to return structured workflow variables instead of hiding everything in answer text.
 
 ### Why a workflow tool
 

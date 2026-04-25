@@ -64,6 +64,7 @@ export const config = {
   shopifyApiKey: process.env.SHOPIFY_API_KEY || '',
   shopifyApiSecret: process.env.SHOPIFY_API_SECRET || '',
   storefrontAccessToken: process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || '',
+  storefrontComponentPreviewFallback: asBoolean(process.env.ASKCRYSTAL_STOREFRONT_COMPONENT_PREVIEW_FALLBACK, false),
   appProxyPrefix: process.env.SHOPIFY_APP_PROXY_PREFIX || APP_PROXY_PREFIX,
   shopifyProxySignatureRequired: asBoolean(process.env.SHOPIFY_PROXY_SIGNATURE_REQUIRED, false),
   difyBaseUrl,
@@ -87,6 +88,7 @@ export const configStatus = {
     apiKey: Boolean(config.shopifyApiKey),
     apiSecret: Boolean(config.shopifyApiSecret),
     storefrontAccessToken: Boolean(config.storefrontAccessToken),
+    storefrontComponentPreviewFallback: config.storefrontComponentPreviewFallback,
   },
   dify: {
     baseUrl: config.difyBaseUrl,

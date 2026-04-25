@@ -2,7 +2,7 @@
   "exported_at": "2026-04-24T18:48:23+08:00",
   "source": {
     "base_url": "http://localhost:18080",
-    "app_id": "9ed29b39-b84b-4da6-83ad-812cce5ee0a0",
+    "app_id": "609d694c-7064-425d-bdc8-6f76d9f62141",
     "include_secret": false,
     "dify_local_git_commit": "712e52222035317283fc2fe0a2221bb21db0c165",
     "dify_local_git_describe": "712e522",
@@ -56,7 +56,7 @@
     }
   },
   "app": {
-    "id": "9ed29b39-b84b-4da6-83ad-812cce5ee0a0",
+    "id": "609d694c-7064-425d-bdc8-6f76d9f62141",
     "name": "AskCrystal Storefront Components",
     "mode": "advanced-chat",
     "description": "Advanced chatflow for validating storefront component intent hydration in AskCrystal chat.",

@@ -38,79 +38,21 @@
   </cart-icon>
 {% endcapture %}
 
-{% capture account_icon %}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="15"
-    height="17"
-    viewBox="0 0 15 17"
-    fill="none"
-    slot="signed-out-avatar"
-    class="account-button__icon"
-  >
-    <path
-      stroke="currentColor"
-      stroke-linejoin="round"
-      stroke-width="var(--icon-stroke-width)"
-      d="M10.375 3.813a3.063 3.063 0 1 1-6.125 0 3.063 3.063 0 0 1 6.125 0ZM7.313 9.5c-3.667 0-6.24 2.691-6.563 6.125h13.125C13.552 12.191 10.979 9.5 7.312 9.5Z"
-    />
-  </svg>
-{% endcapture %}
-
 <header-actions
   {% if display_style == 'text' %}
     class="header-actions--text"
   {% endif %}
   {{- block.shopify_attributes -}}
 >
-  {% if shop.customer_accounts_enabled %}
-    {% liquid
-      assign account_actions_style = ''
-      if display_style == 'text' and section
-        assign actions_font = section.settings.actions_font | default: 'body'
-        assign font_obj = settings.type_heading_font
-        case actions_font
-          when 'body'
-            assign font_obj = settings.type_body_font
-          when 'subheading'
-            assign font_obj = settings.type_subheading_font
-          when 'accent'
-            assign font_obj = settings.type_accent_font
-        endcase
-        assign font_family = font_obj.family | append: ', ' | append: font_obj.fallback_families
-        assign font_family_safe = font_family | replace: '"', "'"
-        assign account_actions_style = '--header-actions-font-family: ' | append: font_family_safe | append: '; --header-actions-font-weight: ' | append: font_obj.weight | append: ';'
-      endif
-    %}
-    <div
-      class="account-button header-actions__action{% if display_style == 'text' %} account-button--text{% endif %} color-{{ settings.popover_color_scheme }}"
-    >
-      <shopify-account
-        menu="{{ customer_account_menu }}"
-        {% if account_actions_style != blank %}
-          style="{{ account_actions_style }}"
-        {% endif %}
-      >
-        {% if customer %}
-          <div class="account-button__fallback"></div>
-        {% else %}
-          <span
-            slot="signed-out-avatar"
-            class="account-button__text header-actions__text-style {% if display_style == 'icon' %}hidden{% else %}mobile:hidden{% endif %}"
-          >
-            {{ 'content.account_title' | t }}
-          </span>
+  {% render 'askcrystal-header-switch', class: 'header-actions__action header-actions__action--switch' %}
 
-          <span
-            slot="signed-out-avatar"
-            class="{% if display_style != 'icon' %}desktop:hidden{% endif %}"
-            aria-hidden="true"
-          >
-            {{ account_icon }}
-          </span>
-        {% endif %}
-      </shopify-account>
-    </div>
+  {% if shop.customer_accounts_enabled %}
+    {% render 'askcrystal-account-action',
+      customer_account_menu: customer_account_menu,
+      display_style: display_style,
+      section: section,
+      wrapper_class: 'mobile:hidden'
+    %}
   {% endif %}
 
   {% if settings.cart_type == 'drawer' and template.name != 'cart' %}
@@ -162,7 +104,7 @@
         {{ empty_cart_drawer_content }}
       </template>
       <button
-        class="header-actions__action button-unstyled{% if display_style == 'text' %} header-actions__text-style{% endif %}"
+        class="header-actions__action header-actions__action--cart button-unstyled{% if display_style == 'text' %} header-actions__text-style{% endif %}"
         on:click="/open"
         aria-haspopup="dialog"
         aria-label="{{ 'accessibility.cart' | t }}"
@@ -243,7 +185,7 @@
   {% else %}
     <a
       href="{{ routes.cart_url }}"
-      class="header-actions__action action__cart{% if display_style == 'text' %} header-actions__text-style{% endif %}"
+      class="header-actions__action header-actions__action--cart action__cart{% if display_style == 'text' %} header-actions__text-style{% endif %}"
       aria-label="{{ 'accessibility.cart' | t }}"
       aria-describedby="cart-bubble-text"
     >
@@ -538,9 +480,12 @@
 
   header-actions {
     display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
 
     @media screen and (max-width: 749px) {
       justify-self: flex-end;
+      gap: var(--gap-2xs, 0.4rem);
     }
   }
 
@@ -563,6 +508,110 @@
 
   .header__column--right header-actions {
     margin-inline-start: calc(var(--gap-md) * -1);
+  }
+
+  .askcrystal-header-switch {
+    --askcrystal-switch-border: rgb(var(--color-primary-rgb) / 0.78);
+    --askcrystal-switch-fill:
+      linear-gradient(
+        180deg,
+        rgb(var(--color-primary-rgb) / 0.11) 0%,
+        rgb(var(--color-primary-rgb) / 0.07) 100%
+      );
+    --askcrystal-switch-fill-hover:
+      linear-gradient(
+        180deg,
+        rgb(var(--color-primary-rgb) / 0.16) 0%,
+        rgb(var(--color-primary-rgb) / 0.1) 100%
+      );
+    --askcrystal-switch-ink: color-mix(in srgb, rgb(var(--color-primary-rgb)) 84%, rgb(var(--color-foreground-heading-rgb)) 16%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.48rem;
+    min-height: var(--button-size);
+    height: auto;
+    padding-inline: 0.94rem 1.16rem;
+    border-radius: 999px;
+    border: 1px solid var(--askcrystal-switch-border);
+    background: var(--askcrystal-switch-fill);
+    box-shadow:
+      inset 0 1px 0 rgb(var(--color-foreground-heading-rgb) / 0.08),
+      0 10px 24px rgb(1 8 15 / 0.12);
+    color: var(--askcrystal-switch-ink);
+    text-decoration: none;
+    white-space: nowrap;
+    font-family: var(--font-heading--family), serif;
+    font-size: clamp(0.94rem, 0.9rem + 0.18vw, 1.04rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
+    transition:
+      background-color var(--animation-speed) var(--animation-easing),
+      border-color var(--animation-speed) var(--animation-easing),
+      box-shadow var(--animation-speed) var(--animation-easing),
+      color var(--animation-speed) var(--animation-easing);
+  }
+
+  .askcrystal-header-switch:hover,
+  .askcrystal-header-switch:focus-visible {
+    background: var(--askcrystal-switch-fill-hover);
+    border-color: rgb(var(--color-primary-rgb) / 0.92);
+    box-shadow:
+      inset 0 1px 0 rgb(var(--color-foreground-heading-rgb) / 0.12),
+      0 0 0 3px rgb(var(--color-primary-rgb) / 0.1);
+    color: color-mix(in srgb, rgb(var(--color-primary-rgb)) 90%, rgb(var(--color-foreground-heading-rgb)) 10%);
+  }
+
+  .askcrystal-header-switch:focus-visible {
+    outline: none;
+  }
+
+  .askcrystal-header-switch__icon {
+    width: 0.88rem;
+    height: 0.88rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .askcrystal-header-switch__icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .askcrystal-header-switch__label {
+    display: block;
+    transform: translateY(-0.02em);
+  }
+
+  .askcrystal-mobile-account {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--minimum-touch-target);
+  }
+
+  @media screen and (max-width: 749px) {
+    .header__column--right header-actions {
+      margin-inline-start: 0;
+    }
+
+    .askcrystal-header-switch {
+      min-height: calc(var(--button-size) - 2px);
+      padding-inline: 0.84rem 1rem;
+      font-size: 0.92rem;
+      gap: 0.42rem;
+    }
+
+    .askcrystal-header-switch__icon {
+      width: 0.8rem;
+      height: 0.8rem;
+    }
   }
 
   .header-actions__cart-icon {

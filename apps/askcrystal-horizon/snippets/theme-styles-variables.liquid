@@ -461,6 +461,8 @@
     --style-border-radius-md: 0.8rem;
     --style-border-radius-50: 50%;
     --style-border-radius-lg: 1rem;
+    --style-border-radius-card: {{ settings.card_corner_radius }}px;
+    --style-border-radius-product: {{ settings.product_corner_radius }}px;
     --style-border-radius-pills: {{ settings.pills_border_radius }}px;
     --style-border-radius-inputs: {{ settings.inputs_border_radius }}px;
     --style-border-radius-buttons-primary: {{ settings.button_border_radius_primary }}px;
@@ -630,6 +632,24 @@
     /* Variant Picker Buttons */
     --variant-picker-button-radius: {{ settings.variant_button_radius | append: 'px' }};
     --variant-picker-button-border-width: {{ settings.variant_button_border_width | append: 'px' }};
+
+    /* AskCrystal theme */
+    --askcrystal-canvas-top: {{ settings.askcrystal_canvas_top }};
+    --askcrystal-canvas-bottom: {{ settings.askcrystal_canvas_bottom }};
+    --askcrystal-canvas-bloom-primary: {{ settings.askcrystal_canvas_bloom_primary }};
+    --askcrystal-canvas-bloom-secondary: {{ settings.askcrystal_canvas_bloom_secondary }};
+    --askcrystal-surface-top: {{ settings.askcrystal_surface_top }};
+    --askcrystal-surface-bottom: {{ settings.askcrystal_surface_bottom }};
+    --askcrystal-surface-outline: {{ settings.askcrystal_surface_outline }};
+    --askcrystal-surface-shadow-color: {{ settings.askcrystal_surface_shadow }};
+    --askcrystal-page-gradient:
+      radial-gradient(circle at 50% -14%, var(--askcrystal-canvas-bloom-primary) 0%, transparent 34%),
+      radial-gradient(circle at 86% 18%, var(--askcrystal-canvas-bloom-secondary) 0%, transparent 24%),
+      linear-gradient(180deg, var(--askcrystal-canvas-top) 0%, var(--askcrystal-canvas-bottom) 100%);
+    --askcrystal-surface-gradient:
+      linear-gradient(180deg, var(--askcrystal-surface-top) 0%, var(--askcrystal-surface-bottom) 100%);
+    --askcrystal-surface-shadow: 0 22px 52px var(--askcrystal-surface-shadow-color);
+    --askcrystal-surface-shadow-soft: 0 14px 36px rgb(var(--color-shadow-rgb) / 0.24);
 
     /* Slideshow */
     --slideshow-controls-size: 3.5rem;

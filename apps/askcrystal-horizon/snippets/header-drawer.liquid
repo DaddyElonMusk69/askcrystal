@@ -13,7 +13,6 @@
 
 {% liquid
   assign block_settings = block.settings
-  assign max_featured_items = 4
   assign image_border_radius = block_settings.image_border_radius
 
   if block_settings.menu_style == 'featured_collections'
@@ -22,19 +21,6 @@
     assign ratio = block_settings.featured_products_aspect_ratio
   endif
 
-  ##
-  # We only eager load heavy elements of the page when rendering this template
-  # through the Section Rendering API.
-  #
-  # This keeps the initial render lightweight, minimizing the impact on TTFB.
-  # The second render then refreshes the page with additional content.
-  #
-  # At the moment, we check if the Section Rendering API is being used by
-  # checking if section.index is blank.
-  assign eager_loading = false
-  if section.index == blank
-    assign eager_loading = true
-  endif
 %}
 
 <script
@@ -498,57 +484,6 @@
                             </li>
                           {%- endfor -%}
                         </ul>
-                        {% liquid
-                          if eager_loading
-                            if block_settings.menu_style == 'featured_collections'
-                              assign featured_collections = link.links | where: 'type', 'collection_link'
-                            endif
-
-                            if block_settings.menu_style == 'featured_products'
-                              assign collection_linklist = link.links | where: 'type', 'collection_link' | first
-                              assign featured_products_collection = collection_linklist.object
-                            endif
-                          else
-                            assign featured_collections = null | sort
-                            assign featured_products_collection = null | sort
-                          endif
-                        -%}
-
-                        {% if featured_collections.size > 0 or featured_products_collection.products_count > 0 %}
-                          <div
-                            class="menu-drawer__featured-content menu-drawer__featured-content--childlist"
-                            style="--menu-drawer-animation-index: {{ linklist.links.size | plus: 1 }};"
-                          >
-                            <ul class="menu-drawer__featured-content-list list-unstyled">
-                              {% if featured_collections.size > 0 %}
-                                {%- for collection in featured_collections limit: max_featured_items -%}
-                                  <li class="menu-drawer__featured-content-list-item menu-drawer__featured-content-list-item--collection">
-                                    {% render 'resource-card',
-                                      resource: collection.object,
-                                      resource_type: 'collection',
-                                      style: 'overlay',
-                                      image_aspect_ratio: ratio,
-                                      image_sizes: 'auto, 400px'
-                                    %}
-                                  </li>
-                                {%- endfor -%}
-                              {% else %}
-                                {% paginate featured_products_collection.products by max_featured_items %}
-                                  {%- for product in featured_products_collection.products limit: max_featured_items -%}
-                                    <li class="menu-drawer__featured-content-list-item menu-drawer__featured-content-list-item--product">
-                                      {% render 'resource-card',
-                                        resource: product,
-                                        resource_type: 'product',
-                                        image_aspect_ratio: ratio,
-                                        image_sizes: 'auto, 400px'
-                                      %}
-                                    </li>
-                                  {%- endfor -%}
-                                {% endpaginate %}
-                              {% endif %}
-                            </ul>
-                          </div>
-                        {% endif %}
                       </div>
                     </div>
                   </details>
@@ -572,10 +507,29 @@
           {% endif %}
         </ul>
       </nav>
+      {% if data_header_drawer_type == 'mobile-drawer' %}
+        <div class="askcrystal-session-drawer-host" data-askcrystal-session-drawer-root></div>
+      {% endif %}
       <div
         class="menu-drawer__utility-links menu-drawer__animated-element"
         style="--menu-drawer-animation-index: {{ linklist.links.size }};"
       >
+        {% if data_header_drawer_type == 'mobile-drawer' and section.settings.show_search %}
+          <search-button class="menu-drawer__search">
+            <button
+              on:click="#search-modal/showDialog"
+              class="button-unstyled menu-drawer__utility-action"
+              aria-label="{{ 'content.search_input_label' | t }}"
+              aria-haspopup="dialog"
+            >
+              <span class="svg-wrapper">
+                {{ 'icon-search.svg' | inline_asset_content }}
+              </span>
+              <span>{{ 'content.search' | t }}</span>
+            </button>
+          </search-button>
+        {% endif %}
+
         {% liquid
           assign show_language = section.settings.show_language
           if localization.available_languages.size <= 1
@@ -702,60 +656,6 @@
           {% endif %}
         {%- endif -%}
       </div>
-
-      {% liquid
-        if block_settings.menu_style == 'featured_collections'
-          assign top_level_featured_collections = linklist.links | where: 'type', 'collection_link'
-        endif
-
-        if eager_loading and block_settings.menu_style == 'featured_products'
-          for link in linklist.links
-            if link.type == 'collection_link'
-              assign collection_linklist = link
-              assign top_level_featured_products_collection = collection_linklist.object
-              break
-            elsif link.type == 'catalog_link' or link.type == 'collections_link'
-              assign top_level_featured_products_collection = collections.all
-              break
-            endif
-          endfor
-        endif
-      -%}
-      {% if top_level_featured_collections.size > 0 or top_level_featured_products_collection.products_count > 0 %}
-        <div
-          class="menu-drawer__featured-content"
-          style="--menu-drawer-animation-index: {{ linklist.links.size | plus: 1 }};"
-        >
-          <ul class="menu-drawer__featured-content-list menu-drawer__animated-element list-unstyled">
-            {% if top_level_featured_collections.size > 0 %}
-              {%- for collection in top_level_featured_collections limit: max_featured_items -%}
-                <li class="menu-drawer__featured-content-list-item menu-drawer__featured-content-list-item--collection">
-                  {% render 'resource-card',
-                    resource: collection.object,
-                    resource_type: 'collection',
-                    style: 'overlay',
-                    image_aspect_ratio: ratio,
-                    image_sizes: 'auto, 400px'
-                  %}
-                </li>
-              {%- endfor -%}
-            {% elsif top_level_featured_products_collection.products_count > 0 %}
-              {% paginate top_level_featured_products_collection.products by max_featured_items %}
-                {%- for product in top_level_featured_products_collection.products limit: max_featured_items -%}
-                  <li class="menu-drawer__featured-content-list-item menu-drawer__featured-content-list-item--product">
-                    {% render 'resource-card',
-                      resource: product,
-                      resource_type: 'product',
-                      image_aspect_ratio: ratio,
-                      image_sizes: 'auto, 400px'
-                    %}
-                  </li>
-                {%- endfor -%}
-              {% endpaginate %}
-            {% endif %}
-          </ul>
-        </div>
-      {% endif %}
     </div>
     <div
       class="menu-drawer__backdrop"
@@ -783,40 +683,122 @@
     height: var(--icon-size-xs);
   }
 
-  .menu-drawer__featured-content {
-    z-index: var(--layer-base);
-    container-type: inline-size;
+  .askcrystal-session-drawer-host {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 18px;
+    padding: 14px var(--drawer-padding) 0;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
   }
 
-  .menu-drawer__featured-content--childlist {
-    z-index: var(--layer-flat);
+  .ac-session-drawer {
+    display: grid;
+    gap: 10px;
   }
 
-  .menu-drawer__featured-content-list {
+  .ac-session-drawer__header {
     display: flex;
-    gap: 1em;
-    overflow-x: auto;
-    padding-block-end: var(--padding-lg);
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
   }
 
-  .menu-drawer__featured-content-list-item {
-    flex: 0 0 auto;
+  .ac-session-drawer__title {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: rgb(var(--color-foreground-rgb) / 0.6);
   }
 
-  .menu-drawer__featured-content-list-item--product {
-    width: 35cqi;
+  .ac-session-drawer__new {
+    min-height: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-primary);
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      color 180ms ease,
+      opacity 180ms ease;
   }
 
-  .menu-drawer__featured-content-list-item--collection img.resource-card__image {
-    width: 80cqi;
+  .ac-session-drawer__list {
+    display: grid;
+    gap: 2px;
+    max-height: min(42svh, 340px);
+    overflow-y: auto;
+    scrollbar-width: thin;
   }
 
-  .menu-drawer__featured-content-list-item:first-child {
-    margin-inline-start: var(--margin-xl);
+  .ac-session-drawer__item {
+    display: block;
+    width: 100%;
+    padding: 7px 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      color 180ms ease,
+      opacity 180ms ease;
   }
 
-  .menu-drawer__featured-content-list-item:last-child {
-    margin-inline-end: var(--margin-xl);
+  .ac-session-drawer__item-title {
+    display: block;
+    overflow: hidden;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: rgb(var(--color-foreground-rgb) / 0.74);
+  }
+
+  .ac-session-drawer__empty {
+    display: block;
+    overflow: hidden;
+    color: rgb(var(--color-foreground-rgb) / 0.72);
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .ac-session-drawer__empty {
+    padding: 2px 0 0;
+  }
+
+  .ac-session-drawer__item.is-active {
+    color: var(--color-primary);
+  }
+
+  .ac-session-drawer__item.is-active .ac-session-drawer__item-title {
+    color: var(--color-primary);
+  }
+
+  .ac-session-drawer__new:hover,
+  .ac-session-drawer__new:focus-visible,
+  .ac-session-drawer__item:hover,
+  .ac-session-drawer__item:focus-visible {
+    opacity: 1;
+  }
+
+  .ac-session-drawer__new:focus-visible,
+  .ac-session-drawer__item:focus-visible {
+    outline: none;
+  }
+
+  .ac-session-drawer__new:disabled,
+  .ac-session-drawer__item:disabled {
+    opacity: 0.62;
+    cursor: default;
   }
 
   .menu-drawer__navigation {
@@ -852,7 +834,7 @@
     height: var(--drawer-height);
     width: var(--drawer-width);
     max-width: var(--drawer-max-width);
-    z-index: var(--layer-menu-drawer);
+    z-index: 120;
     left: 0;
     top: 0;
     padding: 0;
@@ -880,7 +862,7 @@
     width: 100vw;
     height: 100dvh;
     backdrop-filter: brightness(0.75);
-    z-index: var(--layer-heightened);
+    z-index: 110;
     opacity: 0;
     transition: opacity var(--drawer-animation-speed) ease;
 
@@ -1236,10 +1218,36 @@
   .menu-drawer__utility-links {
     display: flex;
     flex-direction: column;
-    padding: 0;
+    gap: var(--gap-xs);
+    padding: 0 var(--padding-xl) var(--padding-md);
     margin-block: auto var(--padding-sm);
-    margin-inline-start: var(--padding-xl);
-    background-color: rgb(var(--color-foreground) 0.03);
+    margin-inline-start: 0;
+    background-color: transparent;
+  }
+
+  .menu-drawer__utility-action {
+    width: 100%;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-sm);
+    color: rgb(var(--color-foreground-rgb));
+    text-decoration: none;
+    font-size: 1.4rem;
+    line-height: 1.1;
+  }
+
+  .menu-drawer__utility-action > .svg-wrapper {
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .menu-drawer__search {
+    display: block;
   }
 
   .menu-drawer__account {

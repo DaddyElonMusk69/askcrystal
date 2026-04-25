@@ -7,6 +7,14 @@ import {
 const NATIVE_PRODUCT_CARD_SECTION_ID = 'section-rendering-askcrystal-chat-product-card'
 const nativeProductCardMarkupCache = new Map()
 const nativeProductCardRequestCache = new Map()
+const nativeProductCardLayoutStyle = {
+  '--product-card-gap': '12px',
+  '--product-card-alignment': 'stretch',
+  '--padding-block-start': '0px',
+  '--padding-block-end': '0px',
+  '--padding-inline-start': '0px',
+  '--padding-inline-end': '0px',
+}
 
 function resolveComponentPayload(part) {
   return readChatComponentToolPayload({
@@ -30,12 +38,15 @@ function asShopifyVariantQueryId(value) {
 }
 
 function buildNativeProductCardRequestUrl(product) {
-  const productPath = product?.url || (product?.handle ? `/products/${product.handle}` : null)
-  if (!productPath || typeof window === 'undefined')
+  if (!product?.handle || typeof window === 'undefined')
     return null
 
-  const requestUrl = new URL(productPath, window.location.origin)
+  const storefrontRoot = typeof window.Shopify?.routes?.root === 'string'
+    ? window.Shopify.routes.root
+    : '/'
+  const requestUrl = new URL(`products/${product.handle}`, new URL(storefrontRoot, window.location.origin))
   requestUrl.searchParams.set('section_id', NATIVE_PRODUCT_CARD_SECTION_ID)
+  requestUrl.searchParams.set('askcrystal_handle', product.handle)
 
   const variantQueryId = asShopifyVariantQueryId(product?.variantId || product?.merchandiseId)
   if (variantQueryId)
@@ -44,10 +55,72 @@ function buildNativeProductCardRequestUrl(product) {
   return requestUrl.toString()
 }
 
+function resolveProductHref(product) {
+  const candidate = typeof product?.url === 'string' ? product.url.trim() : ''
+  if (candidate)
+    return candidate
+
+  const handle = typeof product?.handle === 'string' ? product.handle.trim() : ''
+  return handle ? `/products/${handle}` : null
+}
+
+function resolveProductImageUrl(product) {
+  const image = product?.image
+  if (typeof image === 'string' && image.trim())
+    return image.trim()
+
+  if (image && typeof image === 'object') {
+    const candidate = image.url || image.src
+    if (typeof candidate === 'string' && candidate.trim())
+      return candidate.trim()
+  }
+
+  const featuredImage = product?.featuredImage || product?.featured_image
+  if (featuredImage && typeof featuredImage === 'object') {
+    const candidate = featuredImage.url || featuredImage.src
+    if (typeof candidate === 'string' && candidate.trim())
+      return candidate.trim()
+  }
+
+  return null
+}
+
+function resolveProductImageAlt(product) {
+  const image = product?.image
+  if (image && typeof image === 'object') {
+    const candidate = image.alt || image.altText
+    if (typeof candidate === 'string' && candidate.trim())
+      return candidate.trim()
+  }
+
+  const featuredImage = product?.featuredImage || product?.featured_image
+  if (featuredImage && typeof featuredImage === 'object') {
+    const candidate = featuredImage.alt || featuredImage.altText
+    if (typeof candidate === 'string' && candidate.trim())
+      return candidate.trim()
+  }
+
+  return product?.title || 'Product image'
+}
+
+function isRenderableNativeProductCard(cardElement) {
+  if (!cardElement)
+    return false
+
+  const hasLink = Boolean(cardElement.querySelector('a[href]'))
+  const hasMedia = Boolean(cardElement.querySelector('img, .askcrystal-chat-product-card__placeholder'))
+
+  return hasLink && hasMedia
+}
+
 function extractNativeProductCardMarkup(responseText) {
   const document = new DOMParser().parseFromString(responseText, 'text/html')
   const nativeCard = document.querySelector('[data-askcrystal-native-product-card]')
-  return nativeCard?.outerHTML?.trim() || null
+
+  if (!isRenderableNativeProductCard(nativeCard))
+    return null
+
+  return nativeCard.outerHTML.trim()
 }
 
 async function loadNativeProductCardMarkup(requestUrl) {
@@ -122,30 +195,69 @@ function ProductMeta({ product, ctaLabel }) {
 }
 
 function FallbackProductCard({ product, ctaLabel }) {
-  const content = (
+  const productHref = resolveProductHref(product)
+  const imageUrl = resolveProductImageUrl(product)
+  const imageAlt = resolveProductImageAlt(product)
+  const ctaText = ctaLabel || 'View'
+
+  const media = imageUrl
+    ? <img className="askcrystal-chat-product-card__image" src={imageUrl} alt={imageAlt} loading="lazy" />
+    : <div className="askcrystal-chat-product-card__placeholder">Crystal</div>
+
+  const surface = (
     <>
-      <ProductMedia image={product.image} title={product.title} />
-      <div className="ac-tool-product__body">
-        <div className="ac-tool-product__heading">
-          {product.badge ? <p className="ac-tool-product__badge">{product.badge}</p> : null}
-          <h4 className="ac-tool-product__title">{product.title}</h4>
+      <div className="askcrystal-chat-product-card__media">
+        {media}
+      </div>
+
+      <div className="askcrystal-chat-product-card__body">
+        <product-title className="askcrystal-chat-product-card__title">
+          <span className="title-text">{product.title}</span>
+        </product-title>
+
+        <div className="askcrystal-chat-product-card__meta">
+          <div className="askcrystal-chat-product-card__price-group">
+            {product.price ? <span className="askcrystal-chat-product-card__price askcrystal-chat-product-card__price--hydrated">{product.price}</span> : null}
+            {product.compareAtPrice ? <span className="askcrystal-chat-product-card__compare">{product.compareAtPrice}</span> : null}
+          </div>
+
+          <span className="askcrystal-chat-product-card__cta">
+            {ctaText}
+          </span>
         </div>
-        <ProductMeta product={product} ctaLabel={ctaLabel} />
       </div>
     </>
   )
 
-  return product.url
-    ? (
-        <a className="ac-tool-product ac-tool-product--single" href={product.url}>
-          {content}
-        </a>
-      )
-    : (
-        <div className="ac-tool-product ac-tool-product--single">
-          {content}
+  return (
+    <div
+      className="askcrystal-chat-product-card"
+      data-askcrystal-native-product-card
+      data-askcrystal-render-mode="hydrated"
+    >
+      <div
+        className="product-card askcrystal-chat-product-card__card"
+        data-product-id={product.id || undefined}
+      >
+        <div
+          className="product-card__content product-grid__card askcrystal-chat-product-card__content"
+          style={nativeProductCardLayoutStyle}
+        >
+          {productHref
+            ? (
+                <a className="askcrystal-chat-product-card__surface" href={productHref}>
+                  {surface}
+                </a>
+              )
+            : (
+                <div className="askcrystal-chat-product-card__surface">
+                  {surface}
+                </div>
+              )}
         </div>
-      )
+      </div>
+    </div>
+  )
 }
 
 function NativeProductCard({ product, ctaLabel }) {
@@ -196,6 +308,14 @@ function NativeProductCard({ product, ctaLabel }) {
         if (!isActive)
           return
 
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('[AskCrystal] Native product card render fell back to hydrated shell.', {
+            requestUrl,
+            error,
+            product,
+          })
+        }
+
         startTransition(() => {
           setMarkup(null)
           setLoadError(error)
@@ -210,23 +330,19 @@ function NativeProductCard({ product, ctaLabel }) {
   if (markup) {
     return (
       <div
-        className="ac-tool-product-native"
+        className="ac-tool-product-native ac-tool-product-native--native"
         dangerouslySetInnerHTML={{ __html: markup }}
       />
     )
   }
 
-  if (loadError) {
-    return (
-      <div className="ac-tool-product-native">
-        <FallbackProductCard product={product} ctaLabel={ctaLabel} />
-      </div>
-    )
-  }
-
   return (
-    <div className="ac-tool-product-native ac-tool-product-native--loading" aria-busy="true" aria-live="polite">
-      <span className="ac-tool-product-native__loading-label">Loading product card...</span>
+    <div
+      className={`ac-tool-product-native ${loadError ? 'ac-tool-product-native--fallback' : 'ac-tool-product-native--loading'}`.trim()}
+      aria-busy={loadError ? undefined : 'true'}
+      aria-live="polite"
+    >
+      <FallbackProductCard product={product} ctaLabel={ctaLabel} />
     </div>
   )
 }
@@ -236,21 +352,12 @@ function ProductCardTool(part) {
   if (!payload)
     return null
 
-  const {
-    eyebrow,
-    reason,
-    note,
-    ctaLabel,
-    product,
-  } = payload.props
+  const { ctaLabel, product } = payload.props
 
   return (
-    <ToolShell eyebrow={eyebrow} className="ac-tool--product-card">
-      {reason ? <p className="ac-tool-product__reason">{reason}</p> : null}
+    <section className="ac-tool-product-block">
       <NativeProductCard product={product} ctaLabel={ctaLabel} />
-      {product.summary ? <p className="ac-tool-product__summary">{product.summary}</p> : null}
-      {note ? <p className="ac-tool-product__note">{note}</p> : null}
-    </ToolShell>
+    </section>
   )
 }
 
