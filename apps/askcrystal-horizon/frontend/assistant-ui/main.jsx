@@ -6,13 +6,15 @@ import {
   ComposerPrimitive,
   MessagePrimitive,
   ThreadPrimitive,
+  useAssistantState,
   useMessage,
 } from '@assistant-ui/react';
 import { useExternalStoreRuntime } from '../../node_modules/@assistant-ui/react/dist/legacy-runtime/runtime-cores/external-store/useExternalStoreRuntime.js';
 import {
-  createChatComponentToolParts,
+  createChatComponentToolPart,
   extractChatComponentsFromPayload,
   extractInlineChatComponentManifest,
+  extractInlineChatComponentSegments,
   mergeChatComponents,
   stripInlineChatComponentManifestPreview,
 } from '../../../shopify/packages/storefront-ui/src/chat-components.mjs';
@@ -64,6 +66,54 @@ function getPayloadText(payload) {
   return typeof value === 'string' ? value : '';
 }
 
+function normalizeThreadSuggestions(value) {
+  const rawSuggestions = Array.isArray(value)
+    ? value
+    : Array.isArray(value?.suggestions)
+      ? value.suggestions
+      : Array.isArray(value?.data)
+        ? value.data
+        : [];
+  const seen = new Set();
+
+  return rawSuggestions
+    .map((entry) => {
+      if (typeof entry === 'string') {
+        return {
+          prompt: entry.trim(),
+        };
+      }
+
+      if (entry && typeof entry === 'object' && typeof entry.prompt === 'string') {
+        return {
+          prompt: entry.prompt.trim(),
+        };
+      }
+
+      return null;
+    })
+    .filter((entry) => entry?.prompt)
+    .filter((entry) => {
+      const dedupeKey = entry.prompt.toLowerCase();
+      if (seen.has(dedupeKey)) return false;
+      seen.add(dedupeKey);
+      return true;
+    })
+    .slice(0, 6);
+}
+
+function getPayloadSuggestions(payload) {
+  return normalizeThreadSuggestions(
+    payload?.suggestions ||
+      payload?.suggestedQuestions ||
+      payload?.suggested_questions ||
+      payload?.data?.suggestions ||
+      payload?.data?.suggestedQuestions ||
+      payload?.data?.suggested_questions ||
+      [],
+  );
+}
+
 function isSafeHref(href) {
   return /^(https?:\/\/|mailto:|\/)/i.test(href);
 }
@@ -111,6 +161,67 @@ function parseInlineMarkdown(text, keyPrefix = 'inline') {
   return nodes;
 }
 
+function parseMarkdownTableRow(line) {
+  if (typeof line !== 'string' || !line.includes('|')) return [];
+
+  const trimmed = line.trim().replace(/^\|/, '').replace(/\|$/, '');
+  if (!trimmed) return [];
+
+  return trimmed.split('|').map(cell => cell.trim());
+}
+
+function parseMarkdownTableAlignments(line) {
+  const cells = parseMarkdownTableRow(line);
+  if (!cells.length) return [];
+
+  return cells.map((cell) => {
+    if (/^:\-+\:$/.test(cell)) return 'center';
+    if (/^\-+\:$/.test(cell)) return 'right';
+    return 'left';
+  });
+}
+
+function isMarkdownTableDelimiter(line) {
+  const cells = parseMarkdownTableRow(line);
+  return cells.length > 0 && cells.every(cell => /^:?-{3,}:?$/.test(cell));
+}
+
+function isMarkdownTableRow(line) {
+  const cells = parseMarkdownTableRow(line);
+  return cells.length >= 2 && cells.some(Boolean);
+}
+
+function parseMarkdownTableBlock(lines, startIndex) {
+  const headerLine = lines[startIndex];
+  if (!isMarkdownTableRow(headerLine)) return null;
+
+  const headerCells = parseMarkdownTableRow(headerLine);
+  const nextLine = lines[startIndex + 1];
+  const hasDelimiter = isMarkdownTableDelimiter(nextLine);
+  let cursor = startIndex + (hasDelimiter ? 2 : 1);
+  const rows = [];
+
+  while (cursor < lines.length && isMarkdownTableRow(lines[cursor])) {
+    const rowCells = parseMarkdownTableRow(lines[cursor]);
+    if (rowCells.length !== headerCells.length) break;
+    rows.push(rowCells);
+    cursor += 1;
+  }
+
+  if (rows.length === 0) return null;
+
+  return {
+    headers: headerCells,
+    alignments: hasDelimiter ? parseMarkdownTableAlignments(nextLine) : headerCells.map(() => 'left'),
+    rows,
+    nextIndex: cursor,
+  };
+}
+
+function isRenderableMarkdownFence(language = '') {
+  return /^(?:md|markdown|mdx)$/i.test(language.trim());
+}
+
 function MarkdownContent({ text = '' }) {
   const lines = String(text).replace(/\r\n/g, '\n').split('\n');
   const blocks = [];
@@ -127,6 +238,7 @@ function MarkdownContent({ text = '' }) {
     const fenceMatch = line.match(/^```(\w+)?\s*$/);
     if (fenceMatch) {
       const codeLines = [];
+      const fenceLanguage = fenceMatch[1] || '';
       index += 1;
 
       while (index < lines.length && !/^```\s*$/.test(lines[index])) {
@@ -136,11 +248,19 @@ function MarkdownContent({ text = '' }) {
 
       if (index < lines.length) index += 1;
 
-      blocks.push(
-        <pre key={`code-${index}`} className="ac-markdown__code-block">
-          <code>{codeLines.join('\n')}</code>
-        </pre>,
-      );
+      if (isRenderableMarkdownFence(fenceLanguage)) {
+        blocks.push(
+          <div key={`markdown-fence-${index}`} className="ac-markdown__embedded">
+            <MarkdownContent text={codeLines.join('\n')} />
+          </div>,
+        );
+      } else {
+        blocks.push(
+          <pre key={`code-${index}`} className="ac-markdown__code-block">
+            <code>{codeLines.join('\n')}</code>
+          </pre>,
+        );
+      }
       continue;
     }
 
@@ -153,6 +273,52 @@ function MarkdownContent({ text = '' }) {
         </HeadingTag>,
       );
       index += 1;
+      continue;
+    }
+
+    if (/^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/.test(line)) {
+      blocks.push(<hr key={`rule-${index}`} className="ac-markdown__rule" />);
+      index += 1;
+      continue;
+    }
+
+    const tableBlock = parseMarkdownTableBlock(lines, index);
+    if (tableBlock) {
+      const { headers, alignments, rows, nextIndex } = tableBlock;
+      index = nextIndex;
+
+      blocks.push(
+        <div key={`table-${index}`} className="ac-markdown__table-wrap">
+          <table className="ac-markdown__table">
+            <thead>
+              <tr>
+                {headers.map((header, headerIndex) => (
+                  <th
+                    key={`table-head-${index}-${headerIndex}`}
+                    style={{ textAlign: alignments[headerIndex] || 'left' }}
+                  >
+                    {parseInlineMarkdown(header, `table-head-${index}-${headerIndex}`)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, rowIndex) => (
+                <tr key={`table-row-${index}-${rowIndex}`}>
+                  {headers.map((_, cellIndex) => (
+                    <td
+                      key={`table-cell-${index}-${rowIndex}-${cellIndex}`}
+                      style={{ textAlign: alignments[cellIndex] || 'left' }}
+                    >
+                      {parseInlineMarkdown(row[cellIndex] || '', `table-cell-${index}-${rowIndex}-${cellIndex}`)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>,
+      );
       continue;
     }
 
@@ -230,16 +396,617 @@ function MarkdownContent({ text = '' }) {
   return <div className="ac-markdown">{blocks}</div>;
 }
 
-function ThinkingIndicator({ statusText }) {
+function decodeJsonStringLiteral(literal) {
+  if (typeof literal !== 'string' || !literal) return '';
+
+  try {
+    return JSON.parse(literal);
+  } catch {
+    return literal.replace(/^"/, '').replace(/"$/, '');
+  }
+}
+
+function decodePartialJsonString(rawValue) {
+  if (typeof rawValue !== 'string' || !rawValue) return '';
+
+  let decoded = '';
+  let escaped = false;
+
+  for (let index = 0; index < rawValue.length; index += 1) {
+    const character = rawValue[index];
+
+    if (escaped) {
+      switch (character) {
+        case 'n':
+          decoded += '\n';
+          break;
+        case 'r':
+          decoded += '\r';
+          break;
+        case 't':
+          decoded += '\t';
+          break;
+        case '"':
+          decoded += '"';
+          break;
+        case '\\':
+          decoded += '\\';
+          break;
+        case '/':
+          decoded += '/';
+          break;
+        case 'b':
+          decoded += '\b';
+          break;
+        case 'f':
+          decoded += '\f';
+          break;
+        case 'u': {
+          const unicodeSlice = rawValue.slice(index + 1, index + 5);
+          if (/^[0-9a-fA-F]{4}$/.test(unicodeSlice)) {
+            decoded += String.fromCharCode(Number.parseInt(unicodeSlice, 16));
+            index += 4;
+          }
+          break;
+        }
+        default:
+          decoded += character;
+      }
+
+      escaped = false;
+      continue;
+    }
+
+    if (character === '\\') {
+      escaped = true;
+      continue;
+    }
+
+    decoded += character;
+  }
+
+  return decoded;
+}
+
+function extractPartialFinalAnswerJsonString(value) {
+  if (typeof value !== 'string' || !value) return '';
+
+  const actionInputPrefixMatch = [...value.matchAll(
+    /"action"\s*:\s*"Final Answer"[\s\S]*?"action_input"\s*:\s*"/gi,
+  )].pop();
+
+  if (!actionInputPrefixMatch || typeof actionInputPrefixMatch.index !== 'number') return '';
+
+  const valueStartIndex = actionInputPrefixMatch.index + actionInputPrefixMatch[0].length;
+  let cursor = valueStartIndex;
+  let escaped = false;
+
+  while (cursor < value.length) {
+    const character = value[cursor];
+    if (escaped) {
+      escaped = false;
+      cursor += 1;
+      continue;
+    }
+
+    if (character === '\\') {
+      escaped = true;
+      cursor += 1;
+      continue;
+    }
+
+    if (character === '"') break;
+    cursor += 1;
+  }
+
+  const rawValue = value.slice(valueStartIndex, cursor);
+  return decodePartialJsonString(rawValue).trim();
+}
+
+function extractStructuredFinalAnswer(rawValue) {
+  if (typeof rawValue !== 'string') return '';
+
+  const normalized = rawValue
+    .replace(/<minimax:tool_call>[\s\S]*?<\/minimax:tool_call>/gi, '')
+    .replace(/<invoke\b[\s\S]*?<\/invoke>/gi, '')
+    .replace(/<action_input\b[^>]*>[\s\S]*?<\/action_input>/gi, '')
+    .replace(/<parameter\b[^>]*>[\s\S]*?<\/parameter>/gi, '')
+    .trim();
+
+  if (!normalized) return '';
+
+  const finalActionStringMatch = [...normalized.matchAll(
+    /"action"\s*:\s*"Final Answer"[\s\S]*?"action_input"\s*:\s*("(?:\\.|[^"\\])*")/gi,
+  )].pop();
+
+  if (finalActionStringMatch?.[1]) {
+    const parsed = decodeJsonStringLiteral(finalActionStringMatch[1]).trim();
+    if (parsed) return parsed;
+  }
+
+  const partialJsonAnswer = extractPartialFinalAnswerJsonString(normalized);
+  if (partialJsonAnswer) return partialJsonAnswer;
+
+  const finalAnswerLabelMatch = [...normalized.matchAll(
+    /(?:^|\n)\s*final answer\s*:\s*/gim,
+  )].pop();
+
+  if (typeof finalAnswerLabelMatch?.index === 'number') {
+    const parsed = normalized
+      .slice(finalAnswerLabelMatch.index + finalAnswerLabelMatch[0].length)
+      .trim();
+    if (parsed) return parsed;
+  }
+
+  return '';
+}
+
+function stripLeadingFinalAnswerLabel(value) {
+  if (typeof value !== 'string') return '';
+
+  let nextValue = value.replace(/^\uFEFF/, '').trimStart();
+  if (!nextValue) return '';
+
+  const normalizedPrefix = nextValue
+    .slice(0, 24)
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (
+    normalizedPrefix &&
+    normalizedPrefix.length >= 3 &&
+    normalizedPrefix.length <= 'final answer:'.length &&
+    'final answer:'.startsWith(normalizedPrefix) &&
+    /^[a-z:\s]+$/i.test(nextValue.trim()) &&
+    nextValue.trim().length <= 24
+  ) {
+    return '';
+  }
+
+  const labeledMatch = [...nextValue.matchAll(/(?:^|\n)\s*final answer\s*:\s*/gim)].pop();
+  if (typeof labeledMatch?.index === 'number') {
+    nextValue = nextValue.slice(labeledMatch.index + labeledMatch[0].length).trimStart();
+  } else {
+    nextValue = nextValue.replace(/^final answer\s*:\s*/i, '');
+  }
+
+  return nextValue;
+}
+
+function sanitizeStreamingVisibleAnswer(rawAnswer) {
+  if (typeof rawAnswer !== 'string') return '';
+
+  const answer = rawAnswer
+    .replace(/<minimax:tool_call>[\s\S]*?<\/minimax:tool_call>/gi, '')
+    .replace(/<invoke\b[\s\S]*?<\/invoke>/gi, '')
+    .replace(/<action_input\b[^>]*>[\s\S]*?<\/action_input>/gi, '')
+    .replace(/<parameter\b[^>]*>[\s\S]*?<\/parameter>/gi, '')
+    .trimStart();
+
+  if (!answer) return '';
+
+  const structuredFinalAnswer = extractStructuredFinalAnswer(answer);
+  let visibleAnswer = stripLeadingFinalAnswerLabel(structuredFinalAnswer || answer);
+
+  if (!structuredFinalAnswer) {
+    if (!visibleAnswer) return '';
+
+    const strippedParagraphs = stripLeadingInternalParagraphs(visibleAnswer);
+    if (strippedParagraphs) {
+      visibleAnswer = stripLeadingFinalAnswerLabel(strippedParagraphs) || visibleAnswer;
+    }
+
+    if (looksLikeReactTrace(visibleAnswer) || looksLikeInternalReasoningParagraph(visibleAnswer)) {
+      return '';
+    }
+  }
+
+  return visibleAnswer
+    .replace(/\n{3,}/g, '\n\n')
+    .trimStart();
+}
+
+function looksLikeReactTrace(value) {
+  if (typeof value !== 'string') return false;
+
+  const normalized = value.toLowerCase();
   return (
-    <div className="ac-thinking" role="status" aria-live="polite">
-      <span className="ac-thinking__orb" aria-hidden="true" />
-      <span className="ac-thinking__text">{statusText || 'Tuning in...'}</span>
-      <span className="ac-thinking__dots" aria-hidden="true">
-        <span />
-        <span />
-        <span />
+    /\bthought:\b/.test(normalized) ||
+    /\bobservation:\b/.test(normalized) ||
+    /\baction:\b/.test(normalized) ||
+    /\bquestion:\b/.test(normalized) ||
+    /"action"\s*:/.test(normalized) ||
+    /\bfinal answer\b/.test(normalized)
+  );
+}
+
+function looksLikeInternalReasoningParagraph(value) {
+  if (typeof value !== 'string') return false;
+
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) return false;
+
+  return (
+    /^(question:?|continue\b|the user wants\b|the user has provided\b|the user asked\b|user wants\b|analysis:|thought:|thinking:|observation:|action:)/.test(normalized)
+    || /^(i am thinking about how to\b|i need to\b|i should\b|i have the skill guidance\b|i have the information needed\b|i have gathered information\b|i have found\b|i've found\b|i can now\b|let me\b|since the skill tool isn't available\b)/.test(normalized)
+    || /^(the catalog|catalog search|previous catalog searches|the search results|searching with broader terms)\b/.test(normalized)
+    || /\b(search results|search_catalog|get_product_details|tool_call|catalog lookup|parameter name=)\b/.test(normalized)
+    || /\bi have \w+ products?\b/.test(normalized)
+  );
+}
+
+function stripLeadingInternalParagraphs(value) {
+  if (typeof value !== 'string') return '';
+
+  let nextValue = value.trim();
+  if (!nextValue) return '';
+
+  const lines = nextValue.split('\n');
+  let lineIndex = 0;
+
+  while (lineIndex < lines.length) {
+    const candidateLine = lines[lineIndex].trim();
+    if (!candidateLine) {
+      lineIndex += 1;
+      continue;
+    }
+
+    if (!looksLikeInternalReasoningParagraph(candidateLine)) break;
+    lineIndex += 1;
+  }
+
+  nextValue = lines.slice(lineIndex).join('\n').trim();
+  if (!nextValue) return '';
+
+  const paragraphs = nextValue
+    .split(/\n{2,}/)
+    .map(paragraph => paragraph.trim())
+    .filter(Boolean);
+
+  let paragraphIndex = 0;
+  while (paragraphIndex < paragraphs.length && looksLikeInternalReasoningParagraph(paragraphs[paragraphIndex])) {
+    paragraphIndex += 1;
+  }
+
+  return paragraphs.slice(paragraphIndex).join('\n\n').trim();
+}
+
+function parseStatusHistory(source) {
+  if (Array.isArray(source)) {
+    return source
+      .map((entry) => (typeof entry === 'string' ? entry.trim() : ''))
+      .filter(Boolean)
+      .slice(-6);
+  }
+
+  if (typeof source === 'string') {
+    return source
+      .split('\n')
+      .map(entry => entry.trim())
+      .filter(Boolean)
+      .slice(-6);
+  }
+
+  return [];
+}
+
+function buildThinkingTheme({ statusStage = '', statusTool = '', statusText = '' }) {
+  const context = `${statusStage} ${statusTool} ${statusText}`.toLowerCase();
+
+  if (/shopify|catalog|product|variant|collection|cart|storefront|inventory|shelf/.test(context)) {
+    return [
+      'Walking the crystal shelves for the closest resonance...',
+      'Checking which pieces answer your question most clearly...',
+      'Looking for a match that feels chosen, not generic...',
+      'Comparing the quieter stones with the brighter ones...',
+      'Following the pull toward the clearest shelf match...',
+    ];
+  }
+
+  if (/knowledge|dataset|retriev|document|archive|rag|kb|search|library/.test(context)) {
+    return [
+      'Opening the archive and brushing dust from the pages...',
+      'Crossing older notes with the feeling in your question...',
+      'Pulling the clearest thread from the library...',
+      'Listening for where memory and meaning overlap...',
+      'Letting the right fragment rise to the surface...',
+    ];
+  }
+
+  if (/tarot|card|spread/.test(context)) {
+    return [
+      'Turning the cards slowly, one current at a time...',
+      'Watching which symbols insist on being seen...',
+      'Letting the spread settle before reading the pattern...',
+      'Listening for the card that changes the whole story...',
+      'Tracing the image that keeps returning to the surface...',
+    ];
+  }
+
+  if (/astrology|natal|zodiac|planet|birth|horoscope|star/.test(context)) {
+    return [
+      'Tracing the sky-map behind your question...',
+      'Checking where the planets press most strongly...',
+      'Following the brighter houses and quieter tensions...',
+      'Listening for the weather between stars and self...',
+      'Letting the chart reveal its steadier rhythm...',
+    ];
+  }
+
+  if (/bazi|shushu|taibu|fengshui|yinyuan|marriage|fate|element/.test(context)) {
+    return [
+      'Following the hidden stems beneath the surface...',
+      'Reading the pattern through timing, element, and fate...',
+      'Letting the older map reveal its structure...',
+      'Listening for the balance inside the chart...',
+      'Holding the pattern until its shape becomes clear...',
+    ];
+  }
+
+  if (/crystal|stone|chakra|healing|ritual/.test(context)) {
+    return [
+      'Holding the stones against the shape of your question...',
+      'Checking which crystal answers with steadiness...',
+      'Listening for resonance before recommendation...',
+      'Feeling for the stone that calms instead of performs...',
+      'Letting the ritual choose its own gentle center...',
+    ];
+  }
+
+  if (statusStage === 'compose' || statusStage === 'thought') {
+    return [
+      'The pattern is starting to surface...',
+      'Gathering the clearest strand before I speak...',
+      'Letting the reading take its proper shape...',
+      'Bringing symbol, shelf, and guidance into one thread...',
+      'Waiting for the answer to settle into plain language...',
+    ];
+  }
+
+  return [
+    'Settling into the thread beneath your words...',
+    'Listening for what wants to be named first...',
+    'Holding the question until the noise falls away...',
+    'Letting the reading gather around the clearest signal...',
+    'Finding the gentlest path into the answer...',
+  ];
+}
+
+function rotateSequence(sequence, offset) {
+  if (!sequence.length) return [];
+
+  const safeOffset = ((offset % sequence.length) + sequence.length) % sequence.length;
+  return [...sequence.slice(safeOffset), ...sequence.slice(0, safeOffset)];
+}
+
+function deterministicJitter(seed) {
+  const raw = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+  return raw - Math.floor(raw);
+}
+
+function interleaveThinkingSequence(ambientLines = [], toolLines = []) {
+  if (!ambientLines.length) return [...new Set(toolLines.filter(Boolean))];
+  if (!toolLines.length) return [...new Set(ambientLines.filter(Boolean))];
+
+  const sequence = [ambientLines[0]];
+  let ambientIndex = 1;
+  let toolIndex = 0;
+
+  while (ambientIndex < ambientLines.length || toolIndex < toolLines.length) {
+    if (ambientIndex < ambientLines.length) {
+      sequence.push(ambientLines[ambientIndex]);
+      ambientIndex += 1;
+    }
+
+    if (toolIndex < toolLines.length) {
+      sequence.push(toolLines[toolIndex]);
+      toolIndex += 1;
+    }
+  }
+
+  return [...new Set(sequence.filter(Boolean))];
+}
+
+function getAmbientThinkingLine({ statusText = '', statusStage = '', ambientStatusText = '', hasToolActivity = false }) {
+  if (ambientStatusText) return ambientStatusText;
+  if (statusStage && statusStage !== 'tool' && statusText) return statusText;
+  return hasToolActivity ? 'Following the clearest thread...' : 'Settling into your energy...';
+}
+
+function getThinkingSequence({
+  statusText = '',
+  statusHistoryText = '',
+  statusStage = '',
+  statusTool = '',
+  ambientStatusText = '',
+}) {
+  const toolHistory = parseStatusHistory(statusHistoryText);
+  const toolLines = [];
+
+  if (statusStage === 'tool' && statusText) {
+    toolLines.push(statusText);
+  }
+
+  toolHistory.forEach((line) => {
+    if (!toolLines.includes(line)) {
+      toolLines.push(line);
+    }
+  });
+
+  const ambientLine = getAmbientThinkingLine({
+    statusText,
+    statusStage,
+    ambientStatusText,
+    hasToolActivity: toolLines.length > 0,
+  });
+  const ambientStage = statusStage && statusStage !== 'tool'
+    ? statusStage
+    : toolLines.length > 0
+      ? 'compose'
+      : statusStage;
+  const ambientTheme = buildThinkingTheme({
+    statusStage: ambientStage,
+    statusTool: toolLines.length > 0 ? '' : statusTool,
+    statusText: ambientLine,
+  });
+  const rotationSeed = Math.round(
+    deterministicJitter(
+      ambientLine.length
+      + (toolLines.join('').length * 0.5)
+      + ambientTheme.length,
+    ) * 100,
+  );
+  const rotatedAmbientTheme = rotateSequence(ambientTheme, rotationSeed);
+
+  return interleaveThinkingSequence([ambientLine, ...rotatedAmbientTheme], toolLines);
+}
+
+function getThinkingLineDelay(line = '', stepIndex = 0) {
+  const trimmed = typeof line === 'string' ? line.trim() : '';
+  const baseDelay = 1040;
+  const punctuationPause = /[.!?。！？]$/.test(trimmed)
+    ? 220
+    : /[,;:，；：]$/.test(trimmed)
+      ? 120
+      : 0;
+  const lengthBias = Math.min(320, Math.max(0, trimmed.length * 6));
+  const jitter = Math.round((deterministicJitter(stepIndex + trimmed.length) - 0.5) * 220);
+  return Math.max(880, baseDelay + punctuationPause + lengthBias + jitter);
+}
+
+function usePrefersReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return undefined;
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handleChange = () => setPrefersReducedMotion(mediaQuery.matches);
+    handleChange();
+
+    mediaQuery.addEventListener?.('change', handleChange);
+    return () => mediaQuery.removeEventListener?.('change', handleChange);
+  }, []);
+
+  return prefersReducedMotion;
+}
+
+function ThinkingIndicator({
+  statusText,
+  statusHistoryText = '',
+  statusStage = '',
+  statusTool = '',
+  ambientStatusText = '',
+}) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const thinkingSequence = useMemo(
+    () => getThinkingSequence({
+      statusText,
+      statusHistoryText,
+      statusStage,
+      statusTool,
+      ambientStatusText,
+    }),
+    [ambientStatusText, statusHistoryText, statusStage, statusText, statusTool],
+  );
+  const [sequenceIndex, setSequenceIndex] = useState(0);
+  const [isTrackResetting, setIsTrackResetting] = useState(false);
+  const displaySequence = useMemo(() => {
+    if (thinkingSequence.length <= 2) return thinkingSequence;
+    return [...thinkingSequence, ...thinkingSequence.slice(0, 2)];
+  }, [thinkingSequence]);
+
+  useEffect(() => {
+    setSequenceIndex(0);
+    setIsTrackResetting(true);
+    const rafId = window.requestAnimationFrame(() => {
+      setIsTrackResetting(false);
+    });
+    return () => window.cancelAnimationFrame(rafId);
+  }, [thinkingSequence]);
+
+  useEffect(() => {
+    if (prefersReducedMotion || thinkingSequence.length <= 2) return undefined;
+    if (sequenceIndex >= thinkingSequence.length) return undefined;
+
+    let timeoutId;
+    let cancelled = false;
+
+    const nextIndex = sequenceIndex + 1;
+    const nextLine = displaySequence[nextIndex] || '';
+    timeoutId = window.setTimeout(() => {
+      if (cancelled) return;
+      setSequenceIndex(nextIndex);
+    }, getThinkingLineDelay(nextLine, sequenceIndex));
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [displaySequence, prefersReducedMotion, sequenceIndex, thinkingSequence.length]);
+
+  useEffect(() => {
+    if (prefersReducedMotion || thinkingSequence.length <= 2) return undefined;
+    if (sequenceIndex < thinkingSequence.length) return undefined;
+
+    const timeoutId = window.setTimeout(() => {
+      setIsTrackResetting(true);
+      setSequenceIndex(0);
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          setIsTrackResetting(false);
+        });
+      });
+    }, 720);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [prefersReducedMotion, sequenceIndex, thinkingSequence.length]);
+
+  const visibleHistory = prefersReducedMotion || thinkingSequence.length <= 2
+    ? thinkingSequence.slice(0, 2)
+    : [
+        thinkingSequence[sequenceIndex % thinkingSequence.length],
+        thinkingSequence[(sequenceIndex + 1) % thinkingSequence.length],
+      ].filter(Boolean);
+  const announcedStatus = statusText || visibleHistory[visibleHistory.length - 1] || 'Settling into your energy...';
+
+  return (
+    <div className="ac-thinking">
+      <span className="visually-hidden" role="status" aria-live="polite">
+        {announcedStatus}
       </span>
+      <div className="ac-thinking__lead" aria-hidden="true">
+        <span className="ac-thinking__orb" />
+        <span className="ac-thinking__dots">
+          <span />
+          <span />
+          <span />
+        </span>
+      </div>
+      <div className="ac-thinking__trail" aria-hidden="true">
+        {prefersReducedMotion || thinkingSequence.length <= 2 ? (
+          visibleHistory.map((line, index) => (
+            <div
+              key={`${line}-${index}`}
+              className={`ac-thinking__line${index === visibleHistory.length - 1 ? ' is-current' : ''}`}
+            >
+              {line}
+            </div>
+          ))
+        ) : (
+          <div
+            className={`ac-thinking__track${isTrackResetting ? ' is-resetting' : ''}`}
+            style={{ transform: `translateY(calc(var(--ac-thinking-line-step) * -${sequenceIndex}))` }}
+          >
+            {displaySequence.map((line, index) => (
+              <div key={`${line}-${index}`} className="ac-thinking__line">
+                {line}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -499,25 +1266,55 @@ function buildDemoReply(prompt, products) {
   };
 }
 
-function sanitizeAssistantAnswer(rawAnswer) {
+function sanitizeAssistantText(rawAnswer) {
   const answer = typeof rawAnswer === 'string' ? rawAnswer.trim() : '';
   if (!answer) return '';
 
-  const hasRawToolMarkup = /<\/?(minimax:tool_call|invoke|action_input|parameter)\b/i.test(answer);
-  if (!hasRawToolMarkup) {
-    return answer;
-  }
+  const structuredFinalAnswer = extractStructuredFinalAnswer(answer);
+  const sourceAnswer = structuredFinalAnswer || answer;
 
-  const cleaned = answer
+  const cleaned = sourceAnswer
     .replace(/<minimax:tool_call>[\s\S]*?<\/minimax:tool_call>/gi, '')
     .replace(/<invoke\b[\s\S]*?<\/invoke>/gi, '')
     .replace(/<action_input\b[^>]*>[\s\S]*?<\/action_input>/gi, '')
     .replace(/<parameter\b[^>]*>[\s\S]*?<\/parameter>/gi, '')
-    .replace(/<\/?[^>]+>/g, '')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 
-  if (cleaned && !/\b(search|browse|checking|catalog)\b/i.test(cleaned)) return cleaned;
+  if (!structuredFinalAnswer && looksLikeReactTrace(cleaned)) {
+    return '';
+  }
+
+  if (cleaned) {
+    const energyBlueprintIndex = cleaned.search(/(?:\*\*energy blueprint(?:\*\*)?|\benergy blueprint\s*:)/i);
+    const strippedAnswer = stripLeadingInternalParagraphs(cleaned);
+    const candidateAnswer = energyBlueprintIndex >= 0
+      ? cleaned.slice(energyBlueprintIndex).trim()
+      : (strippedAnswer || cleaned);
+
+    const paragraphs = candidateAnswer
+      .split(/\n{2,}/)
+      .map((paragraph) => paragraph.trim())
+      .filter(Boolean);
+
+    const visibleParagraphs = paragraphs.filter((paragraph) => {
+      return !looksLikeInternalReasoningParagraph(paragraph);
+    });
+
+    const visibleAnswer = (visibleParagraphs.length > 0 ? visibleParagraphs.join('\n\n') : candidateAnswer).trim();
+    if (visibleAnswer && !looksLikeInternalReasoningParagraph(visibleAnswer)) {
+      return visibleAnswer;
+    }
+  }
+
+  return '';
+}
+
+function sanitizeAssistantAnswer(rawAnswer) {
+  const sanitizedAnswer = sanitizeAssistantText(rawAnswer);
+  if (sanitizedAnswer) {
+    return sanitizedAnswer;
+  }
 
   return [
     'I tried to check the shelf for you, but the live catalog result was not available in this moment.',
@@ -535,34 +1332,92 @@ function normalizeAssistantReply(rawAnswer, incomingComponents = []) {
     return {
       answer,
       components,
+      sourceText: typeof rawAnswer === 'string' && rawAnswer.trim() ? rawAnswer : answer,
     };
   }
 
   if (components.length > 0) {
     return {
-      answer: '',
+      answer: 'I found a store-backed match for you below.',
       components,
+      sourceText: typeof rawAnswer === 'string' && rawAnswer.trim() ? rawAnswer : 'I found a store-backed match for you below.',
     };
   }
 
   return {
     answer: 'AskCrystal finished the request, but no guidance text came back. Please try again.',
     components: [],
+    sourceText: 'AskCrystal finished the request, but no guidance text came back. Please try again.',
   };
 }
 
 function buildAssistantParts({ text = '', components = [] } = {}) {
+  const sourceText = typeof text === 'string' ? text : '';
+  const inlineManifest = extractInlineChatComponentManifest(sourceText);
+  const mergedComponents = mergeChatComponents(components, inlineManifest.components);
+  const inlineSegments = extractInlineChatComponentSegments(sourceText);
   const parts = [];
-  const answer = stripInlineChatComponentManifestPreview(text).trim();
+  const usedComponentKeys = new Set();
+  const partRegistry = new Map();
 
-  if (answer) {
-    parts.push({
-      type: 'text',
-      text: answer,
-    });
+  const createToolKey = (part) => `${part.toolName}:${part.toolCallId}`;
+
+  for (const component of mergedComponents) {
+    const part = createChatComponentToolPart(component);
+    if (!part) continue;
+    partRegistry.set(createToolKey(part), part);
   }
 
-  parts.push(...createChatComponentToolParts(components));
+  const appendTextPart = (value) => {
+    const previewText = stripInlineChatComponentManifestPreview(value).trim();
+    const nextText = sanitizeAssistantText(previewText);
+
+    if (!nextText) return;
+
+    const previousPart = parts[parts.length - 1];
+    if (previousPart?.type === 'text') {
+      previousPart.text = `${previousPart.text}\n\n${nextText}`.trim();
+      return;
+    }
+
+    parts.push({
+      type: 'text',
+      text: nextText,
+    });
+  };
+
+  const appendComponentParts = (values) => {
+    for (const value of values) {
+      const part = createChatComponentToolPart(value);
+      if (!part) continue;
+
+      const partKey = createToolKey(part);
+      if (usedComponentKeys.has(partKey)) continue;
+
+      parts.push(partRegistry.get(partKey) || part);
+      usedComponentKeys.add(partKey);
+    }
+  };
+
+  if (inlineSegments.some(segment => segment.type === 'payload')) {
+    for (const segment of inlineSegments) {
+      if (segment.type === 'text') {
+        appendTextPart(segment.value);
+        continue;
+      }
+
+      appendComponentParts(extractChatComponentsFromPayload(segment.value));
+    }
+  } else {
+    appendTextPart(sourceText);
+  }
+
+  for (const part of partRegistry.values()) {
+    const partKey = createToolKey(part);
+    if (usedComponentKeys.has(partKey)) continue;
+    parts.push(part);
+  }
+
   return parts;
 }
 
@@ -680,6 +1535,205 @@ function throwIfAborted(signal) {
   }
 }
 
+function countSharedPrefixLength(left = '', right = '') {
+  const maxLength = Math.min(left.length, right.length);
+  let index = 0;
+
+  while (index < maxLength && left[index] === right[index]) {
+    index += 1;
+  }
+
+  return index;
+}
+
+function splitTextIntoRevealSteps(text, maxSteps = 28, speed = 'normal') {
+  if (typeof text !== 'string' || !text) return [];
+
+  const tokens = text.match(/\n+|[^\s\n]+(?:\s+)?|[ \t]+/g) || [text];
+  if (tokens.length <= maxSteps) return tokens;
+
+  if (speed === 'final') {
+    const steps = [];
+    const targetStepCount = Math.min(tokens.length, maxSteps);
+    let index = 0;
+
+    while (index < tokens.length) {
+      const remainingTokens = tokens.length - index;
+      const remainingSteps = Math.max(1, targetStepCount - steps.length);
+      const averageGroupSize = remainingTokens / remainingSteps;
+      const baseGroupSize = Math.max(1, Math.floor(averageGroupSize));
+      const varianceRoll = deterministicJitter(index + text.length + steps.length);
+      const bump = varianceRoll > 0.72 ? 1 : varianceRoll < 0.18 ? -1 : 0;
+      let groupSize = Math.max(1, Math.round(baseGroupSize + bump));
+
+      const currentToken = tokens[index] || '';
+      const trimmedCurrentToken = currentToken.trim();
+      if (/[\n]/.test(currentToken) || /[.!?。！？]$/.test(trimmedCurrentToken)) {
+        groupSize = 1;
+      } else if (/[,:;，；：]$/.test(trimmedCurrentToken)) {
+        groupSize = Math.min(groupSize, 2);
+      } else {
+        groupSize = Math.min(groupSize, 3);
+      }
+
+      steps.push(tokens.slice(index, index + groupSize).join(''));
+      index += groupSize;
+    }
+
+    return steps;
+  }
+
+  const groupSize = Math.ceil(tokens.length / maxSteps);
+  const steps = [];
+
+  for (let index = 0; index < tokens.length; index += groupSize) {
+    steps.push(tokens.slice(index, index + groupSize).join(''));
+  }
+
+  return steps;
+}
+
+function getRevealStepDelay(stepCount, speed = 'normal', stepText = '', stepIndex = 0) {
+  let baseDelay = 0;
+
+  if (speed === 'fast') {
+    if (stepCount <= 1) return 0;
+    if (stepCount <= 10) baseDelay = 16;
+    else if (stepCount <= 20) baseDelay = 11;
+    else if (stepCount <= 32) baseDelay = 8;
+    else baseDelay = 6;
+  } else if (speed === 'final') {
+    if (stepCount <= 1) return 0;
+    if (stepCount <= 8) baseDelay = 112;
+    else if (stepCount <= 16) baseDelay = 94;
+    else if (stepCount <= 28) baseDelay = 78;
+    else if (stepCount <= 44) baseDelay = 64;
+    else if (stepCount <= 64) baseDelay = 54;
+    else baseDelay = 46;
+  } else {
+    if (stepCount <= 1) return 0;
+    if (stepCount <= 8) baseDelay = 24;
+    else if (stepCount <= 16) baseDelay = 18;
+    else baseDelay = 12;
+  }
+
+  const trimmed = typeof stepText === 'string' ? stepText.trim() : '';
+  const punctuationPause = /[.!?。！？]$/.test(trimmed)
+    ? 176
+    : /[,;:，；：]$/.test(trimmed)
+      ? 104
+      : /\n/.test(stepText)
+        ? 136
+        : 0;
+  const lengthBias = speed === 'final' ? Math.min(28, Math.max(0, trimmed.length * 2 - 10)) : 0;
+  const jitterRange = speed === 'final' ? 52 : 6;
+  const jitter = Math.round((deterministicJitter(stepIndex + stepCount + trimmed.length) - 0.5) * jitterRange);
+  const cadencePulse = speed === 'final' && deterministicJitter(stepIndex * 3.17 + stepCount) > 0.78
+    ? 64 + Math.round(deterministicJitter(stepIndex + 17) * 48)
+    : 0;
+
+  return Math.max(0, baseDelay + punctuationPause + lengthBias + jitter + cadencePulse);
+}
+
+function shouldProgressivelyRevealAnswer({ currentAnswer = '', nextAnswer = '', visibleDeltaCount = 0 }) {
+  if (!nextAnswer || nextAnswer === currentAnswer) return false;
+  if (!currentAnswer) return true;
+  if (nextAnswer.startsWith(currentAnswer)) return true;
+  if (visibleDeltaCount === 0) return true;
+
+  const sharedPrefixLength = countSharedPrefixLength(currentAnswer, nextAnswer);
+  const sharedPrefixRatio = sharedPrefixLength / Math.max(1, Math.min(currentAnswer.length, nextAnswer.length));
+  return sharedPrefixRatio >= 0.65 && nextAnswer.length > currentAnswer.length;
+}
+
+function getRevealSpeed({ currentAnswer = '', visibleDeltaCount = 0 }) {
+  if (!currentAnswer || visibleDeltaCount <= 1) {
+    return 'fast';
+  }
+
+  return 'normal';
+}
+
+function waitForRevealTick(delayMs, signal) {
+  if (!delayMs) return Promise.resolve();
+
+  return new Promise((resolve, reject) => {
+    const timeoutId = globalThis.setTimeout(() => {
+      cleanup();
+      resolve();
+    }, delayMs);
+
+    const handleAbort = () => {
+      cleanup();
+      reject(createAbortError());
+    };
+
+    function cleanup() {
+      globalThis.clearTimeout(timeoutId);
+      signal?.removeEventListener?.('abort', handleAbort);
+    }
+
+    signal?.addEventListener?.('abort', handleAbort, { once: true });
+  });
+}
+
+async function progressivelyRevealAnswer({
+  currentAnswer = '',
+  nextAnswer = '',
+  abortSignal,
+  onDelta,
+  eventPayload,
+  speed = 'normal',
+}) {
+  if (!nextAnswer || nextAnswer === currentAnswer) {
+    return nextAnswer || currentAnswer;
+  }
+
+  const appendFromCurrent = Boolean(currentAnswer) && nextAnswer.startsWith(currentAnswer);
+  let revealSeed = appendFromCurrent ? currentAnswer : '';
+
+  if (!appendFromCurrent && currentAnswer) {
+    const sharedPrefixLength = countSharedPrefixLength(currentAnswer, nextAnswer);
+    const sharedPrefixRatio = sharedPrefixLength / Math.max(1, Math.min(currentAnswer.length, nextAnswer.length));
+
+    if (sharedPrefixRatio >= 0.65) {
+      revealSeed = nextAnswer.slice(0, sharedPrefixLength);
+    }
+  }
+
+  const revealTail = nextAnswer.slice(revealSeed.length);
+  if (!revealTail) {
+    if (revealSeed !== currentAnswer) {
+      onDelta?.('', revealSeed, eventPayload);
+    }
+    return nextAnswer;
+  }
+
+  const maxSteps = speed === 'fast'
+    ? (nextAnswer.length > 1400 ? 64 : nextAnswer.length > 700 ? 52 : 40)
+    : speed === 'final'
+      ? (nextAnswer.length > 1800 ? 120 : nextAnswer.length > 1200 ? 104 : nextAnswer.length > 700 ? 88 : 68)
+      : (nextAnswer.length > 1400 ? 44 : nextAnswer.length > 700 ? 36 : 28);
+  const revealSteps = splitTextIntoRevealSteps(revealTail, maxSteps, speed);
+  let revealedAnswer = revealSeed;
+
+  for (let index = 0; index < revealSteps.length; index += 1) {
+    throwIfAborted(abortSignal);
+    const step = revealSteps[index];
+    revealedAnswer += step;
+
+    const isReplaceFrame = !appendFromCurrent && index === 0;
+    onDelta?.(isReplaceFrame ? '' : step, revealedAnswer, eventPayload);
+
+    if (index < revealSteps.length - 1) {
+      const revealDelay = getRevealStepDelay(revealSteps.length, speed, step, index);
+      await waitForRevealTick(revealDelay, abortSignal);
+    }
+  }
+
+  return nextAnswer;
+}
+
 async function requestProxyStop({ apiEndpoint, taskId, sessionId, conversationId }) {
   if (!apiEndpoint || !taskId) return;
 
@@ -701,7 +1755,7 @@ async function requestProxyStop({ apiEndpoint, taskId, sessionId, conversationId
   }
 }
 
-async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversationId, sessionId, onStatus, onDelta, onComponents }) {
+async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversationId, sessionId, onStatus, onDelta, onComponents, onSuggestions }) {
   throwIfAborted(abortSignal);
   const response = await fetch(resolveStreamEndpoint(apiEndpoint), {
     method: 'POST',
@@ -733,8 +1787,10 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '';
-  let streamedAnswer = '';
+  let streamedRawAnswer = '';
+  let bufferedAnswer = '';
   let streamedComponents = [];
+  let streamedSuggestions = [];
   let latestConversationId = conversationId || null;
 
   while (true) {
@@ -768,12 +1824,24 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
           event.payload?.conversationId || event.payload?.conversation_id || latestConversationId;
       }
 
+      const payloadSuggestions = getPayloadSuggestions(event.payload);
+      if (payloadSuggestions.length) {
+        throwIfAborted(abortSignal);
+        streamedSuggestions = payloadSuggestions;
+        onSuggestions?.(payloadSuggestions, event.payload);
+        latestConversationId =
+          event.payload?.conversationId || event.payload?.conversation_id || latestConversationId;
+      }
+
       if (event.event === 'replace') {
         throwIfAborted(abortSignal);
-        const replacement = getPayloadText(event.payload);
-        if (replacement) {
-          streamedAnswer = replacement;
-          onDelta?.('', streamedAnswer, event.payload);
+        const replacementRaw = getPayloadText(event.payload);
+        if (replacementRaw) {
+          streamedRawAnswer = replacementRaw;
+          const replacement = sanitizeStreamingVisibleAnswer(streamedRawAnswer);
+          if (replacement) {
+            bufferedAnswer = replacement;
+          }
         }
 
         latestConversationId =
@@ -784,8 +1852,11 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
         throwIfAborted(abortSignal);
         const delta = getPayloadText(event.payload);
         if (delta) {
-          streamedAnswer += delta;
-          onDelta?.(delta, streamedAnswer, event.payload);
+          streamedRawAnswer += delta;
+          const nextVisibleAnswer = sanitizeStreamingVisibleAnswer(streamedRawAnswer);
+          if (nextVisibleAnswer) {
+            bufferedAnswer = nextVisibleAnswer;
+          }
         }
 
         latestConversationId =
@@ -794,24 +1865,29 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
 
       if (event.event === 'complete') {
         throwIfAborted(abortSignal);
-        const completeAnswer = getPayloadText(event.payload);
-        const finalAnswer = completeAnswer || streamedAnswer;
-        const normalizedReply = normalizeAssistantReply(finalAnswer, streamedComponents);
+        const completeRawAnswer = getPayloadText(event.payload) || streamedRawAnswer;
+        const completeAnswer = sanitizeStreamingVisibleAnswer(completeRawAnswer) || bufferedAnswer;
+        const finalAnswer = completeAnswer || bufferedAnswer;
+        const normalizedReply = normalizeAssistantReply(completeRawAnswer || finalAnswer, streamedComponents);
 
         return {
           answer: normalizedReply.answer,
           components: normalizedReply.components,
+          sourceText: normalizedReply.sourceText,
+          suggestions: payloadSuggestions.length ? payloadSuggestions : streamedSuggestions,
           conversationId: event.payload?.conversationId || event.payload?.conversation_id || latestConversationId || null,
         };
       }
     }
   }
 
-  if (streamedAnswer) {
-    const normalizedReply = normalizeAssistantReply(streamedAnswer, streamedComponents);
+  if (bufferedAnswer || streamedComponents.length > 0) {
+    const normalizedReply = normalizeAssistantReply(bufferedAnswer, streamedComponents);
     return {
       answer: normalizedReply.answer,
       components: normalizedReply.components,
+      sourceText: normalizedReply.sourceText,
+      suggestions: streamedSuggestions,
       conversationId: latestConversationId,
     };
   }
@@ -851,7 +1927,13 @@ function createAssistantMessage({
   statusText = '',
   statusStage = '',
   statusTool = '',
+  statusHistory = [],
+  ambientStatusText = '',
+  revealPulse = 0,
+  revealMode = '',
 }) {
+  const statusHistoryText = parseStatusHistory(statusHistory).join('\n');
+
   return {
     id,
     role: 'assistant',
@@ -868,9 +1950,31 @@ function createAssistantMessage({
         ...(statusText ? { statusText } : {}),
         ...(statusStage ? { statusStage } : {}),
         ...(statusTool ? { statusTool } : {}),
+        ...(statusHistoryText ? { statusHistoryText } : {}),
+        ...(ambientStatusText ? { ambientStatusText } : {}),
+        ...(revealPulse ? { revealPulse } : {}),
+        ...(revealMode ? { revealMode } : {}),
       },
     },
   };
+}
+
+function appendStatusHistory(history, nextStatus) {
+  const normalizedStage = typeof nextStatus?.stage === 'string' ? nextStatus.stage : '';
+  const normalizedMessage = typeof nextStatus?.message === 'string' ? nextStatus.message.trim() : '';
+  const existingHistory = parseStatusHistory(history);
+
+  if (normalizedStage !== 'tool' || !normalizedMessage) {
+    return existingHistory;
+  }
+
+  if (existingHistory[existingHistory.length - 1] === normalizedMessage) {
+    return existingHistory;
+  }
+
+  const dedupedHistory = existingHistory.filter(entry => entry !== normalizedMessage);
+  dedupedHistory.push(normalizedMessage);
+  return dedupedHistory.slice(-4);
 }
 
 function createCancelledAssistantMessage({ id, text = '', components = [] }) {
@@ -913,7 +2017,7 @@ function normalizeMessagesAfterCancel(nextMessages, cancelRequested) {
   return normalizedMessages;
 }
 
-async function resolveReply({ config, messages, abortSignal, conversationId, sessionId, onStatus, onDelta, onComponents }) {
+async function resolveReply({ config, messages, abortSignal, conversationId, sessionId, onStatus, onDelta, onComponents, onSuggestions }) {
   const lastUserPrompt = getLastUserPrompt(messages);
 
   if (config.runtimeMode === 'proxy' && config.apiEndpoint) {
@@ -927,6 +2031,7 @@ async function resolveReply({ config, messages, abortSignal, conversationId, ses
         onStatus,
         onDelta,
         onComponents,
+        onSuggestions,
       });
     } catch (error) {
       if (error?.name === 'AbortError') {
@@ -942,12 +2047,15 @@ async function resolveReply({ config, messages, abortSignal, conversationId, ses
   return {
     answer: demoReply.answer,
     components: demoReply.components || [],
+    suggestions: [],
+    sourceText: demoReply.answer,
     conversationId,
   };
 }
 
 function useAskCrystalRuntime(config) {
   const [messages, setMessages] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
   const activeRunRef = useRef(null);
   const activeAssistantIdRef = useRef('');
@@ -984,6 +2092,7 @@ function useAskCrystalRuntime(config) {
     activeRun?.abort();
     cancelRequestedRef.current = true;
     setIsRunning(false);
+    setSuggestions([]);
 
     if (assistantId) {
       updateAssistantMessage(assistantId, (message) =>
@@ -1019,8 +2128,10 @@ function useAskCrystalRuntime(config) {
         status: {
           type: 'running',
         },
-        statusText: 'Tuning in...',
+        statusText: 'Settling into your energy...',
         statusStage: 'listen',
+        statusHistory: [],
+        ambientStatusText: 'Settling into your energy...',
       });
       const conversationForReply = [...messagesRef.current, userMessage];
 
@@ -1029,9 +2140,11 @@ function useAskCrystalRuntime(config) {
       activeTaskIdRef.current = '';
       cancelRequestedRef.current = false;
       setIsRunning(true);
+      setSuggestions([]);
       setMessages([...conversationForReply, assistantSeed]);
-      let streamedAnswer = '';
-      let streamedComponents = [];
+      let revealedAnswer = '';
+      let bufferedComponents = [];
+      let revealPulse = 0;
 
       try {
         const result = await resolveReply({
@@ -1046,44 +2159,24 @@ function useAskCrystalRuntime(config) {
             if (normalizedStatus.taskId) {
               activeTaskIdRef.current = normalizedStatus.taskId;
             }
-            updateAssistantMessage(assistantId, () =>
+            updateAssistantMessage(assistantId, (message) =>
               createAssistantMessage({
                 id: assistantId,
                 parts: buildAssistantParts({
-                  text: streamedAnswer,
-                  components: streamedComponents,
+                  text: '',
+                  components: [],
                 }),
-                components: streamedComponents,
+                components: [],
                 status: {
                   type: 'running',
                 },
                 statusText: normalizedStatus.message,
                 statusStage: normalizedStatus.stage,
                 statusTool: normalizedStatus.tool,
-              }),
-            );
-          },
-          onDelta: (_delta, nextAnswer, eventPayload) => {
-            if (abortController.signal.aborted) return;
-            const nextTaskId = getPayloadTaskId(eventPayload);
-            if (nextTaskId) {
-              activeTaskIdRef.current = nextTaskId;
-            }
-            streamedAnswer = nextAnswer;
-            updateAssistantMessage(assistantId, () =>
-              createAssistantMessage({
-                id: assistantId,
-                parts: buildAssistantParts({
-                  text: nextAnswer,
-                  components: streamedComponents,
-                }),
-                components: streamedComponents,
-                status: {
-                  type: 'running',
-                },
-                statusText: '',
-                statusStage: '',
-                statusTool: '',
+                statusHistory: appendStatusHistory(message.metadata?.custom?.statusHistoryText, normalizedStatus),
+                ambientStatusText: normalizedStatus.stage === 'tool'
+                  ? (message.metadata?.custom?.ambientStatusText || 'Settling into your energy...')
+                  : normalizedStatus.message,
               }),
             );
           },
@@ -1093,53 +2186,96 @@ function useAskCrystalRuntime(config) {
             if (nextTaskId) {
               activeTaskIdRef.current = nextTaskId;
             }
-            streamedComponents = nextComponents;
-            updateAssistantMessage(assistantId, () =>
-              createAssistantMessage({
-                id: assistantId,
-                parts: buildAssistantParts({
-                  text: streamedAnswer,
-                  components: nextComponents,
-                }),
-                components: nextComponents,
-                status: {
-                  type: 'running',
-                },
-                statusText: '',
-                statusStage: '',
-                statusTool: '',
-              }),
-            );
+            bufferedComponents = nextComponents;
+          },
+          onSuggestions: (nextSuggestions) => {
+            if (abortController.signal.aborted) return;
+            setSuggestions(nextSuggestions);
           },
         });
 
         conversationIdRef.current = result.conversationId || conversationIdRef.current;
         activeTaskIdRef.current = '';
         cancelRequestedRef.current = false;
+        const finalComponents = result.components || bufferedComponents;
+        const finalSuggestions = normalizeThreadSuggestions(result.suggestions);
+
+        updateAssistantMessage(assistantId, () =>
+          createAssistantMessage({
+            id: assistantId,
+            parts: buildAssistantParts({
+              text: '',
+              components: [],
+            }),
+            components: [],
+            status: {
+              type: 'running',
+            },
+            statusText: '',
+            statusStage: '',
+            statusTool: '',
+            statusHistory: [],
+          }),
+        );
+
+        revealedAnswer = await progressivelyRevealAnswer({
+          currentAnswer: '',
+          nextAnswer: result.answer,
+          abortSignal: abortController.signal,
+          speed: 'final',
+          onDelta: (_delta, nextAnswer) => {
+            if (abortController.signal.aborted) return;
+            revealedAnswer = nextAnswer;
+            updateAssistantMessage(assistantId, () =>
+              createAssistantMessage({
+                id: assistantId,
+                parts: buildAssistantParts({
+                  text: nextAnswer,
+                  components: [],
+                }),
+                components: [],
+                status: {
+                  type: 'running',
+                },
+                statusText: '',
+                statusStage: '',
+                statusTool: '',
+                statusHistory: [],
+                revealPulse: (revealPulse += 1),
+                revealMode: /\n/.test(_delta || '') ? 'newline' : 'inline',
+              }),
+            );
+          },
+        });
+
         setMessages([
           ...conversationForReply,
           createAssistantMessage({
             id: assistantId,
             parts: buildAssistantParts({
-              text: result.answer,
-              components: result.components || streamedComponents,
+              text: result.sourceText || revealedAnswer,
+              components: finalComponents,
             }),
-            components: result.components || streamedComponents,
+            components: finalComponents,
             status: {
               type: 'complete',
               reason: 'stop',
             },
+            revealPulse,
+            revealMode: '',
           }),
         ]);
+        setSuggestions(finalSuggestions);
       } catch (error) {
         if (error?.name === 'AbortError') {
           activeTaskIdRef.current = '';
+          setSuggestions([]);
           setMessages([
             ...conversationForReply,
             createCancelledAssistantMessage({
               id: assistantId,
-              text: streamedAnswer,
-              components: streamedComponents,
+              text: revealedAnswer,
+              components: [],
             }),
           ]);
           return;
@@ -1148,6 +2284,7 @@ function useAskCrystalRuntime(config) {
         console.error('[AskCrystal] Assistant runtime failed.', error);
         activeTaskIdRef.current = '';
         cancelRequestedRef.current = false;
+        setSuggestions([]);
         setMessages([
           ...conversationForReply,
           createAssistantMessage({
@@ -1180,6 +2317,7 @@ function useAskCrystalRuntime(config) {
   const store = useMemo(
     () => ({
       messages,
+      suggestions,
       isRunning,
       setMessages: replaceMessages,
       onImport: replaceMessages,
@@ -1198,10 +2336,13 @@ function useAskCrystalRuntime(config) {
         },
       },
     }),
-    [isRunning, messages, onCancel, onNew, replaceMessages],
+    [isRunning, messages, onCancel, onNew, replaceMessages, suggestions],
   );
 
-  return useExternalStoreRuntime(store);
+  return {
+    runtime: useExternalStoreRuntime(store),
+    hasUserMessages: messages.some(message => message.role === 'user'),
+  };
 }
 
 function ProductCard({ product }) {
@@ -1217,67 +2358,140 @@ function ProductCard({ product }) {
       <div className="ac-homepage__product-copy">
         <p className="ac-homepage__product-meta">{product.badge || 'Bestseller'}</p>
         <h3>{product.title}</h3>
-        {product.summary ? <p>{product.summary}</p> : null}
-        <div className="ac-homepage__product-row">
-          <span className="ac-homepage__product-price">{product.price}</span>
-          <span className="ac-homepage__product-link">View</span>
-        </div>
+        <span className="ac-homepage__product-link">View product</span>
       </div>
     </a>
   );
 }
 
+function WelcomeShelf({ config }) {
+  return (
+    <div className="ac-homepage__guide-shelf">
+      <div className="ac-homepage__guide-shelf-header">
+        <div>
+          <p className="ac-homepage__shelf-kicker">Best sellers</p>
+          <h2>{config.shelfHeading}</h2>
+        </div>
+        <a className="ac-homepage__browse-link" href={config.browseUrl}>
+          Browse all
+        </a>
+      </div>
+
+      {config.products.length ? (
+        <div className="ac-homepage__product-carousel" role="list" aria-label="Featured store products">
+          {config.products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      ) : (
+        <div className="ac-homepage__empty-shelf">
+          Add a featured collection in the section settings to populate the welcome shelf.
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WelcomeGuideCard({ card }) {
+  const className = [
+    'ac-homepage__guide-card',
+    card.layout ? `ac-homepage__guide-card--${card.layout}` : '',
+  ].filter(Boolean).join(' ');
+  const content = (
+    <>
+      <div className="ac-homepage__guide-card-copy">
+        <p className="ac-homepage__guide-card-eyebrow">{card.eyebrow}</p>
+        <h3>{card.title}</h3>
+        <p>{card.description}</p>
+      </div>
+      <div className="ac-homepage__guide-card-footer">
+        <span className="ac-homepage__guide-card-action">{card.cta}</span>
+      </div>
+    </>
+  );
+
+  if (card.prompt) {
+    return (
+      <ThreadPrimitive.Suggestion
+        className={className}
+        prompt={card.prompt}
+        send
+      >
+        {content}
+      </ThreadPrimitive.Suggestion>
+    );
+  }
+
+  return (
+    <a className={className} href={card.href}>
+      {content}
+    </a>
+  );
+}
+
 function WelcomeState({ config }) {
-  const suggestions = config.suggestions.filter(Boolean);
+  const guidedCards = [
+    {
+      id: 'compatibility',
+      layout: 'portrait',
+      eyebrow: 'Relationships',
+      title: 'Read love and compatibility',
+      description: 'Explore soulmate patterns, synastry, and relationship guidance through East-meets-West metaphysics.',
+      cta: 'Open compatibility',
+      prompt: 'Can you do a love and compatibility reading for me?',
+    },
+    {
+      id: 'divination',
+      layout: 'portrait',
+      eyebrow: 'Readings',
+      title: 'Tarot, Bazi, and energy readings',
+      description: 'Use tarot, destiny reading, astrology, or a daily check-in to understand the pattern before you shop.',
+      cta: 'Start a reading',
+      prompt: 'Give me a reading using the best method for my current situation.',
+    },
+    {
+      id: 'ask-anything',
+      layout: 'wide',
+      eyebrow: 'Open chat',
+      title: 'Ask anything about crystals, rituals, or life',
+      description: 'Start with a question, a feeling, or a life situation. AskCrystal can guide, explain, and recommend without hiding the store.',
+      cta: 'Ask AskCrystal',
+      prompt: 'I have a situation in my life and want guidance plus crystal recommendations.',
+    },
+    {
+      id: 'ritual-plan',
+      layout: 'compact',
+      eyebrow: 'Daily support',
+      title: 'Build a practical ritual',
+      description: 'Get a simple cleansing, charging, or intention-setting plan around the stones you choose.',
+      cta: 'Build my ritual',
+      prompt: 'Help me build a simple crystal ritual for what I need right now.',
+    },
+    {
+      id: 'browse-store',
+      layout: 'strip',
+      eyebrow: 'Storefront',
+      title: 'Browse the full crystal shop',
+      description: 'Open the wider shelf, then return to the conversation whenever you want guidance.',
+      cta: 'Browse all products',
+      href: config.browseUrl,
+    },
+  ];
 
   return (
     <div className="ac-homepage__welcome">
-      <section className="ac-homepage__intro">
-        <p className="ac-homepage__eyebrow">{config.eyebrow}</p>
-        <h1>{config.heading}</h1>
-        <p className="ac-homepage__description">{config.description}</p>
+      <section className="ac-homepage__guide" aria-label="Guided AskCrystal paths">
+        <div className="ac-homepage__guide-header">
+          <p className="ac-homepage__guide-kicker">{config.eyebrow}</p>
+          <h1 className="ac-homepage__guide-title">{config.heading}</h1>
+        </div>
 
-        <div className="ac-homepage__suggestions" role="list" aria-label="Suggested prompts">
-          {suggestions.map((prompt) => (
-            <ThreadPrimitive.Suggestion
-              key={prompt}
-              className="ac-homepage__suggestion"
-              prompt={prompt}
-              send
-            >
-              {prompt}
-            </ThreadPrimitive.Suggestion>
+        <div className="ac-homepage__guide-grid">
+          {guidedCards.map(card => (
+            <WelcomeGuideCard key={card.id} card={card} />
           ))}
+          <WelcomeShelf config={config} />
         </div>
-
-        <div className="ac-homepage__note">
-          <span className="ac-homepage__note-mark">Guide</span>
-          <p>{config.note}</p>
-        </div>
-      </section>
-
-      <section className="ac-homepage__shelf" aria-label="Featured products">
-        <div className="ac-homepage__shelf-header">
-          <div>
-            <p className="ac-homepage__shelf-kicker">Storefront</p>
-            <h2>{config.shelfHeading}</h2>
-          </div>
-          <a className="ac-homepage__browse-link" href={config.browseUrl}>
-            Browse all
-          </a>
-        </div>
-
-        {config.products.length ? (
-          <div className="ac-homepage__product-carousel" role="list" aria-label="Featured store products">
-            {config.products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="ac-homepage__empty-shelf">
-            Add a featured collection in the section settings to populate the welcome shelf.
-          </div>
-        )}
       </section>
     </div>
   );
@@ -1362,6 +2576,42 @@ function UserMessage() {
   );
 }
 
+function MessageSuggestions() {
+  const messageId = useMessage((message) => message.id || '');
+  const messageCompleted = useMessage((message) => message.status?.type === 'complete');
+  const suggestions = useAssistantState(({ thread }) => thread.suggestions || []);
+  const isThreadRunning = useAssistantState(({ thread }) => thread.isRunning);
+  const isLatestAssistantMessage = useAssistantState(({ thread }) => {
+    for (let index = thread.messages.length - 1; index >= 0; index -= 1) {
+      const nextMessage = thread.messages[index];
+      if (nextMessage?.role === 'assistant') {
+        return nextMessage.id === messageId;
+      }
+    }
+
+    return false;
+  });
+
+  if (!messageCompleted || isThreadRunning || !isLatestAssistantMessage || !suggestions.length) {
+    return null;
+  }
+
+  return (
+    <div className="ac-message__suggestions" aria-label="Suggested follow-up prompts">
+      {suggestions.map((suggestion, index) => (
+        <ThreadPrimitive.Suggestion
+          key={`${messageId}-suggestion-${index}-${suggestion.prompt}`}
+          className="ac-message__suggestion"
+          prompt={suggestion.prompt}
+          send
+        >
+          {suggestion.prompt}
+        </ThreadPrimitive.Suggestion>
+      ))}
+    </div>
+  );
+}
+
 function AssistantMessage() {
   const assistantParts = useMessage((message) => message.content || message.parts || []);
   const assistantText = extractTextFromParts(assistantParts);
@@ -1369,22 +2619,40 @@ function AssistantMessage() {
   const isRunning = useMessage((message) => message.status?.type === 'running');
   const statusText = useMessage((message) => message.metadata?.custom?.statusText || '');
   const statusStage = useMessage((message) => message.metadata?.custom?.statusStage || '');
+  const statusTool = useMessage((message) => message.metadata?.custom?.statusTool || '');
+  const statusHistoryText = useMessage((message) => message.metadata?.custom?.statusHistoryText || '');
+  const ambientStatusText = useMessage((message) => message.metadata?.custom?.ambientStatusText || '');
+  const revealPulse = useMessage((message) => Number(message.metadata?.custom?.revealPulse || 0));
+  const revealMode = useMessage((message) => message.metadata?.custom?.revealMode || '');
+  const prefersReducedMotion = usePrefersReducedMotion();
   const isThinking = isRunning && !assistantText && !hasToolParts;
   const showInlineStatus = isRunning && (Boolean(assistantText) || hasToolParts) && statusStage === 'tool' && Boolean(statusText);
+  const revealAnimationClass = !prefersReducedMotion && revealPulse > 0
+    ? (revealPulse % 2 === 0 ? ' is-revealing-a' : ' is-revealing-b')
+    : '';
+  const revealModeClass = !prefersReducedMotion && revealMode ? ` is-reveal-${revealMode}` : '';
 
   return (
     <MessagePrimitive.Root className="ac-message ac-message--assistant">
       <div className="ac-message__label">AskCrystal Guide</div>
       <div className="ac-message__bubble ac-message__bubble--assistant">
         {isThinking ? (
-          <ThinkingIndicator statusText={statusText} />
-        ) : (
-          <MessagePrimitive.Parts
-            components={{
-              Text: ({ text }) => <MarkdownContent text={text} />,
-              ...askCrystalMessagePartComponents,
-            }}
+          <ThinkingIndicator
+            statusText={statusText}
+            statusHistoryText={statusHistoryText}
+            statusStage={statusStage}
+            statusTool={statusTool}
+            ambientStatusText={ambientStatusText}
           />
+        ) : (
+          <div className={`ac-message__content-layer${revealAnimationClass}${revealModeClass}`}>
+            <MessagePrimitive.Parts
+              components={{
+                Text: ({ text }) => <MarkdownContent text={text} />,
+                ...askCrystalMessagePartComponents,
+              }}
+            />
+          </div>
         )}
       </div>
       {showInlineStatus ? (
@@ -1392,6 +2660,7 @@ function AssistantMessage() {
           <LiveStatus statusText={statusText} />
         </div>
       ) : null}
+      <MessageSuggestions />
       <MessagePrimitive.Error>
         <div className="ac-message__error">The response was interrupted. You can retry from the composer below.</div>
       </MessagePrimitive.Error>
@@ -1400,13 +2669,45 @@ function AssistantMessage() {
 }
 
 function AskCrystalThread({ config }) {
-  const runtime = useAskCrystalRuntime(config);
+  const { runtime, hasUserMessages } = useAskCrystalRuntime(config);
+  const viewportRef = useRef(null);
+  const hasAutoScrolledIntoConversationRef = useRef(false);
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const rafId = window.requestAnimationFrame(() => {
+      if (!viewportRef.current) return;
+
+      if (!hasUserMessages) {
+        hasAutoScrolledIntoConversationRef.current = false;
+        viewportRef.current.scrollTo({ top: 0, behavior: 'auto' });
+        return;
+      }
+
+      if (!hasAutoScrolledIntoConversationRef.current) {
+        hasAutoScrolledIntoConversationRef.current = true;
+        viewportRef.current.scrollTo({ top: viewportRef.current.scrollHeight, behavior: 'auto' });
+      }
+    });
+
+    return () => window.cancelAnimationFrame(rafId);
+  }, [hasUserMessages]);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <div className="ac-homepage">
         <ThreadPrimitive.Root className="ac-homepage__thread">
-          <ThreadPrimitive.Viewport className="ac-homepage__viewport">
+          <ThreadPrimitive.Viewport
+            ref={viewportRef}
+            className="ac-homepage__viewport"
+            autoScroll={hasUserMessages}
+            turnAnchor={hasUserMessages ? 'bottom' : 'top'}
+            scrollToBottomOnInitialize={false}
+            scrollToBottomOnRunStart={hasUserMessages}
+            scrollToBottomOnThreadSwitch={hasUserMessages}
+          >
             <WelcomeState config={config} />
 
             <div className="ac-homepage__messages">
