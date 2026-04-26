@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://askcrystal.local/schemas/askcrystal_skill_result_v1.schema.json",
+  "title": "AskCrystal Skill Result V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "skill",
+    "summary",
+    "findings",
+    "follow_up_questions",
+    "recommendations",
+    "safety_note",
+    "metadata"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "needs_input",
+        "error"
+      ]
+    },
+    "skill": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "follow_up_questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "safety_note": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "confidence",
+        "missing_inputs"
+      ],
+      "properties": {
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "missing_inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_family": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string"
+        },
+        "intent_type": {
+          "type": "string"
+        },
+        "primary_method": {
+          "type": "string"
+        },
+        "next_tool": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

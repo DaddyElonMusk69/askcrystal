@@ -59,7 +59,7 @@
     "id": "385c285a-0e61-4cf1-ba49-afde28c5ce12",
     "name": "AskCrystal",
     "mode": "agent-chat",
-    "description": "Mythology-oriented crystal guidance agent",
+    "description": "Eastern metaphysics and crystal shopping guidance agent",
     "icon": "🔮",
     "icon_type": "emoji",
     "icon_background": "#1f2937",
@@ -76,12 +76,12 @@
       }
     },
     "completion_params": null,
-    "opening_statement": "I can help with mythology-guided readings, astrology, and crystal recommendations grounded in your intention."
+    "opening_statement": "I can help with Bazi, tarot, fengshui, relationship readings, numerology, and grounded crystal shopping guidance."
   },
   "agent": {
     "strategy": "react",
     "max_iteration": 3,
-    "tool_count": 30,
+    "tool_count": 11,
     "tool_refs": [
       {
         "tool_name": "get_cart",
@@ -119,63 +119,7 @@
         "enabled": true
       },
       {
-        "tool_name": "run_astro_crystal_synthesis_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_astrology_transit_checkin_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
         "tool_name": "run_bazi_chart_analysis_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_cross_mythology_synthesis_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_crystal_chakra_balance_plan_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_crystal_cleansing_and_charging_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_crystal_grid_manifestation_design_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_crystal_intention_matcher_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_deity_alignment_lookup_skill_post",
         "provider_type": "api",
         "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
         "provider_name": "askcrystal_skill_bridge",
@@ -189,49 +133,7 @@
         "enabled": true
       },
       {
-        "tool_name": "run_moon_ritual_designer_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_mythic_archetype_mapping_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_mythic_story_reframe_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_qimen_timing_direction_read_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
         "tool_name": "run_shushu_numerology_profile_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_symbolic_omen_reader_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_synastry_relationship_map_skill_post",
         "provider_type": "api",
         "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
         "provider_name": "askcrystal_skill_bridge",
@@ -252,42 +154,7 @@
         "enabled": true
       },
       {
-        "tool_name": "run_western_natal_archetype_read_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
         "tool_name": "run_yinyuan_matchmaking_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "run_ziwei_palace_theme_read_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "search_crystals_crystals_search_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "get_crystal_crystals__slug__get",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
-        "enabled": true
-      },
-      {
-        "tool_name": "list_crystals_crystals_get",
         "provider_type": "api",
         "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
         "provider_name": "askcrystal_skill_bridge",

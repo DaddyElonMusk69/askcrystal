@@ -1,0 +1,152 @@
+{
+  "contract": "askcrystal_skill_result_v1",
+  "examples": [
+    {
+      "status": "ok",
+      "skill": "shushu_numerology_profile",
+      "summary": "The profile points to a reflective and pattern-sensitive temperament with a strong need for structure during change.",
+      "findings": [
+        "The current date and birth pattern suggest a self-observing, planning-oriented phase.",
+        "The profile is better for reflection and habit design than for hard prediction."
+      ],
+      "follow_up_questions": [],
+      "recommendations": [
+        "Choose one focus area for the next 7 days instead of trying to reset everything at once.",
+        "Track one repeated emotional trigger and one repeated strength."
+      ],
+      "safety_note": "For self-reflection and wellness support only, not deterministic fate analysis.",
+      "metadata": {
+        "confidence": "medium",
+        "missing_inputs": [],
+        "source_family": "Numerologist_skills",
+        "mode": "profile",
+        "intent_type": "reading",
+        "primary_method": "numerology"
+      }
+    },
+    {
+      "status": "needs_input",
+      "skill": "bazi_chart_analysis",
+      "summary": "A proper Bazi reading needs birth timing and gender before the chart can be interpreted responsibly.",
+      "findings": [
+        "Bazi depends on accurate Four Pillars intake.",
+        "A partial chart risks producing unstable conclusions."
+      ],
+      "follow_up_questions": [
+        "What is your birth date and time, as precisely as you know it?",
+        "What gender should I use for the luck-pillar direction?"
+      ],
+      "recommendations": [
+        "If you do not know the exact time, share the closest known window."
+      ],
+      "safety_note": "For self-reflection and planning support only, not deterministic fate analysis.",
+      "metadata": {
+        "confidence": "low",
+        "missing_inputs": [
+          "birth_datetime",
+          "gender"
+        ],
+        "source_family": "bazi-skill",
+        "mode": "intake",
+        "intent_type": "reading",
+        "primary_method": "bazi"
+      }
+    },
+    {
+      "status": "ok",
+      "skill": "yinyuan_matchmaking",
+      "summary": "The relationship question points to compatibility inquiry, but the reading should stay supportive and non-fatalistic.",
+      "findings": [
+        "The strongest value in this mode is clarifying attraction patterns, friction patterns, and communication habits.",
+        "When data is limited, the result should be framed as directional rather than absolute."
+      ],
+      "follow_up_questions": [],
+      "recommendations": [
+        "Clarify whether the user wants Bazi matching, zodiac matching, or a broader relationship reading.",
+        "End with one practical communication suggestion rather than only a compatibility score."
+      ],
+      "safety_note": "For reflection and relationship support only, not a guarantee about outcomes.",
+      "metadata": {
+        "confidence": "medium",
+        "missing_inputs": [],
+        "source_family": "yinyuan-skills",
+        "mode": "matchmaking",
+        "intent_type": "reading",
+        "primary_method": "yinyuan"
+      }
+    },
+    {
+      "status": "ok",
+      "skill": "fengshui_space_audit",
+      "summary": "The layout suggests a practical fengshui review focused on flow, placement, and low-cost fixes.",
+      "findings": [
+        "The best early outputs are diagnosis, low-cost changes, and one or two higher-impact adjustments.",
+        "Advice should stay grounded in the actual space description the user provided."
+      ],
+      "follow_up_questions": [],
+      "recommendations": [
+        "Prioritize one entrance or bed-position fix before suggesting decorative changes.",
+        "Make clear which advice depends on known direction versus unknown direction."
+      ],
+      "safety_note": "For environmental reflection and habit support only, not guaranteed results.",
+      "metadata": {
+        "confidence": "medium",
+        "missing_inputs": [],
+        "source_family": "fengshui.skill",
+        "mode": "space-audit",
+        "intent_type": "reading",
+        "primary_method": "fengshui"
+      }
+    },
+    {
+      "status": "ok",
+      "skill": "tarot_spread_interpretation",
+      "summary": "The tarot response should reflect the spread structure, the question, and one actionable takeaway.",
+      "findings": [
+        "The reading should be framed as reflection guidance rather than fixed prediction.",
+        "If no cards are supplied yet, the workflow can first recommend an appropriate spread."
+      ],
+      "follow_up_questions": [],
+      "recommendations": [
+        "Use a single-card spread for quick guidance and a three-card spread for basic relationship or decision questions.",
+        "Return one concrete action for the next 48 hours."
+      ],
+      "safety_note": "For reflection and emotional processing only, not deterministic prediction.",
+      "metadata": {
+        "confidence": "medium",
+        "missing_inputs": [],
+        "source_family": "tarot-skill",
+        "mode": "interpretation",
+        "intent_type": "reading",
+        "primary_method": "tarot"
+      }
+    },
+    {
+      "status": "ok",
+      "skill": "taibu_structured_divination_router",
+      "summary": "The request is mixed, so the next step is to route it into one primary system before any full reading begins.",
+      "findings": [
+        "The question combines relationship timing with personal pattern reading, so Bazi is the best primary method.",
+        "Tarot can remain a secondary method later if the user wants event-level confirmation."
+      ],
+      "follow_up_questions": [],
+      "recommendations": [
+        "Ask for birth date, birth time, and gender before starting the Bazi reading.",
+        "Do not mix tarot interpretation into the same turn until the primary route is complete."
+      ],
+      "safety_note": "For routing and structured reflection support only, not final divination output.",
+      "metadata": {
+        "confidence": "high",
+        "missing_inputs": [
+          "birth_datetime",
+          "gender"
+        ],
+        "source_family": "taibu",
+        "mode": "router",
+        "intent_type": "mixed_reading",
+        "primary_method": "bazi",
+        "next_tool": "workflow_bazi_chart_analysis"
+      }
+    }
+  ]
+}
