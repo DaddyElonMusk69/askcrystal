@@ -1,65 +1,65 @@
 # AskCrystal
 
-This repository contains the AskCrystal agent stack and the future Shopify storefront integration.
+This repository contains the AskCrystal storefront, agent, and local runtime stack.
 
-## Repo Direction
+## Source Of Truth
 
-The repository is now organized around two major product layers:
+The repo is being normalized around deployable boundaries instead of legacy local experiment folders.
 
-1. `Agent intelligence`
-   - local Dify runtime
-   - portable Dify app DSL snapshots
-   - skill bridge
-   - knowledge base ingestion
-   - prompt and tool orchestration
+### Deployables
 
-2. `Shopify storefront integration`
-   - homepage app block
-   - app proxy backend
-   - customer identity and persistence
-   - future storefront UI implementation
+- `deployables/storefront-theme/`
+  - Shopify theme source
+- `deployables/shopify-app/`
+  - Shopify app / proxy backend
 
-## Where New Code Should Go
+### Services
 
-### Existing agent layer
+- `services/dify-agent/`
+  - versioned Dify DSL, prompts, manifests, and workflow assets
+- `services/dify-runtime/`
+  - local/self-hosted Dify runtime tree
+- `services/skill-bridge/`
+  - FastAPI skill bridge and local tool runtime
 
-- `dify-local/`
-  - local Dify source/runtime
-- `agent/dify/`
-  - versioned Dify app assets for cloud migration
-- `dify_skill_bridge/`
-  - custom skill bridge service
-- `scripts/`
-  - local setup, sync, ingestion, and operational scripts
-- `dify_kb_docs/`
-  - generated KB source docs for Dify datasets
+### Shared Packages
 
-### New storefront layer
+- `packages/storefront-ui-contract/`
+  - storefront component schema, chat parsing, and shared UI contract code
 
-- `apps/shopify/`
-  - future Shopify app and homepage integration code
+### Data
 
-Within `apps/shopify/`:
+- `data/knowledge-base/`
+  - master crystal knowledge JSON and prepared Dify ingestion corpus
 
-- `app/`
-  - Shopify app backend built on the React Router template
-- `extensions/homepage-agent/`
-  - Theme App Extension for the homepage agent block
-- `packages/storefront-ui/`
-  - shared storefront React components and primitives if needed
-- `docs/`
-  - Shopify-app-specific implementation notes
+### Scripts
 
-## Current Rule
+- `scripts/dev/`
+  - local bring-up, smoke tests, and developer utilities
+- `scripts/build/`
+  - export, prompt sync, and knowledge-base preparation
+- `scripts/ops/`
+  - Dify setup, ingestion, tool registration, and agent configuration
+- `scripts/release/`
+  - release helpers and store upload utilities
 
-Do not add new Shopify storefront code to the repository root.
+### Docs
 
-All new Shopify-facing implementation should start inside `apps/shopify/`.
+- `docs/architecture/`
+- `docs/runbooks/`
+- `docs/product/`
+- `docs/adr/`
+- `docs/roadmaps/`
 
-## Key Documents
+## Working Rule
 
-- `docs/INTEGRATED_SHOPIFY_AGENT_ROADMAP.md`
-- `docs/SHOPIFY_STOREFRONT_TECH_DECISIONS.md`
-- `docs/USER_MEMORY_AND_PERSISTENCE_ARCHITECTURE.md`
-- `docs/STORE_IDENTITY_AND_UX_NORTH_STAR.md`
-- `docs/CLOUD_DIFY_TRANSITION_PLAN.md`
+Place new code in the deployable or service that will actually own it in production.
+
+## Key Docs
+
+- `mirgration.md`
+- `docs/roadmaps/INTEGRATED_SHOPIFY_AGENT_ROADMAP.md`
+- `docs/adr/SHOPIFY_STOREFRONT_TECH_DECISIONS.md`
+- `docs/architecture/USER_MEMORY_AND_PERSISTENCE_ARCHITECTURE.md`
+- `docs/product/STORE_IDENTITY_AND_UX_NORTH_STAR.md`
+- `docs/roadmaps/CLOUD_DIFY_TRANSITION_PLAN.md`

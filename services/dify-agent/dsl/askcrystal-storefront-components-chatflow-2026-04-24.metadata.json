@@ -1,0 +1,96 @@
+{
+  "exported_at": "2026-04-24T18:48:23+08:00",
+  "source": {
+    "base_url": "http://localhost:18080",
+    "app_id": "609d694c-7064-425d-bdc8-6f76d9f62141",
+    "include_secret": false,
+    "dify_local_git_commit": "712e52222035317283fc2fe0a2221bb21db0c165",
+    "dify_local_git_describe": "712e522",
+    "system_features": {
+      "sso_enforced_for_signin": false,
+      "sso_enforced_for_signin_protocol": "",
+      "enable_marketplace": true,
+      "max_plugin_package_size": 52428800,
+      "enable_email_code_login": false,
+      "enable_email_password_login": true,
+      "enable_social_oauth_login": false,
+      "is_allow_register": false,
+      "is_allow_create_workspace": false,
+      "is_email_setup": true,
+      "license": {
+        "status": "none",
+        "expired_at": "",
+        "workspaces": {
+          "enabled": false,
+          "size": 0,
+          "limit": 0
+        }
+      },
+      "branding": {
+        "enabled": false,
+        "application_title": "",
+        "login_page_logo": "",
+        "workspace_logo": "",
+        "favicon": ""
+      },
+      "webapp_auth": {
+        "enabled": false,
+        "allow_sso": false,
+        "sso_config": {
+          "protocol": ""
+        },
+        "allow_email_code_login": false,
+        "allow_email_password_login": false
+      },
+      "plugin_installation_permission": {
+        "plugin_installation_scope": "all",
+        "restrict_to_marketplace_only": false
+      },
+      "enable_change_email": true,
+      "plugin_manager": {
+        "enabled": false
+      },
+      "trial_models": [],
+      "enable_trial_app": false,
+      "enable_explore_banner": false
+    }
+  },
+  "app": {
+    "id": "609d694c-7064-425d-bdc8-6f76d9f62141",
+    "name": "AskCrystal Storefront Components",
+    "mode": "advanced-chat",
+    "description": "Advanced chatflow for validating storefront component intent hydration in AskCrystal chat.",
+    "icon": "🔮",
+    "icon_type": "emoji",
+    "icon_background": "#1f2937",
+    "use_icon_as_answer_icon": false
+  },
+  "model": {
+    "provider": null,
+    "model": null,
+    "completion_params": null,
+    "opening_statement": null
+  },
+  "agent": {
+    "strategy": null,
+    "max_iteration": null,
+    "tool_count": 0,
+    "tool_refs": []
+  },
+  "datasets": {
+    "bound_datasets": [],
+    "workspace_inventory": [
+      {
+        "id": "57dfcd7b-19a9-4471-b988-636f7b3719d7",
+        "name": "AskCrystal-KB",
+        "description": "AskCrystal RAG corpus generated from project knowledge JSON",
+        "document_count": 52,
+        "word_count": 87648
+      }
+    ]
+  },
+  "artifacts": {
+    "dsl_file": "services/dify-agent/dsl/askcrystal-storefront-components-chatflow-2026-04-24.dsl.yml",
+    "metadata_file": "services/dify-agent/dsl/askcrystal-storefront-components-chatflow-2026-04-24.metadata.json"
+  }
+}
