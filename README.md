@@ -19,8 +19,6 @@ The repo is being normalized around deployable boundaries instead of legacy loca
   - versioned Dify DSL, prompts, manifests, and workflow assets
 - `services/dify-runtime/`
   - local/self-hosted Dify runtime tree
-- `services/skill-bridge/`
-  - FastAPI skill bridge and local tool runtime
 
 ### Shared Packages
 
@@ -55,9 +53,20 @@ The repo is being normalized around deployable boundaries instead of legacy loca
 
 Place new code in the deployable or service that will actually own it in production.
 
+## Local Development
+
+Start the current local stack from the repo root:
+
+```bash
+./scripts/dev/start_local_stack.sh
+```
+
+This brings up Dify, the Shopify app/proxy, and the theme agent bundle watcher. The Shopify theme preview is not started by default because the theme is expected to be deployed to Shopify; use `--with-theme` only when you intentionally need local `shopify theme dev`.
+
 ## Key Docs
 
 - `mirgration.md`
+- `docs/runbooks/LOCAL_RUNBOOK.md`
 - `docs/roadmaps/INTEGRATED_SHOPIFY_AGENT_ROADMAP.md`
 - `docs/adr/SHOPIFY_STOREFRONT_TECH_DECISIONS.md`
 - `docs/architecture/USER_MEMORY_AND_PERSISTENCE_ARCHITECTURE.md`

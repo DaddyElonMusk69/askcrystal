@@ -1,0 +1,1016 @@
+app:
+  description: Structured relationship guidance, compatibility, and romantic timing workflow for AskCrystal's six-method phase.
+  icon: 💕
+  icon_background: '#1f2937'
+  icon_type: emoji
+  mode: workflow
+  name: AskCrystal Yinyuan Matchmaking
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.44@2f65e26c22dd4ae2c6133f14461dceac4eeb8abdd103f1ab6c9f03618db73313
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: false
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: code
+      id: yinyuan-start-to-prepare
+      source: yinyuan_start
+      sourceHandle: source
+      target: yinyuan_prepare
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: yinyuan-prepare-to-llm
+      source: yinyuan_prepare
+      sourceHandle: source
+      target: yinyuan_llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: yinyuan-llm-to-finalize
+      source: yinyuan_llm
+      sourceHandle: source
+      target: yinyuan_finalize
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: yinyuan-finalize-to-end
+      source: yinyuan_finalize
+      sourceHandle: source
+      target: yinyuan_end_ready
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: Start
+        type: start
+        variables:
+        - label: question
+          max_length: null
+          options: []
+          required: true
+          type: paragraph
+          variable: question
+        - label: person_a
+          max_length: null
+          options: []
+          required: false
+          type: paragraph
+          variable: person_a
+        - label: person_b
+          max_length: null
+          options: []
+          required: false
+          type: paragraph
+          variable: person_b
+      height: 150
+      id: yinyuan_start
+      position:
+        x: 40
+        y: 260
+      positionAbsolute:
+        x: 40
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: |
+          def main(question: str = "", person_a: str = "", person_b: str = "") -> dict:
+              import json
+              import re
+              from datetime import datetime
+
+              zodiac_order = [
+                  "Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake",
+                  "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig",
+              ]
+              zodiac_aliases = {
+                  "rat": "Rat", "mouse": "Rat", "鼠": "Rat",
+                  "ox": "Ox", "cow": "Ox", "牛": "Ox",
+                  "tiger": "Tiger", "虎": "Tiger",
+                  "rabbit": "Rabbit", "hare": "Rabbit", "兔": "Rabbit",
+                  "dragon": "Dragon", "龙": "Dragon",
+                  "snake": "Snake", "serpent": "Snake", "蛇": "Snake",
+                  "horse": "Horse", "马": "Horse",
+                  "goat": "Goat", "sheep": "Goat", "ram": "Goat", "羊": "Goat",
+                  "monkey": "Monkey", "猴": "Monkey",
+                  "rooster": "Rooster", "chicken": "Rooster", "鸡": "Rooster",
+                  "dog": "Dog", "狗": "Dog",
+                  "pig": "Pig", "boar": "Pig", "猪": "Pig",
+              }
+              zodiac_icons = {
+                  "Rat": "🐀", "Ox": "🐂", "Tiger": "🐅", "Rabbit": "🐇",
+                  "Dragon": "🐉", "Snake": "🐍", "Horse": "🐎", "Goat": "🐐",
+                  "Monkey": "🐒", "Rooster": "🐓", "Dog": "🐕", "Pig": "🐖",
+              }
+              zodiac_from_year = {
+                  0: "Monkey", 1: "Rooster", 2: "Dog", 3: "Pig", 4: "Rat", 5: "Ox",
+                  6: "Tiger", 7: "Rabbit", 8: "Dragon", 9: "Snake", 10: "Horse", 11: "Goat",
+              }
+              harmony_pairs = {
+                  tuple(sorted(pair))
+                  for pair in [
+                      ("Rat", "Ox"), ("Tiger", "Pig"), ("Rabbit", "Dog"),
+                      ("Dragon", "Rooster"), ("Snake", "Monkey"), ("Horse", "Goat"),
+                  ]
+              }
+              clash_pairs = {
+                  tuple(sorted(pair))
+                  for pair in [
+                      ("Rat", "Horse"), ("Ox", "Goat"), ("Tiger", "Monkey"),
+                      ("Rabbit", "Rooster"), ("Dragon", "Dog"), ("Snake", "Pig"),
+                  ]
+              }
+              harm_pairs = {
+                  tuple(sorted(pair))
+                  for pair in [
+                      ("Rat", "Goat"), ("Ox", "Horse"), ("Tiger", "Snake"),
+                      ("Rabbit", "Dragon"), ("Monkey", "Pig"), ("Rooster", "Dog"),
+                  ]
+              }
+              three_harmony_groups = [
+                  {"Monkey", "Rat", "Dragon"},
+                  {"Tiger", "Horse", "Dog"},
+                  {"Snake", "Rooster", "Ox"},
+                  {"Pig", "Rabbit", "Goat"},
+              ]
+              peach_blossom = {
+                  "Tiger": {
+                      "direction": "East",
+                      "best_months": ["May", "September", "October"],
+                      "slow_month": "July",
+                      "outlook_2026": "steady",
+                  },
+                  "Horse": {
+                      "direction": "East",
+                      "best_months": ["January", "June", "October"],
+                      "slow_month": "November",
+                      "outlook_2026": "volatile",
+                  },
+                  "Dog": {
+                      "direction": "East",
+                      "best_months": ["January", "May", "September"],
+                      "slow_month": "March",
+                      "outlook_2026": "steady",
+                  },
+                  "Monkey": {
+                      "direction": "West",
+                      "best_months": ["April", "August", "November"],
+                      "slow_month": "January",
+                      "outlook_2026": "good",
+                  },
+                  "Rat": {
+                      "direction": "West",
+                      "best_months": ["July", "August", "December"],
+                      "slow_month": "May",
+                      "outlook_2026": "change-heavy",
+                  },
+                  "Dragon": {
+                      "direction": "West",
+                      "best_months": ["April", "August", "November"],
+                      "slow_month": "September",
+                      "outlook_2026": "good",
+                  },
+                  "Snake": {
+                      "direction": "South",
+                      "best_months": ["March", "July", "November"],
+                      "slow_month": "October",
+                      "outlook_2026": "quiet",
+                  },
+                  "Rooster": {
+                      "direction": "South",
+                      "best_months": ["March", "September", "December"],
+                      "slow_month": "February",
+                      "outlook_2026": "mixed",
+                  },
+                  "Ox": {
+                      "direction": "South",
+                      "best_months": ["April", "August", "December"],
+                      "slow_month": "June",
+                      "outlook_2026": "good",
+                  },
+                  "Pig": {
+                      "direction": "North",
+                      "best_months": ["February", "June", "October"],
+                      "slow_month": "April",
+                      "outlook_2026": "sensitive",
+                  },
+                  "Rabbit": {
+                      "direction": "North",
+                      "best_months": ["February", "June", "October"],
+                      "slow_month": "August",
+                      "outlook_2026": "mixed",
+                  },
+                  "Goat": {
+                      "direction": "North",
+                      "best_months": ["February", "July", "November"],
+                      "slow_month": "December",
+                      "outlook_2026": "excellent",
+                  },
+              }
+
+              def result(status, summary, findings, follow_up_questions, recommendations, missing_inputs, confidence, mode, extra_metadata=None):
+                  metadata = {
+                      "confidence": confidence,
+                      "missing_inputs": missing_inputs,
+                      "source_family": "yinyuan-skills",
+                      "mode": mode,
+                      "intent_type": "reading",
+                      "primary_method": "yinyuan",
+                  }
+                  if extra_metadata:
+                      metadata.update(extra_metadata)
+                  return {
+                      "status": status,
+                      "skill": "yinyuan_matchmaking",
+                      "summary": summary,
+                      "findings": findings,
+                      "follow_up_questions": follow_up_questions,
+                      "recommendations": recommendations,
+                      "safety_note": "For reflection and relationship support only, not a guarantee about outcomes.",
+                      "metadata": metadata,
+                  }
+
+              def clean(value: str) -> str:
+                  return re.sub(r"\s+", " ", str(value or "")).strip()
+
+              def extract_year(text: str):
+                  matches = re.findall(r"\b(19\d{2}|20\d{2})\b", text or "")
+                  if not matches:
+                      return None
+                  return int(matches[0])
+
+              def extract_zodiac(text: str):
+                  lowered = (text or "").lower()
+                  for alias, canonical in zodiac_aliases.items():
+                      if alias.lower() in lowered:
+                          return canonical
+                  year = extract_year(text or "")
+                  if year is not None:
+                      return zodiac_from_year.get(year % 12)
+                  return None
+
+              def detect_mode(question_text: str, a_text: str, b_text: str):
+                  lowered = question_text.lower()
+                  if b_text.strip():
+                      return "compatibility"
+                  if any(term in lowered for term in ["compatible", "compatibility", "match", "matchmaking", "配", "合婚", "together", "relationship with"]):
+                      return "compatibility"
+                  if any(term in lowered for term in ["when", "meet the right person", "right person", "soulmate", "single", "timing", "桃花", "red thread", "正缘"]):
+                      return "timing"
+                  return "general"
+
+              def relationship_signal(zodiac_a: str | None, zodiac_b: str | None):
+                  if not zodiac_a or not zodiac_b:
+                      return {
+                          "signal_type": "profile-guidance",
+                          "relation_type": "unknown",
+                          "score": None,
+                          "strength": "The read can still focus on communication patterns and emotional pacing.",
+                          "caution": "Without both profiles, the result should stay directional rather than precise.",
+                          "advice": "Clarify the emotional goal before judging the long-term fit.",
+                      }
+                  pair = tuple(sorted((zodiac_a, zodiac_b)))
+                  if pair in harmony_pairs:
+                      return {
+                          "signal_type": "zodiac-compatibility",
+                          "relation_type": "harmony",
+                          "score": 95,
+                          "strength": "This pairing tends to feel naturally complementary and mutually supportive.",
+                          "caution": "Strong chemistry still needs intentional communication so assumptions do not replace honesty.",
+                          "advice": "Build routines that protect the relationship from complacency.",
+                      }
+                  for group in three_harmony_groups:
+                      if zodiac_a in group and zodiac_b in group:
+                          return {
+                              "signal_type": "zodiac-compatibility",
+                              "relation_type": "three-harmony",
+                              "score": 85,
+                              "strength": "This pairing usually shares momentum, values, or emotional rhythm more easily than average.",
+                              "caution": "Because the energy flows easily, hidden issues can be ignored until they accumulate.",
+                              "advice": "Name the relationship expectations early so the ease becomes something durable.",
+                          }
+                  if pair in clash_pairs:
+                      return {
+                          "signal_type": "zodiac-compatibility",
+                          "relation_type": "clash",
+                          "score": 50,
+                          "strength": "The attraction can be vivid and growth-oriented because each person activates the other's edges.",
+                          "caution": "The main risk is pace mismatch or trying to win instead of understand.",
+                          "advice": "Use explicit repair language during conflict and avoid making big decisions during emotional spikes.",
+                      }
+                  if pair in harm_pairs:
+                      return {
+                          "signal_type": "zodiac-compatibility",
+                          "relation_type": "harm",
+                          "score": 60,
+                          "strength": "There can still be a real bond here, especially when both people value empathy and patience.",
+                          "caution": "The likely challenge is misunderstanding each other's care style or motives.",
+                          "advice": "Check whether the other person's need is closeness, space, reassurance, or clarity before reacting.",
+                      }
+                  return {
+                      "signal_type": "zodiac-compatibility",
+                      "relation_type": "general",
+                      "score": 70,
+                      "strength": "This looks more like a buildable match than a pre-scripted one, which can be a healthy sign.",
+                      "caution": "The connection may depend more on timing and emotional maturity than on immediate chemistry alone.",
+                      "advice": "Let consistency, not fantasy, be the test of fit.",
+                  }
+
+              question_clean = clean(question)
+              person_a_clean = clean(person_a)
+              person_b_clean = clean(person_b)
+              if not question_clean:
+                  intake = result(
+                      "needs_input",
+                      "A yinyuan reading needs a real relationship question before it can respond responsibly.",
+                      ["The workflow cannot decide whether the user wants compatibility, timing, or general relationship guidance without the actual question."],
+                      ["What would you like to know: whether you are compatible, when love is likely to arrive, or how to read a current relationship pattern?"],
+                      ["Keep the next question focused on one relationship theme so the answer stays useful."],
+                      ["question"],
+                      "low",
+                      "intake",
+                  )
+                  return {
+                      **intake,
+                      "question_clean": "",
+                      "person_a_clean": person_a_clean,
+                      "person_b_clean": person_b_clean,
+                      "mode_detected": "intake",
+                      "fact_brief": "",
+                      "person_a_zodiac": "",
+                      "person_b_zodiac": "",
+                      "signal_type": "",
+                      "relation_type": "",
+                      "compatibility_score": "",
+                      "peach_blossom_direction": "",
+                      "best_months": "",
+                      "slow_month": "",
+                      "year_outlook": "",
+                  }
+
+              mode_detected = detect_mode(question_clean, person_a_clean, person_b_clean)
+              zodiac_a = extract_zodiac(person_a_clean)
+              zodiac_b = extract_zodiac(person_b_clean)
+              findings = []
+              follow_up_questions = []
+              recommendations = []
+              missing_inputs = []
+              confidence = "medium"
+              extra_metadata = {}
+              fact_lines = []
+
+              if mode_detected == "compatibility" and not person_b_clean:
+                  intake = result(
+                      "needs_input",
+                      "A compatibility read needs the other person's profile before it can compare the connection responsibly.",
+                      ["The question is clearly about romantic fit, but the comparison person's details are still missing."],
+                      [
+                          "Share the other person's birth date, birth year, zodiac sign, or a short profile so I can compare the connection.",
+                          "If you want a lighter read, I can also work with just both zodiac signs."
+                      ],
+                      ["If exact birth details are unavailable, two zodiac signs are enough for a lightweight first pass."],
+                      ["person_b"],
+                      "low",
+                      "intake",
+                  )
+                  return {
+                      **intake,
+                      "question_clean": question_clean,
+                      "person_a_clean": person_a_clean,
+                      "person_b_clean": person_b_clean,
+                      "mode_detected": mode_detected,
+                      "fact_brief": "",
+                      "person_a_zodiac": zodiac_a or "",
+                      "person_b_zodiac": "",
+                      "signal_type": "",
+                      "relation_type": "",
+                      "compatibility_score": "",
+                      "peach_blossom_direction": "",
+                      "best_months": "",
+                      "slow_month": "",
+                      "year_outlook": "",
+                  }
+
+              if mode_detected == "compatibility":
+                  signal = relationship_signal(zodiac_a, zodiac_b)
+                  if not zodiac_a:
+                      missing_inputs.append("person_a")
+                      confidence = "low"
+                  if not zodiac_b:
+                      missing_inputs.append("person_b")
+                      confidence = "low"
+                  findings = [
+                      signal["strength"],
+                      signal["caution"],
+                      f"The comparison mode is {signal['relation_type'].replace('-', ' ')} rather than a fixed destiny claim.",
+                  ]
+                  recommendations = [
+                      signal["advice"],
+                      "Look for consistency under ordinary stress, not just chemistry in peak moments.",
+                  ]
+                  if missing_inputs:
+                      follow_up_questions.append("If you want a more tailored read, share both birth years or zodiac signs.")
+                  fact_lines = [
+                      f"Read mode: compatibility",
+                      f"Question: {question_clean}",
+                      f"Person A profile: {person_a_clean or 'not provided'}",
+                      f"Person B profile: {person_b_clean or 'not provided'}",
+                      f"Person A zodiac: {zodiac_icons.get(zodiac_a, '')} {zodiac_a or 'unknown'}",
+                      f"Person B zodiac: {zodiac_icons.get(zodiac_b, '')} {zodiac_b or 'unknown'}",
+                      f"Signal type: {signal['signal_type']}",
+                      f"Relation type: {signal['relation_type']}",
+                      f"Compatibility score: {signal['score'] if signal['score'] is not None else 'unknown'}",
+                      f"Strength signal: {signal['strength']}",
+                      f"Caution signal: {signal['caution']}",
+                      f"Communication advice: {signal['advice']}",
+                  ]
+                  extra_metadata = {
+                      "signal_type": signal["signal_type"],
+                      "relation_type": signal["relation_type"],
+                      "compatibility_score": str(signal["score"] or ""),
+                      "person_a_zodiac": zodiac_a or "",
+                      "person_b_zodiac": zodiac_b or "",
+                  }
+              elif mode_detected == "timing":
+                  if not zodiac_a:
+                      confidence = "low"
+                      missing_inputs.append("person_a")
+                      findings = [
+                          "Timing reads work best as trend windows, not fixed dates.",
+                          "Without a birth year or zodiac sign, the answer should stay general and supportive.",
+                      ]
+                      follow_up_questions = [
+                          "If you want a more tailored timing read, share your birth year, birth date, or zodiac sign.",
+                      ]
+                      recommendations = [
+                          "Treat the next few months as a period for expanding visibility, social rhythm, and emotional clarity.",
+                          "Notice where mutual effort appears naturally instead of forcing a storyline too quickly.",
+                      ]
+                      fact_lines = [
+                          f"Read mode: timing",
+                          f"Question: {question_clean}",
+                          f"Person A profile: {person_a_clean or 'not provided'}",
+                          "Personal timing signals are unavailable because no birth year or zodiac sign was detected.",
+                      ]
+                      extra_metadata = {
+                          "signal_type": "timing-guidance",
+                          "person_a_zodiac": "",
+                      }
+                  else:
+                      timing = peach_blossom[zodiac_a]
+                      outlook_map = {
+                          "excellent": "The current cycle looks unusually supportive for meeting aligned people through visible, warm, social contexts.",
+                          "good": "This cycle is favorable if you stay socially active and emotionally clear about what you want.",
+                          "steady": "This cycle is more about building the right conditions than forcing instant romance.",
+                          "mixed": "There is real potential here, but discernment matters more than speed.",
+                          "quiet": "This phase may reward patience and inner clarity more than dramatic pursuit.",
+                          "volatile": "The attraction field can be strong, but decisions may feel sharper or more reactive than usual.",
+                          "sensitive": "The emotional tone can be fertile but also tender, so pacing matters.",
+                          "change-heavy": "Unexpected shifts may introduce new people, but the lesson is adaptability rather than certainty.",
+                      }
+                      findings = [
+                          outlook_map.get(timing["outlook_2026"], "This cycle is better read as a trend than a fixed prophecy."),
+                          f"Your peach-blossom direction is {timing['direction']}, which traditionally points toward the spaces or social settings most likely to feel resonant.",
+                          f"The most supportive windows are {', '.join(timing['best_months'])}, while {timing['slow_month']} is better for reflection than pressure.",
+                      ]
+                      recommendations = [
+                          "Use the promising windows to say yes to invitations, introductions, and environments where conversation can unfold naturally.",
+                          "Measure alignment by calm reciprocity rather than intensity alone.",
+                      ]
+                      fact_lines = [
+                          f"Read mode: timing",
+                          f"Question: {question_clean}",
+                          f"Person A profile: {person_a_clean or 'not provided'}",
+                          f"Person A zodiac: {zodiac_icons.get(zodiac_a, '')} {zodiac_a}",
+                          f"Peach-blossom direction: {timing['direction']}",
+                          f"Best months: {', '.join(timing['best_months'])}",
+                          f"Slow month: {timing['slow_month']}",
+                          f"2026 outlook: {timing['outlook_2026']}",
+                      ]
+                      extra_metadata = {
+                          "signal_type": "timing-guidance",
+                          "person_a_zodiac": zodiac_a,
+                          "peach_blossom_direction": timing["direction"],
+                          "best_months": ", ".join(timing["best_months"]),
+                          "slow_month": timing["slow_month"],
+                          "year_outlook": timing["outlook_2026"],
+                      }
+              else:
+                  confidence = "medium" if person_a_clean else "low"
+                  if not person_a_clean:
+                      missing_inputs.append("person_a")
+                      follow_up_questions.append("If you want a more personal read, share your birth year, zodiac sign, or a short outline of the relationship context.")
+                  findings = [
+                      "General yinyuan reads are strongest when they focus on the emotional pattern underneath the relationship question.",
+                      "The healthiest signal is not instant certainty but whether the bond becomes clearer, calmer, and more mutual over time.",
+                  ]
+                  recommendations = [
+                      "Name the actual emotional need inside the question: reassurance, clarity, closure, or possibility.",
+                      "Let actions, pacing, and repair after friction tell you more than fantasy alone.",
+                  ]
+                  fact_lines = [
+                      f"Read mode: general",
+                      f"Question: {question_clean}",
+                      f"Person A profile: {person_a_clean or 'not provided'}",
+                      f"Person B profile: {person_b_clean or 'not provided'}",
+                      f"Person A zodiac: {zodiac_icons.get(zodiac_a, '')} {zodiac_a or 'unknown'}",
+                      f"Person B zodiac: {zodiac_icons.get(zodiac_b, '')} {zodiac_b or 'unknown'}",
+                  ]
+                  extra_metadata = {
+                      "signal_type": "relationship-guidance",
+                      "person_a_zodiac": zodiac_a or "",
+                      "person_b_zodiac": zodiac_b or "",
+                  }
+
+              ready = result(
+                  "ready",
+                  "The yinyuan request is ready for structured relationship interpretation.",
+                  findings,
+                  follow_up_questions,
+                  recommendations,
+                  missing_inputs,
+                  confidence,
+                  mode_detected,
+                  extra_metadata=extra_metadata,
+              )
+              return {
+                  **ready,
+                  "question_clean": question_clean,
+                  "person_a_clean": person_a_clean,
+                  "person_b_clean": person_b_clean,
+                  "mode_detected": mode_detected,
+                  "fact_brief": "\n".join(f"- {line}" for line in fact_lines),
+                  "person_a_zodiac": zodiac_a or "",
+                  "person_b_zodiac": zodiac_b or "",
+                  "signal_type": str(extra_metadata.get("signal_type") or ""),
+                  "relation_type": str(extra_metadata.get("relation_type") or ""),
+                  "compatibility_score": str(extra_metadata.get("compatibility_score") or ""),
+                  "peach_blossom_direction": str(extra_metadata.get("peach_blossom_direction") or ""),
+                  "best_months": str(extra_metadata.get("best_months") or ""),
+                  "slow_month": str(extra_metadata.get("slow_month") or ""),
+                  "year_outlook": str(extra_metadata.get("year_outlook") or ""),
+              }
+        code_language: python3
+        desc: Validate the question, infer the yinyuan mode, and extract lightweight compatibility or timing signals.
+        outputs:
+          status:
+            children: null
+            type: string
+          skill:
+            children: null
+            type: string
+          summary:
+            children: null
+            type: string
+          findings:
+            children: null
+            type: array[string]
+          follow_up_questions:
+            children: null
+            type: array[string]
+          recommendations:
+            children: null
+            type: array[string]
+          safety_note:
+            children: null
+            type: string
+          metadata:
+            children: null
+            type: object
+          question_clean:
+            children: null
+            type: string
+          person_a_clean:
+            children: null
+            type: string
+          person_b_clean:
+            children: null
+            type: string
+          mode_detected:
+            children: null
+            type: string
+          fact_brief:
+            children: null
+            type: string
+          person_a_zodiac:
+            children: null
+            type: string
+          person_b_zodiac:
+            children: null
+            type: string
+          signal_type:
+            children: null
+            type: string
+          relation_type:
+            children: null
+            type: string
+          compatibility_score:
+            children: null
+            type: string
+          peach_blossom_direction:
+            children: null
+            type: string
+          best_months:
+            children: null
+            type: string
+          slow_month:
+            children: null
+            type: string
+          year_outlook:
+            children: null
+            type: string
+        selected: false
+        title: Prepare Yinyuan Signals
+        type: code
+        variables:
+        - value_selector:
+          - yinyuan_start
+          - question
+          value_type: string
+          variable: question
+        - value_selector:
+          - yinyuan_start
+          - person_a
+          value_type: string
+          variable: person_a
+        - value_selector:
+          - yinyuan_start
+          - person_b
+          value_type: string
+          variable: person_b
+      height: 84
+      id: yinyuan_prepare
+      position:
+        x: 344
+        y: 260
+      positionAbsolute:
+        x: 344
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: Interpret the yinyuan signals and return strict JSON only.
+        memory:
+          enabled: false
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.4
+          mode: chat
+          name: glm-5
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+        - role: system
+          text: |-
+            You are the AskCrystal yinyuan relationship workflow for a structured six-skill phase.
+
+            Return strict JSON only. Do not use markdown fences. Do not include any explanation outside the JSON object.
+
+            Output shape:
+            {
+              "status": "ok",
+              "skill": "yinyuan_matchmaking",
+              "summary": "1-2 sentence relationship summary",
+              "findings": ["3-5 concise insights"],
+              "follow_up_questions": [],
+              "recommendations": ["2-4 concrete actions"],
+              "safety_note": "For reflection and relationship support only, not a guarantee about outcomes.",
+              "metadata": {
+                "confidence": "medium",
+                "missing_inputs": [],
+                "source_family": "yinyuan-skills",
+                "mode": "{{#yinyuan_prepare.mode_detected#}}",
+                "intent_type": "reading",
+                "primary_method": "yinyuan",
+                "signal_type": "{{#yinyuan_prepare.signal_type#}}",
+                "person_a_zodiac": "{{#yinyuan_prepare.person_a_zodiac#}}",
+                "person_b_zodiac": "{{#yinyuan_prepare.person_b_zodiac#}}",
+                "relation_type": "{{#yinyuan_prepare.relation_type#}}",
+                "compatibility_score": "{{#yinyuan_prepare.compatibility_score#}}",
+                "peach_blossom_direction": "{{#yinyuan_prepare.peach_blossom_direction#}}",
+                "best_months": "{{#yinyuan_prepare.best_months#}}",
+                "slow_month": "{{#yinyuan_prepare.slow_month#}}",
+                "year_outlook": "{{#yinyuan_prepare.year_outlook#}}"
+              }
+            }
+
+            Rules:
+            - Keep the tone calm, warm, and specific.
+            - Never use deterministic soulmate or fate language.
+            - Never say the pair is guaranteed or doomed.
+            - Do not mention tools, workflows, or hidden reasoning.
+            - Use the same language as the user's question.
+            - Treat timing as a trend window, not a fixed prediction.
+            - Let the summary stay compact and place the real substance in findings and recommendations.
+            - If some profile data is missing, acknowledge limits gracefully while still being helpful.
+            - If the current workflow status is needs_input, preserve that status and focus on a concise intake-style response instead of a completed read.
+        - role: user
+          text: |-
+            Current workflow status:
+            {{#yinyuan_prepare.status#}}
+
+            Question:
+            {{#yinyuan_prepare.question_clean#}}
+
+            Person A:
+            {{#yinyuan_prepare.person_a_clean#}}
+
+            Person B:
+            {{#yinyuan_prepare.person_b_clean#}}
+
+            Mode:
+            {{#yinyuan_prepare.mode_detected#}}
+
+            Structured facts:
+            {{#yinyuan_prepare.fact_brief#}}
+
+            Seed findings:
+            {{#yinyuan_prepare.findings#}}
+
+            Seed follow-up questions:
+            {{#yinyuan_prepare.follow_up_questions#}}
+
+            Seed recommendations:
+            {{#yinyuan_prepare.recommendations#}}
+        retry_config:
+          enabled: false
+          exponential_backoff:
+            enabled: false
+            max_interval: 10000
+            multiplier: 2
+          max_retries: 1
+          retry_interval: 1000
+        selected: false
+        structured_output:
+          enabled: false
+        title: Interpret Yinyuan Read
+        type: llm
+        variables: []
+        vision:
+          configs:
+            variable_selector: []
+          enabled: false
+      height: 116
+      id: yinyuan_llm
+      position:
+        x: 648
+        y: 260
+      positionAbsolute:
+        x: 648
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: |
+          def main(text: str, prepare_status: str, prepare_findings: list = None, prepare_follow_up_questions: list = None, prepare_recommendations: list = None, prepare_metadata: dict = None) -> dict:
+              import json
+              import re
+
+              def fallback_payload(raw_text: str) -> dict:
+                  cleaned = (raw_text or "").strip()
+                  summary = cleaned.split("\n")[0][:280] if cleaned else "The relationship interpretation completed, but the structured format needs a retry."
+                  findings = [line.strip("-• ") for line in cleaned.splitlines() if line.strip()][:4] or (prepare_findings or [summary])
+                  return {
+                      "status": prepare_status if prepare_status in {"ok", "needs_input"} else "ok",
+                      "skill": "yinyuan_matchmaking",
+                      "summary": summary,
+                      "findings": findings,
+                      "follow_up_questions": prepare_follow_up_questions or [],
+                      "recommendations": prepare_recommendations or ["Retry the relationship interpretation if a cleaner structured result is needed."],
+                      "safety_note": "For reflection and relationship support only, not a guarantee about outcomes.",
+                      "metadata": dict(prepare_metadata or {}),
+                  }
+
+              raw = (text or "").strip()
+              parsed = None
+              if raw:
+                  candidates = [raw]
+                  fenced = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.S)
+                  candidates.extend(fenced)
+                  brace_match = re.search(r"(\{.*\})", raw, re.S)
+                  if brace_match:
+                      candidates.append(brace_match.group(1))
+                  for candidate in candidates:
+                      try:
+                          parsed = json.loads(candidate)
+                          break
+                      except Exception:
+                          continue
+
+              payload = parsed if isinstance(parsed, dict) else fallback_payload(raw)
+              payload["status"] = payload.get("status") or (prepare_status if prepare_status in {"ok", "needs_input"} else "ok")
+              if payload["status"] not in {"ok", "needs_input"}:
+                  payload["status"] = prepare_status if prepare_status in {"ok", "needs_input"} else "ok"
+              payload["skill"] = "yinyuan_matchmaking"
+              payload["summary"] = str(payload.get("summary") or "")
+              payload["findings"] = payload.get("findings") if isinstance(payload.get("findings"), list) else (prepare_findings or [])
+              payload["follow_up_questions"] = payload.get("follow_up_questions") if isinstance(payload.get("follow_up_questions"), list) else (prepare_follow_up_questions or [])
+              payload["recommendations"] = payload.get("recommendations") if isinstance(payload.get("recommendations"), list) else (prepare_recommendations or [])
+              payload["safety_note"] = str(payload.get("safety_note") or "For reflection and relationship support only, not a guarantee about outcomes.")
+
+              metadata = dict(prepare_metadata or {})
+              llm_metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+              metadata.update(llm_metadata)
+              metadata.setdefault("confidence", "medium" if payload["status"] == "ok" else "low")
+              metadata.setdefault("missing_inputs", [])
+              payload["metadata"] = metadata
+
+              return payload
+        code_language: python3
+        desc: Parse the LLM response into the shared yinyuan workflow contract.
+        outputs:
+          status:
+            children: null
+            type: string
+          skill:
+            children: null
+            type: string
+          summary:
+            children: null
+            type: string
+          findings:
+            children: null
+            type: array[string]
+          follow_up_questions:
+            children: null
+            type: array[string]
+          recommendations:
+            children: null
+            type: array[string]
+          safety_note:
+            children: null
+            type: string
+          metadata:
+            children: null
+            type: object
+        selected: false
+        title: Finalize Yinyuan Contract
+        type: code
+        variables:
+        - value_selector:
+          - yinyuan_llm
+          - text
+          value_type: string
+          variable: text
+        - value_selector:
+          - yinyuan_prepare
+          - status
+          value_type: string
+          variable: prepare_status
+        - value_selector:
+          - yinyuan_prepare
+          - findings
+          value_type: array[string]
+          variable: prepare_findings
+        - value_selector:
+          - yinyuan_prepare
+          - follow_up_questions
+          value_type: array[string]
+          variable: prepare_follow_up_questions
+        - value_selector:
+          - yinyuan_prepare
+          - recommendations
+          value_type: array[string]
+          variable: prepare_recommendations
+        - value_selector:
+          - yinyuan_prepare
+          - metadata
+          value_type: object
+          variable: prepare_metadata
+      height: 84
+      id: yinyuan_finalize
+      position:
+        x: 960
+        y: 260
+      positionAbsolute:
+        x: 960
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - yinyuan_finalize
+          - status
+          value_type: string
+          variable: status
+        - value_selector:
+          - yinyuan_finalize
+          - skill
+          value_type: string
+          variable: skill
+        - value_selector:
+          - yinyuan_finalize
+          - summary
+          value_type: string
+          variable: summary
+        - value_selector:
+          - yinyuan_finalize
+          - findings
+          value_type: array[string]
+          variable: findings
+        - value_selector:
+          - yinyuan_finalize
+          - follow_up_questions
+          value_type: array[string]
+          variable: follow_up_questions
+        - value_selector:
+          - yinyuan_finalize
+          - recommendations
+          value_type: array[string]
+          variable: recommendations
+        - value_selector:
+          - yinyuan_finalize
+          - safety_note
+          value_type: string
+          variable: safety_note
+        - value_selector:
+          - yinyuan_finalize
+          - metadata
+          value_type: object
+          variable: metadata
+        selected: false
+        title: End
+        type: end
+      height: 238
+      id: yinyuan_end_ready
+      position:
+        x: 1264
+        y: 180
+      positionAbsolute:
+        x: 1264
+        y: 180
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.58

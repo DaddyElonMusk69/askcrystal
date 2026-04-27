@@ -6,6 +6,11 @@ DIFY_DIR="$ROOT_DIR/services/dify-runtime"
 DIFY_DOCKER_DIR="$DIFY_DIR/docker"
 DIFY_ENV="$DIFY_DOCKER_DIR/.env"
 
+# shellcheck source=../common/load_env.sh
+. "$ROOT_DIR/scripts/common/load_env.sh"
+load_env_file "$ROOT_DIR/.env"
+load_env_file "$ROOT_DIR/.env.local" override
+
 log() { printf '[setup] %s\n' "$*"; }
 
 require_cmd() {
@@ -29,7 +34,9 @@ set_env_var() {
   local key="$1"
   local value="$2"
   if has_line "^${key}=" "$DIFY_ENV"; then
-    sed -i '' "s#^${key}=.*#${key}=${value}#" "$DIFY_ENV"
+    local tmp_file="$DIFY_ENV.tmp.$$"
+    sed "s#^${key}=.*#${key}=${value}#" "$DIFY_ENV" > "$tmp_file"
+    mv "$tmp_file" "$DIFY_ENV"
   else
     printf '%s=%s\n' "$key" "$value" >> "$DIFY_ENV"
   fi
@@ -63,16 +70,18 @@ prepare_env_file() {
   fi
 
   # Local-friendly defaults
-  set_env_var EXPOSE_NGINX_PORT 18080
-  set_env_var EXPOSE_NGINX_SSL_PORT 18443
+  set_env_var EXPOSE_NGINX_PORT "${DIFY_EXPOSE_NGINX_PORT:-18080}"
+  set_env_var EXPOSE_NGINX_SSL_PORT "${DIFY_EXPOSE_NGINX_SSL_PORT:-18443}"
 
-  set_env_var CONSOLE_WEB_URL "http://localhost:18080"
+  local public_dify_url="${DIFY_PUBLIC_URL:-http://localhost:${DIFY_EXPOSE_NGINX_PORT:-18080}}"
+
+  set_env_var CONSOLE_WEB_URL "$public_dify_url"
   # Dify web entrypoint appends "/console/api" automatically.
   # Keep CONSOLE_API_URL as host root to avoid duplicate "/console/api/console/api".
-  set_env_var CONSOLE_API_URL "http://localhost:18080"
-  set_env_var SERVICE_API_URL "http://localhost:18080"
-  set_env_var APP_WEB_URL "http://localhost:18080"
-  set_env_var FILES_URL "http://localhost:18080"
+  set_env_var CONSOLE_API_URL "$public_dify_url"
+  set_env_var SERVICE_API_URL "$public_dify_url"
+  set_env_var APP_WEB_URL "$public_dify_url"
+  set_env_var FILES_URL "$public_dify_url"
 
   # Keep bootstrap simple for automation; no separate init validation step.
   set_env_var INIT_PASSWORD ""

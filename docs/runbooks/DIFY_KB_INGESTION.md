@@ -38,8 +38,8 @@ Default indexing mode is `economy` to avoid requiring embedding-provider setup d
 ```bash
 python3 scripts/ops/ingest_kb_to_dify.py \
   --base-url http://localhost:18080 \
-  --email askcrystal.admin@example.com \
-  --password Askcrystal123 \
+  --email "$DIFY_ADMIN_EMAIL" \
+  --password "$DIFY_ADMIN_PASSWORD" \
   --dataset-name AskCrystal-KB \
   --kb-dir /Users/haokaiqin/Desktop/AskCrystal/data/knowledge-base/dify_kb_docs \
   --indexing-technique economy \

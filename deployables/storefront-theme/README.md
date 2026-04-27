@@ -11,6 +11,13 @@ npm install
 
 ## Preview the theme
 
+The normal local stack does not start Shopify theme preview because this theme is expected to be deployed to Shopify. If you intentionally need local preview/debugging, run:
+
+```bash
+cd /Users/haokaiqin/Desktop/AskCrystal
+./scripts/dev/start_local_stack.sh --with-theme
+```
+
 Run the Shopify preview server against your development store:
 
 ```bash

@@ -28,9 +28,9 @@ def parse_args() -> argparse.Namespace:
         description="Sync the full Dify app model_config from a repo DSL snapshot into an existing local Dify app."
     )
     parser.add_argument("--base-url", default=os.getenv("DIFY_BASE_URL", "http://localhost:18080"))
-    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", "askcrystal.admin@example.com"))
-    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", "Askcrystal123"))
-    parser.add_argument("--app-id", default=os.getenv("DIFY_APP_ID", "385c285a-0e61-4cf1-ba49-afde28c5ce12"))
+    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", ""))
+    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", ""))
+    parser.add_argument("--app-id", default=os.getenv("DIFY_APP_ID", ""))
     parser.add_argument("--dsl", default=str(DEFAULT_DSL_PATH), help="Path to the Dify DSL file to read.")
     parser.add_argument("--dry-run", action="store_true", help="Print the parsed model_config summary without updating Dify.")
     parser.add_argument(

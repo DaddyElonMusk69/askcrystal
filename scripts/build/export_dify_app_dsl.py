@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 if str(ROOT_DIR) not in sys.path:
@@ -27,9 +28,9 @@ def parse_args() -> argparse.Namespace:
         description="Export the current AskCrystal Dify app as a cloud-importable DSL snapshot."
     )
     parser.add_argument("--base-url", default=os.getenv("DIFY_BASE_URL", "http://localhost:18080"))
-    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", "askcrystal.admin@example.com"))
-    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", "Askcrystal123"))
-    parser.add_argument("--app-id", default=os.getenv("DIFY_APP_ID", "385c285a-0e61-4cf1-ba49-afde28c5ce12"))
+    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", ""))
+    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", ""))
+    parser.add_argument("--app-id", default=os.getenv("DIFY_APP_ID", ""))
     parser.add_argument("--basename", default="askcrystal-agent")
     parser.add_argument(
         "--snapshot-tag",

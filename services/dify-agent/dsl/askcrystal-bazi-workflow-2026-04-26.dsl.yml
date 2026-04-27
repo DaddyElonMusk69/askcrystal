@@ -1,0 +1,1143 @@
+app:
+  description: Deterministic Four Pillars intake and chart-brief workflow for AskCrystal's six-method phase.
+  icon: 🎋
+  icon_background: '#1f2937'
+  icon_type: emoji
+  mode: workflow
+  name: AskCrystal Bazi Chart Analysis
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.45@3b8f3c50ee48f62e45f95957f3441492052f0b1dbc1c6eae71034d7c6d69fe11
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: false
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: code
+      id: bazi-start-to-prepare
+      source: bazi_start
+      sourceHandle: source
+      target: bazi_prepare
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: bazi-prepare-to-llm
+      source: bazi_prepare
+      sourceHandle: source
+      target: bazi_llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: bazi-llm-to-finalize
+      source: bazi_llm
+      sourceHandle: source
+      target: bazi_finalize
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: bazi-finalize-to-end
+      source: bazi_finalize
+      sourceHandle: source
+      target: bazi_end_ready
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: Start
+        type: start
+        variables:
+        - label: birth_datetime
+          max_length: null
+          options: []
+          required: true
+          type: text-input
+          variable: birth_datetime
+        - label: gender
+          max_length: null
+          options: []
+          required: true
+          type: text-input
+          variable: gender
+        - label: birth_place
+          max_length: null
+          options: []
+          required: false
+          type: text-input
+          variable: birth_place
+        - label: calendar_note
+          max_length: null
+          options: []
+          required: false
+          type: text-input
+          variable: calendar_note
+        - label: user_goal
+          max_length: null
+          options: []
+          required: false
+          type: text-input
+          variable: user_goal
+      height: 230
+      id: bazi_start
+      position:
+        x: 40
+        y: 260
+      positionAbsolute:
+        x: 40
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: |
+          def main(birth_datetime: str = "", gender: str = "", birth_place: str = "", calendar_note: str = "", user_goal: str = "") -> dict:
+              import json
+              import re
+              from datetime import datetime
+
+              TIANGAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
+              TIANGAN_WUXING = ["木", "木", "火", "火", "土", "土", "金", "金", "水", "水"]
+              TIANGAN_YINYANG = ["陽", "陰", "陽", "陰", "陽", "陰", "陽", "陰", "陽", "陰"]
+              DIZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]
+              DIZHI_WUXING = ["水", "土", "木", "木", "土", "火", "火", "土", "金", "金", "土", "水"]
+              DIZHI_SHENGXIAO = ["鼠", "牛", "虎", "兔", "龍", "蛇", "馬", "羊", "猴", "雞", "狗", "豬"]
+              DIZHI_CANGGAN = {
+                  "子": ["癸"],
+                  "丑": ["己", "癸", "辛"],
+                  "寅": ["甲", "丙", "戊"],
+                  "卯": ["乙"],
+                  "辰": ["戊", "乙", "癸"],
+                  "巳": ["丙", "戊", "庚"],
+                  "午": ["丁", "己"],
+                  "未": ["己", "丁", "乙"],
+                  "申": ["庚", "壬", "戊"],
+                  "酉": ["辛"],
+                  "戌": ["戊", "辛", "丁"],
+                  "亥": ["壬", "甲"],
+              }
+              SHICHEN = {
+                  23: 0, 0: 0,
+                  1: 1, 2: 1,
+                  3: 2, 4: 2,
+                  5: 3, 6: 3,
+                  7: 4, 8: 4,
+                  9: 5, 10: 5,
+                  11: 6, 12: 6,
+                  13: 7, 14: 7,
+                  15: 8, 16: 8,
+                  17: 9, 18: 9,
+                  19: 10, 20: 10,
+                  21: 11, 22: 11,
+              }
+              SHICHEN_LABELS = {
+                  0: "子時", 1: "丑時", 2: "寅時", 3: "卯時", 4: "辰時", 5: "巳時",
+                  6: "午時", 7: "未時", 8: "申時", 9: "酉時", 10: "戌時", 11: "亥時",
+              }
+              SHICHEN_ALIASES = {
+                  "子時": 23, "子时": 23,
+                  "丑時": 1, "丑时": 1,
+                  "寅時": 3, "寅时": 3,
+                  "卯時": 5, "卯时": 5,
+                  "辰時": 7, "辰时": 7,
+                  "巳時": 9, "巳时": 9,
+                  "午時": 11, "午时": 11,
+                  "未時": 13, "未时": 13,
+                  "申時": 15, "申时": 15,
+                  "酉時": 17, "酉时": 17,
+                  "戌時": 19, "戌时": 19,
+                  "亥時": 21, "亥时": 21,
+              }
+              SHISHEN_NAMES = {
+                  (0, 0): "比肩", (0, 1): "劫財",
+                  (1, 0): "食神", (1, 1): "傷官",
+                  (2, 0): "偏財", (2, 1): "正財",
+                  (3, 0): "七殺", (3, 1): "正官",
+                  (4, 0): "偏印", (4, 1): "正印",
+              }
+              JIEQI_DATES = {
+                  1: [("小寒", 6), ("大寒", 20)],
+                  2: [("立春", 4), ("雨水", 19)],
+                  3: [("驚蟄", 6), ("春分", 21)],
+                  4: [("清明", 5), ("穀雨", 20)],
+                  5: [("立夏", 6), ("小滿", 21)],
+                  6: [("芒種", 6), ("夏至", 21)],
+                  7: [("小暑", 7), ("大暑", 23)],
+                  8: [("立秋", 8), ("處暑", 23)],
+                  9: [("白露", 8), ("秋分", 23)],
+                  10: [("寒露", 8), ("霜降", 24)],
+                  11: [("立冬", 8), ("小雪", 22)],
+                  12: [("大雪", 7), ("冬至", 22)],
+              }
+              WINDOW_ALIASES = [
+                  ("凌晨", 1, "Used 凌晨 as an approximate time window."),
+                  ("早上", 8, "Used 早上 as an approximate time window."),
+                  ("清晨", 6, "Used 清晨 as an approximate time window."),
+                  ("上午", 9, "Used 上午 as an approximate time window."),
+                  ("中午", 12, "Used 中午 as an approximate time window."),
+                  ("午後", 15, "Used 午後 as an approximate time window."),
+                  ("下午", 15, "Used 下午 as an approximate time window."),
+                  ("傍晚", 18, "Used 傍晚 as an approximate time window."),
+                  ("晚上", 20, "Used 晚上 as an approximate time window."),
+                  ("夜裡", 22, "Used 夜裡 as an approximate time window."),
+                  ("夜里", 22, "Used 夜里 as an approximate time window."),
+              ]
+
+              def clean(value: str) -> str:
+                  return re.sub(r"\s+", " ", str(value or "")).strip()
+
+              def normalize_gender(value: str) -> str:
+                  lowered = clean(value).lower()
+                  if lowered in {"男", "male", "man", "m", "boy", "masculine"}:
+                      return "男"
+                  if lowered in {"女", "female", "woman", "f", "girl", "feminine"}:
+                      return "女"
+                  return ""
+
+              def detect_calendar_mode(*values: str) -> str:
+                  combined = " ".join(clean(value) for value in values if clean(value))
+                  lowered = combined.lower()
+                  lunar_terms = ["農曆", "农历", "陰曆", "阴历", "lunar", "閏", "闰月"]
+                  solar_terms = ["陽曆", "阳历", "公曆", "公历", "solar", "gregorian"]
+                  if any(term.lower() in lowered for term in lunar_terms):
+                      return "lunar"
+                  if any(term.lower() in lowered for term in solar_terms):
+                      return "solar"
+                  return "unspecified"
+
+              def shichen_label_from_hour(hour: int) -> str:
+                  return SHICHEN_LABELS.get(SHICHEN.get(hour, 0), "子時")
+
+              def parse_birth_datetime(text: str):
+                  raw = clean(text)
+                  if not raw:
+                      return None, [], "low"
+
+                  normalized = (
+                      raw.replace("：", ":")
+                      .replace("點", "点")
+                      .replace("時", "时")
+                      .replace("號", "日")
+                      .replace("号", "日")
+                  )
+                  date_match = re.search(r"(19\d{2}|20\d{2})\D{0,3}(\d{1,2})\D{0,3}(\d{1,2})", normalized)
+                  if not date_match:
+                      return None, ["The date could not be parsed into year-month-day."], "low"
+
+                  year, month, day = map(int, date_match.groups())
+                  try:
+                      datetime(year, month, day)
+                  except ValueError:
+                      return None, ["The calendar date is invalid."], "low"
+
+                  notes = []
+                  time_source = ""
+                  hour = None
+                  minute = 0
+                  confidence = "high"
+
+                  for alias, mapped_hour in SHICHEN_ALIASES.items():
+                      if alias in raw:
+                          hour = mapped_hour
+                          minute = 0
+                          time_source = "shichen"
+                          confidence = "medium"
+                          notes.append(f"Mapped {alias} to the representative hour {mapped_hour:02d}:00.")
+                          break
+
+                  if hour is None:
+                      tail = normalized[date_match.end():]
+                      time_match = re.search(r"(?<!\d)(\d{1,2})(?:\s*[:点时h]\s*(\d{1,2}))?\s*(am|pm)?", tail, re.I)
+                      if time_match:
+                          hour = int(time_match.group(1))
+                          minute = int(time_match.group(2) or 0)
+                          suffix = (time_match.group(3) or "").lower()
+                          lowered = raw.lower()
+                          if suffix == "pm" and hour < 12:
+                              hour += 12
+                          if suffix == "am" and hour == 12:
+                              hour = 0
+                          if suffix == "" and hour < 12 and any(term in lowered for term in ["下午", "晚上", "傍晚", "午後"]):
+                              hour += 12
+                          if suffix == "" and hour == 12 and "凌晨" in raw:
+                              hour = 0
+                          if not (0 <= hour <= 23 and 0 <= minute <= 59):
+                              return None, ["The time portion is outside a valid 24-hour range."], "low"
+                          time_source = "exact"
+                      else:
+                          for alias, mapped_hour, note in WINDOW_ALIASES:
+                              if alias in raw:
+                                  hour = mapped_hour
+                                  minute = 0
+                                  time_source = "window"
+                                  confidence = "medium"
+                                  notes.append(note)
+                                  break
+
+                  if hour is None:
+                      return {
+                          "year": year,
+                          "month": month,
+                          "day": day,
+                          "hour": None,
+                          "minute": None,
+                          "normalized": f"{year:04d}-{month:02d}-{day:02d}",
+                          "time_source": "missing",
+                          "approximate": True,
+                          "shichen_label": "",
+                      }, ["The time was missing or too vague to map to an hour pillar."], "low"
+
+                  return {
+                      "year": year,
+                      "month": month,
+                      "day": day,
+                      "hour": hour,
+                      "minute": minute,
+                      "normalized": f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}",
+                      "time_source": time_source,
+                      "approximate": time_source in {"shichen", "window"},
+                      "shichen_label": shichen_label_from_hour(hour),
+                  }, notes, confidence
+
+              def get_jieqi_month(year: int, month: int, day: int) -> int:
+                  month_map = {
+                      2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6,
+                      8: 7, 9: 8, 10: 9, 11: 10, 12: 11, 1: 12,
+                  }
+                  jieqi = JIEQI_DATES.get(month, [])
+                  jie_day = jieqi[0][1] if jieqi else 6
+                  if day >= jie_day:
+                      return month_map.get(month, month)
+                  prev_month = month - 1 if month > 1 else 12
+                  return month_map.get(prev_month, prev_month)
+
+              def get_year_ganzhi(year: int, month: int, day: int):
+                  lichun_day = JIEQI_DATES[2][0][1]
+                  if month < 2 or (month == 2 and day < lichun_day):
+                      year -= 1
+                  offset = year - 1984
+                  return offset % 10, offset % 12
+
+              def get_month_ganzhi(year_gan: int, jieqi_month: int):
+                  month_zhi = (jieqi_month + 1) % 12
+                  month_gan_start = {0: 2, 1: 4, 2: 6, 3: 8, 4: 0, 5: 2, 6: 4, 7: 6, 8: 8, 9: 0}
+                  start_gan = month_gan_start[year_gan]
+                  month_gan = (start_gan + jieqi_month - 1) % 10
+                  return month_gan, month_zhi
+
+              def get_day_ganzhi(year: int, month: int, day: int):
+                  a = (14 - month) // 12
+                  y = year + 4800 - a
+                  m = month + 12 * a - 3
+                  jd = day + (153 * m + 2) // 5 + 365 * y + y // 4 - y // 100 + y // 400 - 32045
+                  offset = jd - 2445701
+                  return offset % 10, offset % 12
+
+              def get_hour_ganzhi(day_gan: int, hour: int):
+                  hour_zhi = SHICHEN.get(hour, 0)
+                  hour_gan_start = {0: 0, 1: 2, 2: 4, 3: 6, 4: 8, 5: 0, 6: 2, 7: 4, 8: 6, 9: 8}
+                  start_gan = hour_gan_start[day_gan]
+                  hour_gan = (start_gan + hour_zhi) % 10
+                  return hour_gan, hour_zhi
+
+              def get_shishen(day_gan: int, target_gan: int) -> str:
+                  day_wuxing = day_gan // 2
+                  target_wuxing = target_gan // 2
+                  day_yy = day_gan % 2
+                  target_yy = target_gan % 2
+                  relation = (target_wuxing - day_wuxing) % 5
+                  same_yy = 0 if day_yy == target_yy else 1
+                  return SHISHEN_NAMES.get((relation, same_yy), "")
+
+              def count_wuxing(pillars):
+                  count = {"金": 0.0, "木": 0.0, "水": 0.0, "火": 0.0, "土": 0.0}
+                  for gan, zhi in pillars:
+                      count[TIANGAN_WUXING[gan]] += 1
+                      count[DIZHI_WUXING[zhi]] += 1
+                      for hidden in DIZHI_CANGGAN[DIZHI[zhi]]:
+                          hidden_index = TIANGAN.index(hidden)
+                          count[TIANGAN_WUXING[hidden_index]] += 0.5
+                  return count
+
+              def analyze_rizhu_strength(day_gan: int, month_zhi: int, pillars):
+                  day_wuxing = TIANGAN_WUXING[day_gan]
+                  month_wuxing = DIZHI_WUXING[month_zhi]
+                  wuxing_order = ["木", "火", "土", "金", "水"]
+                  day_idx = wuxing_order.index(day_wuxing)
+                  if day_wuxing == month_wuxing:
+                      month_strength = "旺"
+                  elif wuxing_order[(day_idx + 1) % 5] == month_wuxing:
+                      month_strength = "相"
+                  elif wuxing_order[(day_idx + 4) % 5] == month_wuxing:
+                      month_strength = "休"
+                  elif wuxing_order[(day_idx + 3) % 5] == month_wuxing:
+                      month_strength = "囚"
+                  else:
+                      month_strength = "死"
+                  root_count = 0
+                  help_count = 0
+                  for gan, zhi in pillars:
+                      for hidden in DIZHI_CANGGAN[DIZHI[zhi]]:
+                          if TIANGAN_WUXING[TIANGAN.index(hidden)] == day_wuxing:
+                              root_count += 1
+                      gan_wuxing = TIANGAN_WUXING[gan]
+                      if gan_wuxing == day_wuxing:
+                          help_count += 1
+                      elif wuxing_order[(day_idx + 4) % 5] == gan_wuxing:
+                          help_count += 1
+                  strength_score = 0
+                  if month_strength in ["旺", "相"]:
+                      strength_score += 2
+                  if root_count >= 2:
+                      strength_score += 2
+                  if help_count >= 2:
+                      strength_score += 1
+                  if strength_score >= 4:
+                      overall = "身強"
+                  elif strength_score >= 2:
+                      overall = "中和"
+                  else:
+                      overall = "身弱"
+                  return {
+                      "日主": f"{TIANGAN[day_gan]}（{day_wuxing}）",
+                      "月令": f"{DIZHI[month_zhi]}（{month_wuxing}）",
+                      "月令旺衰": month_strength,
+                      "通根數": root_count,
+                      "比劫印星": help_count,
+                      "綜合判斷": overall,
+                  }
+
+              def get_yongshen(day_gan: int, strength: str):
+                  day_wuxing = TIANGAN_WUXING[day_gan]
+                  wuxing_order = ["木", "火", "土", "金", "水"]
+                  day_idx = wuxing_order.index(day_wuxing)
+                  if strength == "身強":
+                      xiyong = [wuxing_order[(day_idx + 1) % 5], wuxing_order[(day_idx + 2) % 5], wuxing_order[(day_idx + 3) % 5]]
+                      jishen = [wuxing_order[(day_idx + 4) % 5], day_wuxing]
+                  else:
+                      xiyong = [wuxing_order[(day_idx + 4) % 5], day_wuxing]
+                      jishen = [wuxing_order[(day_idx + 1) % 5], wuxing_order[(day_idx + 2) % 5], wuxing_order[(day_idx + 3) % 5]]
+                  return {"喜用神": "、".join(xiyong), "忌神": "、".join(jishen)}
+
+              def calculate_dayun(year_gan: int, gender_norm: str, birth_year: int, birth_month: int, birth_day: int):
+                  year_yinyang = TIANGAN_YINYANG[year_gan]
+                  direction = 1 if ((year_yinyang == "陽" and gender_norm == "男") or (year_yinyang == "陰" and gender_norm == "女")) else -1
+                  start_age = 3 if birth_day <= 15 else 6
+                  jieqi_month = get_jieqi_month(birth_year, birth_month, birth_day)
+                  month_gan, month_zhi = get_month_ganzhi(year_gan, jieqi_month)
+                  dayun_list = []
+                  for index in range(8):
+                      age_start = start_age + index * 10
+                      age_end = age_start + 9
+                      gan = (month_gan + (index + 1) * direction) % 10
+                      zhi = (month_zhi + (index + 1) * direction) % 12
+                      dayun_list.append({
+                          "年齡": f"{age_start}-{age_end}歲",
+                          "干支": f"{TIANGAN[gan]}{DIZHI[zhi]}",
+                          "五行": f"{TIANGAN_WUXING[gan]}{DIZHI_WUXING[zhi]}",
+                      })
+                  return dayun_list
+
+              def paipan(year: int, month: int, day: int, hour: int, gender_norm: str = "男", birth_place_clean: str = ""):
+                  year_gan, year_zhi = get_year_ganzhi(year, month, day)
+                  jieqi_month = get_jieqi_month(year, month, day)
+                  month_gan, month_zhi = get_month_ganzhi(year_gan, jieqi_month)
+                  day_gan, day_zhi = get_day_ganzhi(year, month, day)
+                  hour_gan, hour_zhi = get_hour_ganzhi(day_gan, hour)
+                  pillars = [(year_gan, year_zhi), (month_gan, month_zhi), (day_gan, day_zhi), (hour_gan, hour_zhi)]
+                  shishen_list = []
+                  for index, (gan, _zhi) in enumerate(pillars):
+                      shishen_list.append("日主" if index == 2 else get_shishen(day_gan, gan))
+                  strength_analysis = analyze_rizhu_strength(day_gan, month_zhi, pillars)
+                  yongshen = get_yongshen(day_gan, strength_analysis["綜合判斷"])
+                  return {
+                      "基本資訊": {
+                          "西曆": f"{year}年{month}月{day}日 {hour}時",
+                          "性別": gender_norm,
+                          "出生地": birth_place_clean or "未提供",
+                          "生肖": DIZHI_SHENGXIAO[year_zhi],
+                      },
+                      "四柱八字": {
+                          "年柱": {"干支": f"{TIANGAN[year_gan]}{DIZHI[year_zhi]}", "十神": shishen_list[0], "藏干": "、".join(DIZHI_CANGGAN[DIZHI[year_zhi]])},
+                          "月柱": {"干支": f"{TIANGAN[month_gan]}{DIZHI[month_zhi]}", "十神": shishen_list[1], "藏干": "、".join(DIZHI_CANGGAN[DIZHI[month_zhi]])},
+                          "日柱": {"干支": f"{TIANGAN[day_gan]}{DIZHI[day_zhi]}", "十神": "日主", "藏干": "、".join(DIZHI_CANGGAN[DIZHI[day_zhi]])},
+                          "時柱": {"干支": f"{TIANGAN[hour_gan]}{DIZHI[hour_zhi]}", "十神": shishen_list[3], "藏干": "、".join(DIZHI_CANGGAN[DIZHI[hour_zhi]])},
+                      },
+                      "五行統計": count_wuxing(pillars),
+                      "日主分析": strength_analysis,
+                      "用神喜忌": yongshen,
+                      "大運排列": calculate_dayun(year_gan, gender_norm, year, month, day),
+                  }
+
+              def result(status, summary, findings, follow_up_questions, recommendations, missing_inputs, confidence, mode, extra_metadata=None):
+                  metadata = {
+                      "confidence": confidence,
+                      "missing_inputs": missing_inputs,
+                      "source_family": "bazi-mingli-main",
+                      "mode": mode,
+                      "intent_type": "reading",
+                      "primary_method": "bazi",
+                  }
+                  if extra_metadata:
+                      metadata.update(extra_metadata)
+                  return {
+                      "status": status,
+                      "skill": "bazi_chart_analysis",
+                      "summary": summary,
+                      "findings": findings,
+                      "follow_up_questions": follow_up_questions,
+                      "recommendations": recommendations,
+                      "safety_note": "For self-reflection and wellness support only, not deterministic fate analysis.",
+                      "metadata": metadata,
+                  }
+
+              birth_datetime_clean = clean(birth_datetime)
+              birth_place_clean = clean(birth_place)
+              calendar_note_clean = clean(calendar_note)
+              user_goal_clean = clean(user_goal)
+              gender_normalized = normalize_gender(gender)
+              calendar_mode = detect_calendar_mode(birth_datetime_clean, calendar_note_clean)
+
+              if not birth_datetime_clean:
+                  intake = result(
+                      "needs_input",
+                      "A Bazi reading needs a birth date and time before the chart can be interpreted responsibly.",
+                      ["The Four Pillars cannot be resolved without a usable birth timestamp."],
+                      ["What is your birth date and time, as precisely as you know it?"],
+                      ["If you do not know the exact minute, the closest known time window is still helpful."],
+                      ["birth_datetime"],
+                      "low",
+                      "intake",
+                      extra_metadata={"calendar_mode": calendar_mode},
+                  )
+                  return {
+                      **intake,
+                      "birth_datetime_normalized": "",
+                      "birth_place_clean": birth_place_clean,
+                      "calendar_mode": calendar_mode,
+                      "calendar_note_clean": calendar_note_clean,
+                      "user_goal_clean": user_goal_clean,
+                      "gender_normalized": gender_normalized,
+                      "chart_payload_json": "",
+                      "fact_brief": "",
+                      "chart_basis_note": "",
+                  }
+
+              if calendar_mode == "lunar":
+                  intake = result(
+                      "needs_input",
+                      "This workflow version needs a solar or Gregorian birth date before it can calculate the chart reliably.",
+                      ["The current Dify-native Bazi path does not yet normalize lunar-date intake on its own."],
+                      ["Could you share the solar or Gregorian birth date and time you want me to use?"],
+                      ["If all you have is a lunar birthday, convert it first or mention that you want help confirming the solar equivalent."],
+                      ["birth_datetime"],
+                      "low",
+                      "intake",
+                      extra_metadata={"calendar_mode": calendar_mode},
+                  )
+                  return {
+                      **intake,
+                      "birth_datetime_normalized": "",
+                      "birth_place_clean": birth_place_clean,
+                      "calendar_mode": calendar_mode,
+                      "calendar_note_clean": calendar_note_clean,
+                      "user_goal_clean": user_goal_clean,
+                      "gender_normalized": gender_normalized,
+                      "chart_payload_json": "",
+                      "fact_brief": "",
+                      "chart_basis_note": "Current version requires solar/Gregorian input.",
+                  }
+
+              parsed_datetime, parse_notes, parse_confidence = parse_birth_datetime(birth_datetime_clean)
+              missing_inputs = []
+              follow_up_questions = []
+              findings = []
+              recommendations = []
+
+              if not gender_normalized:
+                  missing_inputs.append("gender")
+                  follow_up_questions.append("What gender should I use for the luck-pillar direction?")
+                  findings.append("Gender is still missing, and this workflow uses it for the DaYun direction.")
+                  recommendations.append("A simple male or female marker is enough for this version of the workflow.")
+
+              if parsed_datetime is None:
+                  missing_inputs.append("birth_datetime")
+                  findings.extend(parse_notes or ["The birth date could not be parsed cleanly."])
+                  follow_up_questions.insert(0, "Could you send the birth date and time again in a clear format such as 1994-11-03 08:40?")
+                  recommendations.append("If the original birth time is uncertain, share the closest known window or Chinese shichen.")
+              elif parsed_datetime.get("hour") is None:
+                  missing_inputs.append("birth_datetime")
+                  findings.extend(parse_notes or ["The date is present, but the hour pillar cannot be established yet."])
+                  follow_up_questions.insert(0, "What birth time or time window should I use for the hour pillar?")
+                  recommendations.append("You can give an exact time, a rough window like early morning, or a Chinese shichen such as 辰時.")
+
+              if missing_inputs:
+                  intake = result(
+                      "needs_input",
+                      "A proper Bazi reading needs a chart-stable birth timestamp and gender before the interpretation should continue.",
+                      findings or ["The intake is incomplete for a responsible Four Pillars reading."],
+                      follow_up_questions,
+                      recommendations or ["Once the missing intake is confirmed, the chart can be calculated in a stable way."],
+                      missing_inputs,
+                      "low",
+                      "intake",
+                      extra_metadata={
+                          "calendar_mode": calendar_mode,
+                          "birth_place": birth_place_clean,
+                          "user_goal": user_goal_clean,
+                      },
+                  )
+                  return {
+                      **intake,
+                      "birth_datetime_normalized": parsed_datetime.get("normalized", "") if isinstance(parsed_datetime, dict) else "",
+                      "birth_place_clean": birth_place_clean,
+                      "calendar_mode": calendar_mode,
+                      "calendar_note_clean": calendar_note_clean,
+                      "user_goal_clean": user_goal_clean,
+                      "gender_normalized": gender_normalized,
+                      "chart_payload_json": "",
+                      "fact_brief": "",
+                      "chart_basis_note": " ".join(parse_notes or []),
+                  }
+
+              chart = paipan(
+                  parsed_datetime["year"],
+                  parsed_datetime["month"],
+                  parsed_datetime["day"],
+                  parsed_datetime["hour"],
+                  gender_normalized,
+                  birth_place_clean,
+              )
+              pillars = chart["四柱八字"]
+              day_master = chart["日主分析"]["日主"]
+              strength = chart["日主分析"]["綜合判斷"]
+              useful_elements = chart["用神喜忌"]["喜用神"]
+              challenging_elements = chart["用神喜忌"]["忌神"]
+              time_basis = "approximate" if parsed_datetime["approximate"] else "exact"
+              chart_basis_note = (
+                  f"Interpreting this as a {calendar_mode if calendar_mode != 'unspecified' else 'solar-assumed'} birth timestamp. "
+                  f"Time basis is {time_basis}; hour pillar mapped to {parsed_datetime['shichen_label']} ({parsed_datetime['hour']:02d}:{parsed_datetime['minute']:02d})."
+              )
+              if parse_notes:
+                  chart_basis_note = chart_basis_note + " " + " ".join(parse_notes)
+
+              findings = [
+                  f"Four Pillars resolve to {pillars['年柱']['干支']} / {pillars['月柱']['干支']} / {pillars['日柱']['干支']} / {pillars['時柱']['干支']}.",
+                  f"Day master is {day_master}, and the current strength read is {strength}.",
+                  f"Supportive elements currently lean toward {useful_elements}, while the more challenging load leans toward {challenging_elements}.",
+                  f"The month command is {chart['日主分析']['月令']} with a seasonal strength of {chart['日主分析']['月令旺衰']}.",
+              ]
+              if parsed_datetime["approximate"]:
+                  findings.append("The birth time was approximate, so event-level timing should stay softer than the core chart themes.")
+
+              recommendations = [
+                  "Use the reading for pattern recognition and planning, not as a rigid prediction about fate.",
+                  "If the birth time was approximate, keep any event-timing conclusions provisional until the time is confirmed.",
+              ]
+              if user_goal_clean:
+                  recommendations.append("Let the follow-up interpretation stay focused on the user goal instead of trying to explain every life domain at once.")
+
+              metadata = {
+                  "birth_datetime": parsed_datetime["normalized"],
+                  "calendar_mode": calendar_mode,
+                  "birth_place": birth_place_clean,
+                  "day_master": day_master,
+                  "strength": strength,
+                  "useful_elements": useful_elements,
+                  "challenging_elements": challenging_elements,
+                  "year_pillar": pillars["年柱"]["干支"],
+                  "month_pillar": pillars["月柱"]["干支"],
+                  "day_pillar": pillars["日柱"]["干支"],
+                  "hour_pillar": pillars["時柱"]["干支"],
+                  "time_basis": time_basis,
+                  "parse_confidence": parse_confidence,
+              }
+              fact_lines = [
+                  f"Birth timestamp: {parsed_datetime['normalized']}",
+                  f"Birth place: {birth_place_clean or 'not provided'}",
+                  f"Calendar mode: {calendar_mode}",
+                  f"Chart basis: {chart_basis_note}",
+                  f"Four Pillars: {pillars['年柱']['干支']} / {pillars['月柱']['干支']} / {pillars['日柱']['干支']} / {pillars['時柱']['干支']}",
+                  f"Day master: {day_master}",
+                  f"Strength: {strength}",
+                  f"Useful elements: {useful_elements}",
+                  f"Challenging elements: {challenging_elements}",
+                  f"Month command: {chart['日主分析']['月令']} ({chart['日主分析']['月令旺衰']})",
+                  f"DaYun preview: {', '.join(item['干支'] for item in chart['大運排列'][:3])}",
+                  f"User goal: {user_goal_clean or 'not provided'}",
+              ]
+
+              ready = result(
+                  "ready",
+                  "The Bazi chart is ready for interpretation.",
+                  findings,
+                  [],
+                  recommendations,
+                  [],
+                  "medium" if not parsed_datetime["approximate"] else "medium",
+                  "reading",
+                  extra_metadata=metadata,
+              )
+              return {
+                  **ready,
+                  "birth_datetime_normalized": parsed_datetime["normalized"],
+                  "birth_place_clean": birth_place_clean,
+                  "calendar_mode": calendar_mode,
+                  "calendar_note_clean": calendar_note_clean,
+                  "user_goal_clean": user_goal_clean,
+                  "gender_normalized": gender_normalized,
+                  "chart_payload_json": json.dumps(chart, ensure_ascii=False),
+                  "fact_brief": "\n".join(f"- {line}" for line in fact_lines),
+                  "chart_basis_note": chart_basis_note,
+              }
+        code_language: python3
+        desc: Normalize birth intake, compute a deterministic Four Pillars chart brief, and prepare compact facts for interpretation.
+        outputs:
+          status:
+            children: null
+            type: string
+          skill:
+            children: null
+            type: string
+          summary:
+            children: null
+            type: string
+          findings:
+            children: null
+            type: array[string]
+          follow_up_questions:
+            children: null
+            type: array[string]
+          recommendations:
+            children: null
+            type: array[string]
+          safety_note:
+            children: null
+            type: string
+          metadata:
+            children: null
+            type: object
+          birth_datetime_normalized:
+            children: null
+            type: string
+          birth_place_clean:
+            children: null
+            type: string
+          calendar_mode:
+            children: null
+            type: string
+          calendar_note_clean:
+            children: null
+            type: string
+          user_goal_clean:
+            children: null
+            type: string
+          gender_normalized:
+            children: null
+            type: string
+          chart_payload_json:
+            children: null
+            type: string
+          fact_brief:
+            children: null
+            type: string
+          chart_basis_note:
+            children: null
+            type: string
+        selected: false
+        title: Prepare Bazi Chart
+        type: code
+        variables:
+        - value_selector:
+          - bazi_start
+          - birth_datetime
+          value_type: string
+          variable: birth_datetime
+        - value_selector:
+          - bazi_start
+          - gender
+          value_type: string
+          variable: gender
+        - value_selector:
+          - bazi_start
+          - birth_place
+          value_type: string
+          variable: birth_place
+        - value_selector:
+          - bazi_start
+          - calendar_note
+          value_type: string
+          variable: calendar_note
+        - value_selector:
+          - bazi_start
+          - user_goal
+          value_type: string
+          variable: user_goal
+      height: 84
+      id: bazi_prepare
+      position:
+        x: 344
+        y: 260
+      positionAbsolute:
+        x: 344
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: Interpret the deterministic Bazi chart brief and return strict JSON only.
+        memory:
+          enabled: false
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.35
+          mode: chat
+          name: glm-5
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+        - role: system
+          text: |-
+            You are the AskCrystal Bazi analysis workflow for the current six-method Dify phase.
+
+            Return strict JSON only. Do not use markdown fences. Do not include any explanation outside the JSON object.
+
+            Output shape:
+            {
+              "status": "ok",
+              "skill": "bazi_chart_analysis",
+              "summary": "1-2 sentence Bazi overview",
+              "findings": ["3-5 concise insights"],
+              "follow_up_questions": [],
+              "recommendations": ["2-4 concrete actions"],
+              "safety_note": "For self-reflection and wellness support only, not deterministic fate analysis.",
+              "metadata": {
+                "confidence": "medium",
+                "missing_inputs": [],
+                "source_family": "bazi-mingli-main",
+                "mode": "reading",
+                "intent_type": "reading",
+                "primary_method": "bazi",
+                "birth_datetime": "{{#bazi_prepare.birth_datetime_normalized#}}",
+                "calendar_mode": "{{#bazi_prepare.calendar_mode#}}",
+                "birth_place": "{{#bazi_prepare.birth_place_clean#}}",
+                "day_master": "{{#bazi_prepare.metadata.day_master#}}",
+                "strength": "{{#bazi_prepare.metadata.strength#}}",
+                "useful_elements": "{{#bazi_prepare.metadata.useful_elements#}}",
+                "challenging_elements": "{{#bazi_prepare.metadata.challenging_elements#}}",
+                "year_pillar": "{{#bazi_prepare.metadata.year_pillar#}}",
+                "month_pillar": "{{#bazi_prepare.metadata.month_pillar#}}",
+                "day_pillar": "{{#bazi_prepare.metadata.day_pillar#}}",
+                "hour_pillar": "{{#bazi_prepare.metadata.hour_pillar#}}",
+                "time_basis": "{{#bazi_prepare.metadata.time_basis#}}",
+                "parse_confidence": "{{#bazi_prepare.metadata.parse_confidence#}}"
+              }
+            }
+
+            Rules:
+            - Keep the tone calm, warm, and confidence-building.
+            - Do not mention tools, workflows, hidden reasoning, or system internals.
+            - Do not invent any chart facts beyond the provided chart brief.
+            - Treat approximate time intake as a meaningful limitation and lower the sharpness of timing claims.
+            - Frame all insights as tendencies, patterns, or planning guidance rather than fate.
+            - When status is needs_input, preserve that status and ask only the minimum clean follow-up questions.
+            - Use the same language as the user's goal when obvious; otherwise use clear, natural English.
+            - Keep the summary compact and put most substance into findings and recommendations.
+        - role: user
+          text: |-
+            Current workflow status:
+            {{#bazi_prepare.status#}}
+
+            User goal:
+            {{#bazi_prepare.user_goal_clean#}}
+
+            Chart basis:
+            {{#bazi_prepare.chart_basis_note#}}
+
+            Structured facts:
+            {{#bazi_prepare.fact_brief#}}
+
+            Deterministic chart payload:
+            {{#bazi_prepare.chart_payload_json#}}
+
+            Seed findings:
+            {{#bazi_prepare.findings#}}
+
+            Seed recommendations:
+            {{#bazi_prepare.recommendations#}}
+        retry_config:
+          enabled: false
+          exponential_backoff:
+            enabled: false
+            max_interval: 10000
+            multiplier: 2
+          max_retries: 1
+          retry_interval: 1000
+        selected: false
+        structured_output:
+          enabled: false
+        title: Interpret Bazi Reading
+        type: llm
+        variables: []
+        vision:
+          configs:
+            variable_selector: []
+          enabled: false
+      height: 116
+      id: bazi_llm
+      position:
+        x: 648
+        y: 260
+      positionAbsolute:
+        x: 648
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: |
+          def main(text: str, prepare_status: str, prepare_findings: list = None, prepare_recommendations: list = None, prepare_follow_up_questions: list = None, prepare_metadata: dict = None) -> dict:
+              import json
+              import re
+
+              def normalize_status(value: str) -> str:
+                  if value in {"ok", "needs_input"}:
+                      return value
+                  if value == "ready":
+                      return "ok"
+                  return "ok"
+
+              def fallback_payload(raw_text: str) -> dict:
+                  cleaned = (raw_text or "").strip()
+                  summary = cleaned.split("\n")[0][:280] if cleaned else "The Bazi reading completed, but the structured format needs a retry."
+                  findings = [line.strip("-• ") for line in cleaned.splitlines() if line.strip()][:5] or (prepare_findings or [summary])
+                  return {
+                      "status": normalize_status(prepare_status),
+                      "skill": "bazi_chart_analysis",
+                      "summary": summary,
+                      "findings": findings,
+                      "follow_up_questions": prepare_follow_up_questions or [],
+                      "recommendations": prepare_recommendations or ["Retry the Bazi analysis if a cleaner structured result is needed."],
+                      "safety_note": "For self-reflection and wellness support only, not deterministic fate analysis.",
+                      "metadata": dict(prepare_metadata or {}),
+                  }
+
+              raw = (text or "").strip()
+              parsed = None
+              if raw:
+                  candidates = [raw]
+                  fenced = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.S)
+                  candidates.extend(fenced)
+                  brace_match = re.search(r"(\{.*\})", raw, re.S)
+                  if brace_match:
+                      candidates.append(brace_match.group(1))
+                  for candidate in candidates:
+                      try:
+                          parsed = json.loads(candidate)
+                          break
+                      except Exception:
+                          continue
+
+              payload = parsed if isinstance(parsed, dict) else fallback_payload(raw)
+              payload["status"] = normalize_status(str(payload.get("status") or prepare_status or "ok"))
+              payload["skill"] = "bazi_chart_analysis"
+              payload["summary"] = str(payload.get("summary") or "")
+              payload["findings"] = payload.get("findings") if isinstance(payload.get("findings"), list) else (prepare_findings or [])
+              payload["follow_up_questions"] = payload.get("follow_up_questions") if isinstance(payload.get("follow_up_questions"), list) else (prepare_follow_up_questions or [])
+              payload["recommendations"] = payload.get("recommendations") if isinstance(payload.get("recommendations"), list) else (prepare_recommendations or [])
+              payload["safety_note"] = str(payload.get("safety_note") or "For self-reflection and wellness support only, not deterministic fate analysis.")
+
+              metadata = dict(prepare_metadata or {})
+              llm_metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+              metadata.update(llm_metadata)
+              metadata.setdefault("confidence", "medium" if payload["status"] == "ok" else "low")
+              metadata.setdefault("missing_inputs", [] if payload["status"] == "ok" else ["birth_datetime", "gender"])
+              payload["metadata"] = metadata
+              return payload
+        code_language: python3
+        desc: Parse the LLM response into the shared Bazi workflow contract.
+        outputs:
+          status:
+            children: null
+            type: string
+          skill:
+            children: null
+            type: string
+          summary:
+            children: null
+            type: string
+          findings:
+            children: null
+            type: array[string]
+          follow_up_questions:
+            children: null
+            type: array[string]
+          recommendations:
+            children: null
+            type: array[string]
+          safety_note:
+            children: null
+            type: string
+          metadata:
+            children: null
+            type: object
+        selected: false
+        title: Finalize Bazi Contract
+        type: code
+        variables:
+        - value_selector:
+          - bazi_llm
+          - text
+          value_type: string
+          variable: text
+        - value_selector:
+          - bazi_prepare
+          - status
+          value_type: string
+          variable: prepare_status
+        - value_selector:
+          - bazi_prepare
+          - findings
+          value_type: array[string]
+          variable: prepare_findings
+        - value_selector:
+          - bazi_prepare
+          - recommendations
+          value_type: array[string]
+          variable: prepare_recommendations
+        - value_selector:
+          - bazi_prepare
+          - follow_up_questions
+          value_type: array[string]
+          variable: prepare_follow_up_questions
+        - value_selector:
+          - bazi_prepare
+          - metadata
+          value_type: object
+          variable: prepare_metadata
+      height: 84
+      id: bazi_finalize
+      position:
+        x: 960
+        y: 260
+      positionAbsolute:
+        x: 960
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - bazi_finalize
+          - status
+          value_type: string
+          variable: status
+        - value_selector:
+          - bazi_finalize
+          - skill
+          value_type: string
+          variable: skill
+        - value_selector:
+          - bazi_finalize
+          - summary
+          value_type: string
+          variable: summary
+        - value_selector:
+          - bazi_finalize
+          - findings
+          value_type: array[string]
+          variable: findings
+        - value_selector:
+          - bazi_finalize
+          - follow_up_questions
+          value_type: array[string]
+          variable: follow_up_questions
+        - value_selector:
+          - bazi_finalize
+          - recommendations
+          value_type: array[string]
+          variable: recommendations
+        - value_selector:
+          - bazi_finalize
+          - safety_note
+          value_type: string
+          variable: safety_note
+        - value_selector:
+          - bazi_finalize
+          - metadata
+          value_type: object
+          variable: metadata
+        selected: false
+        title: End
+        type: end
+      height: 238
+      id: bazi_end_ready
+      position:
+        x: 1264
+        y: 180
+      positionAbsolute:
+        x: 1264
+        y: 180
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244

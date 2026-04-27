@@ -1,133 +1,143 @@
-# AskCrystal Local Runbook (Dify + RAG + Skills)
+# AskCrystal Local Runbook
 
-## PRD behavior references
+This runbook describes the current local development stack after the repo migration.
 
-- PRD alignment map: `docs/architecture/AGENT_BEHAVIOR_PRD_ALIGNMENT.md`
-- Routing prompt policy: `docs/architecture/dify_skill_routing_prompt.md`
-- Canonical runtime prompt source: `scripts/ops/configure_openai_compatible_model.py`
+## Current Runtime Shape
 
-## 1) Start Dify local stack
+The active local system is:
+
+- Shopify theme: `deployables/storefront-theme/`
+- Shopify app/proxy: `deployables/shopify-app/`
+- Dify runtime: `services/dify-runtime/`
+- Dify agent and workflow-tool source: `services/dify-agent/`
+- Shared chat/component contract: `packages/storefront-ui-contract/`
+
+The live AskCrystal Dify app uses workflow-native tools (`provider_type: workflow`) for migrated skill families. The old FastAPI skill bridge has been removed from the repo and is no longer a supported local runtime.
+
+## 1) Start The Local Stack
+
+From the repo root:
 
 ```bash
 cd /Users/haokaiqin/Desktop/AskCrystal
-./scripts/dev/start_local_dify.sh
-./scripts/dev/check_local_dify.sh
+./scripts/dev/start_local_stack.sh
 ```
 
-Default local URLs:
+This starts:
 
-- Dify console: http://localhost:18080
-- Dify API base: http://localhost:18080/console/api
+- Dify Docker Compose runtime on `http://localhost:18080`
+- idempotent Dify admin bootstrap, if setup is not finished yet
+- Shopify app/proxy on `http://localhost:8787`
+- Vite watch for the AskCrystal theme agent bundle
 
-## 2) Bootstrap one-time admin setup
+It does not start Shopify theme preview by default. The theme is expected to be deployed to Shopify, so local `shopify theme dev` is now opt-in only.
+
+Logs are written to:
+
+```text
+tmp/local-stack-logs/
+```
+
+Useful variants:
 
 ```bash
-cd /Users/haokaiqin/Desktop/AskCrystal
-python3 scripts/ops/bootstrap_dify_setup.py \
-  --base-url http://localhost:18080 \
-  --email askcrystal.admin@example.com \
-  --password Askcrystal123
+./scripts/dev/start_local_stack.sh --backend-only
+./scripts/dev/start_local_stack.sh --with-theme --theme-store your-store.myshopify.com
+./scripts/dev/start_local_stack.sh --no-bootstrap-dify
 ```
 
 Notes:
 
-- If setup already exists, this script is idempotent.
-- Password rule: letters + digits, length >= 8.
+- Dify stays Docker-managed and detached.
+- The Shopify app/proxy and any opt-in foreground child processes stop when you press `Ctrl-C`.
+- Add `--stop-dify-on-exit` if you want the script to also run `docker compose down` for Dify on exit.
+- `--with-theme` is only for local theme preview/debugging.
 
-## 3) Build RAG dataset from local KB docs
+## 2) One-Time Dify Setup
+
+The stack script runs this bootstrap step automatically by default:
+
+```bash
+python3 scripts/ops/bootstrap_dify_setup.py \
+  --base-url http://localhost:18080 \
+  --email "$DIFY_ADMIN_EMAIL" \
+  --password "$DIFY_ADMIN_PASSWORD"
+```
+
+If setup already exists, the script is idempotent.
+
+## 3) Knowledge Base
+
+Build and ingest the local AskCrystal knowledge base when the Dify dataset needs to be created or refreshed:
 
 ```bash
 cd /Users/haokaiqin/Desktop/AskCrystal
 ./scripts/ops/run_kb_ingestion.sh
 ```
 
-This will:
+This creates or reuses `AskCrystal-KB` and uploads markdown files from:
 
-1. ensure setup/login works,
-2. create dataset `AskCrystal-KB` if missing,
-3. upload markdown files from `data/knowledge-base/dify_kb_docs/`,
-4. create Dify documents with `economy` indexing.
-
-## 4) Start skill bridge service
-
-Run in a separate terminal and keep it running:
-
-```bash
-cd /Users/haokaiqin/Desktop/AskCrystal
-# Optional Shopify MCP config:
-# export SHOPIFY_STORE_DOMAIN=askcrystal.myshopify.com
-# export SHOPIFY_STOREFRONT_ACCESS_TOKEN=your_storefront_access_token
-./scripts/dev/start_skill_bridge.sh
+```text
+data/knowledge-base/dify_kb_docs/
 ```
 
-Note:
+## 4) Workflow-Native Skill Tools
 
-- If Docker service `askcrystal` is already running, this script exits early to avoid starting a duplicate local process on the same port.
+The current skill direction is Dify-native workflow tools, tracked in:
 
-Bridge URLs:
-
-- Health: http://localhost:8010/health
-- OpenAPI: http://localhost:8010/openapi.json
-
-## 5) Register skill bridge as Dify custom tools
-
-```bash
-cd /Users/haokaiqin/Desktop/AskCrystal
-python3 scripts/ops/register_skill_bridge_tools.py \
-  --base-url http://localhost:18080 \
-  --email askcrystal.admin@example.com \
-  --password Askcrystal123 \
-  --bridge-openapi-url http://localhost:8010/openapi.json \
-  --tool-server-url http://host.docker.internal:8010 \
-  --provider askcrystal_skill_bridge
+```text
+workflow_skill_tracker.md
+services/dify-agent/workflows/
 ```
 
-Notes:
+The live AskCrystal app should expose these workflow tools:
 
-- Use `http://host.docker.internal:8010` when the bridge is running on the host via `./scripts/dev/start_skill_bridge.sh`.
-- Only use `http://askcrystal:8010` if the bridge itself is running as a Docker service on the same Dify network.
+- `workflow_taibu_structured_divination_router`
+- `workflow_bazi_chart_analysis`
+- `workflow_tarot_spread_interpretation`
+- `workflow_yinyuan_matchmaking`
+- `workflow_fengshui_space_audit`
+- `workflow_shushu_numerology_profile`
 
-## 6) Sync per-skill tools into AskCrystal app
+Provisioning scripts live under `scripts/build/`:
 
 ```bash
-cd /Users/haokaiqin/Desktop/AskCrystal
-python3 scripts/ops/sync_agent_skill_tools.py \
-  --base-url http://localhost:18080 \
-  --email askcrystal.admin@example.com \
-  --password Askcrystal123 \
-  --app-id 385c285a-0e61-4cf1-ba49-afde28c5ce12 \
-  --provider askcrystal_skill_bridge
+python3 scripts/build/provision_bazi_workflow.py
+python3 scripts/build/provision_tarot_workflow.py
+python3 scripts/build/provision_yinyuan_workflow.py
+python3 scripts/build/provision_fengshui_workflow.py
+python3 scripts/build/provision_shushu_workflow.py
+python3 scripts/build/provision_taibu_router_workflow.py
 ```
 
-Note:
+Run these only when you intentionally need to import, publish, or resync workflow tool wrappers in local Dify.
 
-- Bridge-side Shopify MCP endpoints are disabled by default (`ENABLE_BRIDGE_SHOPIFY_MCP=0`).
-- Shopify should be connected via Dify native MCP provider.
+## 5) Shopify MCP
 
-## 6.1) Configure Shopify MCP directly in Dify
+Shopify catalog grounding should stay connected through Dify's native MCP provider:
 
 ```bash
 cd /Users/haokaiqin/Desktop/AskCrystal
 python3 scripts/ops/setup_shopify_mcp_direct.py \
   --base-url http://localhost:18080 \
-  --email askcrystal.admin@example.com \
-  --password Askcrystal123 \
-  --app-id 385c285a-0e61-4cf1-ba49-afde28c5ce12 \
+  --email "$DIFY_ADMIN_EMAIL" \
+  --password "$DIFY_ADMIN_PASSWORD" \
+  --app-id "$DIFY_APP_ID" \
   --server-url https://askcrystal.myshopify.com/api/mcp \
   --server-identifier shopify_storefront \
   --storefront-token "$SHOPIFY_STOREFRONT_ACCESS_TOKEN"
 ```
 
-If no tools are discovered after setup, verify MCP access/auth requirements for the store and rerun with valid token/headers.
+## 6) Model Configuration
 
-## 7) Configure real OpenAI-compatible model endpoint
+Configure the local Dify app with an OpenAI-compatible model endpoint:
 
 ```bash
 cd /Users/haokaiqin/Desktop/AskCrystal
 python3 scripts/ops/configure_openai_compatible_model.py \
   --base-url http://localhost:18080 \
-  --email askcrystal.admin@example.com \
-  --password Askcrystal123 \
+  --email "$DIFY_ADMIN_EMAIL" \
+  --password "$DIFY_ADMIN_PASSWORD" \
   --provider langgenius/openai_api_compatible/openai_api_compatible \
   --endpoint-url https://integrate.api.nvidia.com/v1 \
   --model-id minimaxai/minimax-m2.7 \
@@ -136,70 +146,49 @@ python3 scripts/ops/configure_openai_compatible_model.py \
   --max-iteration 3
 ```
 
-Notes:
+Use `--skip-prompt-update` if you need to keep the current prompt untouched.
 
-- For NVIDIA NIM, use full model id `minimaxai/minimax-m2.7` (not `minimax-m2.7`).
-- Keep `max-iteration` low for local testing to avoid long agent loops.
-- This script also applies AskCrystal response-style guardrails (no internal reasoning narration).
-- If you need to keep existing prompt unchanged, add `--skip-prompt-update`.
+## 7) Smoke Tests
 
-## 8) End-to-end smoke test
+Current default Dify smoke test:
 
 ```bash
 cd /Users/haokaiqin/Desktop/AskCrystal
-python3 scripts/dev/e2e_smoke_test.py \
-  --base-url http://localhost:18080 \
-  --email askcrystal.admin@example.com \
-  --password Askcrystal123 \
-  --dataset-name AskCrystal-KB \
-  --provider askcrystal_skill_bridge \
-  --bridge-health-url http://localhost:8010/health
+python3 scripts/dev/e2e_smoke_test.py
 ```
 
 Pass criteria:
 
 - setup endpoint is healthy,
 - admin login succeeds,
-- dataset exists and contains docs,
-- skill bridge health is `ok`,
-- provider `askcrystal_skill_bridge` exposes tools.
+- `AskCrystal-KB` exists and has documents,
+- the AskCrystal app exposes all expected workflow-native tools,
+- no removed `askcrystal_skill_bridge` API tools are enabled on the app.
 
-Optional live chat smoke (real model + streaming + tool usage):
+Optional live chat smoke:
 
 ```bash
-cd /Users/haokaiqin/Desktop/AskCrystal
 python3 scripts/dev/live_agent_chat_smoke.py
 ```
 
-Optional Shopify storefront STOP smoke (simulates the real homepage cancel path: local abort + proxy stop):
+Optional Shopify storefront component proxy smoke:
 
 ```bash
-cd /Users/haokaiqin/Desktop/AskCrystal
+python3 scripts/dev/smoke_storefront_component_proxy.py
+```
+
+Optional Shopify storefront STOP smoke:
+
+```bash
 node scripts/dev/shopify_stop_smoke.mjs
 ```
 
-Pass criteria:
+## Docker Boundary
 
-- the stream yields a `taskId`,
-- the script aborts after a few streamed chunks,
-- the proxy stop endpoint returns `ok=true`,
-- `upstreamStop=true`,
-- no events are processed after the local abort.
+The right local boundary for now is hybrid:
 
-## 9) Daily restart commands
+- Dify runs in Docker Compose because it is already a multi-container runtime.
+- Shopify app/proxy runs on the host because it is currently a lightweight Node dev server.
+- Shopify theme preview is not part of default local startup because the theme is deployed to Shopify. When local preview is explicitly needed, it remains a host process because Shopify CLI auth, preview URLs, and theme dev ergonomics are host-oriented.
 
-```bash
-cd /Users/haokaiqin/Desktop/AskCrystal
-./scripts/dev/start_local_dify.sh
-./scripts/dev/check_local_dify.sh
-# in another terminal
-./scripts/dev/start_skill_bridge.sh
-```
-
-Optional validation:
-
-```bash
-python3 scripts/dev/e2e_smoke_test.py
-python3 scripts/dev/live_agent_chat_smoke.py
-node scripts/dev/shopify_stop_smoke.mjs
-```
+A future root Compose setup can containerize the Shopify app/proxy once the deployable app shell is more mature. The theme preview should remain opt-in and host-run unless we have a strong reason to absorb Shopify CLI auth and preview behavior into Docker.

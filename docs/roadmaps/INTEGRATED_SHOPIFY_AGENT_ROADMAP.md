@@ -16,7 +16,7 @@ Today we already have:
 
 1. a locally runnable Dify agent,
 2. a crystal RAG knowledge base,
-3. skill-bridge tools for mythology, astrology, crystal, and divination flows,
+3. workflow-native Dify tools for metaphysics and guidance flows,
 4. Shopify MCP tool access inside Dify,
 5. PRD-aligned prompt and tool-routing behavior,
 6. documented storefront positioning and memory architecture decisions.
@@ -127,7 +127,7 @@ Purpose:
 
 Tasks:
 
-1. keep local Dify, KB, and skill bridge healthy,
+1. keep local Dify, KB, and workflow-native tools healthy,
 2. finalize prompt and tool playbook behavior,
 3. verify Shopify MCP tools are correctly routed,
 4. produce representative smoke-test scenarios,

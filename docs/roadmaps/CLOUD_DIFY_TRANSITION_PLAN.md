@@ -132,15 +132,14 @@ Cloud-migration role:
 
 Current local ingredients:
 
-- `services/skill-bridge/`
-- `scripts/ops/register_skill_bridge_tools.py`
-- `scripts/ops/sync_agent_skill_tools.py`
+- `services/dify-agent/workflows/`
+- `scripts/build/provision_*_workflow.py`
 - `scripts/ops/setup_shopify_mcp_direct.py`
 
 What we should do:
 
-1. deploy the skill bridge as a real hosted service,
-2. register it into cloud Dify,
+1. import/publish workflow apps in cloud Dify,
+2. create or resync workflow-tool wrappers,
 3. configure Shopify MCP again in cloud Dify,
 4. re-sync app tool bindings after import.
 
@@ -155,7 +154,7 @@ Examples:
 - model API keys,
 - Shopify storefront token,
 - MCP auth headers,
-- bridge service URL,
+- workflow app/tool ids,
 - cloud Dify base URL,
 - admin credentials and workspace references.
 
@@ -262,7 +261,7 @@ Purpose:
 Tasks:
 
 1. upload or re-ingest knowledge base content,
-2. deploy and register the skill bridge,
+2. provision workflow-tool wrappers,
 3. configure Shopify MCP in cloud Dify,
 4. re-sync app tool references,
 5. verify all critical tool operations exist.
@@ -316,10 +315,9 @@ The long-term repo assets for Dify should be:
 1. prompt and routing definitions,
 2. KB source assets,
 3. KB generation/ingestion scripts,
-4. tool bridge service,
+4. workflow specs and DSL exports,
 5. cloud provisioning scripts,
-6. exported DSL files,
-7. migration documentation.
+6. migration documentation.
 
 ## What We Should Not Treat As Product Core
 
@@ -340,7 +338,7 @@ Before saying cloud Dify is ready, confirm:
 4. expected KB is connected,
 5. model provider works,
 6. Shopify MCP works,
-7. skill bridge works,
+7. workflow tools work,
 8. smoke prompts behave correctly.
 
 ## Relationship To Shopify Work

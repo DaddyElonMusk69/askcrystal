@@ -16,8 +16,8 @@ from scripts.common.dify_console_client import DifyConsoleClient, DifyConsoleErr
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Ingest local markdown KB files into a Dify dataset")
     parser.add_argument("--base-url", default=os.getenv("DIFY_BASE_URL", "http://localhost:18080"))
-    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", "askcrystal.admin@example.com"))
-    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", "Askcrystal123"))
+    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", ""))
+    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", ""))
     parser.add_argument("--dataset-name", default=os.getenv("DIFY_DATASET_NAME", "AskCrystal-KB"))
     parser.add_argument("--dataset-description", default="AskCrystal RAG corpus generated from project knowledge JSON")
     parser.add_argument(

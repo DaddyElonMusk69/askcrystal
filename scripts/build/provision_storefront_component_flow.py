@@ -24,8 +24,8 @@ def parse_args() -> argparse.Namespace:
         description="Import and publish the AskCrystal storefront component chatflow in a local Dify workspace."
     )
     parser.add_argument("--base-url", default=os.getenv("DIFY_BASE_URL", "http://localhost:18080"))
-    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", "askcrystal.admin@example.com"))
-    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", "Askcrystal123"))
+    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", ""))
+    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", ""))
     parser.add_argument("--dsl", default=str(DEFAULT_DSL_PATH), help="Path to the Dify DSL file to import.")
     parser.add_argument("--app-id", default=None, help="Optional existing app id to overwrite when supported.")
     parser.add_argument("--skip-publish", action="store_true", help="Import the flow but do not publish it.")

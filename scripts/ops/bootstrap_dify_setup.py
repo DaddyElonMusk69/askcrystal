@@ -19,7 +19,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--base-url", default=os.getenv("DIFY_BASE_URL", "http://localhost:18080"))
     parser.add_argument(
         "--email",
-        default=os.getenv("DIFY_ADMIN_EMAIL", "askcrystal.admin@example.com"),
+        default=os.getenv("DIFY_ADMIN_EMAIL", ""),
         help="Admin email used for Dify login",
     )
     parser.add_argument(
@@ -29,7 +29,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--password",
-        default=os.getenv("DIFY_ADMIN_PASSWORD", "Askcrystal123"),
+        default=os.getenv("DIFY_ADMIN_PASSWORD", ""),
         help="Admin password (must include letters and digits, length >= 8)",
     )
     parser.add_argument("--language", default=os.getenv("DIFY_ADMIN_LANGUAGE", "en-US"))
@@ -39,6 +39,11 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    if not args.email or not args.password:
+        print("[bootstrap] missing DIFY_ADMIN_EMAIL or DIFY_ADMIN_PASSWORD")
+        print("[bootstrap] run ./scripts/dev/setup_local_env.sh or set both values in .env")
+        return 2
+
     client = DifyConsoleClient(args.base_url)
 
     try:
@@ -60,7 +65,7 @@ def main() -> int:
         print("[bootstrap] admin credentials")
         print(f"  base_url: {args.base_url}")
         print(f"  email:    {args.email}")
-        print(f"  password: {args.password}")
+        print("  password: [configured]")
 
         return 0
     except DifyConsoleError as exc:

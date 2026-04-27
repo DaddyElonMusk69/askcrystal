@@ -21,7 +21,14 @@
         "source_family": "Numerologist_skills",
         "mode": "profile",
         "intent_type": "reading",
-        "primary_method": "numerology"
+        "primary_method": "numerology",
+        "birth_date": "1991-08-14",
+        "life_path_number": "6",
+        "birthday_number": "5",
+        "attitude_number": "4",
+        "personal_year_number": "5",
+        "zodiac_sign": "Goat",
+        "season_tone": "summer-expression"
       }
     },
     {
@@ -46,7 +53,7 @@
           "birth_datetime",
           "gender"
         ],
-        "source_family": "bazi-skill",
+        "source_family": "bazi-mingli-main",
         "mode": "intake",
         "intent_type": "reading",
         "primary_method": "bazi"
@@ -146,6 +153,34 @@
         "intent_type": "mixed_reading",
         "primary_method": "bazi",
         "next_tool": "workflow_bazi_chart_analysis"
+      }
+    },
+    {
+      "status": "ok",
+      "skill": "horoscope_daily_guidance",
+      "summary": "Scorpio's daily energy points toward quiet focus and emotional discernment, with practical momentum building through one clear work priority.",
+      "findings": [
+        "Overall: use Scorpio's fixed water depth to notice what is really driving the day before reacting.",
+        "Career: research, focus, and private preparation are better supported than loud visibility.",
+        "Love: choose direct but gentle honesty instead of testing for reassurance."
+      ],
+      "follow_up_questions": [],
+      "recommendations": [
+        "Lucky guide: deep red, 8 and 11, best match tone Cancer.",
+        "Choose one hidden task or emotional knot to simplify before the day ends."
+      ],
+      "safety_note": "For wellness and self-reflection purposes only; not medical, legal, or financial advice.",
+      "metadata": {
+        "confidence": "medium",
+        "missing_inputs": [],
+        "source_family": "horoscope-daily-2.3.0",
+        "mode": "daily",
+        "intent_type": "reading",
+        "primary_method": "horoscope",
+        "zodiac_sign": "Scorpio",
+        "period": "daily",
+        "focus_area": "career",
+        "target_date": "2026-04-26"
       }
     }
   ]

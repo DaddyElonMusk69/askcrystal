@@ -1,0 +1,875 @@
+app:
+  description: Grounded home and workspace fengshui audit workflow for AskCrystal's six-method phase.
+  icon: 🧭
+  icon_background: '#1f2937'
+  icon_type: emoji
+  mode: workflow
+  name: AskCrystal Fengshui Space Audit
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.45@3b8f3c50ee48f62e45f95957f3441492052f0b1dbc1c6eae71034d7c6d69fe11
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: false
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: code
+      id: fengshui-start-to-prepare
+      source: fengshui_start
+      sourceHandle: source
+      target: fengshui_prepare
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: fengshui-prepare-to-llm
+      source: fengshui_prepare
+      sourceHandle: source
+      target: fengshui_llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: fengshui-llm-to-finalize
+      source: fengshui_llm
+      sourceHandle: source
+      target: fengshui_finalize
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: fengshui-finalize-to-end
+      source: fengshui_finalize
+      sourceHandle: source
+      target: fengshui_end_ready
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: Start
+        type: start
+        variables:
+        - label: space_description
+          max_length: null
+          options: []
+          required: true
+          type: paragraph
+          variable: space_description
+        - label: facing_direction
+          max_length: null
+          options: []
+          required: false
+          type: text-input
+          variable: facing_direction
+        - label: priority_goal
+          max_length: null
+          options: []
+          required: false
+          type: text-input
+          variable: priority_goal
+        - label: move_in_year
+          max_length: null
+          options: []
+          required: false
+          type: text-input
+          variable: move_in_year
+      height: 194
+      id: fengshui_start
+      position:
+        x: 40
+        y: 260
+      positionAbsolute:
+        x: 40
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: |
+          def main(space_description: str = "", facing_direction: str = "", priority_goal: str = "", move_in_year: str = "") -> dict:
+              import re
+
+              direction_aliases = {
+                  "north": ["north", "n", "北", "正北"],
+                  "south": ["south", "s", "南", "正南"],
+                  "east": ["east", "e", "东", "正东"],
+                  "west": ["west", "w", "西", "正西"],
+                  "northeast": ["northeast", "north east", "ne", "东北"],
+                  "northwest": ["northwest", "north west", "nw", "西北"],
+                  "southeast": ["southeast", "south east", "se", "东南"],
+                  "southwest": ["southwest", "south west", "sw", "西南"],
+              }
+              goal_keywords = {
+                  "sleep": ["sleep", "rest", "insomnia", "bedroom", "睡", "失眠", "卧室"],
+                  "focus": ["focus", "study", "work", "desk", "office", "productivity", "学习", "工作", "书房", "办公"],
+                  "wealth": ["wealth", "money", "finance", "business", "career", "财", "事业", "生意"],
+                  "relationships": ["relationship", "marriage", "love", "couple", "感情", "婚姻", "桃花"],
+                  "health": ["health", "recovery", "wellness", "病", "健康"],
+                  "calm": ["calm", "peace", "anxiety", "quiet", "情绪", "平静", "焦虑"],
+              }
+              space_type_keywords = {
+                  "workspace": ["office", "desk", "studio", "workspace", "shop", "公司", "办公室", "工位", "店"],
+                  "bedroom": ["bedroom", "bed", "睡房", "卧室", "床"],
+                  "home": ["home", "apartment", "house", "living room", "kitchen", "bathroom", "家", "客厅", "厨房", "卫生间"],
+              }
+              period_labels = {
+                  "period-8": "Period 8 (2004-2023)",
+                  "period-9": "Period 9 (2024-2043)",
+                  "unknown": "unknown",
+              }
+              issue_library = [
+                  {
+                      "tag": "entrance-blocked",
+                      "patterns": ["entrance blocked", "door blocked", "front door blocked", "门口堆", "玄关堆", "门被挡", "entry clutter"],
+                      "finding": "The entry sounds obstructed, which usually weakens the sense of arrival and smooth qi flow.",
+                      "recommendation": "Clear the first one or two steps inside the entrance and keep that zone bright, breathable, and easy to move through.",
+                      "scope": "entrance",
+                  },
+                  {
+                      "tag": "door-window-line",
+                      "patterns": ["door facing window", "front door facing window", "door to window", "门对窗", "穿堂", "through draft", "through flow"],
+                      "finding": "A straight door-to-window line often makes the space feel leaky or hard to settle into.",
+                      "recommendation": "Add a soft pause between the entrance and the far opening with a rug, console, plant, or screen so the space can hold energy more calmly.",
+                      "scope": "entrance",
+                  },
+                  {
+                      "tag": "mirror-facing-bed",
+                      "patterns": ["mirror facing bed", "mirror opposite bed", "镜子对床", "床对镜子"],
+                      "finding": "A mirror facing the bed can make a rest-oriented room feel overstimulated or hard to fully settle.",
+                      "recommendation": "Move the mirror, angle it away, or cover it at night so the sleep zone feels more contained.",
+                      "scope": "bedroom",
+                  },
+                  {
+                      "tag": "bed-near-bathroom",
+                      "patterns": ["bed against bathroom", "bed near bathroom", "bedhead against bathroom", "床头靠厕所", "床靠卫生间"],
+                      "finding": "A bed too close to a bathroom wall can make the sleep zone feel damp, noisy, or unsupported.",
+                      "recommendation": "If possible, move the bed to a more solid wall. If not, strengthen the wall with a substantial headboard and keep the bathroom especially dry and well ventilated.",
+                      "scope": "bedroom",
+                  },
+                  {
+                      "tag": "beam-over-bed-or-desk",
+                      "patterns": ["beam over bed", "beam over desk", "横梁压床", "横梁压桌", "beam overhead"],
+                      "finding": "A heavy beam over a bed or desk often creates a subtle pressure effect over time.",
+                      "recommendation": "Shift the bed or desk out from directly under the beam when possible, or visually soften the pressure with a ceiling treatment and gentler lighting.",
+                      "scope": "bedroom",
+                  },
+                  {
+                      "tag": "desk-no-support",
+                      "patterns": ["desk facing wall", "desk in middle of room", "desk with back to door", "书桌背门", "桌子背门"],
+                      "finding": "The work setup sounds short on backing or command position, which can reduce focus and psychological ease.",
+                      "recommendation": "Place the desk where the door is visible without sitting directly in line with it, and give the chair a more solid backdrop.",
+                      "scope": "workspace",
+                  },
+                  {
+                      "tag": "kitchen-bathroom-conflict",
+                      "patterns": ["kitchen next to bathroom", "kitchen facing bathroom", "厨房对厕所", "厨厕相邻", "厨厕相对"],
+                      "finding": "Kitchen-bathroom conflict tends to mix nourishment and drainage zones in a way that feels energetically muddy.",
+                      "recommendation": "Keep both zones especially clean, shut one door when possible, and create stronger visual separation between the two functions.",
+                      "scope": "kitchen",
+                  },
+                  {
+                      "tag": "center-cluttered",
+                      "patterns": ["center cluttered", "middle cluttered", "center full", "中宫堆", "房子中间很满", "中央杂乱"],
+                      "finding": "A crowded center can make the whole space feel heavy because the middle acts like the breathing point of the layout.",
+                      "recommendation": "Lighten the center of the plan first and avoid storing bulky items there if you want the whole space to feel clearer.",
+                      "scope": "center",
+                  },
+                  {
+                      "tag": "dark-space",
+                      "patterns": ["dark room", "no sunlight", "dim", "采光差", "很暗", "没光"],
+                      "finding": "Low light can make a space feel stagnant even when the layout itself is decent.",
+                      "recommendation": "Improve layered lighting and reflectance before buying decor. Brightening the space is often the fastest fengshui upgrade.",
+                      "scope": "lighting",
+                  },
+              ]
+
+              def clean(value: str) -> str:
+                  return re.sub(r"\s+", " ", str(value or "")).strip()
+
+              def result(status, summary, findings, follow_up_questions, recommendations, missing_inputs, confidence, mode, extra_metadata=None):
+                  metadata = {
+                      "confidence": confidence,
+                      "missing_inputs": missing_inputs,
+                      "source_family": "fengshui.skill",
+                      "mode": mode,
+                      "intent_type": "audit",
+                      "primary_method": "fengshui",
+                  }
+                  if extra_metadata:
+                      metadata.update(extra_metadata)
+                  return {
+                      "status": status,
+                      "skill": "fengshui_space_audit",
+                      "summary": summary,
+                      "findings": findings,
+                      "follow_up_questions": follow_up_questions,
+                      "recommendations": recommendations,
+                      "safety_note": "For environmental reflection only, not a substitute for structural, safety, or professional building advice.",
+                      "metadata": metadata,
+                  }
+
+              def normalize_direction(text: str) -> str:
+                  lowered = clean(text).lower()
+                  for canonical, aliases in direction_aliases.items():
+                      for alias in aliases:
+                          if alias.lower() in lowered:
+                              return canonical
+                  return ""
+
+              def detect_goal(text: str) -> str:
+                  lowered = clean(text).lower()
+                  for goal, keywords in goal_keywords.items():
+                      if any(keyword.lower() in lowered for keyword in keywords):
+                          return goal
+                  return "general"
+
+              def detect_space_type(text: str) -> str:
+                  lowered = clean(text).lower()
+                  for space_type, keywords in space_type_keywords.items():
+                      if any(keyword.lower() in lowered for keyword in keywords):
+                          return space_type
+                  return "space"
+
+              def extract_year(text: str) -> str:
+                  matches = re.findall(r"\b(19\d{2}|20\d{2})\b", text or "")
+                  return matches[0] if matches else ""
+
+              def determine_period(year_text: str) -> str:
+                  if not year_text:
+                      return "unknown"
+                  year = int(year_text)
+                  if 2004 <= year <= 2023:
+                      return "period-8"
+                  if 2024 <= year <= 2043:
+                      return "period-9"
+                  return "unknown"
+
+              def direction_note(direction: str, goal: str) -> tuple[str, str]:
+                  notes = {
+                      "south": (
+                          "A south-facing emphasis can work well in Period 9 when the front of the space feels bright, open, and not overly harsh.",
+                          "Support the south-facing side with warm but controlled lighting and avoid visually choking the front of the space.",
+                      ),
+                      "north": (
+                          "A north-facing space often benefits from warmth, layering, and stronger visual support so it does not feel overly cool or withdrawn.",
+                          "Use warmer light, stable furniture placement, and a more intentional entry sequence to prevent the space from feeling thin or drained.",
+                      ),
+                      "east": (
+                          "East-facing energy often supports growth, learning, and steady morning momentum when the layout is uncluttered.",
+                          "Keep the eastern side active but not chaotic, especially if the goal is focus or healthy routine.",
+                      ),
+                      "west": (
+                          "West-facing rooms can feel sharp or drying if the light is intense, so balance matters more than adding more stimulation.",
+                          "Soften glare and keep the room grounded with texture, calm storage, and less visual aggression.",
+                      ),
+                      "southeast": (
+                          "Southeast is often a useful zone for slow growth, study, and resource-building when it stays orderly.",
+                          "Keep the southeast area light, well maintained, and free of dead storage if the goal involves growth or financial steadiness.",
+                      ),
+                      "southwest": (
+                          "Southwest tends to reward stability, heavier support, and settled routines more than constant rearrangement.",
+                          "Use the southwest for grounded, restorative functions rather than high-chaos storage or transit.",
+                      ),
+                      "northeast": (
+                          "Northeast usually benefits from clarity and disciplined use, especially when the goal is study, planning, or calm reset.",
+                          "Avoid making the northeast noisy or overstuffed if you want the room to feel mentally clean.",
+                      ),
+                      "northwest": (
+                          "Northwest can feel strong and structured, which helps leadership energy but can feel hard if the room lacks softness.",
+                          "Balance the northwest with texture and human warmth so it supports authority without becoming rigid.",
+                      ),
+                  }
+                  return notes.get(direction, ("", ""))
+
+              description_clean = clean(space_description)
+              direction_clean = clean(facing_direction)
+              goal_clean = clean(priority_goal)
+              move_in_year_clean = clean(move_in_year) or extract_year(description_clean)
+              combined_text = " ".join(part for part in [description_clean, direction_clean, goal_clean] if part)
+              direction = normalize_direction(direction_clean or description_clean)
+              goal = detect_goal(goal_clean or description_clean)
+              space_type = detect_space_type(description_clean)
+              period = determine_period(move_in_year_clean)
+
+              if not description_clean or len(description_clean) < 18:
+                  intake = result(
+                      "needs_input",
+                      "A fengshui audit needs a short but concrete description of the space before it can say anything reliable.",
+                      ["The current prompt does not describe the room, layout, or friction point clearly enough to audit."],
+                      [
+                          "Describe the space in one short paragraph: what kind of room it is, where the door, bed, desk, kitchen, or bathroom sit, and what feels off.",
+                      ],
+                      ["If you know the facing direction or move-in year, include those too for a more grounded read."],
+                      ["space_description"],
+                      "low",
+                      "intake",
+                  )
+                  return {
+                      **intake,
+                      "space_description_clean": description_clean,
+                      "facing_direction_normalized": direction,
+                      "priority_goal_normalized": goal_clean,
+                      "move_in_year_normalized": move_in_year_clean,
+                      "space_type": space_type,
+                      "goal_detected": goal,
+                      "move_in_period": period,
+                      "issue_tags": "",
+                      "audit_scope": "",
+                      "fact_brief": "",
+                  }
+
+              findings = []
+              follow_up_questions = []
+              recommendations = []
+              detected_tags = []
+              scopes = []
+              lower_text = combined_text.lower()
+
+              for issue in issue_library:
+                  if any(pattern.lower() in lower_text for pattern in issue["patterns"]):
+                      detected_tags.append(issue["tag"])
+                      scopes.append(issue["scope"])
+                      findings.append(issue["finding"])
+                      recommendations.append(issue["recommendation"])
+
+              if not detected_tags:
+                  findings.append("The description does not point to one severe fengshui fault, so the audit should stay focused on flow, support, light, and room function.")
+                  recommendations.append("Treat this as a refinement audit: clear the entry, strengthen the room's main function, and reduce anything that competes with the user's priority goal.")
+                  scopes.append("general")
+
+              if goal == "sleep":
+                  findings.append("For a sleep-focused room, the main test is whether the bed feels protected, quiet, and visually settled.")
+                  recommendations.append("Prioritize a solid headboard wall, softer evening light, and fewer reflective or noisy elements around the bed zone.")
+              elif goal == "focus":
+                  findings.append("For a focus goal, the room works best when the desk feels supported and visual noise is limited.")
+                  recommendations.append("Let the desk command the room rather than float in chaos, and give work tools a clear home so attention is not constantly pulled sideways.")
+              elif goal == "wealth":
+                  findings.append("For a wealth or business goal, the entry sequence and the visible front of the space matter more than decorative cures.")
+                  recommendations.append("Strengthen the sense of welcome, repair anything worn near the entrance, and keep the first visible zone orderly and alive.")
+              elif goal == "relationships":
+                  findings.append("For relationship support, the room should feel paired, balanced, and emotionally easy rather than overly sharp or single-sided.")
+                  recommendations.append("Look for asymmetry around the bed or seating area and soften anything that makes one person feel peripheral to the space.")
+              elif goal == "health":
+                  findings.append("For health-oriented spaces, stale corners, dark circulation paths, and mixed-function clutter tend to matter more than symbolic objects.")
+                  recommendations.append("Open airflow, simplify hard-to-clean buildup, and reduce heaviness where the body is meant to recover.")
+              elif goal == "calm":
+                  findings.append("For calm, the best fengshui move is usually subtraction rather than adding more objects.")
+                  recommendations.append("Reduce visual interruption first and let lighting, pathways, and storage do the emotional heavy lifting.")
+
+              dir_finding, dir_recommendation = direction_note(direction, goal)
+              if dir_finding:
+                  findings.append(dir_finding)
+              if dir_recommendation:
+                  recommendations.append(dir_recommendation)
+
+              if period == "period-8":
+                  findings.append("The move-in timing points to Period 8 foundations, so the audit should respect what still feels stable while gently adapting the space to the current Period 9 climate.")
+              elif period == "period-9":
+                  findings.append("The move-in timing already sits inside Period 9, so light, visibility, and the emotional tone of the front-facing zones carry extra weight.")
+              else:
+                  follow_up_questions.append("If you want a more tailored read, share the move-in or last major renovation year.")
+
+              if not direction:
+                  follow_up_questions.append("If you know the space's facing direction, share it next time so I can make the directional advice more precise.")
+
+              issue_tags = ", ".join(sorted(dict.fromkeys(detected_tags)))
+              audit_scope = ", ".join(sorted(dict.fromkeys(scopes)))
+              extra_metadata = {
+                  "space_type": space_type,
+                  "goal_detected": goal,
+                  "facing_direction": direction,
+                  "move_in_period": period,
+                  "issue_tags": issue_tags,
+                  "audit_scope": audit_scope,
+                  "move_in_year": move_in_year_clean,
+              }
+              fact_lines = [
+                  f"Audit scope: {audit_scope or 'general'}",
+                  f"Space type: {space_type}",
+                  f"Priority goal: {goal}",
+                  f"Facing direction: {direction or 'unknown'}",
+                  f"Move-in year: {move_in_year_clean or 'unknown'}",
+                  f"Move-in period: {period_labels.get(period, period)}",
+                  f"Detected issue tags: {issue_tags or 'none explicit'}",
+                  f"Space description: {description_clean}",
+              ]
+
+              ready = result(
+                  "ready",
+                  "The fengshui request is ready for a grounded space audit.",
+                  findings,
+                  follow_up_questions,
+                  recommendations,
+                  [],
+                  "medium" if detected_tags or direction or move_in_year_clean else "low",
+                  "space-audit",
+                  extra_metadata=extra_metadata,
+              )
+              return {
+                  **ready,
+                  "space_description_clean": description_clean,
+                  "facing_direction_normalized": direction,
+                  "priority_goal_normalized": goal_clean,
+                  "move_in_year_normalized": move_in_year_clean,
+                  "space_type": space_type,
+                  "goal_detected": goal,
+                  "move_in_period": period,
+                  "issue_tags": issue_tags,
+                  "audit_scope": audit_scope,
+                  "fact_brief": "\n".join(f"- {line}" for line in fact_lines),
+              }
+        code_language: python3
+        desc: Validate the space question, normalize direction and timing clues, and extract practical fengshui audit signals.
+        outputs:
+          status:
+            children: null
+            type: string
+          skill:
+            children: null
+            type: string
+          summary:
+            children: null
+            type: string
+          findings:
+            children: null
+            type: array[string]
+          follow_up_questions:
+            children: null
+            type: array[string]
+          recommendations:
+            children: null
+            type: array[string]
+          safety_note:
+            children: null
+            type: string
+          metadata:
+            children: null
+            type: object
+          space_description_clean:
+            children: null
+            type: string
+          facing_direction_normalized:
+            children: null
+            type: string
+          priority_goal_normalized:
+            children: null
+            type: string
+          move_in_year_normalized:
+            children: null
+            type: string
+          space_type:
+            children: null
+            type: string
+          goal_detected:
+            children: null
+            type: string
+          move_in_period:
+            children: null
+            type: string
+          issue_tags:
+            children: null
+            type: string
+          audit_scope:
+            children: null
+            type: string
+          fact_brief:
+            children: null
+            type: string
+        selected: false
+        title: Prepare Fengshui Audit
+        type: code
+        variables:
+        - value_selector:
+          - fengshui_start
+          - space_description
+          value_type: string
+          variable: space_description
+        - value_selector:
+          - fengshui_start
+          - facing_direction
+          value_type: string
+          variable: facing_direction
+        - value_selector:
+          - fengshui_start
+          - priority_goal
+          value_type: string
+          variable: priority_goal
+        - value_selector:
+          - fengshui_start
+          - move_in_year
+          value_type: string
+          variable: move_in_year
+      height: 84
+      id: fengshui_prepare
+      position:
+        x: 344
+        y: 260
+      positionAbsolute:
+        x: 344
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: Interpret the fengshui audit signals and return strict JSON only.
+        memory:
+          enabled: false
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.4
+          mode: chat
+          name: glm-5
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+        - role: system
+          text: |-
+            You are the AskCrystal fengshui space-audit workflow for a structured six-skill phase.
+
+            Return strict JSON only. Do not use markdown fences. Do not include any explanation outside the JSON object.
+
+            Output shape:
+            {
+              "status": "ok",
+              "skill": "fengshui_space_audit",
+              "summary": "1-2 sentence audit summary",
+              "findings": ["3-5 concise insights"],
+              "follow_up_questions": [],
+              "recommendations": ["2-5 concrete actions"],
+              "safety_note": "For environmental reflection only, not a substitute for structural, safety, or professional building advice.",
+              "metadata": {
+                "confidence": "medium",
+                "missing_inputs": [],
+                "source_family": "fengshui.skill",
+                "mode": "space-audit",
+                "intent_type": "audit",
+                "primary_method": "fengshui",
+                "space_type": "{{#fengshui_prepare.space_type#}}",
+                "goal_detected": "{{#fengshui_prepare.goal_detected#}}",
+                "facing_direction": "{{#fengshui_prepare.facing_direction_normalized#}}",
+                "move_in_period": "{{#fengshui_prepare.move_in_period#}}",
+                "issue_tags": "{{#fengshui_prepare.issue_tags#}}",
+                "audit_scope": "{{#fengshui_prepare.audit_scope#}}"
+              }
+            }
+
+            Rules:
+            - Keep the tone calm, practical, and non-fear-based.
+            - Never talk as if luck is mechanically guaranteed by one object or one rearrangement.
+            - Never mention tools, workflows, or hidden reasoning.
+            - Use the same language as the user's request.
+            - Separate what is observed from what is inferred.
+            - Prefer layout, light, flow, cleanliness, and function over decorative cures.
+            - If the current workflow status is needs_input, preserve that status and focus on a concise intake-style response instead of a completed audit.
+        - role: user
+          text: |-
+            Current workflow status:
+            {{#fengshui_prepare.status#}}
+
+            Space description:
+            {{#fengshui_prepare.space_description_clean#}}
+
+            Facing direction:
+            {{#fengshui_prepare.facing_direction_normalized#}}
+
+            Priority goal:
+            {{#fengshui_prepare.goal_detected#}}
+
+            Move-in year:
+            {{#fengshui_prepare.move_in_year_normalized#}}
+
+            Space type:
+            {{#fengshui_prepare.space_type#}}
+
+            Audit scope:
+            {{#fengshui_prepare.audit_scope#}}
+
+            Detected issue tags:
+            {{#fengshui_prepare.issue_tags#}}
+
+            Structured facts:
+            {{#fengshui_prepare.fact_brief#}}
+
+            Seed findings:
+            {{#fengshui_prepare.findings#}}
+
+            Seed follow-up questions:
+            {{#fengshui_prepare.follow_up_questions#}}
+
+            Seed recommendations:
+            {{#fengshui_prepare.recommendations#}}
+        retry_config:
+          enabled: false
+          exponential_backoff:
+            enabled: false
+            max_interval: 10000
+            multiplier: 2
+          max_retries: 1
+          retry_interval: 1000
+        selected: false
+        structured_output:
+          enabled: false
+        title: Interpret Fengshui Audit
+        type: llm
+        variables: []
+        vision:
+          configs:
+            variable_selector: []
+          enabled: false
+      height: 116
+      id: fengshui_llm
+      position:
+        x: 648
+        y: 260
+      positionAbsolute:
+        x: 648
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: |
+          def main(text: str, prepare_status: str, prepare_findings: list = None, prepare_follow_up_questions: list = None, prepare_recommendations: list = None, prepare_metadata: dict = None) -> dict:
+              import json
+              import re
+
+              def fallback_payload(raw_text: str) -> dict:
+                  cleaned = (raw_text or "").strip()
+                  summary = cleaned.split("\n")[0][:280] if cleaned else "The fengshui audit completed, but the structured format needs a retry."
+                  findings = [line.strip("-• ") for line in cleaned.splitlines() if line.strip()][:4] or (prepare_findings or [summary])
+                  return {
+                      "status": prepare_status if prepare_status in {"ok", "needs_input"} else "ok",
+                      "skill": "fengshui_space_audit",
+                      "summary": summary,
+                      "findings": findings,
+                      "follow_up_questions": prepare_follow_up_questions or [],
+                      "recommendations": prepare_recommendations or ["Retry the fengshui audit if a cleaner structured result is needed."],
+                      "safety_note": "For environmental reflection only, not a substitute for structural, safety, or professional building advice.",
+                      "metadata": dict(prepare_metadata or {}),
+                  }
+
+              raw = (text or "").strip()
+              parsed = None
+              if raw:
+                  candidates = [raw]
+                  fenced = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.S)
+                  candidates.extend(fenced)
+                  brace_match = re.search(r"(\{.*\})", raw, re.S)
+                  if brace_match:
+                      candidates.append(brace_match.group(1))
+                  for candidate in candidates:
+                      try:
+                          parsed = json.loads(candidate)
+                          break
+                      except Exception:
+                          continue
+
+              payload = parsed if isinstance(parsed, dict) else fallback_payload(raw)
+              payload["status"] = payload.get("status") or (prepare_status if prepare_status in {"ok", "needs_input"} else "ok")
+              if payload["status"] not in {"ok", "needs_input"}:
+                  payload["status"] = prepare_status if prepare_status in {"ok", "needs_input"} else "ok"
+              payload["skill"] = "fengshui_space_audit"
+              payload["summary"] = str(payload.get("summary") or "")
+              payload["findings"] = payload.get("findings") if isinstance(payload.get("findings"), list) else (prepare_findings or [])
+              payload["follow_up_questions"] = payload.get("follow_up_questions") if isinstance(payload.get("follow_up_questions"), list) else (prepare_follow_up_questions or [])
+              payload["recommendations"] = payload.get("recommendations") if isinstance(payload.get("recommendations"), list) else (prepare_recommendations or [])
+              payload["safety_note"] = str(payload.get("safety_note") or "For environmental reflection only, not a substitute for structural, safety, or professional building advice.")
+
+              metadata = dict(prepare_metadata or {})
+              llm_metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+              metadata.update(llm_metadata)
+              metadata.setdefault("confidence", "medium" if payload["status"] == "ok" else "low")
+              metadata.setdefault("missing_inputs", [])
+              payload["metadata"] = metadata
+
+              return payload
+        code_language: python3
+        desc: Parse the LLM response into the shared fengshui workflow contract.
+        outputs:
+          status:
+            children: null
+            type: string
+          skill:
+            children: null
+            type: string
+          summary:
+            children: null
+            type: string
+          findings:
+            children: null
+            type: array[string]
+          follow_up_questions:
+            children: null
+            type: array[string]
+          recommendations:
+            children: null
+            type: array[string]
+          safety_note:
+            children: null
+            type: string
+          metadata:
+            children: null
+            type: object
+        selected: false
+        title: Finalize Fengshui Contract
+        type: code
+        variables:
+        - value_selector:
+          - fengshui_llm
+          - text
+          value_type: string
+          variable: text
+        - value_selector:
+          - fengshui_prepare
+          - status
+          value_type: string
+          variable: prepare_status
+        - value_selector:
+          - fengshui_prepare
+          - findings
+          value_type: array[string]
+          variable: prepare_findings
+        - value_selector:
+          - fengshui_prepare
+          - follow_up_questions
+          value_type: array[string]
+          variable: prepare_follow_up_questions
+        - value_selector:
+          - fengshui_prepare
+          - recommendations
+          value_type: array[string]
+          variable: prepare_recommendations
+        - value_selector:
+          - fengshui_prepare
+          - metadata
+          value_type: object
+          variable: prepare_metadata
+      height: 84
+      id: fengshui_finalize
+      position:
+        x: 960
+        y: 260
+      positionAbsolute:
+        x: 960
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - fengshui_finalize
+          - status
+          value_type: string
+          variable: status
+        - value_selector:
+          - fengshui_finalize
+          - skill
+          value_type: string
+          variable: skill
+        - value_selector:
+          - fengshui_finalize
+          - summary
+          value_type: string
+          variable: summary
+        - value_selector:
+          - fengshui_finalize
+          - findings
+          value_type: array[string]
+          variable: findings
+        - value_selector:
+          - fengshui_finalize
+          - follow_up_questions
+          value_type: array[string]
+          variable: follow_up_questions
+        - value_selector:
+          - fengshui_finalize
+          - recommendations
+          value_type: array[string]
+          variable: recommendations
+        - value_selector:
+          - fengshui_finalize
+          - safety_note
+          value_type: string
+          variable: safety_note
+        - value_selector:
+          - fengshui_finalize
+          - metadata
+          value_type: object
+          variable: metadata
+        selected: false
+        title: End
+        type: end
+      height: 238
+      id: fengshui_end_ready
+      position:
+        x: 1264
+        y: 180
+      positionAbsolute:
+        x: 1264
+        y: 180
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.58

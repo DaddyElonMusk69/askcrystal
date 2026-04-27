@@ -28,6 +28,7 @@ The router may choose only from:
 
 - `bazi`
 - `tarot`
+- `horoscope`
 - `fengshui`
 - `yinyuan`
 - `numerology`
@@ -35,7 +36,7 @@ The router may choose only from:
 
 It must not route to:
 
-- astrology-only methods
+- astrology-only methods beyond the supported horoscope workflow
 - crystal-only methods
 - qimen-only methods
 - ziwei-only methods
@@ -50,7 +51,7 @@ It must not route to:
 ### Optional
 
 - `available_methods`
-  - default: `bazi, tarot, fengshui, yinyuan, numerology`
+  - default: `bazi, tarot, horoscope, fengshui, yinyuan, numerology`
 
 ## Workflow Output Contract
 
@@ -117,6 +118,24 @@ Minimum missing inputs:
 Next tool:
 
 - `workflow_tarot_spread_interpretation`
+
+### Horoscope
+
+Choose horoscope when the user asks about:
+
+- daily, weekly, or monthly horoscope
+- Western zodiac signs
+- sun-sign guidance
+- astrology forecast without asking for a precise natal chart
+
+Minimum missing inputs:
+
+- `zodiac_sign`
+- or `birth_date` when the sign should be inferred
+
+Next tool:
+
+- `workflow_horoscope_daily_guidance`
 
 ### Fengshui
 
@@ -229,13 +248,14 @@ Return JSON only.
 ## Suggested System Prompt For The Classification Node
 
 ```text
-You are the AskCrystal route planner for a limited six-method workflow phase.
+You are the AskCrystal route planner for a limited workflow-tool phase.
 
 Your only job is to decide the best next supported method for the user's request.
 
 Supported methods:
 - bazi
 - tarot
+- horoscope
 - fengshui
 - yinyuan
 - numerology

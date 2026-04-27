@@ -123,7 +123,9 @@ class LLMGenerator:
         return name
 
     @classmethod
-    def generate_suggested_questions_after_answer(cls, tenant_id: str, histories: str) -> Sequence[str]:
+    def generate_suggested_questions_after_answer(
+        cls, tenant_id: str, histories: str, model_instance: Any | None = None
+    ) -> Sequence[str]:
         output_parser = SuggestedQuestionsAfterAnswerOutputParser()
         format_instructions = output_parser.get_format_instructions()
 
@@ -131,14 +133,18 @@ class LLMGenerator:
 
         prompt = prompt_template.format({"histories": histories, "format_instructions": format_instructions})
 
-        try:
-            model_manager = ModelManager.for_tenant(tenant_id=tenant_id)
-            model_instance = model_manager.get_default_model_instance(
-                tenant_id=tenant_id,
-                model_type=ModelType.LLM,
-            )
-        except InvokeAuthorizationError:
-            return []
+        if model_instance is None:
+            try:
+                model_manager = ModelManager.for_tenant(tenant_id=tenant_id)
+                model_instance = model_manager.get_default_model_instance(
+                    tenant_id=tenant_id,
+                    model_type=ModelType.LLM,
+                )
+            except InvokeAuthorizationError:
+                return []
+            except Exception:
+                logger.exception("Failed to resolve default model for suggested questions after answer")
+                return []
 
         prompt_messages = [UserPromptMessage(content=prompt)]
 

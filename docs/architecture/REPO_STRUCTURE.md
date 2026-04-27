@@ -19,8 +19,6 @@ Keep the repository organized by production ownership instead of by historical l
   - versioned Dify DSL, prompts, manifests, and workflow assets
 - `services/dify-runtime/`
   - local/self-hosted Dify runtime tree
-- `services/skill-bridge/`
-  - FastAPI bridge for AskCrystal skills and deterministic knowledge tools
 
 ### Shared Packages
 
@@ -59,7 +57,7 @@ Keep the repository organized by production ownership instead of by historical l
 
 If code belongs to a deployable or service in production, place it there directly.
 
-- Dify agent/runtime/bridge work belongs under `services/`
+- Dify agent/runtime work belongs under `services/`
 - Shopify backend/proxy work belongs under `deployables/shopify-app/`
 - Shopify theme work belongs under `deployables/storefront-theme/`
 - Cross-surface contracts belong under `packages/`

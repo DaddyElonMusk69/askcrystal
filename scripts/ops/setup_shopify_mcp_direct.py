@@ -20,9 +20,9 @@ def parse_args() -> argparse.Namespace:
         description="Configure Shopify Storefront MCP directly in Dify and attach MCP tools to AskCrystal app"
     )
     parser.add_argument("--base-url", default=os.getenv("DIFY_BASE_URL", "http://localhost:18080"))
-    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", "askcrystal.admin@example.com"))
-    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", "Askcrystal123"))
-    parser.add_argument("--app-id", default=os.getenv("DIFY_APP_ID", "385c285a-0e61-4cf1-ba49-afde28c5ce12"))
+    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", ""))
+    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", ""))
+    parser.add_argument("--app-id", default=os.getenv("DIFY_APP_ID", ""))
     parser.add_argument("--name", default=os.getenv("SHOPIFY_MCP_PROVIDER_NAME", "Shopify Storefront MCP"))
     parser.add_argument(
         "--server-identifier",

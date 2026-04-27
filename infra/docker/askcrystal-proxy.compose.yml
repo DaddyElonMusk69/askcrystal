@@ -1,0 +1,41 @@
+services:
+  shopify-proxy:
+    build:
+      context: ../..
+      dockerfile: deployables/shopify-app/Dockerfile
+    image: askcrystal/shopify-proxy:local
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 8787
+      ASKCRYSTAL_MEMORY_DATABASE_URL: ${ASKCRYSTAL_MEMORY_DATABASE_URL:-}
+      ASKCRYSTAL_SESSION_SECRET: ${ASKCRYSTAL_SESSION_SECRET:-}
+      ASKCRYSTAL_STOREFRONT_COMPONENT_PREVIEW_FALLBACK: ${ASKCRYSTAL_STOREFRONT_COMPONENT_PREVIEW_FALLBACK:-false}
+      DIFY_BASE_URL: ${ASKCRYSTAL_PROXY_DIFY_BASE_URL:-http://host.docker.internal:18080}
+      DIFY_APP_CHAT_URL: ${ASKCRYSTAL_PROXY_DIFY_APP_CHAT_URL:-}
+      DIFY_APP_API_KEY: ${DIFY_APP_API_KEY:-}
+      DIFY_APP_ID: ${DIFY_APP_ID:-}
+      DIFY_ADMIN_EMAIL: ${DIFY_ADMIN_EMAIL:-}
+      DIFY_ADMIN_PASSWORD: ${DIFY_ADMIN_PASSWORD:-}
+      DIFY_DEV_USE_CONSOLE: ${DIFY_DEV_USE_CONSOLE:-false}
+      DIFY_REQUEST_TIMEOUT_MS: ${DIFY_REQUEST_TIMEOUT_MS:-120000}
+      DIFY_SITE_ACCESS_TOKEN: ${DIFY_SITE_ACCESS_TOKEN:-}
+      DIFY_SITE_APP_BASE_URL: ${DIFY_SITE_APP_BASE_URL:-}
+      DIFY_SUGGESTED_QUESTIONS_REQUEST_TIMEOUT_MS: ${DIFY_SUGGESTED_QUESTIONS_REQUEST_TIMEOUT_MS:-45000}
+      SHOPIFY_API_KEY: ${SHOPIFY_API_KEY:-}
+      SHOPIFY_API_SECRET: ${SHOPIFY_API_SECRET:-}
+      SHOPIFY_APP_PROXY_PREFIX: ${SHOPIFY_APP_PROXY_PREFIX:-/apps/askcrystal}
+      SHOPIFY_APP_URL: ${SHOPIFY_APP_URL:-}
+      SHOPIFY_PROXY_SIGNATURE_REQUIRED: ${SHOPIFY_PROXY_SIGNATURE_REQUIRED:-true}
+      SHOPIFY_STOREFRONT_ACCESS_TOKEN: ${SHOPIFY_STOREFRONT_ACCESS_TOKEN:-}
+      SHOPIFY_STORE_DOMAIN: ${SHOPIFY_STORE_DOMAIN:-}
+    ports:
+      - "${ASKCRYSTAL_SHOPIFY_APP_PORT:-8787}:8787"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8787/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s

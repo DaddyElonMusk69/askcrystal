@@ -1,0 +1,1746 @@
+{% liquid
+  assign intention_collections = section.settings.intention_collections
+  if intention_collections == blank
+    assign intention_collections = collections
+  endif
+
+  assign crystal_collections = section.settings.crystal_collections
+  if crystal_collections == blank
+    assign crystal_collections = collections
+  endif
+
+  assign form_collections = section.settings.form_collections
+  if form_collections == blank
+    assign form_collections = collections
+  endif
+
+  assign bestseller_collection = section.settings.bestseller_collection
+  assign bestseller_handle = section.settings.bestseller_handle | default: 'best-sellers'
+  if bestseller_collection == blank and collections[bestseller_handle] != blank
+    assign bestseller_collection = collections[bestseller_handle]
+  endif
+  if bestseller_collection == blank
+    assign bestseller_collection = collections.all
+  endif
+
+  assign collection_tab_limit = section.settings.collection_tab_limit | default: 8
+  assign product_limit = section.settings.product_limit | default: 6
+  assign crystal_tab_limit = section.settings.crystal_tab_limit | default: 5
+  assign crystal_product_limit = section.settings.crystal_product_limit | default: 8
+  assign form_tab_limit = section.settings.form_tab_limit | default: 5
+  assign form_product_limit = section.settings.form_product_limit | default: 8
+%}
+
+{% style %}
+  {% for collection in crystal_collections limit: crystal_tab_limit %}
+    #AskCrystalCrystalTab-{{ section.id }}-{{ forloop.index }}:checked ~ .askcrystal-collections__crystal-tabs .askcrystal-collections__crystal-label--{{ forloop.index }} {
+      border-color: rgb(228 183 107 / 0.82);
+      background: rgb(185 149 96 / 0.16);
+      color: var(--ac-shop-cream);
+    }
+
+    #AskCrystalCrystalTab-{{ section.id }}-{{ forloop.index }}:checked ~ .askcrystal-collections__crystal-tabs .askcrystal-collections__crystal-panel--{{ forloop.index }} {
+      display: grid;
+    }
+  {% endfor %}
+
+  {% for collection in form_collections limit: form_tab_limit %}
+    #AskCrystalFormTab-{{ section.id }}-{{ forloop.index }}:checked ~ .askcrystal-collections__crystal-tabs .askcrystal-collections__form-label--{{ forloop.index }} {
+      border-color: rgb(228 183 107 / 0.82);
+      background: rgb(185 149 96 / 0.16);
+      color: var(--ac-shop-cream);
+    }
+
+    #AskCrystalFormTab-{{ section.id }}-{{ forloop.index }}:checked ~ .askcrystal-collections__crystal-tabs .askcrystal-collections__form-panel--{{ forloop.index }} {
+      display: grid;
+    }
+  {% endfor %}
+{% endstyle %}
+
+<section class="askcrystal-collections color-{{ section.settings.color_scheme }}">
+  <div class="askcrystal-collections__hero">
+    <div class="askcrystal-collections__stars" aria-hidden="true"></div>
+    <div class="askcrystal-collections__zodiac" aria-hidden="true"></div>
+    <div class="askcrystal-collections__crescent" aria-hidden="true"></div>
+    <div class="askcrystal-collections__crystal-scene" aria-hidden="true">
+      <span class="askcrystal-collections__crystal askcrystal-collections__crystal--main"></span>
+      <span class="askcrystal-collections__crystal askcrystal-collections__crystal--left"></span>
+      <span class="askcrystal-collections__crystal askcrystal-collections__crystal--right"></span>
+      <span class="askcrystal-collections__stone"></span>
+    </div>
+
+    <div class="askcrystal-collections__hero-copy">
+      <p class="askcrystal-collections__kicker">{{ section.settings.hero_kicker }}</p>
+      <h1>{{ section.settings.heading }}</h1>
+      <p class="askcrystal-collections__lede">{{ section.settings.description }}</p>
+      <p class="askcrystal-collections__note">
+        <span aria-hidden="true">✦</span>
+        {{ section.settings.hero_note }}
+      </p>
+    </div>
+  </div>
+
+  <div class="askcrystal-collections__body">
+    <section class="askcrystal-collections__intention" aria-labelledby="askcrystal-intentions-title-{{ section.id }}">
+      <p class="askcrystal-collections__section-label" id="askcrystal-intentions-title-{{ section.id }}">{{ section.settings.intentions_heading }}</p>
+      <div class="askcrystal-collections__intention-rail" role="list" aria-label="{{ section.settings.intentions_heading }}">
+        {% for collection in intention_collections limit: collection_tab_limit %}
+          {% liquid
+            assign collection_image = collection.featured_image
+            if collection_image == blank and collection.products.first != blank
+              assign collection_image = collection.products.first.featured_media.preview_image
+            endif
+          %}
+          <a class="askcrystal-collections__intention-card" href="{{ collection.url }}" role="listitem" aria-label="View all products in {{ collection.title | escape }}">
+            <span class="askcrystal-collections__intention-orb" aria-hidden="true">
+              {% if collection_image != blank %}
+                {{
+                  collection_image
+                  | image_url: width: 180
+                  | image_tag:
+                    widths: '90, 140, 180',
+                    sizes: '64px',
+                    loading: 'lazy',
+                    alt: ''
+                }}
+              {% else %}
+                <span>{{ collection.title | slice: 0 | upcase }}</span>
+              {% endif %}
+            </span>
+            <span class="askcrystal-collections__intention-copy">
+              <span class="askcrystal-collections__intention-title">{{ collection.title }}</span>
+              <span class="askcrystal-collections__intention-count">{{ collection.products_count }} pieces</span>
+            </span>
+          </a>
+        {% else %}
+          <a class="askcrystal-collections__intention-card" href="{{ routes.all_products_collection_url }}" role="listitem">
+            <span class="askcrystal-collections__intention-orb" aria-hidden="true"><span>✦</span></span>
+            <span class="askcrystal-collections__intention-copy">
+              <span class="askcrystal-collections__intention-title">All pieces</span>
+              <span class="askcrystal-collections__intention-count">Browse the shop</span>
+            </span>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="askcrystal-collections__product-section" aria-labelledby="askcrystal-bestsellers-title-{{ section.id }}">
+      <div class="askcrystal-collections__section-head">
+        <p class="askcrystal-collections__section-label">{{ section.settings.bestsellers_kicker }}</p>
+        <div>
+          <h2 id="askcrystal-bestsellers-title-{{ section.id }}">{{ section.settings.bestsellers_heading }}</h2>
+        </div>
+        {% if bestseller_collection != blank %}
+          <a class="askcrystal-collections__text-link" href="{{ bestseller_collection.url }}">View all</a>
+        {% endif %}
+      </div>
+
+      <div class="askcrystal-collections__products" role="list">
+        {% if bestseller_collection != blank %}
+          {% for product in bestseller_collection.products limit: product_limit %}
+            {% liquid
+              assign product_image = product.featured_media.preview_image
+              assign product_blurb = product.description | strip_html | strip | truncate: 76
+              assign product_price = product.price | money_without_trailing_zeros
+              assign product_price_min = product.price_min | money_without_trailing_zeros
+            %}
+
+            <article class="askcrystal-collections__product-card" role="listitem">
+              <a class="askcrystal-collections__product-link" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+                <span class="askcrystal-collections__badge">{{ section.settings.product_badge_text }}</span>
+                <span class="askcrystal-collections__bookmark" aria-hidden="true">
+                  <svg viewBox="0 0 24 32" focusable="false">
+                    <path d="M4 3h16v25l-8-5-8 5V3Z" />
+                  </svg>
+                </span>
+
+                <span class="askcrystal-collections__product-media">
+                  {% if product_image != blank %}
+                    {{
+                      product_image
+                      | image_url: width: 720
+                      | image_tag:
+                        widths: '240, 360, 480, 720',
+                        sizes: '(min-width: 990px) 31vw, 47vw',
+                        loading: 'lazy',
+                        alt: product.title
+                    }}
+                  {% else %}
+                    <span class="askcrystal-collections__product-placeholder">✦</span>
+                  {% endif %}
+                </span>
+
+                <span class="askcrystal-collections__product-copy">
+                  <span class="askcrystal-collections__product-title">
+                    <span aria-hidden="true">✦</span>
+                    {{ product.title }}
+                  </span>
+                  {% if product_blurb != blank %}
+                    <span class="askcrystal-collections__product-blurb">{{ product_blurb }}</span>
+                  {% endif %}
+                  <span class="askcrystal-collections__price">
+                    {% if product.price_varies %}
+                      From {{ product_price_min }}
+                    {% else %}
+                      {{ product_price }}
+                    {% endif %}
+                  </span>
+                </span>
+              </a>
+            </article>
+          {% else %}
+            <div class="askcrystal-collections__empty">
+              <h2>No best sellers yet</h2>
+              <p>Select a best-sellers collection in this section, or add products to your All collection.</p>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="askcrystal-collections__empty">
+            <h2>No best sellers yet</h2>
+            <p>Select a best-sellers collection in this section, or add products to your All collection.</p>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="askcrystal-collections__crystal-browse" aria-labelledby="askcrystal-crystal-title-{{ section.id }}">
+      <div class="askcrystal-collections__section-head askcrystal-collections__section-head--stacked">
+        <p class="askcrystal-collections__section-label">{{ section.settings.crystal_kicker }}</p>
+        <div>
+          <h2 id="askcrystal-crystal-title-{{ section.id }}">{{ section.settings.crystal_heading }}</h2>
+        </div>
+      </div>
+
+      <div class="askcrystal-collections__crystal-shell">
+        {% for collection in crystal_collections limit: crystal_tab_limit %}
+          <input
+            class="askcrystal-collections__crystal-input"
+            type="radio"
+            id="AskCrystalCrystalTab-{{ section.id }}-{{ forloop.index }}"
+            name="AskCrystalCrystalTabs-{{ section.id }}"
+            {% if forloop.first %}checked{% endif %}
+          >
+        {% endfor %}
+
+        <div class="askcrystal-collections__crystal-tabs">
+          <div class="askcrystal-collections__crystal-nav" role="tablist" aria-label="{{ section.settings.crystal_heading }}">
+            {% for collection in crystal_collections limit: crystal_tab_limit %}
+              <label
+                class="askcrystal-collections__crystal-label askcrystal-collections__crystal-label--{{ forloop.index }}"
+                for="AskCrystalCrystalTab-{{ section.id }}-{{ forloop.index }}"
+                role="tab"
+              >
+                {{ collection.title }}
+              </label>
+            {% else %}
+              <a class="askcrystal-collections__crystal-label" href="{{ routes.all_products_collection_url }}">All crystals</a>
+            {% endfor %}
+          </div>
+
+          <div class="askcrystal-collections__crystal-panels">
+            {% for collection in crystal_collections limit: crystal_tab_limit %}
+              <div class="askcrystal-collections__crystal-panel askcrystal-collections__crystal-panel--{{ forloop.index }}" role="tabpanel">
+                <div class="askcrystal-collections__crystal-panel-header">
+                  <div>
+                    <h3>{{ collection.title }}</h3>
+                  </div>
+                  <a class="askcrystal-collections__text-link" href="{{ collection.url }}">View all</a>
+                </div>
+
+                <div class="askcrystal-collections__crystal-carousel" role="list">
+                  {% for product in collection.products limit: crystal_product_limit %}
+                    {% liquid
+                      assign product_image = product.featured_media.preview_image
+                      assign product_price = product.price | money_without_trailing_zeros
+                      assign product_price_min = product.price_min | money_without_trailing_zeros
+                    %}
+                    <article class="askcrystal-collections__mini-card" role="listitem">
+                      <a href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+                        <span class="askcrystal-collections__mini-media">
+                          {% if product_image != blank %}
+                            {{
+                              product_image
+                              | image_url: width: 420
+                              | image_tag:
+                                widths: '180, 260, 360, 420',
+                                sizes: '42vw',
+                                loading: 'lazy',
+                                alt: product.title
+                            }}
+                          {% else %}
+                            <span>✦</span>
+                          {% endif %}
+                        </span>
+                        <span class="askcrystal-collections__mini-title">{{ product.title }}</span>
+                        <span class="askcrystal-collections__mini-price">
+                          {% if product.price_varies %}
+                            From {{ product_price_min }}
+                          {% else %}
+                            {{ product_price }}
+                          {% endif %}
+                        </span>
+                      </a>
+                    </article>
+                  {% else %}
+                    <div class="askcrystal-collections__empty askcrystal-collections__empty--compact">
+                      <h2>No pieces here yet</h2>
+                      <p>Add products to this collection when the material shelves are ready.</p>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="askcrystal-collections__crystal-browse" aria-labelledby="askcrystal-form-title-{{ section.id }}">
+      <div class="askcrystal-collections__section-head askcrystal-collections__section-head--stacked">
+        <p class="askcrystal-collections__section-label">{{ section.settings.form_kicker }}</p>
+        <div>
+          <h2 id="askcrystal-form-title-{{ section.id }}">{{ section.settings.form_heading }}</h2>
+        </div>
+      </div>
+
+      <div class="askcrystal-collections__crystal-shell">
+        {% for collection in form_collections limit: form_tab_limit %}
+          <input
+            class="askcrystal-collections__crystal-input"
+            type="radio"
+            id="AskCrystalFormTab-{{ section.id }}-{{ forloop.index }}"
+            name="AskCrystalFormTabs-{{ section.id }}"
+            {% if forloop.first %}checked{% endif %}
+          >
+        {% endfor %}
+
+        <div class="askcrystal-collections__crystal-tabs">
+          <div class="askcrystal-collections__crystal-nav" role="tablist" aria-label="{{ section.settings.form_heading }}">
+            {% for collection in form_collections limit: form_tab_limit %}
+              <label
+                class="askcrystal-collections__crystal-label askcrystal-collections__form-label--{{ forloop.index }}"
+                for="AskCrystalFormTab-{{ section.id }}-{{ forloop.index }}"
+                role="tab"
+              >
+                {{ collection.title }}
+              </label>
+            {% else %}
+              <a class="askcrystal-collections__crystal-label" href="{{ routes.all_products_collection_url }}">All forms</a>
+            {% endfor %}
+          </div>
+
+          <div class="askcrystal-collections__crystal-panels">
+            {% for collection in form_collections limit: form_tab_limit %}
+              <div class="askcrystal-collections__crystal-panel askcrystal-collections__form-panel--{{ forloop.index }}" role="tabpanel">
+                <div class="askcrystal-collections__crystal-panel-header">
+                  <div>
+                    <h3>{{ collection.title }}</h3>
+                  </div>
+                  <a class="askcrystal-collections__text-link" href="{{ collection.url }}">View all</a>
+                </div>
+
+                <div class="askcrystal-collections__crystal-carousel" role="list">
+                  {% for product in collection.products limit: form_product_limit %}
+                    {% liquid
+                      assign product_image = product.featured_media.preview_image
+                      assign product_price = product.price | money_without_trailing_zeros
+                      assign product_price_min = product.price_min | money_without_trailing_zeros
+                    %}
+                    <article class="askcrystal-collections__mini-card" role="listitem">
+                      <a href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+                        <span class="askcrystal-collections__mini-media">
+                          {% if product_image != blank %}
+                            {{
+                              product_image
+                              | image_url: width: 420
+                              | image_tag:
+                                widths: '180, 260, 360, 420',
+                                sizes: '42vw',
+                                loading: 'lazy',
+                                alt: product.title
+                            }}
+                          {% else %}
+                            <span>✦</span>
+                          {% endif %}
+                        </span>
+                        <span class="askcrystal-collections__mini-title">{{ product.title }}</span>
+                        <span class="askcrystal-collections__mini-price">
+                          {% if product.price_varies %}
+                            From {{ product_price_min }}
+                          {% else %}
+                            {{ product_price }}
+                          {% endif %}
+                        </span>
+                      </a>
+                    </article>
+                  {% else %}
+                    <div class="askcrystal-collections__empty askcrystal-collections__empty--compact">
+                      <h2>No pieces here yet</h2>
+                      <p>Add products when these form collections are ready.</p>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="askcrystal-collections__standard" aria-labelledby="askcrystal-standard-title-{{ section.id }}">
+      <div class="askcrystal-collections__standard-heading">
+        <span aria-hidden="true"></span>
+        <h2 id="askcrystal-standard-title-{{ section.id }}">Our Standard</h2>
+        <span aria-hidden="true"></span>
+      </div>
+      <div class="askcrystal-collections__standard-grid">
+        <article>
+          <svg viewBox="0 0 54 54" aria-hidden="true" focusable="false">
+            <path d="M27 5 42 22 27 50 12 22 27 5Z" />
+            <path d="M12 22h30M20 22l7 28 7-28M27 5v17M11 36c-5-1-8-4-9-9 6 0 10 3 12 8M43 36c5-1 8-4 9-9-6 0-10 3-12 8" />
+          </svg>
+          <h3>Ethically Sourced</h3>
+          <p>We work with trusted makers and conscious suppliers.</p>
+        </article>
+        <article>
+          <svg viewBox="0 0 54 54" aria-hidden="true" focusable="false">
+            <path d="M27 8 39 21 27 44 15 21 27 8Z" />
+            <path d="M9 36c5 7 11 10 18 10s13-3 18-10M15 31l-7-4M39 31l7-4" />
+          </svg>
+          <h3>Hand-Selected</h3>
+          <p>Each piece is chosen for quality, energy, and beauty.</p>
+        </article>
+        <article>
+          <svg viewBox="0 0 54 54" aria-hidden="true" focusable="false">
+            <path d="M34 7c-9 3-15 11-15 21s6 18 15 21c-14 0-25-9-25-21S20 7 34 7Z" />
+            <path d="M40 13v10M35 18h10M42 32v8M38 36h8" />
+          </svg>
+          <h3>Energetically Cleansed</h3>
+          <p>Cleansed and charged before it reaches your hands.</p>
+        </article>
+        <article>
+          <svg viewBox="0 0 54 54" aria-hidden="true" focusable="false">
+            <path d="M27 4 43 20 27 50 11 20 27 4Z" />
+            <path d="M11 20h32M19 20l8 30 8-30M27 4v16M7 39c5-7 12-10 20-10s15 3 20 10" />
+          </svg>
+          <h3>Never Mass-Grade</h3>
+          <p>Only high-grade stones, never commercial filler.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="askcrystal-collections__guidance" aria-labelledby="askcrystal-guidance-title-{{ section.id }}">
+      <div class="askcrystal-collections__eye" aria-hidden="true">
+        <span></span>
+      </div>
+      <div class="askcrystal-collections__guidance-copy">
+        <h2 id="askcrystal-guidance-title-{{ section.id }}">Not sure what resonates?</h2>
+        <p>Ask AskCrystal for personalized guidance.</p>
+        <a href="{{ section.settings.guidance_url }}" class="askcrystal-collections__guidance-button">
+          <span aria-hidden="true">✦</span>
+          {{ section.settings.guidance_label }}
+        </a>
+      </div>
+    </section>
+
+    <section class="askcrystal-collections__trust" aria-label="Store promises">
+      <article>
+        <span aria-hidden="true">
+          <svg viewBox="0 0 42 42" focusable="false"><path d="M21 5 34 10v10c0 8-5 14-13 17C13 34 8 28 8 20V10l13-5Z" /><path d="m16 21 4 4 7-9" /></svg>
+        </span>
+        <div>
+          <h3>Secure & Private</h3>
+          <p>Your data and purchases are always protected.</p>
+        </div>
+      </article>
+      <article>
+        <span aria-hidden="true">
+          <svg viewBox="0 0 42 42" focusable="false"><path d="m7 13 14-8 14 8-14 8-14-8Z" /><path d="M7 13v16l14 8 14-8V13M21 21v16" /></svg>
+        </span>
+        <div>
+          <h3>Insured Shipping</h3>
+          <p>Carefully packaged and fully insured delivery.</p>
+        </div>
+      </article>
+      <article>
+        <span aria-hidden="true">
+          <svg viewBox="0 0 42 42" focusable="false"><path d="M31 13a13 13 0 1 0 3 12" /><path d="M30 6v8h8M14 21c2 5 12 5 14 0" /></svg>
+        </span>
+        <div>
+          <h3>Love It or Return</h3>
+          <p>30-day return window on all eligible items.</p>
+        </div>
+      </article>
+    </section>
+
+    <nav class="askcrystal-collections__link-panel" aria-label="Store links">
+      <details open>
+        <summary>Shop</summary>
+        <a href="{{ routes.all_products_collection_url }}">All products</a>
+        <a href="{{ bestseller_collection.url | default: routes.all_products_collection_url }}">Best sellers</a>
+      </details>
+      <details>
+        <summary>About AskCrystal</summary>
+        <a href="{{ section.settings.guidance_url }}">Ask for guidance</a>
+        <a href="{{ routes.root_url }}">Return to chat</a>
+      </details>
+      <details>
+        <summary>Customer Care</summary>
+        <a href="{{ routes.cart_url }}">Cart</a>
+        <a href="{{ routes.search_url }}">Search</a>
+      </details>
+      <details>
+        <summary>Resources</summary>
+        <a href="{{ routes.root_url }}">Energy readings</a>
+        <a href="{{ routes.all_products_collection_url }}">Crystal shelf</a>
+      </details>
+    </nav>
+  </div>
+</section>
+
+{% stylesheet %}
+  .askcrystal-collections {
+    --ac-shop-night: #020c14;
+    --ac-shop-night-soft: #061520;
+    --ac-shop-gold: #b99560;
+    --ac-shop-gold-bright: #e4b76b;
+    --ac-shop-cream: #f0dfc8;
+    --ac-shop-muted: rgb(240 223 200 / 0.72);
+    --ac-shop-line: rgb(185 149 96 / 0.48);
+    --ac-shop-line-soft: rgb(185 149 96 / 0.26);
+    --ac-shop-card: linear-gradient(180deg, rgb(7 22 33 / 0.96), rgb(2 12 20 / 0.98));
+    --ac-shop-radius-lg: 24px;
+    --ac-shop-radius-md: 18px;
+    --ac-shop-radius-sm: 12px;
+
+    position: relative;
+    overflow: clip;
+    min-height: 100vh;
+    color: var(--ac-shop-cream);
+    background:
+      radial-gradient(circle at 74% 8%, rgb(185 149 96 / 0.13), transparent 24rem),
+      radial-gradient(circle at 14% 18%, rgb(185 149 96 / 0.08), transparent 18rem),
+      linear-gradient(180deg, var(--ac-shop-night) 0%, #03111b 48%, var(--ac-shop-night) 100%);
+  }
+
+  .askcrystal-collections a {
+    color: inherit;
+  }
+
+  .askcrystal-collections__hero {
+    position: relative;
+    isolation: isolate;
+    min-height: clamp(330px, 43vw, 480px);
+    padding: clamp(4.3rem, 10vw, 7rem) clamp(1.38rem, 5vw, 4rem) clamp(1.55rem, 4.4vw, 3rem);
+    border-bottom: 1px solid rgb(185 149 96 / 0.22);
+    background:
+      linear-gradient(90deg, rgb(2 12 20 / 0.98) 0%, rgb(2 12 20 / 0.76) 46%, rgb(2 12 20 / 0.28) 100%),
+      radial-gradient(circle at 80% 35%, rgb(185 149 96 / 0.17), transparent 18rem);
+  }
+
+  .askcrystal-collections__stars,
+  .askcrystal-collections__zodiac,
+  .askcrystal-collections__crescent,
+  .askcrystal-collections__crystal-scene {
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .askcrystal-collections__stars {
+    inset: 0;
+    z-index: -2;
+    opacity: 0.72;
+    background-image:
+      radial-gradient(circle at 18% 26%, rgb(228 183 107 / 0.72) 0 1px, transparent 1.4px),
+      radial-gradient(circle at 72% 18%, rgb(240 223 200 / 0.68) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 84% 56%, rgb(185 149 96 / 0.58) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 42% 72%, rgb(228 183 107 / 0.45) 0 1px, transparent 1.5px);
+    background-size: 120px 110px, 180px 150px, 150px 170px, 210px 160px;
+  }
+
+  .askcrystal-collections__zodiac {
+    z-index: -1;
+    inset-inline-start: clamp(-8rem, -10vw, -3rem);
+    top: clamp(3.5rem, 10vw, 6rem);
+    width: clamp(15rem, 34vw, 26rem);
+    aspect-ratio: 1;
+    border: 1px solid rgb(185 149 96 / 0.14);
+    border-radius: 50%;
+    box-shadow:
+      inset 0 0 0 22px rgb(185 149 96 / 0.025),
+      inset 0 0 0 38px rgb(185 149 96 / 0.045),
+      inset 0 0 0 62px rgb(185 149 96 / 0.025);
+    opacity: 0.9;
+  }
+
+  .askcrystal-collections__zodiac::before,
+  .askcrystal-collections__zodiac::after {
+    content: "";
+    position: absolute;
+    inset: 15%;
+    border: 1px solid rgb(185 149 96 / 0.12);
+    border-radius: inherit;
+  }
+
+  .askcrystal-collections__zodiac::after {
+    inset: 31%;
+  }
+
+  .askcrystal-collections__crescent {
+    top: clamp(6.6rem, 12vw, 8.5rem);
+    inset-inline-end: clamp(3rem, 9vw, 8rem);
+    width: clamp(2.2rem, 4.5vw, 3.6rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--ac-shop-gold);
+    opacity: 0.74;
+    transform: rotate(-24deg);
+    filter: drop-shadow(0 0 18px rgb(185 149 96 / 0.22));
+  }
+
+  .askcrystal-collections__crescent::after {
+    content: "";
+    position: absolute;
+    inset: -5% 16% 5% -18%;
+    border-radius: 50%;
+    background: var(--ac-shop-night);
+  }
+
+  .askcrystal-collections__crystal-scene {
+    z-index: -1;
+    right: clamp(1rem, 8vw, 7rem);
+    bottom: 0;
+    width: min(38vw, 26rem);
+    min-width: 13rem;
+    height: min(35vw, 24rem);
+    opacity: 0.82;
+  }
+
+  .askcrystal-collections__crystal {
+    position: absolute;
+    bottom: 24%;
+    display: block;
+    width: 23%;
+    height: 56%;
+    clip-path: polygon(50% 0, 82% 19%, 72% 100%, 28% 100%, 18% 19%);
+    border: 1px solid rgb(240 223 200 / 0.34);
+    background:
+      linear-gradient(112deg, transparent 0 34%, rgb(240 223 200 / 0.56) 35% 37%, transparent 38%),
+      linear-gradient(70deg, rgb(255 245 224 / 0.26), rgb(185 149 96 / 0.22) 42%, rgb(6 21 32 / 0.8) 100%);
+    box-shadow:
+      inset 0 0 22px rgb(240 223 200 / 0.18),
+      0 26px 42px rgb(0 0 0 / 0.4);
+  }
+
+  .askcrystal-collections__crystal--main {
+    left: 44%;
+    transform: translateX(-50%);
+  }
+
+  .askcrystal-collections__crystal--left {
+    left: 24%;
+    width: 15%;
+    height: 38%;
+    transform: rotate(-13deg);
+    opacity: 0.72;
+  }
+
+  .askcrystal-collections__crystal--right {
+    left: 62%;
+    width: 14%;
+    height: 34%;
+    transform: rotate(17deg);
+    opacity: 0.68;
+  }
+
+  .askcrystal-collections__stone {
+    position: absolute;
+    inset-inline: 4% 3%;
+    bottom: 0;
+    height: 32%;
+    border-radius: 58% 42% 0 0 / 100% 100% 0 0;
+    background:
+      radial-gradient(circle at 44% 18%, rgb(228 183 107 / 0.22), transparent 20%),
+      linear-gradient(180deg, rgb(8 18 24), rgb(0 3 6));
+    box-shadow: 0 -18px 34px rgb(185 149 96 / 0.08);
+  }
+
+  .askcrystal-collections__hero-copy {
+    position: relative;
+    z-index: 1;
+    max-width: min(32rem, 78vw);
+  }
+
+  .askcrystal-collections__kicker,
+  .askcrystal-collections__section-label,
+  .askcrystal-collections__badge,
+  .askcrystal-collections__note {
+    letter-spacing: 0.31em;
+    text-transform: uppercase;
+  }
+
+  .askcrystal-collections__kicker,
+  .askcrystal-collections__section-label {
+    margin: 0;
+    font-size: clamp(0.68rem, 1.45vw, 0.86rem);
+    color: var(--ac-shop-gold-bright);
+  }
+
+  .askcrystal-collections__hero h1 {
+    max-width: 8.6ch;
+    margin: 0.85rem 0 0;
+    font-family: var(--font-heading--family), serif;
+    font-size: clamp(2.85rem, 8.4vw, 5.9rem);
+    font-weight: 400;
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+    color: var(--ac-shop-cream);
+  }
+
+  .askcrystal-collections__lede {
+    max-width: 30rem;
+    margin: 1rem 0 0;
+    color: var(--ac-shop-muted);
+    font-size: clamp(0.96rem, 2vw, 1.16rem);
+    line-height: 1.52;
+  }
+
+  .askcrystal-collections__note {
+    display: flex;
+    gap: 0.72rem;
+    align-items: center;
+    margin: 1.42rem 0 0;
+    color: var(--ac-shop-gold-bright);
+    font-size: clamp(0.68rem, 1.45vw, 0.8rem);
+    line-height: 1.6;
+  }
+
+  .askcrystal-collections__note span {
+    font-size: 1.1rem;
+    letter-spacing: 0;
+  }
+
+  .askcrystal-collections__body {
+    display: grid;
+    gap: clamp(1rem, 2.6vw, 1.55rem);
+    width: min(100%, 1160px);
+    margin: 0 auto;
+    padding: clamp(1.15rem, 3.4vw, 2.2rem) clamp(1rem, 4vw, 2rem) clamp(2.2rem, 7vw, 4.5rem);
+  }
+
+  .askcrystal-collections__intention,
+  .askcrystal-collections__product-section,
+  .askcrystal-collections__crystal-browse {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .askcrystal-collections__intention {
+    text-align: center;
+  }
+
+  .askcrystal-collections__intention-rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(10.5rem, 1fr);
+    gap: 0.78rem;
+    overflow-x: auto;
+    padding: 0.12rem 0 0.5rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .askcrystal-collections__intention-rail::-webkit-scrollbar,
+  .askcrystal-collections__crystal-carousel::-webkit-scrollbar,
+  .askcrystal-collections__crystal-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .askcrystal-collections__intention-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    min-height: 5.8rem;
+    align-items: center;
+    gap: 0.72rem;
+    padding: 0.72rem;
+    border: 1px solid var(--ac-shop-line);
+    border-radius: 1.25rem;
+    background:
+      radial-gradient(circle at 50% 0%, rgb(185 149 96 / 0.1), transparent 72%),
+      rgb(2 12 20 / 0.76);
+    color: var(--ac-shop-cream);
+    text-align: left;
+    text-decoration: none;
+    scroll-snap-align: start;
+    transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
+  }
+
+  .askcrystal-collections__intention-card:hover,
+  .askcrystal-collections__intention-card:focus-visible,
+  .askcrystal-collections__mini-card a:hover,
+  .askcrystal-collections__mini-card a:focus-visible {
+    border-color: rgb(228 183 107 / 0.78);
+    background:
+      radial-gradient(circle at 50% 0%, rgb(185 149 96 / 0.18), transparent 70%),
+      rgb(5 18 28 / 0.92);
+    transform: translateY(-2px);
+  }
+
+  .askcrystal-collections__intention-orb {
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    width: 3.25rem;
+    height: 3.25rem;
+    border: 1px solid rgb(185 149 96 / 0.4);
+    border-radius: 50%;
+    background: rgb(185 149 96 / 0.1);
+    color: var(--ac-shop-gold-bright);
+    font-family: var(--font-heading--family), serif;
+    font-size: 1.35rem;
+  }
+
+  .askcrystal-collections__intention-orb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .askcrystal-collections__intention-copy {
+    display: grid;
+    gap: 0.18rem;
+    min-width: 0;
+  }
+
+  .askcrystal-collections__intention-title {
+    overflow: hidden;
+    color: rgb(240 223 200 / 0.92);
+    font-size: 0.9rem;
+    line-height: 1.18;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .askcrystal-collections__intention-count {
+    color: rgb(240 223 200 / 0.58);
+    font-size: 0.74rem;
+    line-height: 1.2;
+  }
+
+  .askcrystal-collections__intention-help {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.55rem;
+    margin: -0.1rem 0 0;
+    color: var(--ac-shop-muted);
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+
+  .askcrystal-collections__product-title span,
+  .askcrystal-collections__guidance-button span {
+    color: var(--ac-shop-gold-bright);
+  }
+
+  .askcrystal-collections__section-head {
+    display: grid;
+    gap: 0.6rem;
+    align-items: end;
+  }
+
+  .askcrystal-collections__section-head h2 {
+    margin: 0;
+    color: var(--ac-shop-cream);
+    font-family: var(--font-heading--family), serif;
+    font-size: clamp(1.65rem, 4.8vw, 2.75rem);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+  }
+
+  .askcrystal-collections__section-head p {
+    margin: 0;
+    max-width: 40rem;
+    color: var(--ac-shop-muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .askcrystal-collections__text-link {
+    justify-self: start;
+    color: var(--ac-shop-gold-bright);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .askcrystal-collections__products {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.86rem, 2.4vw, 1.45rem);
+  }
+
+  .askcrystal-collections__product-card {
+    min-width: 0;
+  }
+
+  .askcrystal-collections__product-link {
+    position: relative;
+    display: grid;
+    min-height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--ac-shop-line);
+    border-radius: var(--ac-shop-radius-md);
+    background: var(--ac-shop-card);
+    text-decoration: none;
+    box-shadow: 0 18px 44px rgb(0 0 0 / 0.24);
+    transition: transform 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+  }
+
+  .askcrystal-collections__product-link:hover,
+  .askcrystal-collections__product-link:focus-visible {
+    border-color: rgb(228 183 107 / 0.78);
+    box-shadow: 0 24px 58px rgb(0 0 0 / 0.36), 0 0 0 1px rgb(228 183 107 / 0.12);
+    transform: translateY(-3px);
+  }
+
+  .askcrystal-collections__badge {
+    position: absolute;
+    z-index: 2;
+    top: 0.72rem;
+    inset-inline-start: 0.72rem;
+    max-width: calc(100% - 4.6rem);
+    padding: 0.28rem 0.55rem;
+    overflow: hidden;
+    border: 1px solid var(--ac-shop-line);
+    border-radius: 999px;
+    background: rgb(2 12 20 / 0.78);
+    color: var(--ac-shop-gold-bright);
+    font-size: 0.58rem;
+    line-height: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .askcrystal-collections__bookmark {
+    position: absolute;
+    z-index: 2;
+    top: 0.75rem;
+    inset-inline-end: 0.82rem;
+    width: 1.15rem;
+    color: var(--ac-shop-gold-bright);
+  }
+
+  .askcrystal-collections__bookmark svg {
+    width: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+  }
+
+  .askcrystal-collections__product-media,
+  .askcrystal-collections__mini-media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 45% 30%, rgb(185 149 96 / 0.16), transparent 45%),
+      #071721;
+  }
+
+  .askcrystal-collections__product-media {
+    aspect-ratio: 1.08;
+  }
+
+  .askcrystal-collections__product-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 42%, rgb(2 12 20 / 0.72) 100%);
+  }
+
+  .askcrystal-collections__product-media img,
+  .askcrystal-collections__mini-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.02);
+    transition: transform 520ms ease;
+  }
+
+  .askcrystal-collections__product-link:hover .askcrystal-collections__product-media img,
+  .askcrystal-collections__product-link:focus-visible .askcrystal-collections__product-media img,
+  .askcrystal-collections__mini-card a:hover .askcrystal-collections__mini-media img,
+  .askcrystal-collections__mini-card a:focus-visible .askcrystal-collections__mini-media img {
+    transform: scale(1.07);
+  }
+
+  .askcrystal-collections__product-placeholder,
+  .askcrystal-collections__mini-media > span {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    color: rgb(185 149 96 / 0.5);
+    font-size: 3rem;
+  }
+
+  .askcrystal-collections__product-copy {
+    display: grid;
+    gap: 0.45rem;
+    padding: 0.78rem 0.85rem 0.9rem;
+  }
+
+  .askcrystal-collections__product-title {
+    display: flex;
+    gap: 0.38rem;
+    align-items: flex-start;
+    color: var(--ac-shop-cream);
+    font-family: var(--font-heading--family), serif;
+    font-size: clamp(0.94rem, 2.1vw, 1.28rem);
+    line-height: 1.14;
+  }
+
+  .askcrystal-collections__product-title span {
+    font-family: var(--font-body--family), sans-serif;
+    line-height: 1.1;
+  }
+
+  .askcrystal-collections__product-blurb {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--ac-shop-muted);
+    font-size: clamp(0.78rem, 1.6vw, 0.94rem);
+    line-height: 1.42;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .askcrystal-collections__price,
+  .askcrystal-collections__mini-price {
+    color: var(--ac-shop-gold-bright);
+    font-size: clamp(0.98rem, 2vw, 1.18rem);
+    line-height: 1.1;
+  }
+
+  .askcrystal-collections__empty,
+  .askcrystal-collections__standard,
+  .askcrystal-collections__guidance,
+  .askcrystal-collections__trust,
+  .askcrystal-collections__link-panel,
+  .askcrystal-collections__crystal-browse {
+    border: 1px solid var(--ac-shop-line-soft);
+    border-radius: var(--ac-shop-radius-lg);
+    background:
+      radial-gradient(circle at 16% 12%, rgb(185 149 96 / 0.12), transparent 16rem),
+      rgb(3 14 22 / 0.86);
+    box-shadow: 0 20px 52px rgb(0 0 0 / 0.2);
+  }
+
+  .askcrystal-collections__empty {
+    grid-column: 1 / -1;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .askcrystal-collections__empty--compact {
+    min-width: 15rem;
+    padding: 1.2rem;
+    text-align: left;
+  }
+
+  .askcrystal-collections__empty h2,
+  .askcrystal-collections__empty p {
+    margin: 0;
+  }
+
+  .askcrystal-collections__empty p {
+    margin-top: 0.5rem;
+    color: var(--ac-shop-muted);
+  }
+
+  .askcrystal-collections__crystal-browse,
+  .askcrystal-collections__standard {
+    padding: clamp(1.1rem, 3vw, 1.8rem);
+  }
+
+  .askcrystal-collections__crystal-shell {
+    position: relative;
+  }
+
+  .askcrystal-collections__crystal-input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .askcrystal-collections__crystal-tabs {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .askcrystal-collections__crystal-nav {
+    display: flex;
+    gap: 0.55rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+  }
+
+  .askcrystal-collections__crystal-label {
+    flex: 0 0 auto;
+    min-height: 2.4rem;
+    padding: 0.62rem 0.9rem;
+    border: 1px solid rgb(185 149 96 / 0.28);
+    border-radius: 999px;
+    color: var(--ac-shop-muted);
+    cursor: pointer;
+    font-size: 0.82rem;
+    line-height: 1;
+    text-decoration: none;
+    transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+  }
+
+  .askcrystal-collections__crystal-panel {
+    display: none;
+    gap: 1rem;
+  }
+
+  .askcrystal-collections__crystal-panel-header {
+    display: grid;
+    gap: 0.65rem;
+    align-items: end;
+  }
+
+  .askcrystal-collections__crystal-panel-header h3 {
+    margin: 0;
+    font-family: var(--font-heading--family), serif;
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    font-weight: 400;
+    line-height: 1.08;
+  }
+
+  .askcrystal-collections__crystal-panel-header p {
+    margin: 0.3rem 0 0;
+    color: var(--ac-shop-muted);
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .askcrystal-collections__crystal-carousel {
+    display: flex;
+    gap: 0.85rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding: 0.1rem 0 0.5rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .askcrystal-collections__mini-card {
+    flex: 0 0 min(42vw, 12.25rem);
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  .askcrystal-collections__mini-card a {
+    display: grid;
+    gap: 0.48rem;
+    height: 100%;
+    overflow: hidden;
+    padding: 0.48rem;
+    border: 1px solid rgb(185 149 96 / 0.28);
+    border-radius: 1rem;
+    background: rgb(2 12 20 / 0.54);
+    text-decoration: none;
+    transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
+  }
+
+  .askcrystal-collections__mini-media {
+    aspect-ratio: 1;
+    border-radius: 0.72rem;
+  }
+
+  .askcrystal-collections__mini-title {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--ac-shop-cream);
+    font-family: var(--font-heading--family), serif;
+    font-size: 0.96rem;
+    line-height: 1.14;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .askcrystal-collections__mini-price {
+    font-size: 0.88rem;
+  }
+
+  .askcrystal-collections__standard-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.85rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .askcrystal-collections__standard-heading span {
+    width: min(4.5rem, 18vw);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ac-shop-line), transparent);
+  }
+
+  .askcrystal-collections__standard-heading h2 {
+    margin: 0;
+    color: var(--ac-shop-gold-bright);
+    font-family: var(--font-body--family), sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.31em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .askcrystal-collections__standard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.15rem 0.85rem;
+  }
+
+  .askcrystal-collections__standard-grid article {
+    display: grid;
+    justify-items: center;
+    gap: 0.4rem;
+    text-align: center;
+  }
+
+  .askcrystal-collections__standard-grid svg {
+    width: 3.2rem;
+    color: var(--ac-shop-gold-bright);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .askcrystal-collections__standard-grid h3,
+  .askcrystal-collections__trust h3,
+  .askcrystal-collections__link-panel summary {
+    margin: 0;
+    color: var(--ac-shop-cream);
+    font-family: var(--font-heading--family), serif;
+    font-size: clamp(0.98rem, 2vw, 1.26rem);
+    font-weight: 400;
+    line-height: 1.18;
+  }
+
+  .askcrystal-collections__standard-grid p {
+    max-width: 13rem;
+    margin: 0;
+    color: var(--ac-shop-muted);
+    font-size: 0.82rem;
+    line-height: 1.44;
+  }
+
+  .askcrystal-collections__guidance {
+    display: grid;
+    grid-template-columns: minmax(6rem, 32%) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2rem);
+    overflow: hidden;
+    padding: clamp(1.15rem, 3vw, 2rem);
+  }
+
+  .askcrystal-collections__eye {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1.52;
+    min-height: 7rem;
+    opacity: 0.74;
+  }
+
+  .askcrystal-collections__eye::before {
+    content: "";
+    position: absolute;
+    inset: 18% 4%;
+    border: 1px solid rgb(185 149 96 / 0.5);
+    border-radius: 50%;
+    transform: rotate(-8deg);
+  }
+
+  .askcrystal-collections__eye::after {
+    content: "";
+    position: absolute;
+    width: 54%;
+    aspect-ratio: 1;
+    border: 1px solid rgb(185 149 96 / 0.26);
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 1.1rem rgb(185 149 96 / 0.025),
+      0 0 0 2rem rgb(185 149 96 / 0.018);
+  }
+
+  .askcrystal-collections__eye span {
+    position: relative;
+    z-index: 1;
+    width: 20%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--ac-shop-gold-bright);
+    box-shadow: 0 0 26px rgb(185 149 96 / 0.36);
+  }
+
+  .askcrystal-collections__guidance-copy {
+    display: grid;
+    justify-items: start;
+    gap: 0.45rem;
+  }
+
+  .askcrystal-collections__guidance h2 {
+    margin: 0;
+    color: var(--ac-shop-cream);
+    font-family: var(--font-heading--family), serif;
+    font-size: clamp(1.55rem, 4.6vw, 2.6rem);
+    font-weight: 400;
+    line-height: 1.08;
+  }
+
+  .askcrystal-collections__guidance p {
+    margin: 0;
+    color: var(--ac-shop-muted);
+    font-size: clamp(0.92rem, 2vw, 1.08rem);
+  }
+
+  .askcrystal-collections__guidance-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 2.85rem;
+    min-width: min(100%, 15.5rem);
+    margin-top: 0.55rem;
+    padding: 0.7rem 1.35rem;
+    border: 1px solid var(--ac-shop-line);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ac-shop-cream);
+    text-decoration: none;
+    transition: background 220ms ease, border-color 220ms ease, transform 220ms ease;
+  }
+
+  .askcrystal-collections__guidance-button:hover,
+  .askcrystal-collections__guidance-button:focus-visible {
+    border-color: rgb(228 183 107 / 0.84);
+    background: rgb(185 149 96 / 0.12);
+    transform: translateY(-2px);
+  }
+
+  .askcrystal-collections__trust {
+    display: grid;
+    gap: 0;
+    padding: 1rem 1.35rem;
+  }
+
+  .askcrystal-collections__trust article {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem;
+    padding-block: 1rem;
+  }
+
+  .askcrystal-collections__trust article + article {
+    border-top: 1px solid rgb(185 149 96 / 0.18);
+  }
+
+  .askcrystal-collections__trust article > span {
+    display: grid;
+    place-items: center;
+    width: 2.8rem;
+    color: var(--ac-shop-gold-bright);
+  }
+
+  .askcrystal-collections__trust svg {
+    width: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.45;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .askcrystal-collections__trust p {
+    margin: 0.26rem 0 0;
+    color: var(--ac-shop-muted);
+    font-size: 0.92rem;
+    line-height: 1.42;
+  }
+
+  .askcrystal-collections__trust h3 {
+    color: var(--ac-shop-gold-bright);
+  }
+
+  .askcrystal-collections__link-panel {
+    display: grid;
+    padding: 0 1.15rem;
+  }
+
+  .askcrystal-collections__link-panel details {
+    padding-block: 1rem;
+  }
+
+  .askcrystal-collections__link-panel details + details {
+    border-top: 1px solid rgb(185 149 96 / 0.18);
+  }
+
+  .askcrystal-collections__link-panel summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--ac-shop-gold-bright);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .askcrystal-collections__link-panel summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .askcrystal-collections__link-panel summary::after {
+    content: "⌄";
+    font-family: var(--font-body--family), sans-serif;
+    font-size: 1rem;
+    line-height: 1;
+    transition: transform 180ms ease;
+  }
+
+  .askcrystal-collections__link-panel details[open] summary::after {
+    transform: rotate(180deg);
+  }
+
+  .askcrystal-collections__link-panel a {
+    display: block;
+    width: fit-content;
+    margin-top: 0.72rem;
+    color: var(--ac-shop-muted);
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .askcrystal-collections__section-head {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .askcrystal-collections__section-head .askcrystal-collections__section-label,
+    .askcrystal-collections__section-head--stacked .askcrystal-collections__section-label {
+      grid-column: 1 / -1;
+    }
+
+    .askcrystal-collections__intention-rail {
+      grid-auto-flow: initial;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: visible;
+      padding-bottom: 0;
+    }
+
+    .askcrystal-collections__products {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .askcrystal-collections__trust {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .askcrystal-collections__crystal-panel-header {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .askcrystal-collections__mini-card {
+      flex-basis: min(21vw, 13.5rem);
+    }
+
+    .askcrystal-collections__standard-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .askcrystal-collections__standard-grid article + article {
+      border-inline-start: 1px solid rgb(185 149 96 / 0.2);
+    }
+
+    .askcrystal-collections__trust {
+      padding: 1.2rem 1.35rem;
+    }
+
+    .askcrystal-collections__trust article {
+      padding-block: 0.35rem;
+    }
+
+    .askcrystal-collections__trust article + article {
+      border-top: 0;
+      border-inline-start: 1px solid rgb(185 149 96 / 0.25);
+      padding-inline-start: 1.25rem;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .askcrystal-collections__hero {
+      min-height: 24rem;
+    }
+
+    .askcrystal-collections__hero-copy {
+      max-width: 92%;
+    }
+
+    .askcrystal-collections__crystal-scene {
+      right: -1.6rem;
+      bottom: 0.25rem;
+      width: 12.8rem;
+      height: 11.8rem;
+      opacity: 0.38;
+    }
+
+    .askcrystal-collections__crescent {
+      opacity: 0.58;
+    }
+
+    .askcrystal-collections__product-copy {
+      padding: 0.66rem 0.68rem 0.76rem;
+    }
+
+    .askcrystal-collections__product-blurb {
+      -webkit-line-clamp: 2;
+    }
+
+    .askcrystal-collections__guidance {
+      grid-template-columns: 1fr;
+    }
+
+    .askcrystal-collections__eye {
+      min-height: 5.2rem;
+      max-width: 13rem;
+    }
+
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .askcrystal-collections *,
+    .askcrystal-collections *::before,
+    .askcrystal-collections *::after {
+      transition-duration: 1ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "AskCrystal collections",
+  "enabled_on": {
+    "templates": ["list-collections"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "hero_kicker",
+      "label": "Hero kicker",
+      "default": "Curated Collection"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Objects of Alignment"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Each piece is selected for energetic clarity, material integrity, and symbolic resonance."
+    },
+    {
+      "type": "text",
+      "id": "hero_note",
+      "label": "Hero note",
+      "default": "Refined for your current path"
+    },
+    {
+      "type": "header",
+      "content": "Collection tabs"
+    },
+    {
+      "type": "collection_list",
+      "id": "intention_collections",
+      "label": "Collections shown as tabs"
+    },
+    {
+      "type": "range",
+      "id": "collection_tab_limit",
+      "label": "Collection tab count",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "intentions_heading",
+      "label": "Tabs heading",
+      "default": "Browse by Collection"
+    },
+    {
+      "type": "header",
+      "content": "Best sellers"
+    },
+    {
+      "type": "collection",
+      "id": "bestseller_collection",
+      "label": "Best sellers collection"
+    },
+    {
+      "type": "text",
+      "id": "bestseller_handle",
+      "label": "Fallback best sellers handle",
+      "default": "best-sellers"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "label": "Best seller product count",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "text",
+      "id": "bestsellers_kicker",
+      "label": "Best sellers kicker",
+      "default": "Most Chosen"
+    },
+    {
+      "type": "text",
+      "id": "bestsellers_heading",
+      "label": "Best sellers heading",
+      "default": "Best Sellers"
+    },
+    {
+      "type": "text",
+      "id": "product_badge_text",
+      "label": "Product badge text",
+      "default": "Best Seller"
+    },
+    {
+      "type": "header",
+      "content": "Browse by crystal"
+    },
+    {
+      "type": "collection_list",
+      "id": "crystal_collections",
+      "label": "Crystal material collections"
+    },
+    {
+      "type": "range",
+      "id": "crystal_tab_limit",
+      "label": "Crystal tab count",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "crystal_product_limit",
+      "label": "Crystal carousel product count",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "crystal_kicker",
+      "label": "Crystal kicker",
+      "default": "Browse by Crystal"
+    },
+    {
+      "type": "text",
+      "id": "crystal_heading",
+      "label": "Crystal heading",
+      "default": "Choose by material resonance"
+    },
+    {
+      "type": "header",
+      "content": "Shop by form"
+    },
+    {
+      "type": "collection_list",
+      "id": "form_collections",
+      "label": "Form collections"
+    },
+    {
+      "type": "range",
+      "id": "form_tab_limit",
+      "label": "Form tab count",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "form_product_limit",
+      "label": "Form carousel product count",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "form_kicker",
+      "label": "Form kicker",
+      "default": "Shop by Form"
+    },
+    {
+      "type": "text",
+      "id": "form_heading",
+      "label": "Form heading",
+      "default": "Choose how you wear it"
+    },
+    {
+      "type": "header",
+      "content": "Guidance"
+    },
+    {
+      "type": "url",
+      "id": "guidance_url",
+      "label": "Guidance link",
+      "default": "/"
+    },
+    {
+      "type": "text",
+      "id": "guidance_label",
+      "label": "Guidance button label",
+      "default": "Ask for Guidance"
+    }
+  ],
+  "presets": [
+    {
+      "name": "AskCrystal collections"
+    }
+  ]
+}
+{% endschema %}

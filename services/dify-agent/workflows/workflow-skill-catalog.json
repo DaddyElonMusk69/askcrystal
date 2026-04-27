@@ -3,7 +3,7 @@
   "strategy": {
     "runtime": "dify-workflow-tools",
     "legacy_bridge_status": "parked",
-    "scope_rule": "only-six-external-skill-families"
+    "scope_rule": "six-original-families-plus-horoscope-followup"
   },
   "output_contract": "askcrystal_skill_result_v1",
   "output_contract_schema": "services/dify-agent/workflows/askcrystal_skill_result_v1.schema.json",
@@ -15,6 +15,7 @@
       "source_path": "external_skills/Numerologist_skills/",
       "primary_source_file": "external_skills/Numerologist_skills/bazi/SKILL.md",
       "legacy_tool_name": "run_shushu_numerology_profile_skill_post",
+      "spec_path": "services/dify-agent/workflows/specs/shushu_numerology_profile.md",
       "dify_tool_name": "workflow_shushu_numerology_profile",
       "category": "numerology",
       "role": "Build a birth/date/name numerology-style profile with practical reflection guidance.",
@@ -29,15 +30,15 @@
     },
     {
       "id": "bazi_chart_analysis",
-      "source_family": "bazi-skill",
-      "source_path": "external_skills/bazi-skill/",
-      "primary_source_file": "external_skills/bazi-skill/SKILL.md",
+      "source_family": "bazi-mingli-main",
+      "source_path": "external_skills/bazi-mingli-main/",
+      "primary_source_file": "external_skills/bazi-mingli-main/SKILL.md",
       "legacy_tool_name": "run_bazi_chart_analysis_skill_post",
       "spec_path": "services/dify-agent/workflows/specs/bazi_chart_analysis.md",
       "dify_tool_name": "workflow_bazi_chart_analysis",
       "category": "bazi",
       "role": "Produce a structured Four Pillars reading with grounded caveats and practical guidance.",
-      "initial_scope": "classical-bazi-reading",
+      "initial_scope": "deterministic-solar-bazi-reading",
       "required_inputs": [
         "birth_datetime",
         "gender"
@@ -54,13 +55,13 @@
       "source_path": "external_skills/yinyuan-skills/",
       "primary_source_file": "external_skills/yinyuan-skills/SKILL.md",
       "legacy_tool_name": "run_yinyuan_matchmaking_skill_post",
+      "spec_path": "services/dify-agent/workflows/specs/yinyuan_matchmaking.md",
       "dify_tool_name": "workflow_yinyuan_matchmaking",
       "category": "relationship",
       "role": "Handle matchmaking and compatibility reads using supportive, non-fatalistic framing.",
       "initial_scope": "relationship-matchmaking",
       "required_inputs": [
-        "question",
-        "mode"
+        "question"
       ],
       "optional_inputs": [
         "person_a",
@@ -73,6 +74,7 @@
       "source_path": "external_skills/fengshui.skill/",
       "primary_source_file": "external_skills/fengshui.skill/SKILL.md",
       "legacy_tool_name": "run_fengshui_space_audit_skill_post",
+      "spec_path": "services/dify-agent/workflows/specs/fengshui_space_audit.md",
       "dify_tool_name": "workflow_fengshui_space_audit",
       "category": "fengshui",
       "role": "Review a home or workspace layout and provide practical fengshui guidance.",
@@ -82,7 +84,8 @@
       ],
       "optional_inputs": [
         "facing_direction",
-        "priority_goal"
+        "priority_goal",
+        "move_in_year"
       ]
     },
     {
@@ -91,6 +94,7 @@
       "source_path": "external_skills/tarot-skill/",
       "primary_source_file": "external_skills/tarot-skill/SKILL.md",
       "legacy_tool_name": "run_tarot_spread_interpretation_cn_skill_post",
+      "spec_path": "services/dify-agent/workflows/specs/tarot_spread_interpretation.md",
       "dify_tool_name": "workflow_tarot_spread_interpretation",
       "category": "tarot",
       "role": "Guide spread selection and return a structured tarot interpretation.",
@@ -120,6 +124,28 @@
       ],
       "optional_inputs": [
         "available_methods"
+      ]
+    },
+    {
+      "id": "horoscope_daily_guidance",
+      "source_family": "horoscope-daily-2.3.0",
+      "source_path": "external_skills/horoscope-daily-2.3.0/",
+      "primary_source_file": "external_skills/horoscope-daily-2.3.0/SKILL.md",
+      "legacy_tool_name": "",
+      "spec_path": "services/dify-agent/workflows/specs/horoscope_daily_guidance.md",
+      "dify_tool_name": "workflow_horoscope_daily_guidance",
+      "category": "horoscope",
+      "role": "Generate structured Western zodiac guidance for daily, weekly, or monthly horoscope requests.",
+      "initial_scope": "western-zodiac-horoscope",
+      "required_inputs": [
+        "question"
+      ],
+      "optional_inputs": [
+        "zodiac_sign",
+        "birth_date",
+        "target_date",
+        "period",
+        "focus_area"
       ]
     }
   ]

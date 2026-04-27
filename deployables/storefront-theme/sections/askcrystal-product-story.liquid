@@ -1,0 +1,505 @@
+{% liquid
+  assign selected_variant = product.selected_or_first_available_variant
+  assign why_copy = product.description | strip_html | strip
+  if why_copy == blank
+    assign why_copy = section.settings.why_fallback
+  endif
+
+  assign benefits = section.settings.benefits | newline_to_br | split: '<br />'
+  assign care_steps = section.settings.care_steps | newline_to_br | split: '<br />'
+
+  assign property_text = product.metafields.custom.energetic_properties.value | default: section.settings.property_text
+  assign chakra_text = product.metafields.custom.chakra.value | default: section.settings.chakra_text
+  assign zodiac_text = product.metafields.custom.zodiac.value | default: section.settings.zodiac_text
+
+  assign bundle_collection = section.settings.bundle_collection
+  if bundle_collection == blank and product.collections.first != blank
+    assign bundle_collection = product.collections.first
+  endif
+  if bundle_collection == blank
+    assign bundle_collection = collections.all
+  endif
+%}
+
+<section class="askcrystal-product-story color-{{ section.settings.color_scheme }}" {{ section.shopify_attributes }}>
+  <div class="askcrystal-product-story__inner">
+    <div class="askcrystal-product-story__group">
+      <section class="askcrystal-product-story__section" aria-labelledby="AskCrystalWhy-{{ section.id }}">
+        <div class="askcrystal-product-story__section-head">
+          <h2 id="AskCrystalWhy-{{ section.id }}"><span class="askcrystal-product-story__star">*</span> {{ section.settings.why_heading }}</h2>
+        </div>
+        <p class="askcrystal-product-story__copy">{{ why_copy | truncatewords: 58 }}</p>
+      </section>
+
+      <section class="askcrystal-product-story__section" aria-labelledby="AskCrystalBenefits-{{ section.id }}">
+        <div class="askcrystal-product-story__section-head">
+          <h2 id="AskCrystalBenefits-{{ section.id }}">{{ section.settings.benefits_heading }}</h2>
+          <span class="askcrystal-product-story__chevron" aria-hidden="true">^</span>
+        </div>
+        <ul class="askcrystal-product-story__list">
+          {% for benefit in benefits %}
+            {% assign benefit_text = benefit | strip %}
+            {% if benefit_text != blank %}
+              <li>{{ benefit_text }}</li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="askcrystal-product-story__section" aria-labelledby="AskCrystalDetails-{{ section.id }}">
+        <div class="askcrystal-product-story__section-head">
+          <h2 id="AskCrystalDetails-{{ section.id }}">{{ section.settings.details_heading }}</h2>
+          <span class="askcrystal-product-story__chevron" aria-hidden="true">^</span>
+        </div>
+        <ul class="askcrystal-product-story__details-list">
+          {% if product.type != blank %}
+            <li><span>Type:</span> {{ product.type }}</li>
+          {% endif %}
+          {% if product.collections.first != blank %}
+            <li><span>Collection:</span> {{ product.collections.first.title }}</li>
+          {% endif %}
+          {% if selected_variant.sku != blank %}
+            <li><span>SKU:</span> {{ selected_variant.sku }}</li>
+          {% endif %}
+          <li><span>Piece:</span> Natural variations make each one unique.</li>
+          <li><span>Availability:</span> {% if selected_variant.available %}Ready to add to cart{% else %}Currently unavailable{% endif %}</li>
+        </ul>
+      </section>
+
+      <div class="askcrystal-product-story__policies" aria-label="Product policies">
+        <span class="askcrystal-product-story__policy"><span class="askcrystal-product-story__gold" aria-hidden="true">o</span> 30-Day Returns</span>
+        <span class="askcrystal-product-story__policy"><span class="askcrystal-product-story__gold" aria-hidden="true">o</span> Quality Checked</span>
+      </div>
+    </div>
+
+    <div class="askcrystal-product-story__group">
+      <section class="askcrystal-product-story__panel" aria-labelledby="AskCrystalTheDetails-{{ section.id }}">
+        <div class="askcrystal-product-story__panel-head">
+          <h2 id="AskCrystalTheDetails-{{ section.id }}">{{ section.settings.panel_heading }}</h2>
+          <span class="askcrystal-product-story__chevron" aria-hidden="true">^</span>
+        </div>
+        <p>{{ section.settings.panel_copy | replace: '[product]', product.title }}</p>
+        <ul class="askcrystal-product-story__panel-list">
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M6 8c4 0 6 2 6 6-4 0-6-2-6-6ZM18 8c-4 0-6 2-6 6 4 0 6-2 6-6Z" /></svg>
+            <span>{{ section.settings.detail_point_1 }}</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 7 4v7c0 4-3 6-7 7-4-1-7-3-7-7V7l7-4Z" /><path d="m9 12 2 2 4-5" /></svg>
+            <span>{{ section.settings.detail_point_2 }}</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 7l8 15 8-15-8-5Z" /><path d="M4 7h16M8 7l4 15 4-15" /></svg>
+            <span>{{ section.settings.detail_point_3 }}</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="askcrystal-product-story__section" aria-labelledby="AskCrystalCare-{{ section.id }}">
+        <h2 id="AskCrystalCare-{{ section.id }}">{{ section.settings.care_heading }}</h2>
+        <p>{{ section.settings.care_intro }}</p>
+        <ul class="askcrystal-product-story__list">
+          {% for step in care_steps %}
+            {% assign step_text = step | strip %}
+            {% if step_text != blank %}
+              <li>{{ step_text }}</li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="askcrystal-product-story__included" aria-labelledby="AskCrystalIncluded-{{ section.id }}">
+        <div>
+          <p class="askcrystal-product-story__muted">{{ section.settings.included_kicker }}</p>
+          <h3 id="AskCrystalIncluded-{{ section.id }}">{{ section.settings.included_heading }}</h3>
+          <p>{{ section.settings.included_copy }}</p>
+        </div>
+        <span class="askcrystal-product-story__included-visual" aria-hidden="true"></span>
+      </section>
+
+      <section class="askcrystal-product-story__properties" aria-labelledby="AskCrystalProperties-{{ section.id }}">
+        <h2 id="AskCrystalProperties-{{ section.id }}">{{ section.settings.properties_heading }}</h2>
+        <div class="askcrystal-product-story__property-row">
+          <span class="askcrystal-product-story__property-label">Energetic properties</span>
+          <span class="askcrystal-product-story__property-value">{{ property_text }}</span>
+        </div>
+        <div class="askcrystal-product-story__property-row">
+          <span class="askcrystal-product-story__property-label">Associated chakra</span>
+          <span class="askcrystal-product-story__property-value">{{ chakra_text }}</span>
+          <span class="askcrystal-product-story__symbol-row" aria-hidden="true">
+            <span class="askcrystal-product-story__symbol">III</span>
+            <span class="askcrystal-product-story__symbol">VII</span>
+          </span>
+        </div>
+        <div class="askcrystal-product-story__property-row">
+          <span class="askcrystal-product-story__property-label">Associated zodiac</span>
+          <span class="askcrystal-product-story__property-value">{{ zodiac_text }}</span>
+          <span class="askcrystal-product-story__symbol-row" aria-hidden="true">
+            <span class="askcrystal-product-story__symbol">Sc</span>
+            <span class="askcrystal-product-story__symbol">Sg</span>
+            <span class="askcrystal-product-story__symbol">Pi</span>
+          </span>
+        </div>
+      </section>
+
+      <section class="askcrystal-product-story__integrity" aria-labelledby="AskCrystalIntegrity-{{ section.id }}">
+        <h2 id="AskCrystalIntegrity-{{ section.id }}">{{ section.settings.integrity_heading }}</h2>
+        <p>{{ section.settings.integrity_copy }}</p>
+        <div class="askcrystal-product-story__seals" aria-hidden="true">
+          <span class="askcrystal-product-story__seal">Ethically<br>Sourced</span>
+          <span class="askcrystal-product-story__seal">Energy<br>Cleansed</span>
+          <span class="askcrystal-product-story__seal">Quality<br>Checked</span>
+        </div>
+      </section>
+
+      {% if bundle_collection != blank and bundle_collection.products_count > 0 %}
+        <section class="askcrystal-product-story__bundle" aria-labelledby="AskCrystalBundle-{{ section.id }}">
+          <h2 id="AskCrystalBundle-{{ section.id }}">{{ section.settings.bundle_heading }}</h2>
+          <div class="askcrystal-product-story__bundle-products" role="list">
+            {% assign bundle_count = 0 %}
+            {% for bundle_product in bundle_collection.products limit: 8 %}
+              {% if bundle_product.id == product.id %}
+                {% continue %}
+              {% endif %}
+              {% assign bundle_count = bundle_count | plus: 1 %}
+              {% if bundle_count > 3 %}
+                {% break %}
+              {% endif %}
+              <a class="askcrystal-product-story__bundle-card" href="{{ bundle_product.url }}" role="listitem" aria-label="{{ bundle_product.title | escape }}">
+                <span class="askcrystal-product-story__bundle-media">
+                  {% if bundle_product.featured_media.preview_image != blank %}
+                    {{
+                      bundle_product.featured_media.preview_image
+                      | image_url: width: 320
+                      | image_tag:
+                        widths: '160, 240, 320',
+                        sizes: '132px',
+                        loading: 'lazy',
+                        alt: bundle_product.title
+                    }}
+                  {% endif %}
+                </span>
+                <span class="askcrystal-product-story__bundle-copy">
+                  <span class="askcrystal-product-story__bundle-title">{{ bundle_product.title }}</span>
+                  <span class="askcrystal-product-story__bundle-price">{{ bundle_product.price | money_without_trailing_zeros }}</span>
+                </span>
+              </a>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+    </div>
+
+    <div class="askcrystal-product-story__group">
+      <section class="askcrystal-product-story__reviews" id="shopify-product-reviews" aria-labelledby="AskCrystalReviews-{{ section.id }}">
+        <div class="askcrystal-product-story__panel-head">
+          <h2 id="AskCrystalReviews-{{ section.id }}">{{ section.settings.reviews_heading }}</h2>
+          <span class="askcrystal-product-story__chevron" aria-hidden="true">^</span>
+        </div>
+        <div class="askcrystal-product-story__rating">
+          <span class="askcrystal-product-story__rating-score">{{ section.settings.review_score }}</span>
+          <span class="askcrystal-product-story__rating-meta">
+            <span class="askcrystal-product-story__stars" aria-label="Five star rating">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            <span>({{ section.settings.review_count }} reviews)</span>
+          </span>
+        </div>
+        <article class="askcrystal-product-story__review">
+          <strong>{{ section.settings.review_title_1 }}</strong>
+          <span class="askcrystal-product-story__stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <p>{{ section.settings.review_copy_1 }}</p>
+          <span class="askcrystal-product-story__review-author">{{ section.settings.review_author_1 }}</span>
+        </article>
+        <article class="askcrystal-product-story__review">
+          <strong>{{ section.settings.review_title_2 }}</strong>
+          <span class="askcrystal-product-story__stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <p>{{ section.settings.review_copy_2 }}</p>
+          <span class="askcrystal-product-story__review-author">{{ section.settings.review_author_2 }}</span>
+        </article>
+        <a class="askcrystal-product-story__outline-button" href="#shopify-product-reviews">{{ section.settings.reviews_button_label }}</a>
+      </section>
+
+      <section class="askcrystal-product-story__confidence" aria-labelledby="AskCrystalConfidence-{{ section.id }}">
+        <h2 id="AskCrystalConfidence-{{ section.id }}">{{ section.settings.confidence_heading }}</h2>
+        <ul class="askcrystal-product-story__confidence-list">
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 7 4v6c0 4-3 7-7 8-4-1-7-4-7-8V7l7-4Z" /><path d="m9 12 2 2 4-5" /></svg>
+            <span><strong>Secure checkout</strong><p>Your payment is protected.</p></span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Z" /><path d="M3 7v10l9 4 9-4V7M12 11v10" /></svg>
+            <span><strong>Insured shipping</strong><p>Careful packing for delicate pieces.</p></span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2-5.3" /><path d="M4 4v5h5" /></svg>
+            <span><strong>Easy returns</strong><p>Love it or return it hassle-free.</p></span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="askcrystal-product-story__help" aria-labelledby="AskCrystalHelp-{{ section.id }}">
+        <div class="askcrystal-product-story__help-row">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.3A8.5 8.5 0 1 1 21 11.5Z" /><path d="M8 11h.01M12 11h.01M16 11h.01" /></svg>
+          <span>
+            <strong>{{ section.settings.help_heading }}</strong>
+            <p>{{ section.settings.help_copy }}</p>
+          </span>
+        </div>
+        {% if section.settings.help_link != blank %}
+          <a class="askcrystal-product-story__outline-button" href="{{ section.settings.help_link }}">{{ section.settings.help_button_label }}</a>
+        {% endif %}
+      </section>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "AskCrystal product story",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "why_heading",
+      "label": "Why heading",
+      "default": "Why this piece?"
+    },
+    {
+      "type": "textarea",
+      "id": "why_fallback",
+      "label": "Why fallback copy",
+      "default": "Selected for its visual presence, everyday wearability, and steady ritual energy. Let this piece become a small anchor for your intention."
+    },
+    {
+      "type": "text",
+      "id": "benefits_heading",
+      "label": "Benefits heading",
+      "default": "Key benefits"
+    },
+    {
+      "type": "textarea",
+      "id": "benefits",
+      "label": "Benefits",
+      "default": "Supports mindful intention setting\nAdds a refined crystal accent to daily rituals\nMakes a thoughtful gift for a new chapter\nPairs easily with meditation, journaling, or breathwork"
+    },
+    {
+      "type": "text",
+      "id": "details_heading",
+      "label": "Details heading",
+      "default": "Details"
+    },
+    {
+      "type": "text",
+      "id": "panel_heading",
+      "label": "Panel heading",
+      "default": "The details"
+    },
+    {
+      "type": "textarea",
+      "id": "panel_copy",
+      "label": "Panel copy",
+      "default": "Each [product] is naturally unique. Subtle shifts in tone, texture, and flash are part of the stone's character."
+    },
+    {
+      "type": "text",
+      "id": "detail_point_1",
+      "label": "Detail point 1",
+      "default": "Hand-selected with intention"
+    },
+    {
+      "type": "text",
+      "id": "detail_point_2",
+      "label": "Detail point 2",
+      "default": "Natural stones, never synthetic"
+    },
+    {
+      "type": "text",
+      "id": "detail_point_3",
+      "label": "Detail point 3",
+      "default": "Small batch and quality inspected"
+    },
+    {
+      "type": "text",
+      "id": "care_heading",
+      "label": "Care heading",
+      "default": "Care instructions"
+    },
+    {
+      "type": "textarea",
+      "id": "care_intro",
+      "label": "Care intro",
+      "default": "To keep your piece beautiful and energetically clear:"
+    },
+    {
+      "type": "textarea",
+      "id": "care_steps",
+      "label": "Care steps",
+      "default": "Avoid prolonged exposure to water and harsh chemicals\nCleanse regularly with smoke, sound, or selenite\nStore in a soft pouch when not in use"
+    },
+    {
+      "type": "text",
+      "id": "included_kicker",
+      "label": "Included kicker",
+      "default": "This piece comes with a"
+    },
+    {
+      "type": "text",
+      "id": "included_heading",
+      "label": "Included heading",
+      "default": "Silk pouch and care card"
+    },
+    {
+      "type": "textarea",
+      "id": "included_copy",
+      "label": "Included copy",
+      "default": "Thoughtful packaging for you or a loved one."
+    },
+    {
+      "type": "text",
+      "id": "properties_heading",
+      "label": "Properties heading",
+      "default": "Energetic properties"
+    },
+    {
+      "type": "text",
+      "id": "property_text",
+      "label": "Property text",
+      "default": "Protection, intuition, transformation, awareness, clarity"
+    },
+    {
+      "type": "text",
+      "id": "chakra_text",
+      "label": "Chakra text",
+      "default": "Third Eye and Crown"
+    },
+    {
+      "type": "text",
+      "id": "zodiac_text",
+      "label": "Zodiac text",
+      "default": "Scorpio, Sagittarius, Pisces"
+    },
+    {
+      "type": "text",
+      "id": "integrity_heading",
+      "label": "Integrity heading",
+      "default": "Hand-selected for energetic integrity"
+    },
+    {
+      "type": "textarea",
+      "id": "integrity_copy",
+      "label": "Integrity copy",
+      "default": "Our team selects each piece for beauty, resonance, and authenticity, then prepares it for your ritual practice."
+    },
+    {
+      "type": "collection",
+      "id": "bundle_collection",
+      "label": "Frequently bought together collection"
+    },
+    {
+      "type": "text",
+      "id": "bundle_heading",
+      "label": "Bundle heading",
+      "default": "Frequently bought together"
+    },
+    {
+      "type": "text",
+      "id": "reviews_heading",
+      "label": "Reviews heading",
+      "default": "What others say"
+    },
+    {
+      "type": "text",
+      "id": "review_score",
+      "label": "Review score",
+      "default": "New"
+    },
+    {
+      "type": "text",
+      "id": "review_count",
+      "label": "Review count",
+      "default": "0"
+    },
+    {
+      "type": "text",
+      "id": "review_title_1",
+      "label": "Review title 1",
+      "default": "Review widget placeholder"
+    },
+    {
+      "type": "textarea",
+      "id": "review_copy_1",
+      "label": "Review copy 1",
+      "default": "Customer reviews will appear here once the dynamic review widget is connected."
+    },
+    {
+      "type": "text",
+      "id": "review_author_1",
+      "label": "Review author 1",
+      "default": "- AskCrystal"
+    },
+    {
+      "type": "text",
+      "id": "review_title_2",
+      "label": "Review title 2",
+      "default": "Ready for social proof"
+    },
+    {
+      "type": "textarea",
+      "id": "review_copy_2",
+      "label": "Review copy 2",
+      "default": "This panel keeps the page composition close to the design without showing fabricated reviews."
+    },
+    {
+      "type": "text",
+      "id": "review_author_2",
+      "label": "Review author 2",
+      "default": "- Coming soon"
+    },
+    {
+      "type": "text",
+      "id": "reviews_button_label",
+      "label": "Reviews button label",
+      "default": "View all reviews"
+    },
+    {
+      "type": "text",
+      "id": "confidence_heading",
+      "label": "Confidence heading",
+      "default": "Shop with confidence"
+    },
+    {
+      "type": "text",
+      "id": "help_heading",
+      "label": "Help heading",
+      "default": "We're here for you"
+    },
+    {
+      "type": "textarea",
+      "id": "help_copy",
+      "label": "Help copy",
+      "default": "Have a question? Ask Crystal for guidance."
+    },
+    {
+      "type": "url",
+      "id": "help_link",
+      "label": "Help link",
+      "default": "/"
+    },
+    {
+      "type": "text",
+      "id": "help_button_label",
+      "label": "Help button label",
+      "default": "Ask Crystal"
+    }
+  ],
+  "presets": [
+    {
+      "name": "AskCrystal product story"
+    }
+  ]
+}
+{% endschema %}

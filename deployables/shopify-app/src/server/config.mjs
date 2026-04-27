@@ -5,9 +5,10 @@ import { fileURLToPath } from 'node:url'
 import { APP_PROXY_PREFIX } from './contracts.mjs'
 
 const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
+const repoRoot = path.resolve(appRoot, '../..')
 
 const loadEnvFile = (filename) => {
-  const filePath = path.join(appRoot, filename)
+  const filePath = path.isAbsolute(filename) ? filename : path.join(appRoot, filename)
   if (!fs.existsSync(filePath))
     return
 
@@ -37,6 +38,8 @@ const loadEnvFile = (filename) => {
   }
 }
 
+loadEnvFile(path.join(repoRoot, '.env'))
+loadEnvFile(path.join(repoRoot, '.env.local'))
 loadEnvFile('.env')
 loadEnvFile('.env.local')
 

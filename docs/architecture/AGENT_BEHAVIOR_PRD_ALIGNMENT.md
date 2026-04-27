@@ -11,7 +11,8 @@ This maps PRD requirements (`docs/product/prd/PRD.md`, `docs/product/prd/PRD_CN.
    - Dify app `model_config.pre_prompt`
    - Canonical routing spec: `docs/architecture/dify_skill_routing_prompt.md`
 3. Domain execution logic (`how each metaphysics skill responds`):
-   - `services/skill-bridge/src/dify_skill_bridge/skills/*.yml`
+   - Dify workflow tools tracked in `services/dify-agent/workflows/`
+   - Workflow DSL exports in `services/dify-agent/dsl/`
 4. Catalog/cart grounding (`real products only`):
    - Dify MCP provider + app tool attachment (Shopify MCP tools)
    - Setup script: `scripts/ops/setup_shopify_mcp_direct.py`
@@ -28,18 +29,17 @@ This maps PRD requirements (`docs/product/prd/PRD.md`, `docs/product/prd/PRD_CN.
 | 4-step flow (onboarding -> diagnosis -> rec -> care) | `pre_prompt` flow contract | Keeps interaction consistent |
 | Recommend only 1-3 products | `pre_prompt` response contract | Prevents overlong shopping lists |
 | Ground all product recs via tools | `pre_prompt` tool policy + MCP tools enabled | Prevents hallucinated products |
-| Chinese metaphysics + astrology + crystal synthesis | `skills/*.yml` + routing prompt | Domain-specific behavior belongs in skill packs |
+| Chinese metaphysics + astrology + crystal synthesis | Dify workflow tools + routing prompt | Domain-specific behavior belongs in typed workflow tools |
 | Catalog tagging schema (`element`, `chakra`, `intention`, etc.) | Shopify product tags + tool-query strategy | Retrieval quality depends on tags, not prompt text |
 | In-chat product cards | Shopify frontend app block/section | UI responsibility, not Dify responsibility |
 | Post-purchase care guidance | `pre_prompt` response contract + crystal care skills | Keeps retention behavior present |
 
 ## 3) Skill Placement Rules (Operational)
 
-1. Keep CN divination skills in `services/skill-bridge/src/dify_skill_bridge/skills/cn_divination_pack.yml`.
-2. Keep astrology + crystal + healing execution in `services/skill-bridge/src/dify_skill_bridge/skills/astrology_crystal_pack.yml`.
-3. Keep mythic/archetype framing in `services/skill-bridge/src/dify_skill_bridge/skills/mythology_pack.yml`.
-4. Do not embed long persona/guardrail logic inside skill templates; keep those global in `pre_prompt`.
-5. If adding new skill families, add `id`, `when_to_use`, strict `inputs`, and bounded `template`.
+1. Keep domain execution in Dify workflow tools under `services/dify-agent/workflows/`.
+2. Keep source material under `external_skills/`; do not treat source repos as runtime code unless a workflow explicitly wraps them.
+3. Do not embed long persona/guardrail logic inside workflow internals; keep those global in `pre_prompt`.
+4. If adding new workflow families, add strict inputs, bounded outputs, examples, and a DSL/provisioning path.
 
 ## 4) Current Gaps vs PRD (and Fix Location)
 
@@ -58,25 +58,20 @@ cd /Users/haokaiqin/Desktop/AskCrystal
 # Apply PRD-aligned prompt to Dify app model_config.pre_prompt
 python3 scripts/ops/configure_openai_compatible_model.py \
   --base-url http://localhost:18080 \
-  --email askcrystal.admin@example.com \
-  --password Askcrystal123 \
+  --email "$DIFY_ADMIN_EMAIL" \
+  --password "$DIFY_ADMIN_PASSWORD" \
   --provider langgenius/openai_api_compatible/openai_api_compatible \
   --endpoint-url "$MODEL_BASE_URL" \
   --model-id "$MODEL_ID" \
   --api-key "$OPENAI_API_KEY"
 
-# Ensure per-skill tools remain attached to app
-python3 scripts/ops/sync_agent_skill_tools.py \
-  --base-url http://localhost:18080 \
-  --email askcrystal.admin@example.com \
-  --password Askcrystal123 \
-  --app-id 385c285a-0e61-4cf1-ba49-afde28c5ce12 \
-  --provider askcrystal_skill_bridge
+# Provision or resync workflow-native tools only when intentionally needed
+python3 scripts/build/provision_bazi_workflow.py
 ```
 
 ## 6) Rule of Thumb
 
 - Put stable policy in `pre_prompt`.
-- Put domain transforms in skill YAMLs.
+- Put domain transforms in Dify workflow tools.
 - Put commerce truth in Shopify MCP tools.
 - Put presentation in Shopify frontend.

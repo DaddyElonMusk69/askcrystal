@@ -9,7 +9,7 @@ This document covers the Dify side of the contract:
 - how Dify should decide that a component is needed,
 - what shape Dify should return,
 - how Shopify should hydrate and stream that data,
-- how this stays separate from the existing skill-bridge patchwork.
+- how this stays separate from domain workflow tools.
 
 For the frontend rendering contract, see:
 
@@ -83,16 +83,16 @@ Operational note:
 - For the local real-agent bridge, update the original app in place through `POST /console/api/apps/{app_id}/model-config`.
 - The repo helper for that is `scripts/build/sync_dify_prompt_from_dsl.py`.
 - The local workspace should normally stay trimmed to two apps:
-  - live agent app `385c285a-0e61-4cf1-ba49-afde28c5ce12`
+  - live agent app from `DIFY_APP_ID`
   - retained bootstrap app `609d694c-7064-425d-bdc8-6f76d9f62141`
 
 ## Why This Is The Right Dify-Native Path
 
-### Why not the skill bridge
+### Why not a domain workflow tool
 
-The skill bridge exists because Dify does not have a first-class "skills" abstraction that matches the source repos we imported. It is useful for domain skills and patching capability gaps, but it is the wrong abstraction for presentation.
+AskCrystal domain workflows exist to handle metaphysics and guidance logic. They are the wrong abstraction for presentation.
 
-Storefront components are not domain skills. They are typed UI intents. They should not be modeled as pseudo-skills.
+Storefront components are not domain readings. They are typed UI intents and should stay in a dedicated component-building path.
 
 ### Why not raw text markers
 
@@ -119,7 +119,7 @@ A workflow tool is the cleanest Dify-native abstraction here because it:
 - has explicit input and output variables,
 - can validate and normalize output inside Dify before the proxy sees it,
 - avoids creating an external service just to echo JSON,
-- keeps this feature separate from the skill bridge.
+- keeps this feature separate from domain workflow tools.
 
 ## Recommended Topology
 
@@ -128,7 +128,7 @@ flowchart LR
     U["Storefront User"] --> S["Shopify Theme / assistant-ui"]
     S --> P["Shopify Proxy"]
     P --> C["AskCrystal Chatflow"]
-    C --> A["Agent Node<br/>reasoning + Shopify MCP + skill bridge"]
+    C --> A["Agent Node<br/>reasoning + Shopify MCP + workflow tools"]
     C --> W["Workflow Tool<br/>build_storefront_components"]
     A --> W
     W --> C
@@ -315,7 +315,7 @@ Recommended structure:
    - user message
    - conversation metadata
 2. `Agent Node`
-   - uses Shopify MCP tools and the existing skill-bridge tools
+   - uses Shopify MCP tools and domain workflow tools
 3. `Component Builder Step`
    - invoke `build_storefront_components`
 4. `Answer Node`
@@ -338,7 +338,7 @@ The final answer text and the component intents should travel as separate output
 ### Phase 2. Build the workflow tool
 
 - Implement `build_storefront_components` inside Dify as a reusable workflow tool.
-- Keep it independent from the skill bridge.
+- Keep it independent from domain workflow tools.
 - Version its output with `schema_version`.
 
 ### Phase 3. Move AskCrystal to Chatflow
@@ -370,15 +370,6 @@ If the team is not ready to move from `agent-chat` to `chatflow` yet, use this t
 This is acceptable as a bridge, but not the recommended end state.
 
 ## Decision Matrix
-
-### `Skill bridge` as presentation tool
-
-- Pros:
-  - fast to patch in
-- Cons:
-  - wrong abstraction
-  - couples UI rendering to the skill workaround layer
-  - weaker long-term portability
 
 ### `External OpenAPI custom tool`
 
@@ -414,7 +405,7 @@ This is acceptable as a bridge, but not the recommended end state.
 - Letting Dify author arbitrary storefront markup
 - Putting checkout mutations inside component payloads
 - Making Dify the system of record for catalog fields
-- Replacing the existing skill bridge for domain skills
+- Replacing domain workflow tools
 
 ## Files In This Repo
 

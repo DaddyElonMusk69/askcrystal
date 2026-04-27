@@ -20,6 +20,13 @@ This folder now holds the first AskCrystal backend scaffold for Shopify integrat
 
 ## Local development
 
+Preferred full-stack startup from the repo root:
+
+```bash
+cd /Users/haokaiqin/Desktop/AskCrystal
+./scripts/dev/start_local_stack.sh --backend-only
+```
+
 Run the scaffold server:
 
 ```bash

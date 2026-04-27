@@ -181,11 +181,13 @@
 }
 
 .ac-homepage__guide-card {
+  appearance: none;
   position: relative;
   display: grid;
   justify-items: start;
   align-content: start;
   gap: 7px;
+  width: 100%;
   min-width: 0;
   min-height: 106px;
   border: 0.5px solid var(--ac-color-line);
@@ -193,10 +195,18 @@
   background: var(--ac-color-paper);
   padding: 12px 12px 11px;
   color: var(--ac-color-ink);
+  font: inherit;
   text-decoration: none;
   text-align: left;
   overflow: hidden;
   box-shadow: var(--ac-shadow-soft);
+  cursor: pointer;
+}
+
+.ac-homepage__guide-card:disabled,
+.ac-message__suggestion:disabled {
+  cursor: wait;
+  opacity: 0.72;
 }
 
 .ac-homepage__guide-card--portrait {
@@ -854,6 +864,191 @@
   color: rgb(var(--color-primary-rgb) / 0.82);
 }
 
+.ac-progress-card {
+  position: relative;
+  display: grid;
+  gap: 11px;
+  width: min(100%, 28rem);
+  padding: 15px 14px 11px;
+  border: 1px solid color-mix(in srgb, var(--ac-color-line) 82%, rgb(var(--color-primary-rgb)) 18%);
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(circle at 50% -12%, rgb(var(--color-primary-rgb) / 0.11), transparent 44%),
+    color-mix(in srgb, var(--ac-color-composer-shell) 82%, var(--ac-color-paper) 18%);
+  box-shadow:
+    0 0 26px rgb(var(--ac-color-composer-glow-rgb) / 0.12),
+    0 0 54px rgb(var(--ac-color-composer-glow-rgb) / 0.06),
+    var(--ac-shadow-soft),
+    inset 0 1px rgb(var(--color-primary-rgb) / 0.08);
+  color: var(--ac-color-ink);
+  contain: layout;
+}
+
+.ac-progress-card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 1px rgb(var(--color-primary-rgb) / 0.16),
+    0 0 28px rgb(var(--ac-color-composer-glow-rgb) / 0.2),
+    0 0 54px rgb(var(--ac-color-composer-glow-rgb) / 0.1);
+  opacity: 0.5;
+  animation: ac-progress-card-glow 3.4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+.ac-progress-card::after {
+  content: "";
+  position: absolute;
+  inset: -9px;
+  border-radius: calc(1.35rem + 9px);
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 24% 14%, rgb(var(--ac-color-composer-glow-rgb) / 0.12), transparent 38%),
+    radial-gradient(circle at 78% 86%, rgb(var(--color-primary-rgb) / 0.1), transparent 42%);
+  filter: blur(10px);
+  opacity: 0.26;
+  animation: ac-progress-card-aura 4.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.ac-progress-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ac-progress-card__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  min-width: 0;
+}
+
+.ac-progress-card__heading {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ac-progress-card__eyebrow,
+.ac-progress-card__expectation {
+  margin: 0;
+}
+
+.ac-progress-card__eyebrow {
+  color: rgb(var(--color-primary-rgb) / 0.78);
+  font-size: 0.64rem;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ac-progress-card__heading h3 {
+  margin: 0;
+  font-family: var(--font-heading--family), serif;
+  font-size: 1.04rem;
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+.ac-progress-card__steps {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 1px 0 0;
+  list-style: none;
+}
+
+.ac-progress-card__step {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: start;
+  gap: 9px;
+  min-width: 0;
+  color: rgb(var(--color-foreground-rgb) / 0.62);
+  opacity: 0;
+  transform: translateY(3px);
+  animation: ac-progress-lyric-line 460ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--ac-progress-step-index, 0) * 75ms);
+}
+
+.ac-progress-card__step-marker {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgb(var(--color-primary-rgb) / 0.34);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 0.7rem;
+  line-height: 1;
+  box-shadow: 0 0 10px rgb(var(--ac-color-composer-glow-rgb) / 0.16);
+}
+
+.ac-progress-card__step--done .ac-progress-card__step-marker::before {
+  content: "✓";
+  opacity: 0;
+  transform: scale(0.62);
+  animation: ac-progress-checkmark 360ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.ac-progress-card__step--current .ac-progress-card__step-marker::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: inherit;
+  background: currentcolor;
+  box-shadow: 0 0 14px rgb(var(--ac-color-composer-glow-rgb) / 0.34);
+  transform: scale(0.8);
+  animation: ac-progress-current-dot 1.8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+.ac-progress-card__step--pending .ac-progress-card__step-marker {
+  opacity: 0.36;
+}
+
+.ac-progress-card__step--done {
+  color: rgb(var(--color-foreground-rgb) / 0.56);
+}
+
+.ac-progress-card__step--current {
+  color: var(--ac-color-ink);
+}
+
+.ac-progress-card__step-label {
+  min-width: 0;
+  font-size: 0.83rem;
+  line-height: 1.34;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ac-progress-card__ambient {
+  min-height: 1.25rem;
+  margin: 0;
+  color: rgb(var(--color-primary-rgb) / 0.72);
+  font-size: 0.76rem;
+  line-height: 1.38;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ac-progress-card__footer {
+  display: block;
+  padding-top: 0;
+}
+
+.ac-progress-card__expectation {
+  min-width: 0;
+  color: rgb(var(--color-foreground-rgb) / 0.48);
+  font-size: 0.66rem;
+  line-height: 1.3;
+}
+
 .ac-thinking__dots {
   display: inline-flex;
   align-items: center;
@@ -938,6 +1133,64 @@
   50% {
     opacity: 0.42;
     transform: scale(1.01);
+  }
+}
+
+@keyframes ac-progress-card-glow {
+  0%,
+  100% {
+    opacity: 0.34;
+    transform: scale(0.992);
+  }
+
+  50% {
+    opacity: 0.68;
+    transform: scale(1.006);
+  }
+}
+
+@keyframes ac-progress-card-aura {
+  0%,
+  100% {
+    opacity: 0.18;
+    transform: translate3d(0, 0, 0) scale(0.99);
+  }
+
+  50% {
+    opacity: 0.34;
+    transform: translate3d(0, -1px, 0) scale(1.01);
+  }
+}
+
+@keyframes ac-progress-lyric-line {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ac-progress-checkmark {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ac-progress-current-dot {
+  0%,
+  100% {
+    opacity: 0.68;
+    transform: scale(0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -1400,7 +1653,11 @@
 @media (prefers-reduced-motion: reduce) {
   .ac-thinking__orb,
   .ac-thinking__dots span,
-  .ac-thinking__line {
+  .ac-thinking__line,
+  .ac-progress-card::before,
+  .ac-progress-card::after,
+  .ac-progress-card__step,
+  .ac-progress-card__step-marker::before {
     animation: none;
     transform: none;
     opacity: 1;

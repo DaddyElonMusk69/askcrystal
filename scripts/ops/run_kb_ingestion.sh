@@ -4,11 +4,20 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 BASE_URL="${DIFY_BASE_URL:-http://localhost:18080}"
-EMAIL="${DIFY_ADMIN_EMAIL:-askcrystal.admin@example.com}"
-PASSWORD="${DIFY_ADMIN_PASSWORD:-Askcrystal123}"
+EMAIL="${DIFY_ADMIN_EMAIL:-}"
+PASSWORD="${DIFY_ADMIN_PASSWORD:-}"
 DATASET_NAME="${DIFY_DATASET_NAME:-AskCrystal-KB}"
 KB_DIR="${DIFY_KB_DIR:-$ROOT_DIR/data/knowledge-base/dify_kb_docs}"
 INDEXING_TECHNIQUE="${DIFY_INDEXING_TECHNIQUE:-economy}"
+
+[ -n "$EMAIL" ] || {
+  printf '[ingest-run] missing DIFY_ADMIN_EMAIL\n'
+  exit 2
+}
+[ -n "$PASSWORD" ] || {
+  printf '[ingest-run] missing DIFY_ADMIN_PASSWORD\n'
+  exit 2
+}
 
 printf '[ingest-run] bootstrapping setup if needed\n'
 python3 "$ROOT_DIR/scripts/ops/bootstrap_dify_setup.py" \

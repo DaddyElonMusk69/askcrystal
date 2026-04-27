@@ -6,7 +6,7 @@ For the broader Shopify homepage integration path, see:
 
 ## Goal
 
-Bring up a fully runnable local Dify environment for AskCrystal, load the crystal KB as RAG data, and integrate the local skill bridge as callable tools.
+Bring up a fully runnable local Dify environment for AskCrystal, load the crystal KB as RAG data, and integrate workflow-native Dify tools.
 
 ## Principles
 
@@ -41,17 +41,17 @@ Deliverables:
 - `scripts/ops/run_kb_ingestion.sh`
 - `docs/DIFY_KB_INGESTION.md`
 
-## Phase 3: Skills Integration
+## Phase 3: Workflow Tool Integration
 
-1. Run the skill bridge locally (OpenAPI served)
-2. Import bridge OpenAPI into Dify custom tools
-3. Enable toolset for AskCrystal app
-4. Add routing/system prompt template for skill-family orchestration
+1. Provision Dify workflow apps from `services/dify-agent/dsl/`
+2. Publish workflow apps and create workflow-tool wrappers
+3. Enable workflow tools for AskCrystal app
+4. Add routing/system prompt template for workflow-family orchestration
 
 Deliverables:
 
-- `scripts/dev/start_skill_bridge.sh`
-- `docs/DIFY_SKILL_INTEGRATION.md`
+- `services/dify-agent/workflows/`
+- `scripts/build/provision_*_workflow.py`
 - Prompt template reference wired from `docs/architecture/dify_skill_routing_prompt.md`
 
 ## Phase 4: End-to-End App Assembly
@@ -81,7 +81,7 @@ Deliverables:
 
 - `./scripts/dev/start_local_dify.sh` brings Dify up locally
 - KB dataset exists and is indexed from project JSON-derived docs
-- Skill bridge tools are importable and callable from Dify
+- Workflow-native tools are callable from Dify
 - End-to-end sample prompts return grounded, tool-aided results
 
 ## Status Update (2026-04-22)
@@ -90,7 +90,8 @@ Deliverables:
   - Local Dify stack boots via scripts and passes health checks.
 - Phase 2 complete:
   - `AskCrystal-KB` dataset created and loaded from `data/knowledge-base/dify_kb_docs/` (52 docs).
-- Phase 3 complete:
-  - Skill bridge is runnable locally and registered as `askcrystal_skill_bridge` custom API tools in Dify.
+- Phase 3 has moved to workflow-native tools:
+  - The old skill bridge has been removed.
+  - Domain tools are registered as Dify workflow tools.
 - Phase 4 core validation complete:
   - End-to-end smoke test passes (`scripts/dev/e2e_smoke_test.py`).

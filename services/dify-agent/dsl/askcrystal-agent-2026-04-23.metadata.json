@@ -1,11 +1,11 @@
 {
-  "exported_at": "2026-04-23T10:50:49+08:00",
+  "exported_at": "2026-04-26T13:45:58+08:00",
   "source": {
     "base_url": "http://localhost:18080",
     "app_id": "385c285a-0e61-4cf1-ba49-afde28c5ce12",
     "include_secret": false,
-    "dify_local_git_commit": "712e52222035317283fc2fe0a2221bb21db0c165",
-    "dify_local_git_describe": "712e522",
+    "dify_local_git_commit": "07faae6dcac7780fe9c7b878f58a75dfc70afb1c",
+    "dify_local_git_describe": "07faae6",
     "system_features": {
       "sso_enforced_for_signin": false,
       "sso_enforced_for_signin_protocol": "",
@@ -59,7 +59,7 @@
     "id": "385c285a-0e61-4cf1-ba49-afde28c5ce12",
     "name": "AskCrystal",
     "mode": "agent-chat",
-    "description": "Eastern metaphysics and crystal shopping guidance agent",
+    "description": "Mythology-oriented crystal guidance agent",
     "icon": "🔮",
     "icon_type": "emoji",
     "icon_background": "#1f2937",
@@ -68,21 +68,28 @@
   "model": {
     "provider": null,
     "model": {
-      "provider": "langgenius/openai_api_compatible/openai_api_compatible",
-      "name": "minimaxai/minimax-m2.7",
-      "mode": "chat",
       "completion_params": {
         "stop": []
-      }
+      },
+      "mode": "chat",
+      "name": "glm-5",
+      "provider": "langgenius/openai_api_compatible/openai_api_compatible"
     },
     "completion_params": null,
-    "opening_statement": "I can help with Bazi, tarot, fengshui, relationship readings, numerology, and grounded crystal shopping guidance."
+    "opening_statement": "I can help with Bazi, tarot, horoscopes, fengshui, relationship readings, numerology, and grounded crystal shopping guidance."
   },
   "agent": {
     "strategy": "react",
     "max_iteration": 3,
-    "tool_count": 11,
+    "tool_count": 13,
     "tool_refs": [
+      {
+        "tool_name": "current_time",
+        "provider_type": "builtin",
+        "provider_id": "time",
+        "provider_name": "time",
+        "enabled": true
+      },
       {
         "tool_name": "get_cart",
         "provider_type": "mcp",
@@ -119,45 +126,52 @@
         "enabled": true
       },
       {
-        "tool_name": "run_bazi_chart_analysis_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
+        "tool_name": "workflow_shushu_numerology_profile",
+        "provider_type": "workflow",
+        "provider_id": "76f6819f-de3c-4d94-b89a-04f0db0f5f3b",
+        "provider_name": "Shushu Numerology Profile",
         "enabled": true
       },
       {
-        "tool_name": "run_fengshui_space_audit_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
+        "tool_name": "workflow_bazi_chart_analysis",
+        "provider_type": "workflow",
+        "provider_id": "a5b39ec5-1328-4de1-95eb-23c6e839d668",
+        "provider_name": "Bazi Chart Analysis",
         "enabled": true
       },
       {
-        "tool_name": "run_shushu_numerology_profile_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
+        "tool_name": "workflow_fengshui_space_audit",
+        "provider_type": "workflow",
+        "provider_id": "8e55cc87-9d4c-4a98-88f1-9192a91cff7f",
+        "provider_name": "Fengshui Space Audit",
         "enabled": true
       },
       {
-        "tool_name": "run_taibu_structured_divination_router_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
+        "tool_name": "workflow_tarot_spread_interpretation",
+        "provider_type": "workflow",
+        "provider_id": "1fa4d603-73db-404d-9025-105977f13075",
+        "provider_name": "Tarot Spread Interpretation",
         "enabled": true
       },
       {
-        "tool_name": "run_tarot_spread_interpretation_cn_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
+        "tool_name": "workflow_horoscope_daily_guidance",
+        "provider_type": "workflow",
+        "provider_id": "35d0ce5a-ecea-46cd-abff-aa948d0ac26d",
+        "provider_name": "Horoscope Daily Guidance",
         "enabled": true
       },
       {
-        "tool_name": "run_yinyuan_matchmaking_skill_post",
-        "provider_type": "api",
-        "provider_id": "a3eae901-0d3e-4274-8f7b-55d68f424c79",
-        "provider_name": "askcrystal_skill_bridge",
+        "tool_name": "workflow_yinyuan_matchmaking",
+        "provider_type": "workflow",
+        "provider_id": "0568bfff-6168-46fc-8ed4-7c71172e5c22",
+        "provider_name": "Yinyuan Matchmaking",
+        "enabled": true
+      },
+      {
+        "tool_name": "workflow_taibu_structured_divination_router",
+        "provider_type": "workflow",
+        "provider_id": "dc259aad-5f81-4afc-be07-c17c1351fb27",
+        "provider_name": "Taibu Structured Divination Router",
         "enabled": true
       }
     ]

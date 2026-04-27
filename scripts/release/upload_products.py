@@ -2,12 +2,13 @@ import os
 import json
 import requests
 import markdown
+from pathlib import Path
 
 # Configuration
-SHOP_URL = "askcrystal.myshopify.com"
-ACCESS_TOKEN = "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"
-API_VERSION = "2024-04"
-BASE_DIR = "/Users/haokaiqin/Desktop/AskCrystal/store/descriptions/pillar3_4/"
+SHOP_URL = os.getenv("SHOPIFY_STORE_DOMAIN", "")
+ACCESS_TOKEN = os.getenv("SHOPIFY_ADMIN_ACCESS_TOKEN", "")
+API_VERSION = os.getenv("SHOPIFY_ADMIN_API_VERSION", "2024-04")
+BASE_DIR = os.getenv("ASKCRYSTAL_PRODUCT_DESCRIPTION_DIR", "")
 
 # Product List with prices
 products_meta = [
@@ -108,5 +109,20 @@ def upload_product(item):
         print(f"Failed to upload: {item['title']} - {response.text}")
 
 if __name__ == "__main__":
+    missing = [
+        key
+        for key, value in {
+            "SHOPIFY_STORE_DOMAIN": SHOP_URL,
+            "SHOPIFY_ADMIN_ACCESS_TOKEN": ACCESS_TOKEN,
+            "ASKCRYSTAL_PRODUCT_DESCRIPTION_DIR": BASE_DIR,
+        }.items()
+        if not value
+    ]
+    if missing:
+        raise SystemExit(f"Missing required environment values: {', '.join(missing)}")
+
+    if not Path(BASE_DIR).exists():
+        raise SystemExit(f"Product description directory does not exist: {BASE_DIR}")
+
     for item in products_meta:
         upload_product(item)

@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import mimetypes
+import os
 import time
 import uuid
 from dataclasses import dataclass
@@ -12,6 +13,39 @@ from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlparse
 from urllib.request import HTTPCookieProcessor, Request, build_opener
+
+
+def _load_env_file(path: Path) -> None:
+    if not path.exists():
+        return
+
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+
+        key, value = line.split("=", 1)
+        key = key.strip()
+        if not key or key in os.environ:
+            continue
+
+        value = value.strip()
+        if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+            value = value[1:-1]
+        os.environ[key] = value
+
+
+def load_project_env() -> None:
+    root_dir = Path(__file__).resolve().parents[2]
+    for env_path in (
+        root_dir / ".env",
+        root_dir / ".env.local",
+        root_dir / "deployables" / "shopify-app" / ".env.local",
+    ):
+        _load_env_file(env_path)
+
+
+load_project_env()
 
 
 @dataclass
@@ -302,6 +336,37 @@ class DifyConsoleClient:
         )
         if not isinstance(response, dict):
             raise DifyConsoleError("Unexpected workflow tool creation payload", payload=response)
+        return response
+
+    def update_workflow_tool(
+        self,
+        *,
+        workflow_tool_id: str,
+        name: str,
+        label: str,
+        description: str,
+        parameters: list[dict[str, Any]],
+        icon: dict[str, Any] | None = None,
+        privacy_policy: str = "",
+        labels: list[str] | None = None,
+    ) -> dict[str, Any]:
+        payload = {
+            "workflow_tool_id": workflow_tool_id,
+            "name": name,
+            "label": label,
+            "icon": icon or {"type": "emoji", "emoji": "🧩"},
+            "description": description,
+            "parameters": parameters,
+            "privacy_policy": privacy_policy,
+            "labels": labels or [],
+        }
+        response = self.request(
+            "POST",
+            "/console/api/workspaces/current/tool-provider/workflow/update",
+            json_body=payload,
+        )
+        if not isinstance(response, dict):
+            raise DifyConsoleError("Unexpected workflow tool update payload", payload=response)
         return response
 
     def get_workflow_tool(

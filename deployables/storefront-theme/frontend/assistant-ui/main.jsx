@@ -36,6 +36,15 @@ const MAX_STORED_CHAT_SESSIONS = 24;
 const HOMEPAGE_BACKDROP_URL = 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/backdrop.png?v=1777102538';
 let messageSequence = 0;
 const COMPOSER_MAX_ROWS = 7;
+const AskCrystalActionsContext = React.createContext({
+  sendPrompt: () => {},
+  onCancel: () => {},
+  isRunning: false,
+});
+
+function useAskCrystalActions() {
+  return React.useContext(AskCrystalActionsContext);
+}
 
 function readJsonScript(id) {
   const element = document.getElementById(id);
@@ -1029,10 +1038,10 @@ function buildThinkingTheme({ statusStage = '', statusTool = '', statusText = ''
 
   if (/shopify|catalog|product|variant|collection|cart|storefront|inventory|shelf/.test(context)) {
     return [
-      'Walking the crystal shelves for the closest resonance...',
-      'Checking which pieces answer your question most clearly...',
+      'Walking the crystal shelves for a close match...',
+      'Comparing a few pieces against your question...',
+      'Checking which crystal pieces answer most clearly...',
       'Looking for a match that feels chosen, not generic...',
-      'Comparing the quieter stones with the brighter ones...',
       'Following the pull toward the clearest shelf match...',
     ];
   }
@@ -1040,19 +1049,19 @@ function buildThinkingTheme({ statusStage = '', statusTool = '', statusText = ''
   if (/knowledge|dataset|retriev|document|archive|rag|kb|search|library/.test(context)) {
     return [
       'Opening the archive and brushing dust from the pages...',
-      'Crossing older notes with the feeling in your question...',
+      'Cross-checking older notes with your question...',
       'Pulling the clearest thread from the library...',
-      'Listening for where memory and meaning overlap...',
+      'Listening where memory and meaning overlap...',
       'Letting the right fragment rise to the surface...',
     ];
   }
 
   if (/tarot|card|spread/.test(context)) {
     return [
-      'Turning the cards slowly, one current at a time...',
+      'Turning the cards one current at a time...',
       'Watching which symbols insist on being seen...',
       'Letting the spread settle before reading the pattern...',
-      'Listening for the card that changes the whole story...',
+      'Listening for the card that changes the story...',
       'Tracing the image that keeps returning to the surface...',
     ];
   }
@@ -1061,7 +1070,7 @@ function buildThinkingTheme({ statusStage = '', statusTool = '', statusText = ''
     return [
       'Tracing the sky-map behind your question...',
       'Checking where the planets press most strongly...',
-      'Following the brighter houses and quieter tensions...',
+      'Following the bright houses and quiet tensions...',
       'Listening for the weather between stars and self...',
       'Letting the chart reveal its steadier rhythm...',
     ];
@@ -1070,9 +1079,9 @@ function buildThinkingTheme({ statusStage = '', statusTool = '', statusText = ''
   if (/bazi|shushu|taibu|fengshui|yinyuan|marriage|fate|element/.test(context)) {
     return [
       'Following the hidden stems beneath the surface...',
-      'Reading the pattern through timing, element, and fate...',
-      'Letting the older map reveal its structure...',
-      'Listening for the balance inside the chart...',
+      'Reading the timing, element, and pattern in the chart...',
+      'Letting the older map reveal structure...',
+      'Listening for balance inside the chart...',
       'Holding the pattern until its shape becomes clear...',
     ];
   }
@@ -1080,20 +1089,20 @@ function buildThinkingTheme({ statusStage = '', statusTool = '', statusText = ''
   if (/crystal|stone|chakra|healing|ritual/.test(context)) {
     return [
       'Holding the stones against the shape of your question...',
-      'Checking which crystal answers with steadiness...',
-      'Listening for resonance before recommendation...',
+      'Checking which crystal answers steadily...',
+      'Listening for resonance before choosing...',
       'Feeling for the stone that calms instead of performs...',
-      'Letting the ritual choose its own gentle center...',
+      'Letting the ritual find its gentle center...',
     ];
   }
 
   if (statusStage === 'compose' || statusStage === 'thought') {
     return [
-      'The pattern is starting to surface...',
+      'The pattern is surfacing...',
       'Gathering the clearest strand before I speak...',
       'Letting the reading take its proper shape...',
-      'Bringing symbol, shelf, and guidance into one thread...',
-      'Waiting for the answer to settle into plain language...',
+      'Joining symbol, shelf, and guidance...',
+      'Settling into plain language...',
     ];
   }
 
@@ -1355,6 +1364,179 @@ function LiveStatus({ statusText }) {
   );
 }
 
+function AmbientProgressLine({
+  statusText,
+  statusStage = '',
+  statusTool = '',
+  ambientStatusText = '',
+}) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const ambientLines = useMemo(() => {
+    const ambientLine = getAmbientThinkingLine({
+      statusText,
+      statusStage,
+      ambientStatusText,
+      hasToolActivity: statusStage === 'tool',
+    });
+    const theme = buildThinkingTheme({
+      statusStage: statusStage === 'tool' ? 'compose' : statusStage,
+      statusTool,
+      statusText: ambientLine,
+    });
+
+    return [...new Set([ambientLine, ...theme].filter(Boolean))];
+  }, [ambientStatusText, statusStage, statusText, statusTool]);
+  const [lineIndex, setLineIndex] = useState(0);
+
+  useEffect(() => {
+    setLineIndex(0);
+  }, [ambientLines]);
+
+  useEffect(() => {
+    if (prefersReducedMotion || ambientLines.length <= 1) return undefined;
+
+    const timeoutId = window.setTimeout(() => {
+      setLineIndex((currentIndex) => (currentIndex + 1) % ambientLines.length);
+    }, 7200);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [ambientLines.length, lineIndex, prefersReducedMotion]);
+
+  return (
+    <p className="ac-progress-card__ambient">
+      {ambientLines[lineIndex] || 'The reading is still moving...'}
+    </p>
+  );
+}
+
+function getProgressExpectation(elapsedMs) {
+  if (elapsedMs >= 55000) {
+    return 'This one is taking the longer orbit.';
+  }
+
+  if (elapsedMs >= 30000) {
+    return 'Full readings can take 30-60 seconds to come through.';
+  }
+
+  if (elapsedMs >= 12000) {
+    return 'A deeper read may take a few more moments.';
+  }
+
+  if (elapsedMs >= 4000) {
+    return 'Following the strongest thread.';
+  }
+
+  return 'The first signs are arriving.';
+}
+
+function ProgressCard({
+  statusText,
+  statusHistoryText = '',
+  statusStage = '',
+  statusTool = '',
+  ambientStatusText = '',
+  statusElapsedMs = 0,
+}) {
+  const startedAtRef = useRef(Date.now());
+  const [localElapsedMs, setLocalElapsedMs] = useState(0);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setLocalElapsedMs(Date.now() - startedAtRef.current);
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  const elapsedMs = Math.max(Number(statusElapsedMs) || 0, localElapsedMs);
+  const showDetailedMilestones = elapsedMs >= 4000 || statusStage === 'tool' || statusStage === 'compose';
+  const statusHistory = parseStatusHistory(statusHistoryText);
+  const activeStatus = statusText || 'Opening the thread beneath your question...';
+  const readingPathLabel = 'Choosing the strongest reading path';
+  const oldReadingPathLabel = 'Choosing the right reading path';
+  const toolMilestones = statusHistory.filter((label) => label !== readingPathLabel && label !== oldReadingPathLabel);
+
+  if (
+    statusStage === 'tool'
+    && activeStatus
+    && activeStatus !== readingPathLabel
+    && activeStatus !== oldReadingPathLabel
+    && !toolMilestones.includes(activeStatus)
+  ) {
+    toolMilestones.push(activeStatus);
+  }
+
+  const latestToolMilestones = toolMilestones.slice(-1);
+  const milestones = [
+    {
+      label: 'Your question has entered the reading',
+      state: 'done',
+    },
+  ];
+
+  if (showDetailedMilestones) {
+    const hasReadingPathMoved = latestToolMilestones.length > 0 || statusStage === 'compose';
+    milestones.push({
+      label: hasReadingPathMoved ? 'The strongest reading path is chosen' : readingPathLabel,
+      state: hasReadingPathMoved ? 'done' : 'current',
+    });
+
+    latestToolMilestones.forEach((label, index) => {
+      const isLastToolLine = index === latestToolMilestones.length - 1;
+      milestones.push({
+        label,
+        state: statusStage === 'tool' && isLastToolLine ? 'current' : 'done',
+      });
+    });
+
+    milestones.push({
+      label: 'Shaping the guidance into a clear answer',
+      state: statusStage === 'compose' ? 'current' : 'pending',
+    });
+  } else {
+    milestones.push({
+      label: activeStatus,
+      state: 'current',
+    });
+  }
+  const visibleMilestones = milestones.slice(0, 4);
+
+  return (
+    <div className="ac-progress-card" role="status" aria-live="polite">
+      <div className="ac-progress-card__header">
+        <div className="ac-progress-card__heading">
+          <p className="ac-progress-card__eyebrow">AskCrystal is listening</p>
+          <h3>Reading the signs</h3>
+        </div>
+      </div>
+
+      <ol className="ac-progress-card__steps ac-progress-card__steps--lyric" aria-label="Reading progress">
+        {visibleMilestones.map((milestone, index) => (
+          <li
+            key={`${milestone.label}-${index}`}
+            className={`ac-progress-card__step ac-progress-card__step--${milestone.state}`}
+            style={{ '--ac-progress-step-index': index }}
+          >
+            <span className="ac-progress-card__step-marker" aria-hidden="true" />
+            <span className="ac-progress-card__step-label">{milestone.label}</span>
+          </li>
+        ))}
+      </ol>
+
+      <AmbientProgressLine
+        statusText={statusText}
+        statusStage={statusStage}
+        statusTool={statusTool}
+        ambientStatusText={ambientStatusText}
+      />
+
+      <div className="ac-progress-card__footer">
+        <p className="ac-progress-card__expectation">{getProgressExpectation(elapsedMs)}</p>
+      </div>
+    </div>
+  );
+}
+
 function normalizeStatusPayload(payload) {
   if (!payload) {
     return {
@@ -1362,6 +1544,7 @@ function normalizeStatusPayload(payload) {
       tool: '',
       message: '',
       taskId: '',
+      elapsedMs: 0,
     };
   }
 
@@ -1371,14 +1554,18 @@ function normalizeStatusPayload(payload) {
       tool: '',
       message: payload,
       taskId: '',
+      elapsedMs: 0,
     };
   }
+
+  const elapsedMs = Number(payload.elapsedMs);
 
   return {
     stage: typeof payload.stage === 'string' ? payload.stage : '',
     tool: typeof payload.tool === 'string' ? payload.tool : '',
     message: typeof payload.message === 'string' ? payload.message : '',
     taskId: getPayloadTaskId(payload),
+    elapsedMs: Number.isFinite(elapsedMs) ? Math.max(0, elapsedMs) : 0,
   };
 }
 
@@ -1793,6 +1980,16 @@ function resolveStopEndpoint(apiEndpoint) {
   return resolveApiEndpoint(`${apiEndpoint.replace(/\/$/, '')}/stop`);
 }
 
+function resolveSuggestionsEndpoint(apiEndpoint) {
+  if (!apiEndpoint) return '';
+
+  if (apiEndpoint.endsWith('/suggestions')) {
+    return resolveApiEndpoint(apiEndpoint);
+  }
+
+  return resolveApiEndpoint(`${apiEndpoint.replace(/\/$/, '')}/suggestions`);
+}
+
 function getBrowserSessionId() {
   if (typeof window === 'undefined') {
     return 'askcrystal-theme-preview';
@@ -1849,6 +2046,11 @@ function extractSseEvents(buffer) {
 
 function getPayloadTaskId(payload) {
   const value = payload?.taskId || payload?.task_id || payload?.data?.taskId || payload?.data?.task_id;
+  return typeof value === 'string' ? value : '';
+}
+
+function getPayloadMessageId(payload) {
+  const value = payload?.messageId || payload?.message_id || payload?.data?.messageId || payload?.data?.message_id;
   return typeof value === 'string' ? value : '';
 }
 
@@ -2088,6 +2290,37 @@ async function requestProxyStop({ apiEndpoint, taskId, sessionId, conversationId
   }
 }
 
+async function fetchProxySuggestions({ apiEndpoint, messageId, sessionId }) {
+  if (!apiEndpoint || !messageId) return [];
+
+  try {
+    const response = await fetch(resolveSuggestionsEndpoint(apiEndpoint), {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messageId,
+        sessionId,
+      }),
+    });
+
+    if (!response.ok) return [];
+
+    const payload = await response.json();
+    return normalizeThreadSuggestions(
+      payload?.suggestions ||
+        payload?.data?.suggestions ||
+        payload?.data ||
+        [],
+    );
+  } catch (error) {
+    console.error('[AskCrystal] Suggested prompts request failed.', error);
+    return [];
+  }
+}
+
 async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversationId, sessionId, onStatus, onDelta, onComponents, onSuggestions }) {
   throwIfAborted(abortSignal);
   const response = await fetch(resolveStreamEndpoint(apiEndpoint), {
@@ -2209,6 +2442,7 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
           sourceText: normalizedReply.sourceText,
           suggestions: payloadSuggestions.length ? payloadSuggestions : streamedSuggestions,
           conversationId: event.payload?.conversationId || event.payload?.conversation_id || latestConversationId || null,
+          messageId: getPayloadMessageId(event.payload) || null,
         };
       }
     }
@@ -2222,6 +2456,7 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
       sourceText: normalizedReply.sourceText,
       suggestions: streamedSuggestions,
       conversationId: latestConversationId,
+      messageId: null,
     };
   }
 
@@ -2262,8 +2497,10 @@ function createAssistantMessage({
   statusTool = '',
   statusHistory = [],
   ambientStatusText = '',
+  statusElapsedMs = null,
 }) {
   const statusHistoryText = parseStatusHistory(statusHistory).join('\n');
+  const normalizedStatusElapsedMs = Number(statusElapsedMs);
 
   return {
     id,
@@ -2283,6 +2520,7 @@ function createAssistantMessage({
         ...(statusTool ? { statusTool } : {}),
         ...(statusHistoryText ? { statusHistoryText } : {}),
         ...(ambientStatusText ? { ambientStatusText } : {}),
+        ...(Number.isFinite(normalizedStatusElapsedMs) ? { statusElapsedMs: Math.max(0, normalizedStatusElapsedMs) } : {}),
       },
     },
   };
@@ -2379,6 +2617,7 @@ async function resolveReply({ config, messages, abortSignal, conversationId, ses
     suggestions: [],
     sourceText: demoReply.answer,
     conversationId,
+    messageId: null,
   };
 }
 
@@ -2525,6 +2764,7 @@ function useAskCrystalRuntime(config) {
 
     activeRun?.abort();
     cancelRequestedRef.current = true;
+    isRunningRef.current = false;
     setIsRunning(false);
     setSuggestions([]);
 
@@ -2566,6 +2806,7 @@ function useAskCrystalRuntime(config) {
         statusStage: 'listen',
         statusHistory: [],
         ambientStatusText: 'Settling into your energy...',
+        statusElapsedMs: 0,
       });
       const conversationForReply = [...messagesRef.current, userMessage];
 
@@ -2573,6 +2814,7 @@ function useAskCrystalRuntime(config) {
       activeAssistantIdRef.current = assistantId;
       activeTaskIdRef.current = '';
       cancelRequestedRef.current = false;
+      isRunningRef.current = true;
       setIsRunning(true);
       setSuggestions([]);
       setMessages([...conversationForReply, assistantSeed]);
@@ -2611,6 +2853,7 @@ function useAskCrystalRuntime(config) {
                 ambientStatusText: normalizedStatus.stage === 'tool'
                   ? (message.metadata?.custom?.ambientStatusText || 'Settling into your energy...')
                   : normalizedStatus.message,
+                statusElapsedMs: normalizedStatus.elapsedMs,
               }),
             );
           },
@@ -2698,6 +2941,19 @@ function useAskCrystalRuntime(config) {
           }),
         ]);
         setSuggestions(finalSuggestions);
+
+        if (result.messageId && config.apiEndpoint) {
+          const suggestionsSessionId = activeSessionIdRef.current;
+          fetchProxySuggestions({
+            apiEndpoint: config.apiEndpoint,
+            messageId: result.messageId,
+            sessionId: sessionIdRef.current,
+          }).then((nextSuggestions) => {
+            if (!nextSuggestions.length) return;
+            if (activeSessionIdRef.current !== suggestionsSessionId) return;
+            setSuggestions(nextSuggestions);
+          });
+        }
       } catch (error) {
         if (error?.name === 'AbortError') {
           activeTaskIdRef.current = '';
@@ -2740,11 +2996,32 @@ function useAskCrystalRuntime(config) {
         if (activeTaskIdRef.current && abortController.signal.aborted) {
           activeTaskIdRef.current = '';
         }
+        isRunningRef.current = false;
         setIsRunning(false);
       }
     },
     [config, updateAssistantMessage],
   );
+
+  const sendPrompt = useCallback((prompt) => {
+    const text = typeof prompt === 'string' ? prompt.trim() : '';
+    if (!text || isRunningRef.current) return;
+
+    void onNew({
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text,
+        },
+      ],
+      metadata: {
+        custom: {
+          source: 'suggestion',
+        },
+      },
+    });
+  }, [onNew]);
 
   const store = useMemo(
     () => ({
@@ -2773,6 +3050,9 @@ function useAskCrystalRuntime(config) {
     runtime: useExternalStoreRuntime(store),
     hasUserMessages: messages.some(message => message.role === 'user'),
     activeSessionId,
+    sendPrompt,
+    onCancel,
+    isRunning,
   };
 }
 
@@ -2824,6 +3104,7 @@ function WelcomeShelf({ config }) {
 }
 
 function WelcomeGuideCard({ card }) {
+  const { sendPrompt, isRunning } = useAskCrystalActions();
   const className = [
     'ac-homepage__guide-card',
     card.layout ? `ac-homepage__guide-card--${card.layout}` : '',
@@ -2850,13 +3131,14 @@ function WelcomeGuideCard({ card }) {
 
   if (card.prompt) {
     return (
-      <ThreadPrimitive.Suggestion
+      <button
+        type="button"
         className={className}
-        prompt={card.prompt}
-        send
+        disabled={isRunning}
+        onClick={() => sendPrompt(card.prompt)}
       >
         {content}
-      </ThreadPrimitive.Suggestion>
+      </button>
     );
   }
 
@@ -2921,7 +3203,7 @@ function WelcomeState({ config }) {
     {
       id: 'compatibility',
       layout: 'portrait',
-      eyebrow: 'Connections',
+      eyebrow: 'Love',
       title: 'Read love and synastry',
       description: 'Explore soulmate, synastry, and relationship guidance.',
       cta: 'Cosmic match',
@@ -2949,14 +3231,14 @@ function WelcomeState({ config }) {
       prompt: 'I have a situation in my life and want guidance plus crystal recommendations.',
     },
     {
-      id: 'ritual-plan',
+      id: 'horoscope',
       layout: 'wide',
-      eyebrow: 'Daily support',
-      title: 'Build a practical ritual',
-      description: 'Get a simple cleansing, charging, or intention-setting plan.',
-      cta: 'Build my ritual',
+      eyebrow: 'Horoscope',
+      title: 'Check today\'s cosmic weather',
+      description: 'Get zodiac timing, mood guidance, and crystal support.',
+      cta: 'Read my horoscope',
       emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_4.png?v=1777105421',
-      prompt: 'Help me build a simple crystal ritual for what I need right now.',
+      prompt: 'Give me a daily horoscope reading and crystal guidance. Ask for my zodiac sign if you need it.',
     },
     {
       id: 'browse-store',
@@ -3089,6 +3371,7 @@ function UserMessage() {
 }
 
 function MessageSuggestions() {
+  const { sendPrompt, isRunning } = useAskCrystalActions();
   const messageId = useMessage((message) => message.id || '');
   const messageCompleted = useMessage((message) => message.status?.type === 'complete');
   const suggestions = useAssistantState(({ thread }) => thread.suggestions || []);
@@ -3111,14 +3394,15 @@ function MessageSuggestions() {
   return (
     <div className="ac-message__suggestions" aria-label="Suggested follow-up prompts">
       {suggestions.map((suggestion, index) => (
-        <ThreadPrimitive.Suggestion
+        <button
+          type="button"
           key={`${messageId}-suggestion-${index}-${suggestion.prompt}`}
           className="ac-message__suggestion"
-          prompt={suggestion.prompt}
-          send
+          disabled={isThreadRunning || isRunning}
+          onClick={() => sendPrompt(suggestion.prompt)}
         >
           {suggestion.prompt}
-        </ThreadPrimitive.Suggestion>
+        </button>
       ))}
     </div>
   );
@@ -3134,6 +3418,7 @@ function AssistantMessage() {
   const statusTool = useMessage((message) => message.metadata?.custom?.statusTool || '');
   const statusHistoryText = useMessage((message) => message.metadata?.custom?.statusHistoryText || '');
   const ambientStatusText = useMessage((message) => message.metadata?.custom?.ambientStatusText || '');
+  const statusElapsedMs = useMessage((message) => message.metadata?.custom?.statusElapsedMs || 0);
   const isThinking = isRunning && !assistantText && !hasToolParts;
   const showInlineStatus = isRunning && (Boolean(assistantText) || hasToolParts) && statusStage === 'tool' && Boolean(statusText);
 
@@ -3142,12 +3427,13 @@ function AssistantMessage() {
       <div className="ac-message__label">AskCrystal Guide</div>
       <div className="ac-message__bubble ac-message__bubble--assistant">
         {isThinking ? (
-          <ThinkingIndicator
+          <ProgressCard
             statusText={statusText}
             statusHistoryText={statusHistoryText}
             statusStage={statusStage}
             statusTool={statusTool}
             ambientStatusText={ambientStatusText}
+            statusElapsedMs={statusElapsedMs}
           />
         ) : (
           <div className="ac-message__content-layer">
@@ -3174,7 +3460,12 @@ function AssistantMessage() {
 }
 
 function AskCrystalThread({ config }) {
-  const { runtime, hasUserMessages, activeSessionId } = useAskCrystalRuntime(config);
+  const { runtime, hasUserMessages, activeSessionId, sendPrompt, onCancel, isRunning } = useAskCrystalRuntime(config);
+  const askCrystalActions = useMemo(() => ({
+    sendPrompt,
+    onCancel,
+    isRunning,
+  }), [isRunning, onCancel, sendPrompt]);
   const homepageRef = useRef(null);
   const viewportRef = useRef(null);
   const hasAutoScrolledIntoConversationRef = useRef(false);
@@ -3237,37 +3528,39 @@ function AskCrystalThread({ config }) {
   }, [activeSessionId]);
 
   return (
-    <AssistantRuntimeProvider runtime={runtime}>
-      <div ref={homepageRef} className="ac-homepage">
-        <div className="ac-homepage__backdrop" aria-hidden="true">
-          <img src={HOMEPAGE_BACKDROP_URL} alt="" loading="eager" decoding="async" />
+    <AskCrystalActionsContext.Provider value={askCrystalActions}>
+      <AssistantRuntimeProvider runtime={runtime}>
+        <div ref={homepageRef} className="ac-homepage">
+          <div className="ac-homepage__backdrop" aria-hidden="true">
+            <img src={HOMEPAGE_BACKDROP_URL} alt="" loading="eager" decoding="async" />
+          </div>
+          <ThreadPrimitive.Root className="ac-homepage__thread">
+            <ThreadPrimitive.Viewport
+              ref={viewportRef}
+              className="ac-homepage__viewport"
+              autoScroll={hasUserMessages}
+              turnAnchor={hasUserMessages ? 'bottom' : 'top'}
+              scrollToBottomOnInitialize={false}
+              scrollToBottomOnRunStart={hasUserMessages}
+              scrollToBottomOnThreadSwitch={hasUserMessages}
+            >
+              <WelcomeState config={config} />
+
+              <div className="ac-homepage__messages">
+                <ThreadPrimitive.Messages
+                  components={{
+                    UserMessage,
+                    AssistantMessage,
+                  }}
+                />
+              </div>
+
+              <ComposerDock />
+            </ThreadPrimitive.Viewport>
+          </ThreadPrimitive.Root>
         </div>
-        <ThreadPrimitive.Root className="ac-homepage__thread">
-          <ThreadPrimitive.Viewport
-            ref={viewportRef}
-            className="ac-homepage__viewport"
-            autoScroll={hasUserMessages}
-            turnAnchor={hasUserMessages ? 'bottom' : 'top'}
-            scrollToBottomOnInitialize={false}
-            scrollToBottomOnRunStart={hasUserMessages}
-            scrollToBottomOnThreadSwitch={hasUserMessages}
-          >
-            <WelcomeState config={config} />
-
-            <div className="ac-homepage__messages">
-              <ThreadPrimitive.Messages
-                components={{
-                  UserMessage,
-                  AssistantMessage,
-                }}
-              />
-            </div>
-
-            <ComposerDock />
-          </ThreadPrimitive.Viewport>
-        </ThreadPrimitive.Root>
-      </div>
-    </AssistantRuntimeProvider>
+      </AssistantRuntimeProvider>
+    </AskCrystalActionsContext.Provider>
   );
 }
 

@@ -82,9 +82,9 @@ def parse_args() -> argparse.Namespace:
         description="Configure AskCrystal to use an OpenAI-compatible model provider in local Dify"
     )
     parser.add_argument("--base-url", default=os.getenv("DIFY_BASE_URL", "http://localhost:18080"))
-    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", "askcrystal.admin@example.com"))
-    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", "Askcrystal123"))
-    parser.add_argument("--app-id", default=os.getenv("DIFY_APP_ID", "385c285a-0e61-4cf1-ba49-afde28c5ce12"))
+    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", ""))
+    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", ""))
+    parser.add_argument("--app-id", default=os.getenv("DIFY_APP_ID", ""))
     parser.add_argument(
         "--provider",
         default=os.getenv(
@@ -233,6 +233,21 @@ def main() -> int:
             print("[configure] model enabled")
         except DifyConsoleError as exc:
             print(f"[configure] enable skipped: {exc.message}")
+
+        client.request(
+            "POST",
+            "/console/api/workspaces/current/default-model",
+            json_body={
+                "model_settings": [
+                    {
+                        "model_type": "llm",
+                        "provider": args.provider,
+                        "model": args.model_id,
+                    }
+                ],
+            },
+        )
+        print("[configure] workspace default llm updated")
 
         app = client.request("GET", f"/console/api/apps/{args.app_id}")
         model_config = app.get("model_config") or {}

@@ -1,6 +1,6 @@
 # AskCrystal Workflow Test Prompts
 
-Use these prompts to validate routing and output behavior as the six workflow-tools are rebuilt in Dify.
+Use these prompts to validate routing and output behavior as the workflow-tools are rebuilt in Dify.
 
 ## Rules
 
@@ -188,6 +188,36 @@ Expected outcome:
 
 - combine birth date with optional name context,
 - return a compact profile rather than a sprawling reading.
+
+## Horoscope
+
+### Prompt 1
+
+`What is my Scorpio horoscope today, focused on work?`
+
+Expected route:
+
+- `horoscope_daily_guidance`
+
+Expected outcome:
+
+- infer daily period and career focus,
+- use Western zodiac framing only,
+- keep guidance reflective and non-deterministic.
+
+### Prompt 2
+
+`I was born June 15. What is my horoscope this week?`
+
+Expected route:
+
+- `horoscope_daily_guidance`
+
+Expected outcome:
+
+- infer Gemini from birthday,
+- use weekly period framing,
+- ask for clarification only if the sign or date cannot be inferred.
 
 ## Shopping Without Divination
 

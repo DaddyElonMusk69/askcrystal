@@ -68,7 +68,7 @@ For April 24, 2026, that agent snapshot now carries the temporary storefront-com
 To sync the original local AskCrystal `agent-chat` app in place without breaking its existing app id, update the app model config directly from the snapshot:
 
 ```bash
-python3 scripts/build/sync_dify_prompt_from_dsl.py \
+python3 scripts/build/sync_dify_model_config_from_dsl.py \
   --dsl services/dify-agent/dsl/askcrystal-agent-2026-04-23.dsl.yml \
   --app-id 385c285a-0e61-4cf1-ba49-afde28c5ce12
 ```
@@ -77,6 +77,57 @@ Current local workspace expectation:
 
 - one live agent app: `385c285a-0e61-4cf1-ba49-afde28c5ce12`
 - one retained bootstrap app: `609d694c-7064-425d-bdc8-6f76d9f62141`
+
+## Workflow Tool Artifacts
+
+The first workflow-tool migration artifact lives here:
+
+- `askcrystal-taibu-router-workflow-2026-04-26.dsl.yml`
+- `askcrystal-bazi-workflow-2026-04-26.dsl.yml`
+- `askcrystal-tarot-workflow-2026-04-26.dsl.yml`
+- `askcrystal-yinyuan-workflow-2026-04-26.dsl.yml`
+- `askcrystal-fengshui-workflow-2026-04-26.dsl.yml`
+- `askcrystal-shushu-workflow-2026-04-26.dsl.yml`
+- `askcrystal-horoscope-workflow-2026-04-26.dsl.yml`
+
+Provision it into local Dify and register it as a workflow tool with:
+
+```bash
+python3 scripts/build/provision_taibu_router_workflow.py
+python3 scripts/build/provision_bazi_workflow.py
+python3 scripts/build/provision_tarot_workflow.py
+python3 scripts/build/provision_yinyuan_workflow.py
+python3 scripts/build/provision_fengshui_workflow.py
+python3 scripts/build/provision_shushu_workflow.py
+python3 scripts/build/provision_horoscope_workflow.py
+```
+
+Current local migration status:
+
+- the Taibu router workflow app has been provisioned into local Dify
+- its workflow tool is named `workflow_taibu_structured_divination_router`
+- the Tarot interpretation workflow app has been provisioned into local Dify
+- its workflow tool is named `workflow_tarot_spread_interpretation`
+- the Tarot workflow provisioner now auto-resyncs stale workflow-tool wrappers when Dify reports `synced: false`
+- the Yinyuan matchmaking workflow app has been provisioned into local Dify
+- its workflow tool is named `workflow_yinyuan_matchmaking`
+- the Yinyuan workflow provisioner now auto-resyncs stale workflow-tool wrappers when Dify reports `synced: false`
+- the Fengshui space-audit workflow app has been provisioned into local Dify
+- its workflow tool is named `workflow_fengshui_space_audit`
+- the Shushu numerology profile workflow app has been provisioned into local Dify
+- its workflow tool is named `workflow_shushu_numerology_profile`
+- the Bazi chart-analysis workflow app has been provisioned into local Dify
+- its workflow tool is named `workflow_bazi_chart_analysis`
+- the Horoscope daily-guidance workflow app has been provisioned into local Dify
+- its workflow tool is named `workflow_horoscope_daily_guidance`
+- the main AskCrystal agent snapshot now references that router via `provider_type: workflow`
+- the main AskCrystal agent snapshot now references Bazi via `provider_type: workflow`
+- the main AskCrystal agent snapshot now references Horoscope via `provider_type: workflow`
+- the main AskCrystal agent snapshot now references Tarot via `provider_type: workflow`
+- the main AskCrystal agent snapshot now references Yinyuan via `provider_type: workflow`
+- the main AskCrystal agent snapshot now references Fengshui via `provider_type: workflow`
+- the main AskCrystal agent snapshot now references Shushu via `provider_type: workflow`
+- duplicate local workflow app imports were cleaned up for the older Yinyuan and Taibu copies; the retained active workflow app ids are the ones referenced by the workflow-tool wrappers
 
 After that, smoke-test an explicit storefront turn through the Shopify proxy:
 
@@ -93,7 +144,7 @@ python3 scripts/dev/smoke_storefront_component_proxy.py \
 3. Re-provision the environment pieces that DSL does not fully carry:
    - model credentials
    - knowledge base content
-   - skill bridge provider
+   - workflow-tool wrappers
    - Shopify MCP connection
 4. Validate the imported app against the matching `.metadata.json` file.
 

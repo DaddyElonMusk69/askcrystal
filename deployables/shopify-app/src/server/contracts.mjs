@@ -5,6 +5,7 @@ export const ROUTES = {
   chat: `${APP_PROXY_PREFIX}/chat`,
   chatParameters: `${APP_PROXY_PREFIX}/chat/parameters`,
   chatStream: `${APP_PROXY_PREFIX}/chat/stream`,
+  chatSuggestions: `${APP_PROXY_PREFIX}/chat/suggestions`,
   chatStop: `${APP_PROXY_PREFIX}/chat/stop`,
   chatEmbed: `${APP_PROXY_PREFIX}/chat/embed`,
   catalogSearch: `${APP_PROXY_PREFIX}/catalog/search`,

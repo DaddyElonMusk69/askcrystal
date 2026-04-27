@@ -22,7 +22,9 @@ const TERMINAL_EVENTS = new Set([
 const DEFAULT_STREAM_RETRY_ATTEMPTS = 2
 const STREAM_DECISION_MIN_CHARS = 24
 const STREAM_DECISION_AFTER_REASONING_MIN_CHARS = 48
-const SUGGESTED_QUESTIONS_REQUEST_TIMEOUT_MS = 3500
+const SUGGESTED_QUESTIONS_REQUEST_TIMEOUT_MS = Number(
+  process.env.DIFY_SUGGESTED_QUESTIONS_REQUEST_TIMEOUT_MS || 45000,
+)
 
 const joinUrl = (baseUrl, path) => new URL(path, `${baseUrl.replace(/\/$/, '')}/`).toString()
 
@@ -225,6 +227,9 @@ const mapToolNamesToDomain = (toolNames, domain) =>
 
 const TOOL_DOMAIN_MAP = {
   ...mapToolNamesToDomain([
+    'current_time',
+  ], 'time_awareness'),
+  ...mapToolNamesToDomain([
     'search_catalog',
     'get_product_details',
   ], 'storefront_search'),
@@ -250,10 +255,12 @@ const TOOL_DOMAIN_MAP = {
   ...mapToolNamesToDomain([
     'run_astrology_transit_checkin_skill_post',
     'run_western_natal_archetype_read_skill_post',
+    'workflow_horoscope_daily_guidance',
   ], 'astrology'),
   ...mapToolNamesToDomain([
     'run_synastry_relationship_map_skill_post',
     'run_yinyuan_matchmaking_skill_post',
+    'workflow_yinyuan_matchmaking',
   ], 'compatibility'),
   ...mapToolNamesToDomain([
     'run_bazi_chart_analysis_skill_post',
@@ -261,12 +268,17 @@ const TOOL_DOMAIN_MAP = {
     'run_qimen_timing_direction_read_skill_post',
     'run_ziwei_palace_theme_read_skill_post',
     'run_taibu_structured_divination_router_skill_post',
+    'workflow_bazi_chart_analysis',
+    'workflow_shushu_numerology_profile',
+    'workflow_taibu_structured_divination_router',
   ], 'eastern_metaphysics'),
   ...mapToolNamesToDomain([
     'run_fengshui_space_audit_skill_post',
+    'workflow_fengshui_space_audit',
   ], 'fengshui'),
   ...mapToolNamesToDomain([
     'run_tarot_spread_interpretation_cn_skill_post',
+    'workflow_tarot_spread_interpretation',
   ], 'tarot'),
   ...mapToolNamesToDomain([
     'run_cross_mythology_synthesis_skill_post',
@@ -279,6 +291,7 @@ const TOOL_DOMAIN_MAP = {
 }
 
 const TOOL_DOMAIN_PATTERNS = [
+  { domain: 'time_awareness', pattern: /current[_\s-]?time|today|date|clock|timezone|timing/ },
   { domain: 'storefront_search', pattern: /shopify|catalog|product|variant|collection|inventory|storefront/ },
   { domain: 'storefront_cart', pattern: /\bcart\b/ },
   { domain: 'storefront_policy', pattern: /polic|faq|shipping|return/ },
@@ -292,11 +305,38 @@ const TOOL_DOMAIN_PATTERNS = [
   { domain: 'mythology_oracle', pattern: /myth|deity|omen|moon|symbolic|archetype/ },
 ]
 
+const TOOL_STATUS_LINE_OVERRIDES = {
+  current_time: 'Checking today’s timing...',
+  search_catalog: 'Looking through the crystal shelf for a close match...',
+  get_product_details: 'Checking the crystal details before I name it...',
+  get_cart: 'Looking over the pieces already in your tray...',
+  update_cart: 'Updating the pieces resting in your tray...',
+  search_shop_policies_and_faqs: 'Checking the shop notes for a clear answer...',
+  workflow_horoscope_daily_guidance: 'Consulting your horoscope map for today’s thread...',
+  workflow_bazi_chart_analysis: 'Reading the Bazi structure beneath the surface...',
+  workflow_tarot_spread_interpretation: 'Letting the card pattern settle into view...',
+  workflow_yinyuan_matchmaking: 'Reading the relationship current between both sides...',
+  workflow_fengshui_space_audit: 'Walking the space for blocked and flowing areas...',
+  workflow_shushu_numerology_profile: 'Tracing the numerology pattern around your question...',
+  workflow_taibu_structured_divination_router: 'Choosing the strongest reading path for this question...',
+  run_bazi_chart_analysis_skill_post: 'Reading the Bazi structure beneath the surface...',
+  run_shushu_numerology_profile_skill_post: 'Tracing the numerology pattern around your question...',
+  run_yinyuan_matchmaking_skill_post: 'Reading the relationship current between both sides...',
+  run_fengshui_space_audit_skill_post: 'Walking the space for blocked and flowing areas...',
+  run_tarot_spread_interpretation_cn_skill_post: 'Letting the card pattern settle into view...',
+  run_taibu_structured_divination_router_skill_post: 'Choosing the strongest reading path for this question...',
+}
+
 const TOOL_STATUS_LINE_BANKS = {
+  time_awareness: [
+    'Checking today’s timing...',
+    'Anchoring the reading to the current moment...',
+    'Setting the calendar before reading the sky...',
+  ],
   storefront_search: [
     'Walking the crystal shelves for a close match...',
     'Comparing a few pieces against your question...',
-    'Checking which storefront pieces answer most clearly...',
+    'Checking which crystal pieces answer most clearly...',
   ],
   storefront_cart: [
     'Looking over your tray...',
@@ -306,7 +346,7 @@ const TOOL_STATUS_LINE_BANKS = {
   storefront_policy: [
     'Checking the shop notes for a clear answer...',
     'Looking through the store guidance...',
-    'Pulling the relevant store details into view...',
+    'Pulling the relevant details into view...',
   ],
   crystal_library: [
     'Opening the crystal archive...',
@@ -315,38 +355,38 @@ const TOOL_STATUS_LINE_BANKS = {
   ],
   crystal_prescription: [
     'Holding your intention against the right stones...',
-    'Shaping the crystal prescription around your energy...',
-    'Checking which stones answer with steadiness...',
+    'Shaping the crystal match around your energy...',
+    'Checking which stones answer steadily...',
   ],
   astrology: [
     'Tracing the sky-map behind your question...',
     'Checking where the planets press most strongly...',
-    'Reading the chart for the clearest pattern...',
+    'Reading the chart for its clearest pattern...',
   ],
   compatibility: [
     'Reading how the two currents meet...',
-    'Checking the harmony, friction, and pull between these energies...',
+    'Checking the harmony, friction, and pull...',
     'Following the thread between both charts...',
   ],
   eastern_metaphysics: [
     'Following the hidden stems beneath the surface...',
-    'Reading the timing, element, and pattern in your chart...',
-    'Checking the older map for the clearest structure...',
+    'Reading timing, element, and pattern in the chart...',
+    'Checking the older map for its clearest structure...',
   ],
   fengshui: [
-    'Walking the space for blocked and flowing areas...',
-    'Checking how the room holds and redirects energy...',
-    'Reading the shape and flow of the space...',
+    'Walking the space for flow...',
+    'Checking how the room redirects energy...',
+    'Reading the shape and direction of the space...',
   ],
   tarot: [
-    'Turning the cards slowly, one current at a time...',
-    'Watching which symbol keeps returning to the surface...',
+    'Turning the cards one current at a time...',
+    'Watching which symbol keeps returning...',
     'Letting the spread settle before reading the pattern...',
   ],
   mythology_oracle: [
-    'Listening for the myth beneath this moment...',
-    'Finding the symbolic thread that best fits your question...',
-    'Reading the omen and archetype around this turning point...',
+    'Listening for the myth beneath the moment...',
+    'Finding the symbolic thread that best fits...',
+    'Reading the omen around this turning point...',
   ],
 }
 
@@ -362,44 +402,33 @@ const deterministicIndex = (value, size) => {
   return hash % size
 }
 
-const humanizeToolLabel = (toolName = '') => toolName
-  .replace(/^run_/, '')
-  .replace(/^get_/, '')
-  .replace(/^list_/, '')
-  .replace(/^search_/, '')
-  .replace(/_skill_post$/, '')
-  .replace(/_post$/, '')
-  .replace(/_get$/, '')
-  .replace(/_crystals__slug__/g, ' crystal')
-  .replace(/_+/g, ' ')
-  .trim()
-
 const buildFallbackToolMessage = (toolName = '') => {
-  const humanizedLabel = humanizeToolLabel(toolName)
-  if (!humanizedLabel)
-    return 'Listening for the signs...'
-
   if (/^search_/i.test(toolName))
-    return `Searching ${humanizedLabel}...`
+    return 'Searching supporting details...'
   if (/^get_/i.test(toolName))
-    return `Checking ${humanizedLabel}...`
+    return 'Checking supporting details...'
   if (/^list_/i.test(toolName))
-    return `Surveying ${humanizedLabel}...`
+    return 'Surveying supporting details...'
   if (/^run_/i.test(toolName))
-    return `Consulting ${humanizedLabel}...`
+    return 'Consulting reading support...'
 
-  return `Reading ${humanizedLabel}...`
+  return 'Reading supporting signals...'
 }
 
 const getToolDomain = ({ toolName = '', toolContext = '' } = {}) => {
-  if (toolName && TOOL_DOMAIN_MAP[toolName])
-    return TOOL_DOMAIN_MAP[toolName]
+  const normalizedToolName = toolName.toLowerCase().replace(/[\s-]+/g, '_')
+  if (normalizedToolName && TOOL_DOMAIN_MAP[normalizedToolName])
+    return TOOL_DOMAIN_MAP[normalizedToolName]
 
   const fallbackMatch = TOOL_DOMAIN_PATTERNS.find(({ pattern }) => pattern.test(toolContext))
   return fallbackMatch?.domain || ''
 }
 
 const buildToolStatusMessage = ({ toolName = '', toolContext = '' } = {}) => {
+  const normalizedToolName = toolName.toLowerCase().replace(/[\s-]+/g, '_')
+  if (TOOL_STATUS_LINE_OVERRIDES[normalizedToolName])
+    return TOOL_STATUS_LINE_OVERRIDES[normalizedToolName]
+
   const domain = getToolDomain({ toolName, toolContext })
   const messageBank = TOOL_STATUS_LINE_BANKS[domain]
   if (Array.isArray(messageBank) && messageBank.length > 0)
@@ -777,7 +806,7 @@ const buildThoughtStatusPayload = (event) => {
     return {
       stage: 'thought',
       tool: null,
-      message: 'Tuning into the clearest thread...',
+      message: 'Finding the clearest thread...',
       taskId,
     }
   }
@@ -786,7 +815,7 @@ const buildThoughtStatusPayload = (event) => {
     return {
       stage: 'thought',
       tool: null,
-      message: 'Checking the archive for a steadier match...',
+      message: 'Checking the archive...',
       taskId,
     }
   }
@@ -795,7 +824,25 @@ const buildThoughtStatusPayload = (event) => {
     return {
       stage: 'thought',
       tool: null,
-      message: 'Bringing the guidance into focus...',
+      message: 'Bringing guidance into focus...',
+      taskId,
+    }
+  }
+
+  if (/product|shop|store|inventory|variant|price/.test(normalized)) {
+    return {
+      stage: 'thought',
+      tool: null,
+      message: 'Checking storefront details...',
+      taskId,
+    }
+  }
+
+  if (/chart|zodiac|horoscope|planet|bazi|tarot|feng|numerology|relationship|compatib/.test(normalized)) {
+    return {
+      stage: 'thought',
+      tool: null,
+      message: 'Reading the pattern...',
       taskId,
     }
   }
@@ -803,7 +850,7 @@ const buildThoughtStatusPayload = (event) => {
   return {
     stage: 'thought',
     tool: null,
-    message: rawThought.slice(0, 180),
+    message: 'Following the clearest thread...',
     taskId,
   }
 }
@@ -998,46 +1045,6 @@ const normalizeSuggestedQuestions = (value) => {
   return deduped.slice(0, 6)
 }
 
-const buildFallbackSuggestedQuestions = (payload) => {
-  const answer = typeof payload?.answer === 'string' ? payload.answer.toLowerCase() : ''
-  const hasProductCard = Array.isArray(payload?.components)
-    && payload.components.some(component => component?.component === 'product_card')
-  const suggestions = []
-
-  const pushSuggestion = (prompt) => {
-    const normalizedPrompt = typeof prompt === 'string' ? prompt.trim() : ''
-    if (!normalizedPrompt)
-      return
-    if (suggestions.some(existing => existing.toLowerCase() === normalizedPrompt.toLowerCase()))
-      return
-    suggestions.push(normalizedPrompt)
-  }
-
-  if (/sleep|bedtime|rest|anxious|anxiety|calm|overthink/.test(answer)) {
-    pushSuggestion(hasProductCard ? 'Show me another crystal for sleep' : 'Recommend a sleep crystal from the store')
-    pushSuggestion('Give me a 5-minute bedtime ritual')
-    pushSuggestion('How should I cleanse and charge it?')
-  }
-  else if (/love|relationship|partner|compatibility|heart/.test(answer)) {
-    pushSuggestion(hasProductCard ? 'Show me a softer alternative for love' : 'Recommend a love crystal from the store')
-    pushSuggestion('Give me a simple love ritual')
-    pushSuggestion('What should I pair it with?')
-  }
-  else if (/focus|clarity|abundance|career|work|study|confidence/.test(answer)) {
-    pushSuggestion(hasProductCard ? 'Show me 2 alternatives for focus' : 'Recommend a crystal for focus from the store')
-    pushSuggestion('Give me a daily intention ritual')
-    pushSuggestion('How should I use it each morning?')
-  }
-
-  if (suggestions.length === 0) {
-    pushSuggestion(hasProductCard ? 'Show me 2 alternatives from the store' : 'Recommend a crystal product from the store')
-    pushSuggestion('Give me a short ritual for this')
-    pushSuggestion('How do I cleanse and charge it?')
-  }
-
-  return suggestions.slice(0, 3)
-}
-
 const buildServiceSuggestedQuestionsRequest = ({
   chatUrl,
   apiKey,
@@ -1194,7 +1201,7 @@ const attachSuggestedQuestions = async ({
   })
   const suggestions = suggestedQuestionsResult.suggestions.length > 0
     ? suggestedQuestionsResult.suggestions
-    : (!suggestedQuestionsResult.ok ? buildFallbackSuggestedQuestions(payload) : [])
+    : []
 
   const nextPayload = {
     ...payload,
@@ -1387,7 +1394,7 @@ const sendServiceApiChat = async ({
       if (!payload?.message)
         return
 
-      const statusKey = `${payload.stage || 'status'}:${payload.tool || ''}:${payload.message}`
+      const statusKey = `${payload.stage || 'status'}:${payload.tool || ''}:${payload.message}:${payload.taskId || payload.task_id || ''}`
       if (statusKey === lastStatusKey)
         return
 
@@ -1539,13 +1546,6 @@ const sendServiceApiChat = async ({
             payload.answer = forwardedVisibleAnswer
           if (forwardedComponents.length > 0)
             payload.components = mergeChatComponents(payload.components, forwardedComponents)
-          payload = await attachSuggestedQuestions({
-            payload,
-            chatUrl,
-            apiKey,
-            userId,
-            onProgress,
-          })
           onProgress?.({
             type: 'complete',
             payload,
@@ -1577,13 +1577,6 @@ const sendServiceApiChat = async ({
       payload.answer = forwardedVisibleAnswer
     if (forwardedComponents.length > 0)
       payload.components = mergeChatComponents(payload.components, forwardedComponents)
-    payload = await attachSuggestedQuestions({
-      payload,
-      chatUrl,
-      apiKey,
-      userId,
-      onProgress,
-    })
     onProgress?.({
       type: 'complete',
       payload,
@@ -1902,6 +1895,24 @@ export class LocalDifyGateway {
 
     if (!difyResult.ok)
       return difyResult
+
+    return {
+      ...difyResult,
+      mode: serviceApiConfig.value.mode,
+    }
+  }
+
+  async getSuggestedQuestions({ messageId, userId }) {
+    const serviceApiConfig = await this._resolveServiceApiConfig()
+    if (!serviceApiConfig.ok)
+      return serviceApiConfig
+
+    const difyResult = await fetchServiceSuggestedQuestions({
+      chatUrl: serviceApiConfig.value.chatUrl,
+      apiKey: serviceApiConfig.value.apiKey,
+      messageId,
+      userId,
+    })
 
     return {
       ...difyResult,

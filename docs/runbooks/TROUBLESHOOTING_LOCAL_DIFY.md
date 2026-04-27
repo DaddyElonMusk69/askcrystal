@@ -30,45 +30,7 @@ Fix:
 
 - Use `scripts/dify_console_client.py` (already handles login cookies + CSRF header automatically).
 
-## 3) Skill bridge dependency install fails with SSL cert error
-
-Symptom:
-
-- `SSLCertVerificationError` during `pip install`.
-
-Fix:
-
-- `scripts/dev/start_skill_bridge.sh` now prefers an existing runtime with `fastapi/uvicorn/pydantic` and starts without forcing pip install.
-- If you want auto-install to `.venv`, set:
-
-```bash
-SKILL_BRIDGE_AUTO_INSTALL=1 ./scripts/dev/start_skill_bridge.sh
-```
-
-## 4) Dify cannot reach bridge at runtime
-
-Symptom:
-
-- Tools are registered but execution fails.
-
-Checks:
-
-1. Bridge process is running on host `:8010`.
-2. Provider was registered with `--tool-server-url http://host.docker.internal:8010` if the bridge runs on the host.
-3. Container-to-host connectivity test:
-
-```bash
-cd /Users/haokaiqin/Desktop/AskCrystal/services/dify-runtime/docker
-docker compose exec -T api python - <<'PY'
-import urllib.request
-with urllib.request.urlopen('http://host.docker.internal:8010/health', timeout=10) as r:
-    print(r.status)
-PY
-```
-
-If you intentionally run the bridge as a Docker service instead, re-register the provider with the Docker-network URL, for example `http://askcrystal:8010`.
-
-## 5) Colima image pull/cache corruption
+## 3) Colima image pull/cache corruption
 
 Symptom:
 
@@ -89,11 +51,10 @@ cd /Users/haokaiqin/Desktop/AskCrystal
 ./scripts/dev/start_local_dify.sh
 ```
 
-## 6) Quick health checklist
+## 4) Quick health checklist
 
 ```bash
 cd /Users/haokaiqin/Desktop/AskCrystal
-./scripts/dev/check_local_dify.sh
-curl -fsS http://localhost:8010/health
+./scripts/dev/start_local_stack.sh --backend-only
 python3 scripts/dev/e2e_smoke_test.py
 ```

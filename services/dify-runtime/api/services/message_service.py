@@ -314,7 +314,7 @@ class MessageService:
 
         with measure_time() as timer:
             questions_sequence = LLMGenerator.generate_suggested_questions_after_answer(
-                tenant_id=app_model.tenant_id, histories=histories
+                tenant_id=app_model.tenant_id, histories=histories, model_instance=model_instance
             )
             questions: list[str] = list(questions_sequence)
 

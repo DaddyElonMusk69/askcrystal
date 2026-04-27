@@ -20,9 +20,9 @@ from scripts.common.dify_console_client import DifyConsoleClient, DifyConsoleErr
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run live streaming chat smoke tests against AskCrystal agent app")
     parser.add_argument("--base-url", default=os.getenv("DIFY_BASE_URL", "http://localhost:18080"))
-    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", "askcrystal.admin@example.com"))
-    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", "Askcrystal123"))
-    parser.add_argument("--app-id", default=os.getenv("DIFY_APP_ID", "385c285a-0e61-4cf1-ba49-afde28c5ce12"))
+    parser.add_argument("--email", default=os.getenv("DIFY_ADMIN_EMAIL", ""))
+    parser.add_argument("--password", default=os.getenv("DIFY_ADMIN_PASSWORD", ""))
+    parser.add_argument("--app-id", default=os.getenv("DIFY_APP_ID", ""))
     parser.add_argument("--retries", type=int, default=2, help="Retry count per query on stream errors")
     parser.add_argument(
         "--query",
