@@ -29,9 +29,11 @@ const LOCAL_PROXY_ORIGIN = 'http://localhost:8787';
 const SESSION_STORAGE_KEY = 'askcrystal-theme-session-id';
 const CHAT_SESSIONS_STORAGE_KEY = 'askcrystal-theme-chat-sessions-v1';
 const ACTIVE_CHAT_SESSION_STORAGE_KEY = 'askcrystal-theme-active-session-id';
+const PENDING_PROMPT_STORAGE_KEY = 'askcrystal-theme-pending-prompt-v1';
 const SESSION_REGISTRY_EVENT = 'askcrystal:session-registry';
 const SESSION_SELECT_EVENT = 'askcrystal:session-select';
 const SESSION_CREATE_EVENT = 'askcrystal:session-create';
+const SESSION_DELETE_EVENT = 'askcrystal:session-delete';
 const MAX_STORED_CHAT_SESSIONS = 24;
 const HOMEPAGE_BACKDROP_URL = 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/backdrop.png?v=1777102538';
 let messageSequence = 0;
@@ -155,6 +157,85 @@ function writeLocalStorageValue(key, value) {
 
     window.localStorage.setItem(key, value);
   } catch {}
+}
+
+function canUseSessionStorage() {
+  return typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
+}
+
+function readSessionStorageValue(key) {
+  if (!canUseSessionStorage()) return '';
+
+  try {
+    return window.sessionStorage.getItem(key) || '';
+  } catch {
+    return '';
+  }
+}
+
+function writeSessionStorageValue(key, value) {
+  if (!canUseSessionStorage()) return;
+
+  try {
+    if (value === '' || value === null || value === undefined) {
+      window.sessionStorage.removeItem(key);
+      return;
+    }
+
+    window.sessionStorage.setItem(key, value);
+  } catch {}
+}
+
+function normalizeDisplayMode(value) {
+  return value === 'chat' ? 'chat' : 'home';
+}
+
+function getUrlDisplayModeOverride() {
+  if (typeof window === 'undefined') return '';
+
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const requestedMode = params.get('askcrystal') || params.get('mode');
+    if (requestedMode === 'chat') return 'chat';
+    if (requestedMode === 'home') return 'home';
+  } catch {}
+
+  return '';
+}
+
+function getEffectiveDisplayMode(config = {}) {
+  return getUrlDisplayModeOverride() || normalizeDisplayMode(config.displayMode);
+}
+
+function getChatPageUrl(config = {}) {
+  const configuredUrl = typeof config.chatPageUrl === 'string' ? config.chatPageUrl.trim() : '';
+  return configuredUrl || '/?askcrystal=chat';
+}
+
+function handOffPromptToChatPage(config, prompt) {
+  const text = typeof prompt === 'string' ? prompt.trim() : '';
+  if (!text || typeof window === 'undefined') return false;
+
+  writeSessionStorageValue(PENDING_PROMPT_STORAGE_KEY, JSON.stringify({
+    prompt: text,
+    createdAt: Date.now(),
+  }));
+
+  window.location.assign(getChatPageUrl(config));
+  return true;
+}
+
+function consumePendingChatPrompt() {
+  const rawValue = readSessionStorageValue(PENDING_PROMPT_STORAGE_KEY);
+  if (!rawValue) return '';
+
+  writeSessionStorageValue(PENDING_PROMPT_STORAGE_KEY, '');
+  const payload = parseJsonValue(rawValue, null);
+  const prompt = typeof payload?.prompt === 'string' ? payload.prompt.trim() : '';
+  const createdAt = Number(payload?.createdAt);
+  const isFresh = Number.isFinite(createdAt) ? Date.now() - createdAt < 5 * 60 * 1000 : true;
+
+  return prompt && isFresh ? prompt : '';
 }
 
 function parseJsonValue(source, fallback) {
@@ -2724,6 +2805,27 @@ function useAskCrystalRuntime(config) {
     closeHeaderDrawer();
   }, [applySession]);
 
+  const deleteSessionAndSwitch = useCallback((targetSessionId) => {
+    if (!targetSessionId || isRunningRef.current) return;
+
+    const remainingSessions = sortSessionsByRecent(
+      sessionsRef.current.filter(session => session.id !== targetSessionId),
+    );
+    const nextSessions = remainingSessions.length > 0
+      ? remainingSessions
+      : [createStoredChatSession()];
+    const activeSessionWasRemoved = targetSessionId === activeSessionIdRef.current;
+    const nextActiveSession = getSessionById(nextSessions, activeSessionIdRef.current) || nextSessions[0];
+
+    setSessions(nextSessions);
+
+    if (activeSessionWasRemoved || nextActiveSession.id !== activeSessionIdRef.current) {
+      applySession(nextActiveSession);
+    }
+
+    closeHeaderDrawer();
+  }, [applySession]);
+
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
 
@@ -2733,14 +2835,19 @@ function useAskCrystalRuntime(config) {
     const handleSessionCreate = () => {
       createSessionAndSwitch();
     };
+    const handleSessionDelete = (event) => {
+      deleteSessionAndSwitch(event.detail?.sessionId || '');
+    };
 
     window.addEventListener(SESSION_SELECT_EVENT, handleSessionSelect);
     window.addEventListener(SESSION_CREATE_EVENT, handleSessionCreate);
+    window.addEventListener(SESSION_DELETE_EVENT, handleSessionDelete);
     return () => {
       window.removeEventListener(SESSION_SELECT_EVENT, handleSessionSelect);
       window.removeEventListener(SESSION_CREATE_EVENT, handleSessionCreate);
+      window.removeEventListener(SESSION_DELETE_EVENT, handleSessionDelete);
     };
-  }, [createSessionAndSwitch, switchToSession]);
+  }, [createSessionAndSwitch, deleteSessionAndSwitch, switchToSession]);
 
   const replaceMessages = useCallback((nextMessages) => {
     setMessages(normalizeMessagesAfterCancel(nextMessages, cancelRequestedRef.current));
@@ -2792,6 +2899,13 @@ function useAskCrystalRuntime(config) {
     async (appendMessage) => {
       if (appendMessage.role !== 'user') {
         throw new Error('AskCrystal homepage only supports user-authored messages.');
+      }
+
+      if (getEffectiveDisplayMode(config) === 'home') {
+        const promptText = extractTextFromParts(appendMessage.content || []);
+        if (handOffPromptToChatPage(config, promptText)) {
+          return;
+        }
       }
 
       const userMessage = createUserMessage(appendMessage);
@@ -3459,6 +3573,63 @@ function AssistantMessage() {
   );
 }
 
+function ChatPageHeader({ config }) {
+  const heading = typeof config.chatHeading === 'string' && config.chatHeading.trim()
+    ? config.chatHeading.trim()
+    : 'AskCrystal reading room';
+  const description = typeof config.chatDescription === 'string' && config.chatDescription.trim()
+    ? config.chatDescription.trim()
+    : 'Ask a question, name a feeling, or continue your last thread.';
+  const homeUrl = typeof config.homeUrl === 'string' && config.homeUrl.trim()
+    ? config.homeUrl.trim()
+    : '/';
+  const browseUrl = typeof config.browseUrl === 'string' && config.browseUrl.trim()
+    ? config.browseUrl.trim()
+    : '/collections';
+
+  return (
+    <header className="ac-chat-page__header">
+      <div className="ac-chat-page__header-copy">
+        <p className="ac-chat-page__kicker">AskCrystal</p>
+        <h1>{heading}</h1>
+        <p>{description}</p>
+      </div>
+      <nav className="ac-chat-page__nav" aria-label="AskCrystal page shortcuts">
+        <a href={homeUrl}>Guide</a>
+        <a href={browseUrl}>Shop crystals</a>
+      </nav>
+    </header>
+  );
+}
+
+function ChatEmptyState() {
+  const { sendPrompt, isRunning } = useAskCrystalActions();
+  const starters = [
+    'Give me a reading for what I need today.',
+    'Help me find a crystal for calm sleep.',
+    'Can you do a Bazi reading?',
+  ];
+
+  return (
+    <section className="ac-chat-page__empty" aria-label="Start an AskCrystal reading">
+      <p className="ac-chat-page__empty-kicker">Reading room is open</p>
+      <h2>Begin with a feeling, a question, or a sign you keep noticing.</h2>
+      <div className="ac-chat-page__starter-row">
+        {starters.map((starter) => (
+          <button
+            type="button"
+            key={starter}
+            disabled={isRunning}
+            onClick={() => sendPrompt(starter)}
+          >
+            {starter}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function AskCrystalThread({ config }) {
   const { runtime, hasUserMessages, activeSessionId, sendPrompt, onCancel, isRunning } = useAskCrystalRuntime(config);
   const askCrystalActions = useMemo(() => ({
@@ -3466,9 +3637,27 @@ function AskCrystalThread({ config }) {
     onCancel,
     isRunning,
   }), [isRunning, onCancel, sendPrompt]);
+  const displayMode = getEffectiveDisplayMode(config);
+  const isChatMode = displayMode === 'chat';
+  const shouldAutoScrollConversation = isChatMode && hasUserMessages;
   const homepageRef = useRef(null);
   const viewportRef = useRef(null);
   const hasAutoScrolledIntoConversationRef = useRef(false);
+  const pendingPromptConsumedRef = useRef(false);
+
+  useEffect(() => {
+    if (!isChatMode || pendingPromptConsumedRef.current || isRunning) return;
+
+    pendingPromptConsumedRef.current = true;
+    const pendingPrompt = consumePendingChatPrompt();
+    if (!pendingPrompt) return;
+
+    const timeoutId = window.setTimeout(() => {
+      sendPrompt(pendingPrompt);
+    }, 80);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isChatMode, isRunning, sendPrompt]);
 
   useEffect(() => {
     const viewport = viewportRef.current;
@@ -3477,7 +3666,7 @@ function AskCrystalThread({ config }) {
     const rafId = window.requestAnimationFrame(() => {
       if (!viewportRef.current) return;
 
-      if (!hasUserMessages) {
+      if (!shouldAutoScrollConversation) {
         hasAutoScrolledIntoConversationRef.current = false;
         viewportRef.current.scrollTo({ top: 0, behavior: 'auto' });
         return;
@@ -3490,7 +3679,7 @@ function AskCrystalThread({ config }) {
     });
 
     return () => window.cancelAnimationFrame(rafId);
-  }, [activeSessionId, hasUserMessages]);
+  }, [activeSessionId, shouldAutoScrollConversation]);
 
   useEffect(() => {
     const homepage = homepageRef.current;
@@ -3530,7 +3719,7 @@ function AskCrystalThread({ config }) {
   return (
     <AskCrystalActionsContext.Provider value={askCrystalActions}>
       <AssistantRuntimeProvider runtime={runtime}>
-        <div ref={homepageRef} className="ac-homepage">
+        <div ref={homepageRef} className={`ac-homepage ac-homepage--${displayMode}`}>
           <div className="ac-homepage__backdrop" aria-hidden="true">
             <img src={HOMEPAGE_BACKDROP_URL} alt="" loading="eager" decoding="async" />
           </div>
@@ -3538,22 +3727,31 @@ function AskCrystalThread({ config }) {
             <ThreadPrimitive.Viewport
               ref={viewportRef}
               className="ac-homepage__viewport"
-              autoScroll={hasUserMessages}
-              turnAnchor={hasUserMessages ? 'bottom' : 'top'}
+              autoScroll={shouldAutoScrollConversation}
+              turnAnchor={shouldAutoScrollConversation ? 'bottom' : 'top'}
               scrollToBottomOnInitialize={false}
-              scrollToBottomOnRunStart={hasUserMessages}
-              scrollToBottomOnThreadSwitch={hasUserMessages}
+              scrollToBottomOnRunStart={shouldAutoScrollConversation}
+              scrollToBottomOnThreadSwitch={shouldAutoScrollConversation}
             >
-              <WelcomeState config={config} />
+              {isChatMode ? (
+                <>
+                  <ChatPageHeader config={config} />
+                  {!hasUserMessages ? <ChatEmptyState /> : null}
+                </>
+              ) : (
+                <WelcomeState config={config} />
+              )}
 
-              <div className="ac-homepage__messages">
-                <ThreadPrimitive.Messages
-                  components={{
-                    UserMessage,
-                    AssistantMessage,
-                  }}
-                />
-              </div>
+              {isChatMode ? (
+                <div className="ac-homepage__messages">
+                  <ThreadPrimitive.Messages
+                    components={{
+                      UserMessage,
+                      AssistantMessage,
+                    }}
+                  />
+                </div>
+              ) : null}
 
               <ComposerDock />
             </ThreadPrimitive.Viewport>

@@ -56,8 +56,11 @@
   <script id="AskCrystalHomepageConfig-{{ section.id }}" type="application/json">
     {
       "sectionId": {{ section.id | json }},
+      "displayMode": "home",
       "runtimeMode": {{ section.settings.runtime_mode | json }},
       "apiEndpoint": {{ section.settings.api_endpoint | json }},
+      "chatPageUrl": {{ section.settings.chat_page_url | default: '/?askcrystal=chat' | json }},
+      "homeUrl": {{ routes.root_url | json }},
       "eyebrow": {{ section.settings.eyebrow | json }},
       "heading": {{ section.settings.heading | json }},
       "headingLine1": {{ section.settings.heading_line_1 | default: 'Find the crystal, ritual, or reading' | json }},
@@ -226,6 +229,11 @@
       "id": "api_endpoint",
       "label": "Proxy endpoint",
       "default": "/apps/askcrystal/chat"
+    },
+    {
+      "type": "url",
+      "id": "chat_page_url",
+      "label": "Chat page link"
     },
     {
       "type": "header",

@@ -7,9 +7,12 @@ const CHAT_SESSIONS_STORAGE_KEY = 'askcrystal-theme-chat-sessions-v1';
 const ACTIVE_CHAT_SESSION_STORAGE_KEY = 'askcrystal-theme-active-session-id';
 const SESSION_REGISTRY_EVENT = 'askcrystal:session-registry';
 const SESSION_SELECT_EVENT = 'askcrystal:session-select';
-const SESSION_CREATE_EVENT = 'askcrystal:session-create';
+const SESSION_DELETE_EVENT = 'askcrystal:session-delete';
 const FALLBACK_SESSION_TITLE = 'New reading';
 const FALLBACK_SESSION_PREVIEW = 'No messages yet.';
+const CHAT_ROUTE_URL = '/?askcrystal=chat';
+const HOME_ROUTE_URL = '/';
+const MAX_STORED_CHAT_SESSIONS = 24;
 
 /**
  * A custom element that manages the main menu drawer.
@@ -79,12 +82,49 @@ class HeaderDrawer extends Component {
   #onClick = (event) => {
     if (!(event.target instanceof Element)) return;
 
+    const deleteButton = event.target.closest('[data-askcrystal-session-action="delete"]');
+    if (deleteButton instanceof HTMLButtonElement) {
+      if (deleteButton.disabled || this.#sessionState.isRunning) return;
+
+      const sessionId = deleteButton.getAttribute('data-askcrystal-session-id') || '';
+      if (!sessionId) return;
+
+      const sessionTitle =
+        deleteButton.getAttribute('data-askcrystal-session-title') ||
+        FALLBACK_SESSION_TITLE;
+      const confirmed = window.confirm(
+        `Delete "${sessionTitle}"?\n\nThis cannot be undone.`
+      );
+      if (!confirmed) return;
+
+      const nextState = removeStoredSession(sessionId);
+      this.#sessionState = {
+        ...nextState,
+        isRunning: this.#sessionState.isRunning,
+      };
+      this.#renderSessionDrawer();
+      window.dispatchEvent(
+        new CustomEvent(SESSION_DELETE_EVENT, {
+          detail: {
+            sessionId,
+          },
+        })
+      );
+      return;
+    }
+
     const createButton = event.target.closest('[data-askcrystal-session-action="create"]');
     if (createButton instanceof HTMLButtonElement) {
       if (createButton.disabled || this.#sessionState.isRunning) return;
 
-      window.dispatchEvent(new CustomEvent(SESSION_CREATE_EVENT));
+      const nextState = createStoredSessionAndSelect();
+      this.#sessionState = {
+        ...nextState,
+        isRunning: this.#sessionState.isRunning,
+      };
+      this.#renderSessionDrawer();
       this.close();
+      window.location.assign(HOME_ROUTE_URL);
       return;
     }
 
@@ -96,6 +136,13 @@ class HeaderDrawer extends Component {
     const sessionId = sessionButton.getAttribute('data-askcrystal-session-id') || '';
     if (!sessionId) return;
 
+    writeLocalStorageValue(ACTIVE_CHAT_SESSION_STORAGE_KEY, sessionId);
+    this.#sessionState = {
+      ...this.#sessionState,
+      activeSessionId: sessionId,
+    };
+    this.#renderSessionDrawer();
+
     window.dispatchEvent(
       new CustomEvent(SESSION_SELECT_EVENT, {
         detail: {
@@ -104,6 +151,10 @@ class HeaderDrawer extends Component {
       })
     );
     this.close();
+
+    if (!isAskCrystalChatRoute()) {
+      window.location.assign(CHAT_ROUTE_URL);
+    }
   };
 
   #onSessionRegistry = (event) => {
@@ -321,6 +372,30 @@ function readLocalStorageValue(key) {
   }
 }
 
+function writeLocalStorageValue(key, value) {
+  if (!canUseLocalStorage()) return;
+
+  try {
+    if (value === '' || value === null || value === undefined) {
+      window.localStorage.removeItem(key);
+      return;
+    }
+
+    window.localStorage.setItem(key, value);
+  } catch {}
+}
+
+function isAskCrystalChatRoute() {
+  if (typeof window === 'undefined') return false;
+
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return window.location.pathname.includes('/pages/askcrystal') || params.get('askcrystal') === 'chat';
+  } catch {
+    return window.location.pathname.includes('/pages/askcrystal');
+  }
+}
+
 function parseJsonValue(source, fallback) {
   if (typeof source !== 'string' || !source.trim()) return fallback;
 
@@ -449,6 +524,78 @@ function getStoredSessionSummaries() {
   return sortSessionsByRecent(storedSessions.map(normalizeStoredSessionSummary).filter(Boolean));
 }
 
+function getStoredSessions() {
+  const storedSessions = parseJsonValue(readLocalStorageValue(CHAT_SESSIONS_STORAGE_KEY), []);
+  if (!Array.isArray(storedSessions)) return [];
+
+  return storedSessions.filter((session) => {
+    return session && typeof session === 'object' && typeof session.id === 'string' && session.id;
+  });
+}
+
+function createMessageId(prefix = 'thread') {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `${prefix}-${crypto.randomUUID()}`;
+  }
+
+  return `${prefix}-${Date.now()}-${Math.round(Math.random() * 1000000)}`;
+}
+
+function createStoredChatSession() {
+  const now = new Date().toISOString();
+
+  return {
+    id: createMessageId('thread'),
+    title: FALLBACK_SESSION_TITLE,
+    createdAt: now,
+    updatedAt: now,
+    conversationId: null,
+    messages: [],
+    suggestions: [],
+  };
+}
+
+function createStoredSessionAndSelect() {
+  const nextSession = createStoredChatSession();
+  const nextSessions = sortSessionsByRecent([nextSession, ...getStoredSessions()]).slice(
+    0,
+    MAX_STORED_CHAT_SESSIONS
+  );
+  const nextSessionSummaries = sortSessionsByRecent(
+    nextSessions.map(normalizeStoredSessionSummary).filter(Boolean)
+  );
+
+  writeLocalStorageValue(CHAT_SESSIONS_STORAGE_KEY, JSON.stringify(nextSessions));
+  writeLocalStorageValue(ACTIVE_CHAT_SESSION_STORAGE_KEY, nextSession.id);
+
+  return normalizeSessionRegistry({
+    sessions: nextSessionSummaries,
+    activeSessionId: nextSession.id,
+    isRunning: false,
+  });
+}
+
+function removeStoredSession(sessionId) {
+  const currentSessions = getStoredSessions();
+  const nextSessions = currentSessions.filter((session) => session.id !== sessionId);
+  const currentActiveSessionId = readLocalStorageValue(ACTIVE_CHAT_SESSION_STORAGE_KEY);
+  const nextSessionSummaries = sortSessionsByRecent(
+    nextSessions.map(normalizeStoredSessionSummary).filter(Boolean)
+  );
+  const nextActiveSessionId = currentActiveSessionId === sessionId
+    ? nextSessionSummaries[0]?.id || ''
+    : currentActiveSessionId;
+
+  writeLocalStorageValue(CHAT_SESSIONS_STORAGE_KEY, JSON.stringify(nextSessions));
+  writeLocalStorageValue(ACTIVE_CHAT_SESSION_STORAGE_KEY, nextActiveSessionId);
+
+  return normalizeSessionRegistry({
+    sessions: nextSessionSummaries,
+    activeSessionId: nextActiveSessionId,
+    isRunning: false,
+  });
+}
+
 function normalizeSessionRegistry(value) {
   const rawSessions = Array.isArray(value?.sessions) ? value.sessions : [];
   const sessions = sortSessionsByRecent(
@@ -514,14 +661,35 @@ function buildSessionDrawerFragment(state) {
   } else {
     state.sessions.forEach((session) => {
       const item = createElement(
-        'button',
+        'div',
         `ac-session-drawer__item${session.id === state.activeSessionId ? ' is-active' : ''}`
       );
-      item.type = 'button';
-      item.disabled = state.isRunning;
-      item.setAttribute('data-askcrystal-session-id', session.id);
-      item.setAttribute('aria-pressed', session.id === state.activeSessionId ? 'true' : 'false');
-      item.append(createElement('span', 'ac-session-drawer__item-title', session.title || FALLBACK_SESSION_TITLE));
+      item.setAttribute('role', 'listitem');
+
+      const selectButton = createElement(
+        'button',
+        'ac-session-drawer__select',
+        session.title || FALLBACK_SESSION_TITLE
+      );
+      selectButton.type = 'button';
+      selectButton.disabled = state.isRunning;
+      selectButton.setAttribute('data-askcrystal-session-id', session.id);
+      selectButton.setAttribute('aria-pressed', session.id === state.activeSessionId ? 'true' : 'false');
+
+      const sessionTitle = session.title || FALLBACK_SESSION_TITLE;
+      const deleteButton = createElement('button', 'ac-session-drawer__delete', 'X');
+      deleteButton.type = 'button';
+      deleteButton.disabled = state.isRunning;
+      deleteButton.setAttribute('data-askcrystal-session-action', 'delete');
+      deleteButton.setAttribute('data-askcrystal-session-id', session.id);
+      deleteButton.setAttribute('data-askcrystal-session-title', sessionTitle);
+      deleteButton.setAttribute(
+        'aria-label',
+        `Delete reading: ${sessionTitle}`
+      );
+      deleteButton.title = 'Delete reading';
+
+      item.append(selectButton, deleteButton);
       list.append(item);
     });
   }

@@ -740,12 +740,22 @@
   }
 
   .ac-session-drawer__item {
-    display: block;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
     width: 100%;
-    padding: 7px 0;
+    padding: 0;
     border: 0;
     background: transparent;
     color: inherit;
+  }
+
+  .ac-session-drawer__select,
+  .ac-session-drawer__delete {
+    border: 0;
+    background: transparent;
+    font: inherit;
     text-align: left;
     cursor: pointer;
     transition:
@@ -753,14 +763,30 @@
       opacity 180ms ease;
   }
 
-  .ac-session-drawer__item-title {
+  .ac-session-drawer__select {
     display: block;
     overflow: hidden;
+    width: 100%;
+    min-width: 0;
+    padding: 7px 0;
     font-size: 0.9rem;
     line-height: 1.35;
     text-overflow: ellipsis;
     white-space: nowrap;
     color: rgb(var(--color-foreground-rgb) / 0.74);
+  }
+
+  .ac-session-drawer__delete {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border-radius: 999px;
+    color: rgb(var(--color-foreground-rgb) / 0.46);
+    font-size: 0.68rem;
+    line-height: 1;
+    text-align: center;
   }
 
   .ac-session-drawer__empty {
@@ -775,28 +801,28 @@
     padding: 2px 0 0;
   }
 
-  .ac-session-drawer__item.is-active {
-    color: var(--color-primary);
-  }
-
-  .ac-session-drawer__item.is-active .ac-session-drawer__item-title {
+  .ac-session-drawer__item.is-active .ac-session-drawer__select {
     color: var(--color-primary);
   }
 
   .ac-session-drawer__new:hover,
   .ac-session-drawer__new:focus-visible,
-  .ac-session-drawer__item:hover,
-  .ac-session-drawer__item:focus-visible {
+  .ac-session-drawer__select:hover,
+  .ac-session-drawer__select:focus-visible,
+  .ac-session-drawer__delete:hover,
+  .ac-session-drawer__delete:focus-visible {
     opacity: 1;
   }
 
   .ac-session-drawer__new:focus-visible,
-  .ac-session-drawer__item:focus-visible {
+  .ac-session-drawer__select:focus-visible,
+  .ac-session-drawer__delete:focus-visible {
     outline: none;
   }
 
   .ac-session-drawer__new:disabled,
-  .ac-session-drawer__item:disabled {
+  .ac-session-drawer__select:disabled,
+  .ac-session-drawer__delete:disabled {
     opacity: 0.62;
     cursor: default;
   }

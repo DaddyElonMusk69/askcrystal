@@ -6,18 +6,23 @@
 
 {% liquid
   assign is_home_view = false
+  assign is_chat_view = false
   if template.name == 'index' or request.path == routes.root_url
     assign is_home_view = true
   endif
 
-  if is_home_view
+  if request.path contains '/pages/askcrystal'
+    assign is_chat_view = true
+  endif
+
+  if is_home_view or is_chat_view
     assign switch_url = '/collections'
     assign switch_label = 'Shop'
     assign switch_description = 'Browse the crystal collection'
   else
-    assign switch_url = routes.root_url
+    assign switch_url = '/?askcrystal=chat'
     assign switch_label = 'Chat'
-    assign switch_description = 'Return to the AskCrystal chat'
+    assign switch_description = 'Open the AskCrystal chat'
   endif
 %}
 
@@ -25,7 +30,7 @@
   href="{{ switch_url }}"
   class="askcrystal-header-switch{% if class != blank %} {{ class | strip }}{% endif %}"
   aria-label="{{ switch_description }}"
-  data-mode="{% if is_home_view %}shop{% else %}reading{% endif %}"
+  data-mode="{% if is_home_view or is_chat_view %}shop{% else %}reading{% endif %}"
 >
   <span
     class="askcrystal-header-switch__icon"

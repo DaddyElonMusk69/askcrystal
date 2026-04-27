@@ -547,6 +547,146 @@
   box-shadow: none;
 }
 
+.ac-homepage--chat .ac-homepage__viewport {
+  padding-top: 22px;
+  padding-bottom: 118px;
+}
+
+.ac-homepage--chat .ac-homepage__backdrop {
+  --ac-homepage-backdrop-base-offset: -58px;
+  opacity: min(var(--ac-homepage-backdrop-opacity), 0.72);
+}
+
+.ac-chat-page__header {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  max-width: min(100%, 46rem);
+  padding: 18px 4px 10px;
+}
+
+.ac-chat-page__header-copy {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ac-chat-page__kicker,
+.ac-chat-page__empty-kicker {
+  margin: 0;
+  font-size: 0.68rem;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(var(--color-primary-rgb) / 0.78);
+}
+
+.ac-chat-page__header h1,
+.ac-chat-page__empty h2 {
+  margin: 0;
+  font-family: var(--font-heading--family), serif;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  color: var(--ac-color-hero-ink);
+}
+
+.ac-chat-page__header h1 {
+  font-size: clamp(1.45rem, 8vw, 2.35rem);
+  line-height: 1.05;
+}
+
+.ac-chat-page__header p,
+.ac-chat-page__empty h2 {
+  max-width: 30rem;
+}
+
+.ac-chat-page__header-copy > p:not(.ac-chat-page__kicker) {
+  margin: 0;
+  color: var(--ac-color-muted);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.ac-chat-page__nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ac-chat-page__nav a,
+.ac-chat-page__starter-row button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  border: 1px solid var(--ac-color-line);
+  border-radius: 999px;
+  background: rgb(var(--color-primary-rgb) / 0.08);
+  color: var(--color-primary);
+  text-decoration: none;
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+.ac-chat-page__nav a {
+  padding: 0 13px;
+}
+
+.ac-chat-page__empty {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 34rem);
+  padding: 28px 4px 18px;
+}
+
+.ac-chat-page__empty h2 {
+  font-size: clamp(1.3rem, 7vw, 2rem);
+  line-height: 1.16;
+}
+
+.ac-chat-page__starter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.ac-chat-page__starter-row button {
+  padding: 0 14px;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.ac-chat-page__starter-row button:hover,
+.ac-chat-page__starter-row button:focus-visible,
+.ac-chat-page__nav a:hover,
+.ac-chat-page__nav a:focus-visible {
+  border-color: var(--ac-color-line-strong);
+  background: rgb(var(--color-primary-rgb) / 0.12);
+  outline: none;
+}
+
+.ac-chat-page__starter-row button:hover,
+.ac-chat-page__starter-row button:focus-visible {
+  transform: translateY(-1px);
+}
+
+.ac-chat-page__starter-row button:disabled {
+  cursor: wait;
+  opacity: 0.64;
+  transform: none;
+}
+
+.ac-homepage--chat .ac-homepage__messages {
+  width: 100%;
+  max-width: min(100%, 48rem);
+  padding-top: 18px;
+}
+
 .ac-message {
   display: grid;
   gap: 8px;
@@ -1444,20 +1584,55 @@
 
 .ac-session-drawer__item {
   display: grid;
-  gap: 7px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
   width: 100%;
   padding: 13px 14px;
   border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
   border-radius: 1.15rem;
   background: rgb(var(--color-background-rgb) / 0.82);
   color: inherit;
-  text-align: left;
-  cursor: pointer;
   transition:
     border-color 180ms ease,
     background-color 180ms ease,
     transform 180ms ease,
     box-shadow 180ms ease;
+}
+
+.ac-session-drawer__select,
+.ac-session-drawer__delete {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ac-session-drawer__select {
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  color: var(--ac-color-ink);
+  font-family: var(--font-heading--family), serif;
+  font-size: 0.94rem;
+  line-height: 1.12;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ac-session-drawer__delete {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 999px;
+  color: rgb(var(--color-foreground-rgb) / 0.5);
+  font-size: 0.7rem;
+  line-height: 1;
+  text-align: center;
 }
 
 .ac-session-drawer__item-row {
@@ -1509,20 +1684,33 @@
 .ac-session-drawer__new:hover,
 .ac-session-drawer__new:focus-visible,
 .ac-session-drawer__item:hover,
-.ac-session-drawer__item:focus-visible {
+.ac-session-drawer__item:focus-within,
+.ac-session-drawer__select:hover,
+.ac-session-drawer__select:focus-visible,
+.ac-session-drawer__delete:hover,
+.ac-session-drawer__delete:focus-visible {
   border-color: rgb(var(--color-primary-rgb) / 0.3);
   background-color: rgb(var(--color-primary-rgb) / 0.08);
+  outline: none;
+}
+
+.ac-session-drawer__new:hover,
+.ac-session-drawer__new:focus-visible,
+.ac-session-drawer__item:hover,
+.ac-session-drawer__item:focus-within {
   transform: translateY(-1px);
 }
 
 .ac-session-drawer__new:focus-visible,
-.ac-session-drawer__item:focus-visible {
+.ac-session-drawer__select:focus-visible,
+.ac-session-drawer__delete:focus-visible {
   outline: none;
   box-shadow: 0 0 0 4px rgb(var(--color-primary-rgb) / 0.1);
 }
 
 .ac-session-drawer__new:disabled,
-.ac-session-drawer__item:disabled {
+.ac-session-drawer__select:disabled,
+.ac-session-drawer__delete:disabled {
   opacity: 0.62;
   cursor: default;
   transform: none;
@@ -1610,6 +1798,29 @@
     padding-top: 24px;
   }
 
+  .ac-homepage--chat .ac-homepage__viewport {
+    padding-top: 38px;
+  }
+
+  .ac-chat-page__header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    max-width: min(100%, 58rem);
+    padding-top: 24px;
+  }
+
+  .ac-chat-page__header h1 {
+    font-size: clamp(2.3rem, 4vw, 3.9rem);
+  }
+
+  .ac-chat-page__empty {
+    padding-top: 42px;
+  }
+
+  .ac-homepage--chat .ac-homepage__messages {
+    max-width: min(100%, 58rem);
+  }
+
   .ac-message__bubble--user {
     max-width: min(60vw, 30rem);
     padding: 11px 13px;
@@ -1666,6 +1877,7 @@
   .ac-homepage__composer-shell,
   .ac-homepage__composer-send,
   .ac-homepage__composer-cancel,
+  .ac-chat-page__starter-row button,
   .ac-session-drawer__new,
   .ac-session-drawer__item {
     transition: none;
