@@ -1,6 +1,16 @@
 /**
  * Updates the recently viewed products in localStorage.
  */
+function canUseLocalStorage() {
+  if (typeof window === 'undefined') return false;
+
+  try {
+    return typeof window.localStorage !== 'undefined';
+  } catch {
+    return false;
+  }
+}
+
 export class RecentlyViewed {
   /** @static @constant {string} The key used to store the viewed products in session storage */
   static #STORAGE_KEY = 'viewedProducts';
@@ -12,17 +22,25 @@ export class RecentlyViewed {
    * @param {string} productId - The ID of the product to add.
    */
   static addProduct(productId) {
+    if (!canUseLocalStorage()) return;
+
     let viewedProducts = this.getProducts();
 
     viewedProducts = viewedProducts.filter((/** @type {string} */ id) => id !== productId);
     viewedProducts.unshift(productId);
     viewedProducts = viewedProducts.slice(0, this.#MAX_PRODUCTS);
 
-    localStorage.setItem(this.#STORAGE_KEY, JSON.stringify(viewedProducts));
+    try {
+      localStorage.setItem(this.#STORAGE_KEY, JSON.stringify(viewedProducts));
+    } catch {}
   }
 
   static clearProducts() {
-    localStorage.removeItem(this.#STORAGE_KEY);
+    if (!canUseLocalStorage()) return;
+
+    try {
+      localStorage.removeItem(this.#STORAGE_KEY);
+    } catch {}
   }
 
   /**
@@ -30,6 +48,12 @@ export class RecentlyViewed {
    * @returns {string[]} The list of viewed products.
    */
   static getProducts() {
-    return JSON.parse(localStorage.getItem(this.#STORAGE_KEY) || '[]');
+    if (!canUseLocalStorage()) return [];
+
+    try {
+      return JSON.parse(localStorage.getItem(this.#STORAGE_KEY) || '[]');
+    } catch {
+      return [];
+    }
   }
 }

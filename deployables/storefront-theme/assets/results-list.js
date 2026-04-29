@@ -1,6 +1,13 @@
 import { mediaQueryLarge, requestIdleCallback, startViewTransition } from '@theme/utilities';
 import PaginatedList from '@theme/paginated-list';
 
+function writeSessionStorageValue(key, value) {
+  try {
+    if (typeof window.sessionStorage === 'undefined') return;
+    window.sessionStorage.setItem(key, value);
+  } catch {}
+}
+
 /**
  * A custom element that renders a pagniated results list
  */
@@ -41,7 +48,7 @@ export default class ResultsList extends PaginatedList {
 
     requestIdleCallback(() => {
       const viewport = mediaQueryLarge.matches ? 'desktop' : 'mobile';
-      sessionStorage.setItem(`product-grid-view-${viewport}`, value);
+      writeSessionStorageValue(`product-grid-view-${viewport}`, value);
     });
   };
 

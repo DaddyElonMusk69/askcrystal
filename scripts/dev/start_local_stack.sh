@@ -30,6 +30,7 @@ STOP_DIFY_ON_EXIT=0
 child_names=()
 child_pids=()
 child_logs=()
+child_critical=()
 
 log() { printf '[stack] %s\n' "$*"; }
 
@@ -180,7 +181,8 @@ ensure_node_modules() {
 start_child() {
   local name="$1"
   local cwd="$2"
-  shift 2
+  local critical="${3:-1}"
+  shift 3
 
   local log_file="$LOG_DIR/$name.log"
   (
@@ -192,6 +194,7 @@ start_child() {
   child_names+=("$name")
   child_pids+=("$pid")
   child_logs+=("$log_file")
+  child_critical+=("$critical")
   log "started $name (pid=$pid, log=$log_file)"
 }
 
@@ -274,6 +277,7 @@ if [ "$START_PROXY" = "1" ]; then
     start_child \
       shopify-proxy \
       "$SHOPIFY_APP_DIR" \
+      1 \
       env PORT="$SHOPIFY_APP_PORT" DIFY_BASE_URL="$DIFY_BASE_URL" npm run dev:proxy
     wait_url "Shopify app/proxy" "http://localhost:$SHOPIFY_APP_PORT/api/health" 60
   fi
@@ -282,7 +286,7 @@ fi
 if [ "$START_AGENT_WATCH" = "1" ]; then
   require_cmd npm
   ensure_node_modules "$THEME_DIR" "storefront theme"
-  start_child agent-watch "$THEME_DIR" npm run agent:watch
+  start_child agent-watch "$THEME_DIR" 0 npm run agent:watch
 fi
 
 if [ "$START_THEME" = "1" ]; then
@@ -292,9 +296,9 @@ if [ "$START_THEME" = "1" ]; then
   if port_in_use "$THEME_PORT"; then
     log "theme preview port $THEME_PORT already in use; assuming Shopify theme dev is running"
   elif [ -n "$THEME_STORE" ]; then
-    start_child theme-dev "$THEME_DIR" env SHOPIFY_FLAG_STORE="$THEME_STORE" npm run theme:dev
+    start_child theme-dev "$THEME_DIR" 0 env SHOPIFY_FLAG_STORE="$THEME_STORE" npm run theme:dev
   else
-    start_child theme-dev "$THEME_DIR" npm run theme:dev
+    start_child theme-dev "$THEME_DIR" 0 npm run theme:dev
   fi
 fi
 
@@ -322,8 +326,23 @@ while true; do
       log "${child_names[$index]} exited with status $status"
       log "last log lines from ${child_logs[$index]}:"
       tail -n 40 "${child_logs[$index]}" || true
-      exit "$status"
+
+      if [ "${child_critical[$index]}" = "1" ]; then
+        exit "$status"
+      fi
+
+      log "${child_names[$index]} is non-critical; keeping the stack running"
+      unset 'child_names[index]'
+      unset 'child_pids[index]'
+      unset 'child_logs[index]'
+      unset 'child_critical[index]'
     fi
   done
+
+  if [ "${#child_pids[@]}" -eq 0 ]; then
+    log "no monitored foreground services remain"
+    exit 0
+  fi
+
   sleep 2
 done

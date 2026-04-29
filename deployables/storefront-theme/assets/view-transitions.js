@@ -1,4 +1,38 @@
 (function () {
+  function canUseSessionStorage() {
+    try {
+      return typeof window.sessionStorage !== 'undefined';
+    } catch {
+      return false;
+    }
+  }
+
+  function readSessionStorageValue(key) {
+    if (!canUseSessionStorage()) return '';
+
+    try {
+      return window.sessionStorage.getItem(key) || '';
+    } catch {
+      return '';
+    }
+  }
+
+  function writeSessionStorageValue(key, value) {
+    if (!canUseSessionStorage()) return;
+
+    try {
+      window.sessionStorage.setItem(key, value);
+    } catch {}
+  }
+
+  function removeSessionStorageValue(key) {
+    if (!canUseSessionStorage()) return;
+
+    try {
+      window.sessionStorage.removeItem(key);
+    } catch {}
+  }
+
   const viewTransitionRenderBlocker = document.getElementById('view-transition-render-blocker');
   // Remove the view transition render blocker if the user has reduced motion enabled or is on a low power device.
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || isLowPowerDevice()) {
@@ -47,11 +81,11 @@
     if (transitionType) {
       viewTransition.types.clear();
       viewTransition.types.add(transitionType);
-      sessionStorage.setItem('custom-transition-type', transitionType);
+      writeSessionStorageValue('custom-transition-type', transitionType);
     } else {
       viewTransition.types.clear();
       viewTransition.types.add('page-navigation');
-      sessionStorage.removeItem('custom-transition-type');
+      removeSessionStorageValue('custom-transition-type');
     }
   });
 
@@ -63,7 +97,7 @@
       return;
     }
 
-    const customTransitionType = sessionStorage.getItem('custom-transition-type');
+    const customTransitionType = readSessionStorageValue('custom-transition-type');
 
     if (customTransitionType) {
       viewTransition.types.clear();
@@ -75,7 +109,7 @@
       viewTransition.types.add('page-navigation');
 
       idleCallback(() => {
-        sessionStorage.removeItem('custom-transition-type');
+        removeSessionStorageValue('custom-transition-type');
         document.querySelectorAll('[data-view-transition-type]').forEach((element) => {
           element.removeAttribute('data-view-transition-type');
         });

@@ -667,11 +667,15 @@ export function oncePerEditorSession(element, sessionKeyName, callback) {
   const editorId = shopifyEditorSectionId || shopifyEditorBlockId;
   const uniqueSessionKey = `${sessionKeyName}-${editorId}`;
 
-  if (isInThemeEditor && sessionStorage.getItem(uniqueSessionKey)) return;
+  try {
+    if (isInThemeEditor && sessionStorage.getItem(uniqueSessionKey)) return;
+  } catch {}
 
   callback();
 
-  if (isInThemeEditor) sessionStorage.setItem(uniqueSessionKey, 'true');
+  try {
+    if (isInThemeEditor) sessionStorage.setItem(uniqueSessionKey, 'true');
+  } catch {}
 
   return;
 }

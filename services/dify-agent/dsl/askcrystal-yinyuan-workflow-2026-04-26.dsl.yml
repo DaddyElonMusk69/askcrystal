@@ -6,12 +6,7 @@ app:
   mode: workflow
   name: AskCrystal Yinyuan Matchmaking
   use_icon_as_answer_icon: false
-dependencies:
-- current_identifier: null
-  type: marketplace
-  value:
-    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.44@2f65e26c22dd4ae2c6133f14461dceac4eeb8abdd103f1ab6c9f03618db73313
-    version: null
+dependencies: []
 kind: app
 version: 0.6.0
 workflow:
@@ -52,21 +47,9 @@ workflow:
         isInIteration: false
         isInLoop: false
         sourceType: code
-        targetType: llm
-      id: yinyuan-prepare-to-llm
-      source: yinyuan_prepare
-      sourceHandle: source
-      target: yinyuan_llm
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
-        isInIteration: false
-        isInLoop: false
-        sourceType: llm
         targetType: code
-      id: yinyuan-llm-to-finalize
-      source: yinyuan_llm
+      id: yinyuan-prepare-to-finalize
+      source: yinyuan_prepare
       sourceHandle: source
       target: yinyuan_finalize
       targetHandle: target
@@ -702,183 +685,26 @@ workflow:
       type: custom
       width: 244
     - data:
-        context:
-          enabled: false
-          variable_selector: []
-        desc: Interpret the yinyuan signals and return strict JSON only.
-        memory:
-          enabled: false
-          window:
-            enabled: false
-            size: 50
-        model:
-          completion_params:
-            temperature: 0.4
-          mode: chat
-          name: glm-5
-          provider: langgenius/openai_api_compatible/openai_api_compatible
-        prompt_template:
-        - role: system
-          text: |-
-            You are the AskCrystal yinyuan relationship workflow for a structured six-skill phase.
-
-            Return strict JSON only. Do not use markdown fences. Do not include any explanation outside the JSON object.
-
-            Output shape:
-            {
-              "status": "ok",
-              "skill": "yinyuan_matchmaking",
-              "summary": "1-2 sentence relationship summary",
-              "findings": ["3-5 concise insights"],
-              "follow_up_questions": [],
-              "recommendations": ["2-4 concrete actions"],
-              "safety_note": "For reflection and relationship support only, not a guarantee about outcomes.",
-              "metadata": {
-                "confidence": "medium",
-                "missing_inputs": [],
-                "source_family": "yinyuan-skills",
-                "mode": "{{#yinyuan_prepare.mode_detected#}}",
-                "intent_type": "reading",
-                "primary_method": "yinyuan",
-                "signal_type": "{{#yinyuan_prepare.signal_type#}}",
-                "person_a_zodiac": "{{#yinyuan_prepare.person_a_zodiac#}}",
-                "person_b_zodiac": "{{#yinyuan_prepare.person_b_zodiac#}}",
-                "relation_type": "{{#yinyuan_prepare.relation_type#}}",
-                "compatibility_score": "{{#yinyuan_prepare.compatibility_score#}}",
-                "peach_blossom_direction": "{{#yinyuan_prepare.peach_blossom_direction#}}",
-                "best_months": "{{#yinyuan_prepare.best_months#}}",
-                "slow_month": "{{#yinyuan_prepare.slow_month#}}",
-                "year_outlook": "{{#yinyuan_prepare.year_outlook#}}"
-              }
-            }
-
-            Rules:
-            - Keep the tone calm, warm, and specific.
-            - Never use deterministic soulmate or fate language.
-            - Never say the pair is guaranteed or doomed.
-            - Do not mention tools, workflows, or hidden reasoning.
-            - Use the same language as the user's question.
-            - Treat timing as a trend window, not a fixed prediction.
-            - Let the summary stay compact and place the real substance in findings and recommendations.
-            - If some profile data is missing, acknowledge limits gracefully while still being helpful.
-            - If the current workflow status is needs_input, preserve that status and focus on a concise intake-style response instead of a completed read.
-        - role: user
-          text: |-
-            Current workflow status:
-            {{#yinyuan_prepare.status#}}
-
-            Question:
-            {{#yinyuan_prepare.question_clean#}}
-
-            Person A:
-            {{#yinyuan_prepare.person_a_clean#}}
-
-            Person B:
-            {{#yinyuan_prepare.person_b_clean#}}
-
-            Mode:
-            {{#yinyuan_prepare.mode_detected#}}
-
-            Structured facts:
-            {{#yinyuan_prepare.fact_brief#}}
-
-            Seed findings:
-            {{#yinyuan_prepare.findings#}}
-
-            Seed follow-up questions:
-            {{#yinyuan_prepare.follow_up_questions#}}
-
-            Seed recommendations:
-            {{#yinyuan_prepare.recommendations#}}
-        retry_config:
-          enabled: false
-          exponential_backoff:
-            enabled: false
-            max_interval: 10000
-            multiplier: 2
-          max_retries: 1
-          retry_interval: 1000
-        selected: false
-        structured_output:
-          enabled: false
-        title: Interpret Yinyuan Read
-        type: llm
-        variables: []
-        vision:
-          configs:
-            variable_selector: []
-          enabled: false
-      height: 116
-      id: yinyuan_llm
-      position:
-        x: 648
-        y: 260
-      positionAbsolute:
-        x: 648
-        y: 260
-      selected: false
-      sourcePosition: right
-      targetPosition: left
-      type: custom
-      width: 244
-    - data:
         code: |
-          def main(text: str, prepare_status: str, prepare_findings: list = None, prepare_follow_up_questions: list = None, prepare_recommendations: list = None, prepare_metadata: dict = None) -> dict:
-              import json
-              import re
-
-              def fallback_payload(raw_text: str) -> dict:
-                  cleaned = (raw_text or "").strip()
-                  summary = cleaned.split("\n")[0][:280] if cleaned else "The relationship interpretation completed, but the structured format needs a retry."
-                  findings = [line.strip("-• ") for line in cleaned.splitlines() if line.strip()][:4] or (prepare_findings or [summary])
-                  return {
-                      "status": prepare_status if prepare_status in {"ok", "needs_input"} else "ok",
-                      "skill": "yinyuan_matchmaking",
-                      "summary": summary,
-                      "findings": findings,
-                      "follow_up_questions": prepare_follow_up_questions or [],
-                      "recommendations": prepare_recommendations or ["Retry the relationship interpretation if a cleaner structured result is needed."],
-                      "safety_note": "For reflection and relationship support only, not a guarantee about outcomes.",
-                      "metadata": dict(prepare_metadata or {}),
-                  }
-
-              raw = (text or "").strip()
-              parsed = None
-              if raw:
-                  candidates = [raw]
-                  fenced = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.S)
-                  candidates.extend(fenced)
-                  brace_match = re.search(r"(\{.*\})", raw, re.S)
-                  if brace_match:
-                      candidates.append(brace_match.group(1))
-                  for candidate in candidates:
-                      try:
-                          parsed = json.loads(candidate)
-                          break
-                      except Exception:
-                          continue
-
-              payload = parsed if isinstance(parsed, dict) else fallback_payload(raw)
-              payload["status"] = payload.get("status") or (prepare_status if prepare_status in {"ok", "needs_input"} else "ok")
-              if payload["status"] not in {"ok", "needs_input"}:
-                  payload["status"] = prepare_status if prepare_status in {"ok", "needs_input"} else "ok"
-              payload["skill"] = "yinyuan_matchmaking"
-              payload["summary"] = str(payload.get("summary") or "")
-              payload["findings"] = payload.get("findings") if isinstance(payload.get("findings"), list) else (prepare_findings or [])
-              payload["follow_up_questions"] = payload.get("follow_up_questions") if isinstance(payload.get("follow_up_questions"), list) else (prepare_follow_up_questions or [])
-              payload["recommendations"] = payload.get("recommendations") if isinstance(payload.get("recommendations"), list) else (prepare_recommendations or [])
-              payload["safety_note"] = str(payload.get("safety_note") or "For reflection and relationship support only, not a guarantee about outcomes.")
-
+          def main(prepare_status: str, prepare_summary: str = "", prepare_findings: list = None, prepare_follow_up_questions: list = None, prepare_recommendations: list = None, prepare_safety_note: str = "", prepare_metadata: dict = None, fact_brief: str = "") -> dict:
               metadata = dict(prepare_metadata or {})
-              llm_metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
-              metadata.update(llm_metadata)
-              metadata.setdefault("confidence", "medium" if payload["status"] == "ok" else "low")
+              status = prepare_status if prepare_status in {"ok", "needs_input"} else "ok"
+              metadata.setdefault("confidence", "medium" if status == "ok" else "low")
               metadata.setdefault("missing_inputs", [])
-              payload["metadata"] = metadata
-
-              return payload
+              if fact_brief:
+                  metadata["fact_brief"] = fact_brief
+              return {
+                  "status": status,
+                  "skill": "yinyuan_matchmaking",
+                  "summary": str(prepare_summary or "The relationship signals are ready for interpretation."),
+                  "findings": prepare_findings or [],
+                  "follow_up_questions": prepare_follow_up_questions or [],
+                  "recommendations": prepare_recommendations or [],
+                  "safety_note": str(prepare_safety_note or "For reflection and relationship support only, not a guarantee about outcomes."),
+                  "metadata": metadata,
+              }
         code_language: python3
-        desc: Parse the LLM response into the shared yinyuan workflow contract.
+        desc: Return the structured yinyuan signal contract for the master agent to interpret.
         outputs:
           status:
             children: null
@@ -909,15 +735,15 @@ workflow:
         type: code
         variables:
         - value_selector:
-          - yinyuan_llm
-          - text
-          value_type: string
-          variable: text
-        - value_selector:
           - yinyuan_prepare
           - status
           value_type: string
           variable: prepare_status
+        - value_selector:
+          - yinyuan_prepare
+          - summary
+          value_type: string
+          variable: prepare_summary
         - value_selector:
           - yinyuan_prepare
           - findings
@@ -935,16 +761,26 @@ workflow:
           variable: prepare_recommendations
         - value_selector:
           - yinyuan_prepare
+          - safety_note
+          value_type: string
+          variable: prepare_safety_note
+        - value_selector:
+          - yinyuan_prepare
           - metadata
           value_type: object
           variable: prepare_metadata
+        - value_selector:
+          - yinyuan_prepare
+          - fact_brief
+          value_type: string
+          variable: fact_brief
       height: 84
       id: yinyuan_finalize
       position:
-        x: 960
+        x: 648
         y: 260
       positionAbsolute:
-        x: 960
+        x: 648
         y: 260
       selected: false
       sourcePosition: right

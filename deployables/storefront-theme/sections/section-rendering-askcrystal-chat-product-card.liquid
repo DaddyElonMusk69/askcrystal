@@ -13,6 +13,14 @@
     assign requested_handle = request.query_string | split: 'askcrystal_handle=' | last | split: '&' | first | url_decode
   endif
 
+  assign requested_cta_label = 'View'
+  if request.query_string contains 'askcrystal_cta='
+    assign requested_cta_label = request.query_string | split: 'askcrystal_cta=' | last | split: '&' | first | url_decode | strip
+    if requested_cta_label == blank
+      assign requested_cta_label = 'View'
+    endif
+  endif
+
   if requested_handle != blank
     assign requested_product = all_products[requested_handle]
     if requested_product != blank
@@ -119,7 +127,7 @@
               </div>
 
               <span class="askcrystal-chat-product-card__cta">
-                View
+                {{ requested_cta_label }}
               </span>
             </div>
           </div>

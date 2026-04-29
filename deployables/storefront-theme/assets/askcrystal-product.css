@@ -446,6 +446,11 @@ main[data-template^='product'] .text-block--ac_shipping_note p {
   line-height: 1.2;
 }
 
+.askcrystal-product-story__included-list,
+.askcrystal-product-story__quality-list {
+  padding-top: 2px;
+}
+
 .askcrystal-product-story__details-list {
   display: grid;
   gap: 9px;
@@ -631,6 +636,10 @@ main[data-template^='product'] .text-block--ac_shipping_note p {
   gap: 9px;
 }
 
+.askcrystal-product-story__seals--notes {
+  grid-template-columns: 1fr;
+}
+
 .askcrystal-product-story__seal {
   display: grid;
   place-items: center;
@@ -643,6 +652,25 @@ main[data-template^='product'] .text-block--ac_shipping_note p {
   letter-spacing: 0.09em;
   text-align: center;
   text-transform: uppercase;
+}
+
+.askcrystal-product-story__seals--notes .askcrystal-product-story__seal {
+  min-height: 42px;
+  aspect-ratio: auto;
+  padding: 8px 13px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  line-height: 1.25;
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+
+.askcrystal-product-story__safety {
+  padding-top: 12px;
+  border-top: 1px solid var(--ac-product-line-soft);
+  color: var(--ac-product-dim);
+  font-size: 0.76rem;
+  line-height: 1.55;
 }
 
 .askcrystal-product-story__bundle-products {

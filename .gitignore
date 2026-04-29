@@ -9,6 +9,9 @@ external_skills/
 node_modules/
 .shopify/
 
+data/shopify/generated/*.csv
+!data/shopify/generated/.gitkeep
+
 .env
 .env.*
 !/.env.example

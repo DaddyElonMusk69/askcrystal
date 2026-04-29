@@ -2,6 +2,16 @@ import crypto from 'node:crypto'
 
 import { config } from '../config.mjs'
 
+export const getShopifyProxyContext = requestUrl => {
+  const url = new URL(requestUrl, config.shopifyAppUrl || 'http://localhost')
+  return {
+    shop: url.searchParams.get('shop') || config.shopifyStoreDomain || '',
+    loggedInCustomerId: url.searchParams.get('logged_in_customer_id') || '',
+    pathPrefix: url.searchParams.get('path_prefix') || '',
+    timestamp: url.searchParams.get('timestamp') || '',
+  }
+}
+
 export const validateShopifyProxyRequest = requestUrl => {
   if (!config.shopifyProxySignatureRequired) {
     return {

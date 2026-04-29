@@ -136,8 +136,15 @@
               const grid = document.querySelector('.product-grid');
               if (!grid) return;
 
-              const storedLayoutMobile = sessionStorage.getItem('product-grid-view-mobile') || 'default';
-              const storedLayoutDesktop = sessionStorage.getItem('product-grid-view-desktop') || 'default';
+              let storedLayoutMobile = 'default';
+              let storedLayoutDesktop = 'default';
+
+              try {
+                storedLayoutMobile = sessionStorage.getItem('product-grid-view-mobile') || 'default';
+                storedLayoutDesktop = sessionStorage.getItem('product-grid-view-desktop') || 'default';
+              } catch {
+                return;
+              }
 
               // No need to read the window width if no custom layouts were saved.
               if (storedLayoutMobile === 'default' && storedLayoutDesktop === 'default') return;

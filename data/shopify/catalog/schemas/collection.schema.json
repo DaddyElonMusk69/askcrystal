@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://askcrystal.local/schemas/shopify-catalog-collection.schema.json",
+  "title": "AskCrystal Local Shopify Catalog Collection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "handle",
+    "workflow_status",
+    "shopify_status",
+    "title",
+    "description",
+    "rules",
+    "sort_order"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "handle": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "workflow_status": {
+      "type": "string",
+      "enum": ["draft", "ai_filled", "human_reviewed", "approved"]
+    },
+    "shopify_status": {
+      "type": "string",
+      "enum": ["draft", "active", "archived"]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "image": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["src", "alt"],
+      "properties": {
+        "src": {
+          "type": "string",
+          "minLength": 1
+        },
+        "alt": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["manual", "tag"]
+        },
+        "product_handles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "uniqueItems": true
+        },
+        "required_tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": { "const": "manual" }
+            }
+          },
+          "then": {
+            "required": ["product_handles"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mode": { "const": "tag" }
+            }
+          },
+          "then": {
+            "required": ["required_tags"]
+          }
+        }
+      ]
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": ["manual", "best-selling", "title-ascending", "title-descending", "created", "created-descending", "price-ascending", "price-descending"]
+    }
+  }
+}

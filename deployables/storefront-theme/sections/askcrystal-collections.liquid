@@ -29,6 +29,18 @@
   assign crystal_product_limit = section.settings.crystal_product_limit | default: 8
   assign form_tab_limit = section.settings.form_tab_limit | default: 5
   assign form_product_limit = section.settings.form_product_limit | default: 8
+
+  assign hero_image_url = section.settings.hero_image_url
+  assign hero_image_width = 1105
+  assign hero_image_height = 1423
+  if section.settings.hero_image != blank
+    assign hero_image_url = section.settings.hero_image | image_url: width: 2400
+    assign hero_image_width = section.settings.hero_image.width
+    assign hero_image_height = section.settings.hero_image.height
+  endif
+  if hero_image_url == blank
+    assign hero_image_url = 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/collections_bg.webp?v=1777343070'
+  endif
 %}
 
 {% style %}
@@ -58,15 +70,22 @@
 {% endstyle %}
 
 <section class="askcrystal-collections color-{{ section.settings.color_scheme }}">
-  <div class="askcrystal-collections__hero">
-    <div class="askcrystal-collections__stars" aria-hidden="true"></div>
-    <div class="askcrystal-collections__zodiac" aria-hidden="true"></div>
-    <div class="askcrystal-collections__crescent" aria-hidden="true"></div>
-    <div class="askcrystal-collections__crystal-scene" aria-hidden="true">
-      <span class="askcrystal-collections__crystal askcrystal-collections__crystal--main"></span>
-      <span class="askcrystal-collections__crystal askcrystal-collections__crystal--left"></span>
-      <span class="askcrystal-collections__crystal askcrystal-collections__crystal--right"></span>
-      <span class="askcrystal-collections__stone"></span>
+  <div class="askcrystal-collections__hero" data-askcrystal-collections-hero>
+    <div
+      class="askcrystal-collections__hero-media"
+      style="--ac-collections-hero-image-ratio: {{ hero_image_width }} / {{ hero_image_height }};"
+      aria-hidden="true"
+    >
+      {% if hero_image_url != blank %}
+        <img
+          src="{{ hero_image_url | escape }}"
+          alt=""
+          width="{{ hero_image_width }}"
+          height="{{ hero_image_height }}"
+          loading="eager"
+          fetchpriority="high"
+        >
+      {% endif %}
     </div>
 
     <div class="askcrystal-collections__hero-copy">
@@ -528,147 +547,70 @@
   }
 
   .askcrystal-collections__hero {
+    --ac-collections-hero-parallax: 0px;
+    --ac-collections-hero-rest-y: -78px;
+    --ac-collections-copy-parallax: 0px;
+
     position: relative;
     isolation: isolate;
     min-height: clamp(330px, 43vw, 480px);
     padding: clamp(4.3rem, 10vw, 7rem) clamp(1.38rem, 5vw, 4rem) clamp(1.55rem, 4.4vw, 3rem);
+    overflow: hidden;
     border-bottom: 1px solid rgb(185 149 96 / 0.22);
-    background:
-      linear-gradient(90deg, rgb(2 12 20 / 0.98) 0%, rgb(2 12 20 / 0.76) 46%, rgb(2 12 20 / 0.28) 100%),
-      radial-gradient(circle at 80% 35%, rgb(185 149 96 / 0.17), transparent 18rem);
+    background: #020c14;
   }
 
-  .askcrystal-collections__stars,
-  .askcrystal-collections__zodiac,
-  .askcrystal-collections__crescent,
-  .askcrystal-collections__crystal-scene {
+  .askcrystal-collections__hero::before,
+  .askcrystal-collections__hero::after,
+  .askcrystal-collections__hero-media {
     position: absolute;
+    inset: 0;
     pointer-events: none;
   }
 
-  .askcrystal-collections__stars {
-    inset: 0;
-    z-index: -2;
-    opacity: 0.72;
-    background-image:
-      radial-gradient(circle at 18% 26%, rgb(228 183 107 / 0.72) 0 1px, transparent 1.4px),
-      radial-gradient(circle at 72% 18%, rgb(240 223 200 / 0.68) 0 1px, transparent 1.5px),
-      radial-gradient(circle at 84% 56%, rgb(185 149 96 / 0.58) 0 1px, transparent 1.6px),
-      radial-gradient(circle at 42% 72%, rgb(228 183 107 / 0.45) 0 1px, transparent 1.5px);
-    background-size: 120px 110px, 180px 150px, 150px 170px, 210px 160px;
-  }
-
-  .askcrystal-collections__zodiac {
-    z-index: -1;
-    inset-inline-start: clamp(-8rem, -10vw, -3rem);
-    top: clamp(3.5rem, 10vw, 6rem);
-    width: clamp(15rem, 34vw, 26rem);
-    aspect-ratio: 1;
-    border: 1px solid rgb(185 149 96 / 0.14);
-    border-radius: 50%;
-    box-shadow:
-      inset 0 0 0 22px rgb(185 149 96 / 0.025),
-      inset 0 0 0 38px rgb(185 149 96 / 0.045),
-      inset 0 0 0 62px rgb(185 149 96 / 0.025);
-    opacity: 0.9;
-  }
-
-  .askcrystal-collections__zodiac::before,
-  .askcrystal-collections__zodiac::after {
+  .askcrystal-collections__hero::before,
+  .askcrystal-collections__hero::after {
     content: "";
-    position: absolute;
-    inset: 15%;
-    border: 1px solid rgb(185 149 96 / 0.12);
-    border-radius: inherit;
   }
 
-  .askcrystal-collections__zodiac::after {
-    inset: 31%;
-  }
-
-  .askcrystal-collections__crescent {
-    top: clamp(6.6rem, 12vw, 8.5rem);
-    inset-inline-end: clamp(3rem, 9vw, 8rem);
-    width: clamp(2.2rem, 4.5vw, 3.6rem);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--ac-shop-gold);
-    opacity: 0.74;
-    transform: rotate(-24deg);
-    filter: drop-shadow(0 0 18px rgb(185 149 96 / 0.22));
-  }
-
-  .askcrystal-collections__crescent::after {
-    content: "";
-    position: absolute;
-    inset: -5% 16% 5% -18%;
-    border-radius: 50%;
-    background: var(--ac-shop-night);
-  }
-
-  .askcrystal-collections__crystal-scene {
+  .askcrystal-collections__hero::before {
     z-index: -1;
-    right: clamp(1rem, 8vw, 7rem);
-    bottom: 0;
-    width: min(38vw, 26rem);
-    min-width: 13rem;
-    height: min(35vw, 24rem);
-    opacity: 0.82;
+    background:
+      linear-gradient(90deg, rgb(2 12 20 / 0.58) 0%, rgb(2 12 20 / 0.18) 44%, rgb(2 12 20 / 0) 100%),
+      linear-gradient(180deg, transparent 54%, rgb(2 12 20 / 0.32) 100%);
   }
 
-  .askcrystal-collections__crystal {
-    position: absolute;
-    bottom: 24%;
+  .askcrystal-collections__hero::after {
+    display: none;
+  }
+
+  .askcrystal-collections__hero-media {
+    z-index: -3;
+    inset: 0 auto auto 50%;
+    width: 100vw;
+    aspect-ratio: var(--ac-collections-hero-image-ratio, 1000 / 484);
+    opacity: 0.94;
+    transform: translate3d(-50%, calc(var(--ac-collections-hero-rest-y) + var(--ac-collections-hero-parallax)), 0);
+    transform-origin: center top;
+    backface-visibility: hidden;
+    contain: paint;
+    will-change: transform;
+  }
+
+  .askcrystal-collections__hero-media img {
     display: block;
-    width: 23%;
-    height: 56%;
-    clip-path: polygon(50% 0, 82% 19%, 72% 100%, 28% 100%, 18% 19%);
-    border: 1px solid rgb(240 223 200 / 0.34);
-    background:
-      linear-gradient(112deg, transparent 0 34%, rgb(240 223 200 / 0.56) 35% 37%, transparent 38%),
-      linear-gradient(70deg, rgb(255 245 224 / 0.26), rgb(185 149 96 / 0.22) 42%, rgb(6 21 32 / 0.8) 100%);
-    box-shadow:
-      inset 0 0 22px rgb(240 223 200 / 0.18),
-      0 26px 42px rgb(0 0 0 / 0.4);
-  }
-
-  .askcrystal-collections__crystal--main {
-    left: 44%;
-    transform: translateX(-50%);
-  }
-
-  .askcrystal-collections__crystal--left {
-    left: 24%;
-    width: 15%;
-    height: 38%;
-    transform: rotate(-13deg);
-    opacity: 0.72;
-  }
-
-  .askcrystal-collections__crystal--right {
-    left: 62%;
-    width: 14%;
-    height: 34%;
-    transform: rotate(17deg);
-    opacity: 0.68;
-  }
-
-  .askcrystal-collections__stone {
-    position: absolute;
-    inset-inline: 4% 3%;
-    bottom: 0;
-    height: 32%;
-    border-radius: 58% 42% 0 0 / 100% 100% 0 0;
-    background:
-      radial-gradient(circle at 44% 18%, rgb(228 183 107 / 0.22), transparent 20%),
-      linear-gradient(180deg, rgb(8 18 24), rgb(0 3 6));
-    box-shadow: 0 -18px 34px rgb(185 149 96 / 0.08);
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    object-position: center top;
   }
 
   .askcrystal-collections__hero-copy {
     position: relative;
     z-index: 1;
     max-width: min(32rem, 78vw);
+    transform: translate3d(0, calc(-24px + var(--ac-collections-copy-parallax)), 0);
+    will-change: transform;
   }
 
   .askcrystal-collections__kicker,
@@ -1491,23 +1433,27 @@
 
   @media screen and (max-width: 749px) {
     .askcrystal-collections__hero {
+      --ac-collections-hero-rest-y: -58px;
+
       min-height: 24rem;
+      padding-top: 5.25rem;
     }
 
     .askcrystal-collections__hero-copy {
       max-width: 92%;
+      transform: translate3d(0, calc(-30px + var(--ac-collections-copy-parallax)), 0);
     }
 
-    .askcrystal-collections__crystal-scene {
-      right: -1.6rem;
-      bottom: 0.25rem;
-      width: 12.8rem;
-      height: 11.8rem;
-      opacity: 0.38;
+    .askcrystal-collections__hero::before {
+      background:
+        linear-gradient(90deg, rgb(2 12 20 / 0.54) 0%, rgb(2 12 20 / 0.18) 66%, rgb(2 12 20 / 0) 100%),
+        linear-gradient(180deg, transparent 50%, rgb(2 12 20 / 0.34) 100%);
     }
 
-    .askcrystal-collections__crescent {
-      opacity: 0.58;
+    .askcrystal-collections__hero-media {
+      inset: 0 auto auto 50%;
+      width: 100vw;
+      opacity: 0.88;
     }
 
     .askcrystal-collections__product-copy {
@@ -1530,6 +1476,15 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .askcrystal-collections__hero,
+    .askcrystal-collections__hero-media,
+    .askcrystal-collections__hero-copy {
+      --ac-collections-hero-parallax: 0px !important;
+      --ac-collections-copy-parallax: 0px !important;
+      transform: none !important;
+      will-change: auto;
+    }
+
     .askcrystal-collections *,
     .askcrystal-collections *::before,
     .askcrystal-collections *::after {
@@ -1538,6 +1493,92 @@
     }
   }
 {% endstylesheet %}
+
+<script>
+  (() => {
+    if (window.__askCrystalCollectionsParallaxInitialized) return;
+    window.__askCrystalCollectionsParallaxInitialized = true;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const heroes = new Map();
+    let frame = 0;
+
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+    const roundPx = value => Math.round(value);
+
+    const measureHero = (hero) => {
+      const rect = hero.getBoundingClientRect();
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      return {
+        top: rect.top + scrollY,
+        height: Math.max(rect.height, 1),
+        imageOffset: null,
+        copyOffset: null,
+      };
+    };
+
+    const updateHero = (hero, metrics) => {
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      const progress = clamp((scrollY - metrics.top) / metrics.height, 0, 1);
+      const imageOffset = roundPx(progress * 92);
+      const copyOffset = roundPx(progress * -18);
+
+      if (metrics.imageOffset !== imageOffset) {
+        metrics.imageOffset = imageOffset;
+        hero.style.setProperty('--ac-collections-hero-parallax', `${imageOffset}px`);
+      }
+
+      if (metrics.copyOffset !== copyOffset) {
+        metrics.copyOffset = copyOffset;
+        hero.style.setProperty('--ac-collections-copy-parallax', `${copyOffset}px`);
+      }
+    };
+
+    const update = () => {
+      frame = 0;
+      if (reduceMotion.matches) return;
+      heroes.forEach((metrics, hero) => {
+        if (!hero.isConnected) {
+          heroes.delete(hero);
+          return;
+        }
+
+        updateHero(hero, metrics);
+      });
+    };
+
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    const hydrate = () => {
+      document
+        .querySelectorAll('[data-askcrystal-collections-hero]')
+        .forEach((hero) => {
+          heroes.set(hero, measureHero(hero));
+        });
+      requestUpdate();
+    };
+
+    const measureAndUpdate = () => {
+      heroes.forEach((_metrics, hero) => {
+        if (!hero.isConnected) {
+          heroes.delete(hero);
+          return;
+        }
+
+        heroes.set(hero, measureHero(hero));
+      });
+      requestUpdate();
+    };
+
+    hydrate();
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', measureAndUpdate, { passive: true });
+    document.addEventListener('shopify:section:load', hydrate);
+  })();
+</script>
 
 {% schema %}
 {
@@ -1575,6 +1616,17 @@
       "id": "hero_note",
       "label": "Hero note",
       "default": "Refined for your current path"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero image"
+    },
+    {
+      "type": "text",
+      "id": "hero_image_url",
+      "label": "Hero image URL",
+      "default": "https://cdn.shopify.com/s/files/1/0981/4786/0843/files/collections_bg.webp?v=1777343070"
     },
     {
       "type": "header",

@@ -21,7 +21,7 @@ DEFAULT_DSL_PATH = REPO_ROOT / "services" / "dify-agent" / "dsl" / "askcrystal-f
 WORKFLOW_TOOL_NAME = "workflow_fengshui_space_audit"
 WORKFLOW_TOOL_LABEL = "Fengshui Space Audit"
 WORKFLOW_TOOL_DESCRIPTION = (
-    "Provides grounded home and workspace fengshui audits with practical, non-fear-based recommendations."
+    "Builds a grounded home or workspace fengshui audit contract for the main AskCrystal agent to interpret."
 )
 WORKFLOW_TOOL_ICON = {"type": "emoji", "emoji": "🧭"}
 WORKFLOW_TOOL_LABELS = ["utilities"]
@@ -89,7 +89,8 @@ def ensure_workflow_tool(client: DifyConsoleClient, workflow_app_id: str) -> dic
         existing = client.get_workflow_tool(workflow_app_id=workflow_app_id)
         if isinstance(existing, dict) and existing:
             workflow_tool_id = existing.get("workflow_tool_id") or existing.get("id")
-            if existing.get("synced") is False and isinstance(workflow_tool_id, str) and workflow_tool_id:
+            if isinstance(workflow_tool_id, str) and workflow_tool_id:
+                # Refresh the pinned workflow version and parameter contract after every publish.
                 client.update_workflow_tool(
                     workflow_tool_id=workflow_tool_id,
                     name=WORKFLOW_TOOL_NAME,
@@ -99,7 +100,7 @@ def ensure_workflow_tool(client: DifyConsoleClient, workflow_app_id: str) -> dic
                     icon=WORKFLOW_TOOL_ICON,
                     labels=WORKFLOW_TOOL_LABELS,
                 )
-                existing = client.get_workflow_tool(workflow_tool_id=workflow_tool_id)
+                return client.get_workflow_tool(workflow_tool_id=workflow_tool_id)
             return existing
     except DifyConsoleError:
         pass

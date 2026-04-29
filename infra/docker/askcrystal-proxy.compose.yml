@@ -1,4 +1,23 @@
+name: askcrystal-proxy
+
 services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${ASKCRYSTAL_POSTGRES_DB:-askcrystal}
+      POSTGRES_USER: ${ASKCRYSTAL_POSTGRES_USER:-askcrystal}
+      POSTGRES_PASSWORD: ${ASKCRYSTAL_POSTGRES_PASSWORD:-askcrystal}
+    ports:
+      - "${ASKCRYSTAL_POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - askcrystal-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   shopify-proxy:
     build:
       context: ../..
@@ -8,7 +27,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 8787
-      ASKCRYSTAL_MEMORY_DATABASE_URL: ${ASKCRYSTAL_MEMORY_DATABASE_URL:-}
+      ASKCRYSTAL_MEMORY_DATABASE_URL: ${ASKCRYSTAL_MEMORY_DATABASE_URL:-postgresql://askcrystal:askcrystal@postgres:5432/askcrystal}
+      ASKCRYSTAL_MEMORY_DATABASE_SSL: ${ASKCRYSTAL_MEMORY_DATABASE_SSL:-false}
       ASKCRYSTAL_SESSION_SECRET: ${ASKCRYSTAL_SESSION_SECRET:-}
       ASKCRYSTAL_STOREFRONT_COMPONENT_PREVIEW_FALLBACK: ${ASKCRYSTAL_STOREFRONT_COMPONENT_PREVIEW_FALLBACK:-false}
       DIFY_BASE_URL: ${ASKCRYSTAL_PROXY_DIFY_BASE_URL:-http://host.docker.internal:18080}
@@ -33,9 +53,15 @@ services:
       - "${ASKCRYSTAL_SHOPIFY_APP_PORT:-8787}:8787"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8787/api/health"]
       interval: 30s
       timeout: 5s
       retries: 5
       start_period: 15s
+
+volumes:
+  askcrystal-postgres-data:

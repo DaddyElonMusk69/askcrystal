@@ -27,16 +27,6 @@ const asOptionalString = value => {
   return normalized || null
 }
 
-const asStringList = (value, limit = 8) => {
-  if (!Array.isArray(value))
-    return []
-
-  return value
-    .map(item => asNonEmptyString(typeof item === 'string' ? item : item?.label || item?.title || item?.text))
-    .filter(Boolean)
-    .slice(0, limit)
-}
-
 const getNestedRecord = (...values) => values.find(isRecord) || null
 
 const getNestedArray = (...values) => values.find(Array.isArray) || []
@@ -449,7 +439,6 @@ const ingestCatalogTruthFromValue = (value, hydrationContext, depth = 0) => {
 
 const getProductRef = (props) => getNestedRecord(props?.product_ref, props?.productRef)
 const getProductRefs = (props) => getNestedArray(props?.product_refs, props?.productRefs)
-const getLinkedProductRefs = (props) => getNestedArray(props?.linked_product_refs, props?.linkedProductRefs)
 const getCollectionRef = (props) => getNestedRecord(props?.collection_ref, props?.collectionRef)
 
 const isIntentComponent = (candidate) => {
@@ -466,14 +455,6 @@ const isIntentComponent = (candidate) => {
       return isRecord(getProductRef(props))
     case 'product_carousel':
       return Array.isArray(getProductRefs(props))
-    case 'ritual_card':
-      return Array.isArray(getLinkedProductRefs(props)) || asStringList(props.steps, 1).length > 0 || Boolean(asNonEmptyString(props.summary))
-    case 'reading_summary':
-      return Boolean(asNonEmptyString(props.summary))
-    case 'collection_link':
-      return isRecord(getCollectionRef(props))
-    case 'next_steps':
-      return asStringList(props.steps, 1).length > 0
     default:
       return false
   }
@@ -764,75 +745,6 @@ const hydrateIntentComponent = async (intentComponent, hydrationContext, fallbac
         },
       }, fallbackId)
     }
-
-    case 'ritual_card': {
-      const linkedProducts = []
-      for (const productRef of getLinkedProductRefs(props)) {
-        const product = await resolveProductRef(productRef, hydrationContext)
-        if (product)
-          linkedProducts.push(product)
-      }
-
-      return normalizeHydratedComponent({
-        component,
-        id,
-        props: {
-          eyebrow: asOptionalString(props.eyebrow),
-          title: asOptionalString(props.title),
-          summary: asOptionalString(props.summary),
-          duration: asOptionalString(props.duration),
-          steps: asStringList(props.steps, 6),
-          note: asOptionalString(props.note),
-          disclaimer: asOptionalString(props.disclaimer),
-          linkedProducts,
-        },
-      }, fallbackId)
-    }
-
-    case 'reading_summary':
-      return normalizeHydratedComponent({
-        component,
-        id,
-        props: {
-          eyebrow: asOptionalString(props.eyebrow),
-          title: asOptionalString(props.title),
-          summary: asOptionalString(props.summary),
-          energyFocus: asOptionalString(props.energyFocus || props.energy_focus || props.energy || props.focus),
-          highlights: asStringList(props.highlights, 5),
-          disclaimer: asOptionalString(props.disclaimer),
-        },
-      }, fallbackId)
-
-    case 'collection_link': {
-      const collection = await resolveCollectionRef(getCollectionRef(props), hydrationContext)
-      if (!collection)
-        return null
-
-      return normalizeHydratedComponent({
-        component,
-        id,
-        props: {
-          eyebrow: asOptionalString(props.eyebrow),
-          title: asOptionalString(props.title || collection.title),
-          description: asOptionalString(props.description || collection.description),
-          url: collection.url,
-          label: asOptionalString(props.label || props.cta_label || props.ctaLabel),
-          image: asOptionalString(collection.image),
-        },
-      }, fallbackId)
-    }
-
-    case 'next_steps':
-      return normalizeHydratedComponent({
-        component,
-        id,
-        props: {
-          eyebrow: asOptionalString(props.eyebrow),
-          title: asOptionalString(props.title),
-          steps: asStringList(props.steps, 5),
-          closing: asOptionalString(props.closing),
-        },
-      }, fallbackId)
 
     default:
       return null

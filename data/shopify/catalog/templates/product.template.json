@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "handle": "example-crystal-product",
+  "workflow_status": "draft",
+  "shopify_status": "draft",
+  "title": "Example Crystal Product",
+  "description": "Customer-facing product description. Keep this beautiful, specific, and free of hidden structured JSON.",
+  "vendor": "AskCrystal",
+  "product_type": "Necklace",
+  "tags": ["example", "crystal"],
+  "collections": ["example-collection"],
+  "options": [
+    {
+      "name": "Title",
+      "values": ["Default Title"]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "AC-EXAMPLE-001",
+      "price": "44.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": ["Default Title"],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/example-crystal-product.webp",
+      "alt": "Example crystal product"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "calm",
+    "secondary_intentions": ["sleep", "intuition"],
+    "product_form": "necklace",
+    "crystal_material_handles": ["amethyst"],
+    "chakras": ["third_eye", "crown"],
+    "color_families": ["purple"],
+    "ritual_uses": ["bedside", "daily_wear"],
+    "gift_for": ["stress_relief"],
+    "western_elements": ["water", "air"],
+    "five_elements": ["water", "metal"],
+    "zodiac_signs": ["pisces", "sagittarius"],
+    "energetic_properties": ["calming", "dream clarity"],
+    "archetype_name": "The Dream Keeper",
+    "story_headline": "A quiet anchor for overstimulated nights",
+    "story_summary": "Use this space for product-specific energetic storytelling. Keep it grounded, gentle, and non-medical.",
+    "benefits": ["Softens mental chatter before sleep", "Supports intuitive reflection"],
+    "ritual_title": "Nightstand Release Ritual",
+    "ritual_steps": ["Hold the crystal for three slow breaths", "Name one thought you are ready to release"],
+    "care_steps": ["Clean gently with a soft dry cloth", "Recharge on selenite or under moonlight"],
+    "included_items": ["Crystal piece", "Care pouch", "Simple intention card"],
+    "quality_notes": ["Natural stone variations expected", "Quality checked before shipping"],
+    "pairing_notes": "Pairs well with selenite for clearing or rose quartz for emotional softness.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice.",
+    "agent_summary": "Recommend this when users ask for calm, sleep support, dreamwork, or intuitive reflection.",
+    "agent_tags": ["calm", "sleep", "amethyst", "third_eye", "crown"],
+    "data_status": "draft"
+  }
+}

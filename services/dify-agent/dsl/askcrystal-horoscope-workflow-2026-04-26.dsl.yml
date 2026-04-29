@@ -6,12 +6,7 @@ app:
   mode: workflow
   name: AskCrystal Horoscope Daily Guidance
   use_icon_as_answer_icon: false
-dependencies:
-- current_identifier: null
-  type: marketplace
-  value:
-    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.45@3b8f3c50ee48f62e45f95957f3441492052f0b1dbc1c6eae71034d7c6d69fe11
-    version: null
+dependencies: []
 kind: app
 version: 0.6.0
 workflow:
@@ -52,21 +47,9 @@ workflow:
         isInIteration: false
         isInLoop: false
         sourceType: code
-        targetType: llm
-      id: horoscope-prepare-to-llm
-      source: horoscope_prepare
-      sourceHandle: source
-      target: horoscope_llm
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
-        isInIteration: false
-        isInLoop: false
-        sourceType: llm
         targetType: code
-      id: horoscope-llm-to-finalize
-      source: horoscope_llm
+      id: horoscope-prepare-to-finalize
+      source: horoscope_prepare
       sourceHandle: source
       target: horoscope_finalize
       targetHandle: target
@@ -793,181 +776,28 @@ workflow:
       type: custom
       width: 244
     - data:
-        context:
-          enabled: false
-          variable_selector: []
-        desc: Generate structured horoscope guidance and return strict JSON only.
-        memory:
-          enabled: false
-          window:
-            enabled: false
-            size: 50
-        model:
-          completion_params:
-            temperature: 0.45
-          mode: chat
-          name: glm-5
-          provider: langgenius/openai_api_compatible/openai_api_compatible
-        prompt_template:
-        - role: system
-          text: |-
-            You are the AskCrystal horoscope workflow for Western zodiac guidance.
-
-            Return strict JSON only. Do not use markdown fences. Do not include any explanation outside the JSON object.
-
-            Output shape:
-            {
-              "status": "ok",
-              "skill": "horoscope_daily_guidance",
-              "summary": "1-2 sentence horoscope summary",
-              "findings": ["3-6 concise reading details"],
-              "follow_up_questions": [],
-              "recommendations": ["2-4 practical next steps or lucky guide items"],
-              "safety_note": "For wellness and self-reflection purposes only; not medical, legal, or financial advice.",
-              "metadata": {
-                "confidence": "medium",
-                "missing_inputs": [],
-                "source_family": "horoscope-daily-2.3.0",
-                "mode": "{{#horoscope_prepare.period#}}",
-                "intent_type": "reading",
-                "primary_method": "horoscope",
-                "zodiac_sign": "{{#horoscope_prepare.zodiac_sign#}}",
-                "period": "{{#horoscope_prepare.period#}}",
-                "focus_area": "{{#horoscope_prepare.focus_area#}}",
-                "target_date": "{{#horoscope_prepare.target_date_normalized#}}"
-              }
-            }
-
-            Rules:
-            - Keep the tone calm, warm, modern, and confidence-building.
-            - Treat horoscope guidance as symbolic self-reflection, not hard prediction.
-            - Never mention tools, workflows, hidden reasoning, or exact astronomical calculations.
-            - Use the same language as the user's request.
-            - If the current workflow status is needs_input, preserve that status and ask only for the missing sign or birth date.
-            - For successful readings, include practical guidance for the requested period and focus area.
-            - Do not diagnose health issues, promise outcomes, or use fear-based language.
-            - For all-signs requests, keep each sign extremely concise and put the core value in the findings list.
-        - role: user
-          text: |-
-            Current workflow status:
-            {{#horoscope_prepare.status#}}
-
-            User request:
-            {{#horoscope_prepare.question_clean#}}
-
-            Zodiac sign:
-            {{#horoscope_prepare.zodiac_sign#}}
-
-            Period:
-            {{#horoscope_prepare.period#}}
-
-            Focus area:
-            {{#horoscope_prepare.focus_area#}}
-
-            Target date:
-            {{#horoscope_prepare.target_date_normalized#}}
-
-            Sign profile:
-            {{#horoscope_prepare.sign_profile#}}
-
-            Structured facts:
-            {{#horoscope_prepare.fact_brief#}}
-
-            Seed findings:
-            {{#horoscope_prepare.findings#}}
-
-            Seed recommendations:
-            {{#horoscope_prepare.recommendations#}}
-        retry_config:
-          enabled: false
-          exponential_backoff:
-            enabled: false
-            max_interval: 10000
-            multiplier: 2
-          max_retries: 1
-          retry_interval: 1000
-        selected: false
-        structured_output:
-          enabled: false
-        title: Generate Horoscope Guidance
-        type: llm
-        variables: []
-        vision:
-          configs:
-            variable_selector: []
-          enabled: false
-      height: 116
-      id: horoscope_llm
-      position:
-        x: 648
-        y: 260
-      positionAbsolute:
-        x: 648
-        y: 260
-      selected: false
-      sourcePosition: right
-      targetPosition: left
-      type: custom
-      width: 244
-    - data:
         code: |
-          def main(text: str, prepare_status: str, prepare_summary: str = "", prepare_findings: list = None, prepare_recommendations: list = None, prepare_metadata: dict = None) -> dict:
-              import json
-              import re
-
-              def fallback_payload(raw_text: str) -> dict:
-                  summary = (prepare_summary or "").strip() or "The horoscope workflow completed, but the structured format needs a retry."
-                  findings = prepare_findings or [summary]
-                  return {
-                      "status": prepare_status if prepare_status in {"ok", "needs_input"} else "ok",
-                      "skill": "horoscope_daily_guidance",
-                      "summary": summary,
-                      "findings": findings,
-                      "follow_up_questions": [],
-                      "recommendations": prepare_recommendations or ["Retry the horoscope request if a cleaner structured result is needed."],
-                      "safety_note": "For wellness and self-reflection purposes only; not medical, legal, or financial advice.",
-                      "metadata": dict(prepare_metadata or {}),
-                  }
-
-              raw = (text or "").strip()
-              parsed = None
-              if raw:
-                  candidates = [raw]
-                  fenced = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.S)
-                  candidates.extend(fenced)
-                  brace_match = re.search(r"(\{.*\})", raw, re.S)
-                  if brace_match:
-                      candidates.append(brace_match.group(1))
-                  for candidate in candidates:
-                      try:
-                          parsed = json.loads(candidate)
-                          break
-                      except Exception:
-                          continue
-
-              payload = parsed if isinstance(parsed, dict) else fallback_payload(raw)
-              payload["status"] = payload.get("status") or (prepare_status if prepare_status in {"ok", "needs_input"} else "ok")
-              if payload["status"] not in {"ok", "needs_input"}:
-                  payload["status"] = prepare_status if prepare_status in {"ok", "needs_input"} else "ok"
-              payload["skill"] = "horoscope_daily_guidance"
-              payload["summary"] = str(payload.get("summary") or "")
-              payload["findings"] = payload.get("findings") if isinstance(payload.get("findings"), list) else (prepare_findings or [])
-              payload["follow_up_questions"] = payload.get("follow_up_questions") if isinstance(payload.get("follow_up_questions"), list) else []
-              payload["recommendations"] = payload.get("recommendations") if isinstance(payload.get("recommendations"), list) else (prepare_recommendations or [])
-              payload["safety_note"] = str(payload.get("safety_note") or "For wellness and self-reflection purposes only; not medical, legal, or financial advice.")
-
+          def main(prepare_status: str, prepare_summary: str = "", prepare_findings: list = None, prepare_follow_up_questions: list = None, prepare_recommendations: list = None, prepare_safety_note: str = "", prepare_metadata: dict = None, fact_brief: str = "") -> dict:
               metadata = dict(prepare_metadata or {})
-              llm_metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
-              metadata.update(llm_metadata)
-              metadata.setdefault("confidence", "medium" if payload["status"] == "ok" else "low")
+              status = prepare_status if prepare_status in {"ok", "needs_input"} else "ok"
+              metadata.setdefault("confidence", "medium" if status == "ok" else "low")
               metadata.setdefault("missing_inputs", [])
               metadata.setdefault("source_family", "horoscope-daily-2.3.0")
               metadata.setdefault("primary_method", "horoscope")
-              payload["metadata"] = metadata
-
-              return payload
+              if fact_brief:
+                  metadata["fact_brief"] = fact_brief
+              return {
+                  "status": status,
+                  "skill": "horoscope_daily_guidance",
+                  "summary": str(prepare_summary or "The horoscope context is ready for interpretation."),
+                  "findings": prepare_findings or [],
+                  "follow_up_questions": prepare_follow_up_questions or [],
+                  "recommendations": prepare_recommendations or [],
+                  "safety_note": str(prepare_safety_note or "For wellness and self-reflection purposes only; not medical, legal, or financial advice."),
+                  "metadata": metadata,
+              }
         code_language: python3
-        desc: Parse the LLM response into the shared horoscope skill contract.
+        desc: Return the structured horoscope contract for the master agent to interpret.
         outputs:
           status:
             children: null
@@ -998,11 +828,6 @@ workflow:
         type: code
         variables:
         - value_selector:
-          - horoscope_llm
-          - text
-          value_type: string
-          variable: text
-        - value_selector:
           - horoscope_prepare
           - status
           value_type: string
@@ -1019,21 +844,36 @@ workflow:
           variable: prepare_findings
         - value_selector:
           - horoscope_prepare
+          - follow_up_questions
+          value_type: array[string]
+          variable: prepare_follow_up_questions
+        - value_selector:
+          - horoscope_prepare
           - recommendations
           value_type: array[string]
           variable: prepare_recommendations
         - value_selector:
           - horoscope_prepare
+          - safety_note
+          value_type: string
+          variable: prepare_safety_note
+        - value_selector:
+          - horoscope_prepare
           - metadata
           value_type: object
           variable: prepare_metadata
+        - value_selector:
+          - horoscope_prepare
+          - fact_brief
+          value_type: string
+          variable: fact_brief
       height: 84
       id: horoscope_finalize
       position:
-        x: 960
+        x: 648
         y: 260
       positionAbsolute:
-        x: 960
+        x: 648
         y: 260
       selected: false
       sourcePosition: right

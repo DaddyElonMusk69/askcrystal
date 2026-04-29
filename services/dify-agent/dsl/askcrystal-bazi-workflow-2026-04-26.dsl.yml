@@ -6,12 +6,7 @@ app:
   mode: workflow
   name: AskCrystal Bazi Chart Analysis
   use_icon_as_answer_icon: false
-dependencies:
-- current_identifier: null
-  type: marketplace
-  value:
-    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.45@3b8f3c50ee48f62e45f95957f3441492052f0b1dbc1c6eae71034d7c6d69fe11
-    version: null
+dependencies: []
 kind: app
 version: 0.6.0
 workflow:
@@ -52,21 +47,9 @@ workflow:
         isInIteration: false
         isInLoop: false
         sourceType: code
-        targetType: llm
-      id: bazi-prepare-to-llm
-      source: bazi_prepare
-      sourceHandle: source
-      target: bazi_llm
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
-        isInIteration: false
-        isInLoop: false
-        sourceType: llm
         targetType: code
-      id: bazi-llm-to-finalize
-      source: bazi_llm
+      id: bazi-prepare-to-finalize
+      source: bazi_prepare
       sourceHandle: source
       target: bazi_finalize
       targetHandle: target
@@ -832,128 +815,25 @@ workflow:
       type: custom
       width: 244
     - data:
-        context:
-          enabled: false
-          variable_selector: []
-        desc: Interpret the deterministic Bazi chart brief and return strict JSON only.
-        memory:
-          enabled: false
-          window:
-            enabled: false
-            size: 50
-        model:
-          completion_params:
-            temperature: 0.35
-          mode: chat
-          name: glm-5
-          provider: langgenius/openai_api_compatible/openai_api_compatible
-        prompt_template:
-        - role: system
-          text: |-
-            You are the AskCrystal Bazi analysis workflow for the current six-method Dify phase.
-
-            Return strict JSON only. Do not use markdown fences. Do not include any explanation outside the JSON object.
-
-            Output shape:
-            {
-              "status": "ok",
-              "skill": "bazi_chart_analysis",
-              "summary": "1-2 sentence Bazi overview",
-              "findings": ["3-5 concise insights"],
-              "follow_up_questions": [],
-              "recommendations": ["2-4 concrete actions"],
-              "safety_note": "For self-reflection and wellness support only, not deterministic fate analysis.",
-              "metadata": {
-                "confidence": "medium",
-                "missing_inputs": [],
-                "source_family": "bazi-mingli-main",
-                "mode": "reading",
-                "intent_type": "reading",
-                "primary_method": "bazi",
-                "birth_datetime": "{{#bazi_prepare.birth_datetime_normalized#}}",
-                "calendar_mode": "{{#bazi_prepare.calendar_mode#}}",
-                "birth_place": "{{#bazi_prepare.birth_place_clean#}}",
-                "day_master": "{{#bazi_prepare.metadata.day_master#}}",
-                "strength": "{{#bazi_prepare.metadata.strength#}}",
-                "useful_elements": "{{#bazi_prepare.metadata.useful_elements#}}",
-                "challenging_elements": "{{#bazi_prepare.metadata.challenging_elements#}}",
-                "year_pillar": "{{#bazi_prepare.metadata.year_pillar#}}",
-                "month_pillar": "{{#bazi_prepare.metadata.month_pillar#}}",
-                "day_pillar": "{{#bazi_prepare.metadata.day_pillar#}}",
-                "hour_pillar": "{{#bazi_prepare.metadata.hour_pillar#}}",
-                "time_basis": "{{#bazi_prepare.metadata.time_basis#}}",
-                "parse_confidence": "{{#bazi_prepare.metadata.parse_confidence#}}"
-              }
-            }
-
-            Rules:
-            - Keep the tone calm, warm, and confidence-building.
-            - Do not mention tools, workflows, hidden reasoning, or system internals.
-            - Do not invent any chart facts beyond the provided chart brief.
-            - Treat approximate time intake as a meaningful limitation and lower the sharpness of timing claims.
-            - Frame all insights as tendencies, patterns, or planning guidance rather than fate.
-            - When status is needs_input, preserve that status and ask only the minimum clean follow-up questions.
-            - Use the same language as the user's goal when obvious; otherwise use clear, natural English.
-            - Keep the summary compact and put most substance into findings and recommendations.
-        - role: user
-          text: |-
-            Current workflow status:
-            {{#bazi_prepare.status#}}
-
-            User goal:
-            {{#bazi_prepare.user_goal_clean#}}
-
-            Chart basis:
-            {{#bazi_prepare.chart_basis_note#}}
-
-            Structured facts:
-            {{#bazi_prepare.fact_brief#}}
-
-            Deterministic chart payload:
-            {{#bazi_prepare.chart_payload_json#}}
-
-            Seed findings:
-            {{#bazi_prepare.findings#}}
-
-            Seed recommendations:
-            {{#bazi_prepare.recommendations#}}
-        retry_config:
-          enabled: false
-          exponential_backoff:
-            enabled: false
-            max_interval: 10000
-            multiplier: 2
-          max_retries: 1
-          retry_interval: 1000
-        selected: false
-        structured_output:
-          enabled: false
-        title: Interpret Bazi Reading
-        type: llm
-        variables: []
-        vision:
-          configs:
-            variable_selector: []
-          enabled: false
-      height: 116
-      id: bazi_llm
-      position:
-        x: 648
-        y: 260
-      positionAbsolute:
-        x: 648
-        y: 260
-      selected: false
-      sourcePosition: right
-      targetPosition: left
-      type: custom
-      width: 244
-    - data:
         code: |
-          def main(text: str, prepare_status: str, prepare_findings: list = None, prepare_recommendations: list = None, prepare_follow_up_questions: list = None, prepare_metadata: dict = None) -> dict:
-              import json
-              import re
-
+          def main(
+              prepare_status: str,
+              prepare_summary: str = "",
+              prepare_findings: list = None,
+              prepare_recommendations: list = None,
+              prepare_follow_up_questions: list = None,
+              prepare_safety_note: str = "",
+              prepare_metadata: dict = None,
+              birth_datetime_normalized: str = "",
+              birth_place_clean: str = "",
+              calendar_mode: str = "",
+              calendar_note_clean: str = "",
+              user_goal_clean: str = "",
+              gender_normalized: str = "",
+              chart_payload_json: str = "",
+              fact_brief: str = "",
+              chart_basis_note: str = "",
+          ) -> dict:
               def normalize_status(value: str) -> str:
                   if value in {"ok", "needs_input"}:
                       return value
@@ -961,55 +841,35 @@ workflow:
                       return "ok"
                   return "ok"
 
-              def fallback_payload(raw_text: str) -> dict:
-                  cleaned = (raw_text or "").strip()
-                  summary = cleaned.split("\n")[0][:280] if cleaned else "The Bazi reading completed, but the structured format needs a retry."
-                  findings = [line.strip("-• ") for line in cleaned.splitlines() if line.strip()][:5] or (prepare_findings or [summary])
-                  return {
-                      "status": normalize_status(prepare_status),
-                      "skill": "bazi_chart_analysis",
-                      "summary": summary,
-                      "findings": findings,
-                      "follow_up_questions": prepare_follow_up_questions or [],
-                      "recommendations": prepare_recommendations or ["Retry the Bazi analysis if a cleaner structured result is needed."],
-                      "safety_note": "For self-reflection and wellness support only, not deterministic fate analysis.",
-                      "metadata": dict(prepare_metadata or {}),
-                  }
-
-              raw = (text or "").strip()
-              parsed = None
-              if raw:
-                  candidates = [raw]
-                  fenced = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.S)
-                  candidates.extend(fenced)
-                  brace_match = re.search(r"(\{.*\})", raw, re.S)
-                  if brace_match:
-                      candidates.append(brace_match.group(1))
-                  for candidate in candidates:
-                      try:
-                          parsed = json.loads(candidate)
-                          break
-                      except Exception:
-                          continue
-
-              payload = parsed if isinstance(parsed, dict) else fallback_payload(raw)
-              payload["status"] = normalize_status(str(payload.get("status") or prepare_status or "ok"))
-              payload["skill"] = "bazi_chart_analysis"
-              payload["summary"] = str(payload.get("summary") or "")
-              payload["findings"] = payload.get("findings") if isinstance(payload.get("findings"), list) else (prepare_findings or [])
-              payload["follow_up_questions"] = payload.get("follow_up_questions") if isinstance(payload.get("follow_up_questions"), list) else (prepare_follow_up_questions or [])
-              payload["recommendations"] = payload.get("recommendations") if isinstance(payload.get("recommendations"), list) else (prepare_recommendations or [])
-              payload["safety_note"] = str(payload.get("safety_note") or "For self-reflection and wellness support only, not deterministic fate analysis.")
-
               metadata = dict(prepare_metadata or {})
-              llm_metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
-              metadata.update(llm_metadata)
-              metadata.setdefault("confidence", "medium" if payload["status"] == "ok" else "low")
-              metadata.setdefault("missing_inputs", [] if payload["status"] == "ok" else ["birth_datetime", "gender"])
-              payload["metadata"] = metadata
-              return payload
+              status = normalize_status(str(prepare_status or "ok"))
+              metadata.setdefault("confidence", "medium" if status == "ok" else "low")
+              metadata.setdefault("missing_inputs", [] if status == "ok" else ["birth_datetime", "gender"])
+              metadata.setdefault("birth_datetime", birth_datetime_normalized)
+              metadata.setdefault("birth_place", birth_place_clean)
+              metadata.setdefault("calendar_mode", calendar_mode)
+              metadata.setdefault("calendar_note", calendar_note_clean)
+              metadata.setdefault("user_goal", user_goal_clean)
+              metadata.setdefault("gender", gender_normalized)
+              if chart_basis_note:
+                  metadata["chart_basis_note"] = chart_basis_note
+              if fact_brief:
+                  metadata["fact_brief"] = fact_brief
+              if chart_payload_json:
+                  metadata["chart_payload_json"] = chart_payload_json
+
+              return {
+                  "status": status,
+                  "skill": "bazi_chart_analysis",
+                  "summary": str(prepare_summary or "The Bazi chart is ready for interpretation."),
+                  "findings": prepare_findings or [],
+                  "follow_up_questions": prepare_follow_up_questions or [],
+                  "recommendations": prepare_recommendations or [],
+                  "safety_note": str(prepare_safety_note or "For self-reflection and wellness support only, not deterministic fate analysis."),
+                  "metadata": metadata,
+              }
         code_language: python3
-        desc: Parse the LLM response into the shared Bazi workflow contract.
+        desc: Return the deterministic Bazi chart contract for the master agent to interpret.
         outputs:
           status:
             children: null
@@ -1040,15 +900,15 @@ workflow:
         type: code
         variables:
         - value_selector:
-          - bazi_llm
-          - text
-          value_type: string
-          variable: text
-        - value_selector:
           - bazi_prepare
           - status
           value_type: string
           variable: prepare_status
+        - value_selector:
+          - bazi_prepare
+          - summary
+          value_type: string
+          variable: prepare_summary
         - value_selector:
           - bazi_prepare
           - findings
@@ -1066,16 +926,66 @@ workflow:
           variable: prepare_follow_up_questions
         - value_selector:
           - bazi_prepare
+          - safety_note
+          value_type: string
+          variable: prepare_safety_note
+        - value_selector:
+          - bazi_prepare
           - metadata
           value_type: object
           variable: prepare_metadata
+        - value_selector:
+          - bazi_prepare
+          - birth_datetime_normalized
+          value_type: string
+          variable: birth_datetime_normalized
+        - value_selector:
+          - bazi_prepare
+          - birth_place_clean
+          value_type: string
+          variable: birth_place_clean
+        - value_selector:
+          - bazi_prepare
+          - calendar_mode
+          value_type: string
+          variable: calendar_mode
+        - value_selector:
+          - bazi_prepare
+          - calendar_note_clean
+          value_type: string
+          variable: calendar_note_clean
+        - value_selector:
+          - bazi_prepare
+          - user_goal_clean
+          value_type: string
+          variable: user_goal_clean
+        - value_selector:
+          - bazi_prepare
+          - gender_normalized
+          value_type: string
+          variable: gender_normalized
+        - value_selector:
+          - bazi_prepare
+          - chart_payload_json
+          value_type: string
+          variable: chart_payload_json
+        - value_selector:
+          - bazi_prepare
+          - fact_brief
+          value_type: string
+          variable: fact_brief
+        - value_selector:
+          - bazi_prepare
+          - chart_basis_note
+          value_type: string
+          variable: chart_basis_note
       height: 84
       id: bazi_finalize
       position:
-        x: 960
+        x: 648
         y: 260
       positionAbsolute:
-        x: 960
+        x: 648
         y: 260
       selected: false
       sourcePosition: right
@@ -1131,10 +1041,10 @@ workflow:
       height: 238
       id: bazi_end_ready
       position:
-        x: 1264
+        x: 952
         y: 180
       positionAbsolute:
-        x: 1264
+        x: 952
         y: 180
       selected: false
       sourcePosition: right

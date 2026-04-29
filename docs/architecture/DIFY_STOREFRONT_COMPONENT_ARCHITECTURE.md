@@ -245,7 +245,7 @@ Create a reusable workflow tool:
 - `allowed_components`
   - Enum-like list passed from the parent flow.
 - `max_components`
-  - Usually `1-3`.
+  - V1 default: `1`.
 
 ### Workflow tool outputs
 
@@ -273,39 +273,27 @@ The tool should not:
 
 ## Component Suite
 
-Initial allowlist:
+V1 allowlist:
 
-- `reading_summary`
 - `product_card`
 - `product_carousel`
-- `ritual_card`
-- `collection_link`
-- `next_steps`
 
 Recommended usage:
 
-- `reading_summary`
-  - Use when the answer opens with an "Energy Blueprint" and trust-building matters.
 - `product_card`
   - Use for one strongest product recommendation.
 - `product_carousel`
   - Use for 2-4 comparable matches.
-- `ritual_card`
-  - Use when practice or care instructions matter as much as the product.
-- `collection_link`
-  - Use when the user wants to browse wider than one SKU recommendation.
-- `next_steps`
-  - Use to keep momentum after the main recommendation.
+- Reading summaries, rituals, next steps, and collection browsing prompts should stay in normal prose or native storefront navigation, not component manifests.
 
 Recommended per-turn limit:
 
-- `1-3` components
+- `0-1` components
 
 Preferred ordering:
 
-1. diagnosis or reading component
-2. commerce component
-3. lightweight follow-up component
+1. natural-language answer
+2. one product component only when it improves the shopping outcome
 
 ## Parent Chatflow Design
 

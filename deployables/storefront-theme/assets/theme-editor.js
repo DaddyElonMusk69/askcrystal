@@ -150,13 +150,40 @@ document.addEventListener('shopify:section:unload', function (event) {
  *
  * This script is used to save the state of these features and restore it when the page is refreshed, to make things a little more seamless.
  */
+function readSessionStorageValue(key) {
+  try {
+    return window.sessionStorage.getItem(key) || '';
+  } catch {
+    return '';
+  }
+}
+
+function writeSessionStorageValue(key, value) {
+  try {
+    window.sessionStorage.setItem(key, value);
+  } catch {}
+}
+
+function removeSessionStorageValue(key) {
+  try {
+    window.sessionStorage.removeItem(key);
+  } catch {}
+}
+
+function getSessionStorageKeys() {
+  try {
+    return Object.keys(window.sessionStorage);
+  } catch {
+    return [];
+  }
+}
 
 // Detect when page is about to unload
 // This helps distinguish between theme editor refreshes (which don't trigger beforeunload)
 // and actual navigation (which does trigger beforeunload)
 window.addEventListener('beforeunload', function (_event) {
   // Set a flag to indicate that an actual unload is happening (not just a refresh)
-  sessionStorage.setItem('editor-page-unloading', 'true');
+  writeSessionStorageValue('editor-page-unloading', 'true');
 });
 
 // Check if the device is iOS as Safari on iOS doesn't support the beforeunload event
@@ -172,10 +199,10 @@ if (window.Shopify?.designMode && !isIOS) {
      * @returns {boolean}
      */
     function wasPageUnloading() {
-      const unloading = sessionStorage.getItem('editor-page-unloading') === 'true';
+      const unloading = readSessionStorageValue('editor-page-unloading') === 'true';
       // Clear the flag after checking
       if (unloading) {
-        sessionStorage.removeItem('editor-page-unloading');
+        removeSessionStorageValue('editor-page-unloading');
       }
       return unloading;
     }
@@ -184,10 +211,10 @@ if (window.Shopify?.designMode && !isIOS) {
      * Clear all saved editor states
      */
     function clearAllEditorStates() {
-      const keys = Object.keys(sessionStorage);
+      const keys = getSessionStorageKeys();
       keys.forEach((key) => {
         if (key.startsWith(EDITOR_PREFIX)) {
-          sessionStorage.removeItem(key);
+          removeSessionStorageValue(key);
         }
       });
     }
@@ -196,7 +223,7 @@ if (window.Shopify?.designMode && !isIOS) {
      * @param {string} name
      */
     function getEditorState(name) {
-      const state = sessionStorage.getItem(`${EDITOR_PREFIX}-${name}`);
+      const state = readSessionStorageValue(`${EDITOR_PREFIX}-${name}`);
       return state ? JSON.parse(state) : null;
     }
 
@@ -206,7 +233,7 @@ if (window.Shopify?.designMode && !isIOS) {
      * @param {string | undefined} instanceId
      */
     function saveEditorState(name, isOpen, instanceId) {
-      sessionStorage.setItem(`${EDITOR_PREFIX}-${name}`, JSON.stringify({ isOpen, instanceId }));
+      writeSessionStorageValue(`${EDITOR_PREFIX}-${name}`, JSON.stringify({ isOpen, instanceId }));
     }
 
     /** @type {{name: string, selector: string, matches: (el: Element) => boolean, isOpen: (el: Element) => boolean, open: (el: Element, instanceId?: string) => void, getInstanceId?: (el: Element) => string | undefined}[]} */

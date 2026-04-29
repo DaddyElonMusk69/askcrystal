@@ -1,6 +1,7 @@
 import React, { startTransition, useEffect, useState } from 'react'
 import {
   CHAT_COMPONENT_TOOL_NAMES,
+  createChatComponentToolPart,
   readChatComponentToolPayload,
 } from '../../../../packages/storefront-ui-contract/src/chat-components.mjs'
 
@@ -37,7 +38,7 @@ function asShopifyVariantQueryId(value) {
   return match ? match[1] : null
 }
 
-function buildNativeProductCardRequestUrl(product) {
+function buildNativeProductCardRequestUrl(product, ctaLabel) {
   if (!product?.handle || typeof window === 'undefined')
     return null
 
@@ -51,6 +52,9 @@ function buildNativeProductCardRequestUrl(product) {
   const variantQueryId = asShopifyVariantQueryId(product?.variantId || product?.merchandiseId)
   if (variantQueryId)
     requestUrl.searchParams.set('variant', variantQueryId)
+
+  if (typeof ctaLabel === 'string' && ctaLabel.trim())
+    requestUrl.searchParams.set('askcrystal_cta', ctaLabel.trim())
 
   return requestUrl.toString()
 }
@@ -260,8 +264,41 @@ function FallbackProductCard({ product, ctaLabel }) {
   )
 }
 
+function NativeProductCardSkeleton() {
+  return (
+    <div
+      className="askcrystal-chat-product-card ac-product-card-skeleton"
+      data-askcrystal-native-product-card
+      data-askcrystal-render-mode="loading"
+      aria-hidden="true"
+    >
+      <div className="product-card askcrystal-chat-product-card__card">
+        <div
+          className="product-card__content product-grid__card askcrystal-chat-product-card__content"
+          style={nativeProductCardLayoutStyle}
+        >
+          <div className="askcrystal-chat-product-card__surface">
+            <div className="askcrystal-chat-product-card__media ac-product-card-skeleton__media">
+              <span className="ac-product-card-skeleton__crystal" />
+            </div>
+
+            <div className="askcrystal-chat-product-card__body ac-product-card-skeleton__body">
+              <span className="ac-product-card-skeleton__line ac-product-card-skeleton__line--title" />
+              <span className="ac-product-card-skeleton__line ac-product-card-skeleton__line--short" />
+              <span className="ac-product-card-skeleton__meta">
+                <span className="ac-product-card-skeleton__line ac-product-card-skeleton__line--price" />
+                <span className="ac-product-card-skeleton__pill" />
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function NativeProductCard({ product, ctaLabel }) {
-  const requestUrl = buildNativeProductCardRequestUrl(product)
+  const requestUrl = buildNativeProductCardRequestUrl(product, ctaLabel)
   const [markup, setMarkup] = useState(() => (requestUrl ? nativeProductCardMarkupCache.get(requestUrl) || null : null))
   const [loadError, setLoadError] = useState(null)
 
@@ -342,7 +379,14 @@ function NativeProductCard({ product, ctaLabel }) {
       aria-busy={loadError ? undefined : 'true'}
       aria-live="polite"
     >
-      <FallbackProductCard product={product} ctaLabel={ctaLabel} />
+      {loadError
+        ? <FallbackProductCard product={product} ctaLabel={ctaLabel} />
+        : (
+            <>
+              <span className="ac-tool-product-native__loading-label">Polishing the storefront card...</span>
+              <NativeProductCardSkeleton />
+            </>
+          )}
     </div>
   )
 }
@@ -352,10 +396,19 @@ function ProductCardTool(part) {
   if (!payload)
     return null
 
-  const { ctaLabel, product } = payload.props
+  const { ctaLabel, eyebrow, note, product, reason } = payload.props
 
   return (
     <section className="ac-tool-product-block">
+      {eyebrow || reason || note
+        ? (
+            <div className="ac-tool-product-context">
+              {eyebrow ? <p className="ac-tool-product-context__eyebrow">{eyebrow}</p> : null}
+              {reason ? <p className="ac-tool-product-context__reason">{reason}</p> : null}
+              {note ? <p className="ac-tool-product-context__note">{note}</p> : null}
+            </div>
+          )
+        : null}
       <NativeProductCard product={product} ctaLabel={ctaLabel} />
     </section>
   )
@@ -387,13 +440,6 @@ function ProductCarouselTool(part) {
               <div className="ac-tool-carousel__copy">
                 {product.badge ? <p className="ac-tool-product__badge">{product.badge}</p> : null}
                 <h4 className="ac-tool-product__title">{product.title}</h4>
-                {product.reason || product.summary
-                  ? (
-                      <p className="ac-tool-product__summary">
-                        {product.reason || product.summary}
-                      </p>
-                    )
-                  : null}
                 <ProductMeta product={product} ctaLabel={product.ctaLabel || 'View'} />
               </div>
             </>
@@ -616,16 +662,78 @@ function ToolGroup({ children }) {
   return <div className="ac-tool-group">{children}</div>
 }
 
+const TOOL_COMPONENTS_BY_NAME = {
+  [CHAT_COMPONENT_TOOL_NAMES.product_card]: ProductCardTool,
+  [CHAT_COMPONENT_TOOL_NAMES.product_carousel]: ProductCarouselTool,
+}
+
+function buildDebugComponentPayloads(products = []) {
+  const availableProducts = Array.isArray(products)
+    ? products.filter(product => product?.title)
+    : []
+  const shelfProducts = availableProducts.slice(0, 4)
+  const primaryProduct = shelfProducts[0]
+
+  return [
+    primaryProduct
+      ? {
+          component: 'product_card',
+          id: 'debug-product-card',
+          props: {
+            eyebrow: 'Prescription',
+            reason: 'Single-product recommendation card using a real product from the current Shopify shelf.',
+            ctaLabel: 'View crystal',
+            product: primaryProduct,
+          },
+        }
+      : null,
+    shelfProducts.length
+      ? {
+          component: 'product_carousel',
+          id: 'debug-product-carousel',
+          props: {
+            eyebrow: 'Curated shelf',
+            title: 'A few grounded options',
+            reason: 'Carousel surface for 2-4 products when comparison is more useful than one answer.',
+            browseUrl: '/collections',
+            browseLabel: 'Browse collections',
+            products: shelfProducts,
+          },
+        }
+      : null,
+  ].filter(Boolean)
+}
+
+export function AskCrystalComponentDebugShowcase({ products = [] }) {
+  const debugComponents = buildDebugComponentPayloads(products)
+  const parts = debugComponents
+    .map((component, index) => createChatComponentToolPart(component, `debug-${index}`))
+    .filter(Boolean)
+
+  if (!parts.length)
+    return null
+
+  return (
+    <div className="ac-component-debug" aria-label="AskCrystal component debug showcase">
+      <ToolGroup>
+        {parts.map((part) => {
+          const ToolComponent = TOOL_COMPONENTS_BY_NAME[part.toolName] || ToolFallback
+
+          return (
+            <ToolComponent
+              key={part.toolCallId || part.toolName}
+              {...part}
+            />
+          )
+        })}
+      </ToolGroup>
+    </div>
+  )
+}
+
 export const askCrystalMessagePartComponents = {
   tools: {
-    by_name: {
-      [CHAT_COMPONENT_TOOL_NAMES.product_card]: ProductCardTool,
-      [CHAT_COMPONENT_TOOL_NAMES.product_carousel]: ProductCarouselTool,
-      [CHAT_COMPONENT_TOOL_NAMES.ritual_card]: RitualCardTool,
-      [CHAT_COMPONENT_TOOL_NAMES.reading_summary]: ReadingSummaryTool,
-      [CHAT_COMPONENT_TOOL_NAMES.collection_link]: CollectionLinkTool,
-      [CHAT_COMPONENT_TOOL_NAMES.next_steps]: NextStepsTool,
-    },
+    by_name: TOOL_COMPONENTS_BY_NAME,
     Fallback: ToolFallback,
   },
   ToolGroup,

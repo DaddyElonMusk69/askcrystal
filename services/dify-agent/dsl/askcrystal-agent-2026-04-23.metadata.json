@@ -85,9 +85,9 @@
     "tool_refs": [
       {
         "tool_name": "current_time",
-        "provider_type": "builtin",
-        "provider_id": "time",
-        "provider_name": "time",
+        "provider_type": "workflow",
+        "provider_id": "f6d29c31-e40b-4b98-9d18-0bdae2b86088",
+        "provider_name": "current_time",
         "enabled": true
       },
       {

@@ -6,12 +6,7 @@ app:
   mode: workflow
   name: AskCrystal Shushu Numerology Profile
   use_icon_as_answer_icon: false
-dependencies:
-- current_identifier: null
-  type: marketplace
-  value:
-    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.45@3b8f3c50ee48f62e45f95957f3441492052f0b1dbc1c6eae71034d7c6d69fe11
-    version: null
+dependencies: []
 kind: app
 version: 0.6.0
 workflow:
@@ -52,21 +47,9 @@ workflow:
         isInIteration: false
         isInLoop: false
         sourceType: code
-        targetType: llm
-      id: shushu-prepare-to-llm
-      source: shushu_prepare
-      sourceHandle: source
-      target: shushu_llm
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
-        isInIteration: false
-        isInLoop: false
-        sourceType: llm
         targetType: code
-      id: shushu-llm-to-finalize
-      source: shushu_llm
+      id: shushu-prepare-to-finalize
+      source: shushu_prepare
       sourceHandle: source
       target: shushu_finalize
       targetHandle: target
@@ -325,7 +308,8 @@ workflow:
               year = parsed_date.year
               month = parsed_date.month
               day = parsed_date.day
-              current_year = date.today().year
+              runtime_year_match = re.search(r"\b(19\d{2}|20\d{2}|21\d{2})\b", focus_clean)
+              current_year = int(runtime_year_match.group(1)) if runtime_year_match else date.today().year
               current_year_digits = [int(ch) for ch in str(current_year)]
               life_path_number = reduce_number(sum(digits))
               birthday_number = reduce_number(day)
@@ -489,174 +473,26 @@ workflow:
       type: custom
       width: 244
     - data:
-        context:
-          enabled: false
-          variable_selector: []
-        desc: Interpret the birthday-pattern profile and return strict JSON only.
-        memory:
-          enabled: false
-          window:
-            enabled: false
-            size: 50
-        model:
-          completion_params:
-            temperature: 0.4
-          mode: chat
-          name: glm-5
-          provider: langgenius/openai_api_compatible/openai_api_compatible
-        prompt_template:
-        - role: system
-          text: |-
-            You are the AskCrystal shushu numerology workflow for a structured six-skill phase.
-
-            Return strict JSON only. Do not use markdown fences. Do not include any explanation outside the JSON object.
-
-            Output shape:
-            {
-              "status": "ok",
-              "skill": "shushu_numerology_profile",
-              "summary": "1-2 sentence birthday-pattern summary",
-              "findings": ["3-5 concise insights"],
-              "follow_up_questions": [],
-              "recommendations": ["2-4 concrete actions"],
-              "safety_note": "For self-reflection and wellness support only, not deterministic fate analysis.",
-              "metadata": {
-                "confidence": "medium",
-                "missing_inputs": [],
-                "source_family": "Numerologist_skills",
-                "mode": "profile",
-                "intent_type": "reading",
-                "primary_method": "numerology",
-                "birth_date": "{{#shushu_prepare.birth_date_normalized#}}",
-                "life_path_number": "{{#shushu_prepare.life_path_number#}}",
-                "birthday_number": "{{#shushu_prepare.birthday_number#}}",
-                "attitude_number": "{{#shushu_prepare.attitude_number#}}",
-                "personal_year_number": "{{#shushu_prepare.personal_year_number#}}",
-                "zodiac_sign": "{{#shushu_prepare.zodiac_sign#}}",
-                "season_tone": "{{#shushu_prepare.season_tone#}}",
-                "focus_detected": "{{#shushu_prepare.focus_detected#}}"
-              }
-            }
-
-            Rules:
-            - Keep the tone calm, warm, and confidence-building.
-            - Treat this as a lightweight birthday-pattern profile, not hard destiny.
-            - Never mention tools, workflows, or hidden reasoning.
-            - Use the same language as the user's request.
-            - Optional name context should personalize tone, not create fake mathematical certainty.
-            - Let the summary stay compact and place the real substance in findings and recommendations.
-            - If the current workflow status is needs_input, preserve that status and focus on a concise intake-style response instead of a completed profile.
-        - role: user
-          text: |-
-            Current workflow status:
-            {{#shushu_prepare.status#}}
-
-            Birth date:
-            {{#shushu_prepare.birth_date_normalized#}}
-
-            Name context:
-            {{#shushu_prepare.name_clean#}}
-
-            Focus:
-            {{#shushu_prepare.focus_detected#}}
-
-            Structured facts:
-            {{#shushu_prepare.fact_brief#}}
-
-            Seed findings:
-            {{#shushu_prepare.findings#}}
-
-            Seed recommendations:
-            {{#shushu_prepare.recommendations#}}
-        retry_config:
-          enabled: false
-          exponential_backoff:
-            enabled: false
-            max_interval: 10000
-            multiplier: 2
-          max_retries: 1
-          retry_interval: 1000
-        selected: false
-        structured_output:
-          enabled: false
-        title: Interpret Shushu Profile
-        type: llm
-        variables: []
-        vision:
-          configs:
-            variable_selector: []
-          enabled: false
-      height: 116
-      id: shushu_llm
-      position:
-        x: 648
-        y: 260
-      positionAbsolute:
-        x: 648
-        y: 260
-      selected: false
-      sourcePosition: right
-      targetPosition: left
-      type: custom
-      width: 244
-    - data:
         code: |
-          def main(text: str, prepare_status: str, prepare_findings: list = None, prepare_recommendations: list = None, prepare_metadata: dict = None) -> dict:
-              import json
-              import re
-
-              def fallback_payload(raw_text: str) -> dict:
-                  cleaned = (raw_text or "").strip()
-                  summary = cleaned.split("\n")[0][:280] if cleaned else "The birthday-pattern profile completed, but the structured format needs a retry."
-                  findings = [line.strip("-• ") for line in cleaned.splitlines() if line.strip()][:4] or (prepare_findings or [summary])
-                  return {
-                      "status": prepare_status if prepare_status in {"ok", "needs_input"} else "ok",
-                      "skill": "shushu_numerology_profile",
-                      "summary": summary,
-                      "findings": findings,
-                      "follow_up_questions": [],
-                      "recommendations": prepare_recommendations or ["Retry the numerology-style profile if a cleaner structured result is needed."],
-                      "safety_note": "For self-reflection and wellness support only, not deterministic fate analysis.",
-                      "metadata": dict(prepare_metadata or {}),
-                  }
-
-              raw = (text or "").strip()
-              parsed = None
-              if raw:
-                  candidates = [raw]
-                  fenced = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.S)
-                  candidates.extend(fenced)
-                  brace_match = re.search(r"(\{.*\})", raw, re.S)
-                  if brace_match:
-                      candidates.append(brace_match.group(1))
-                  for candidate in candidates:
-                      try:
-                          parsed = json.loads(candidate)
-                          break
-                      except Exception:
-                          continue
-
-              payload = parsed if isinstance(parsed, dict) else fallback_payload(raw)
-              payload["status"] = payload.get("status") or (prepare_status if prepare_status in {"ok", "needs_input"} else "ok")
-              if payload["status"] not in {"ok", "needs_input"}:
-                  payload["status"] = prepare_status if prepare_status in {"ok", "needs_input"} else "ok"
-              payload["skill"] = "shushu_numerology_profile"
-              payload["summary"] = str(payload.get("summary") or "")
-              payload["findings"] = payload.get("findings") if isinstance(payload.get("findings"), list) else (prepare_findings or [])
-              payload["follow_up_questions"] = payload.get("follow_up_questions") if isinstance(payload.get("follow_up_questions"), list) else []
-              payload["recommendations"] = payload.get("recommendations") if isinstance(payload.get("recommendations"), list) else (prepare_recommendations or [])
-              payload["safety_note"] = str(payload.get("safety_note") or "For self-reflection and wellness support only, not deterministic fate analysis.")
-
+          def main(prepare_status: str, prepare_summary: str = "", prepare_findings: list = None, prepare_follow_up_questions: list = None, prepare_recommendations: list = None, prepare_safety_note: str = "", prepare_metadata: dict = None, fact_brief: str = "") -> dict:
               metadata = dict(prepare_metadata or {})
-              llm_metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
-              metadata.update(llm_metadata)
-              metadata.setdefault("confidence", "medium" if payload["status"] == "ok" else "low")
+              status = prepare_status if prepare_status in {"ok", "needs_input"} else "ok"
+              metadata.setdefault("confidence", "medium" if status == "ok" else "low")
               metadata.setdefault("missing_inputs", [])
-              payload["metadata"] = metadata
-
-              return payload
+              if fact_brief:
+                  metadata["fact_brief"] = fact_brief
+              return {
+                  "status": status,
+                  "skill": "shushu_numerology_profile",
+                  "summary": str(prepare_summary or "The birthday-pattern profile is ready for interpretation."),
+                  "findings": prepare_findings or [],
+                  "follow_up_questions": prepare_follow_up_questions or [],
+                  "recommendations": prepare_recommendations or [],
+                  "safety_note": str(prepare_safety_note or "For self-reflection and wellness support only, not deterministic fate analysis."),
+                  "metadata": metadata,
+              }
         code_language: python3
-        desc: Parse the LLM response into the shared shushu profile contract.
+        desc: Return the structured shushu profile contract for the master agent to interpret.
         outputs:
           status:
             children: null
@@ -687,15 +523,15 @@ workflow:
         type: code
         variables:
         - value_selector:
-          - shushu_llm
-          - text
-          value_type: string
-          variable: text
-        - value_selector:
           - shushu_prepare
           - status
           value_type: string
           variable: prepare_status
+        - value_selector:
+          - shushu_prepare
+          - summary
+          value_type: string
+          variable: prepare_summary
         - value_selector:
           - shushu_prepare
           - findings
@@ -703,21 +539,36 @@ workflow:
           variable: prepare_findings
         - value_selector:
           - shushu_prepare
+          - follow_up_questions
+          value_type: array[string]
+          variable: prepare_follow_up_questions
+        - value_selector:
+          - shushu_prepare
           - recommendations
           value_type: array[string]
           variable: prepare_recommendations
         - value_selector:
           - shushu_prepare
+          - safety_note
+          value_type: string
+          variable: prepare_safety_note
+        - value_selector:
+          - shushu_prepare
           - metadata
           value_type: object
           variable: prepare_metadata
+        - value_selector:
+          - shushu_prepare
+          - fact_brief
+          value_type: string
+          variable: fact_brief
       height: 84
       id: shushu_finalize
       position:
-        x: 960
+        x: 648
         y: 260
       positionAbsolute:
-        x: 960
+        x: 648
         y: 260
       selected: false
       sourcePosition: right

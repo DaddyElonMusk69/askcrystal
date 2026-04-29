@@ -3,19 +3,11 @@ export const CHAT_COMPONENT_LIBRARY_VERSION = 1
 export const CHAT_COMPONENTS = Object.freeze({
   product_card: 'product_card',
   product_carousel: 'product_carousel',
-  ritual_card: 'ritual_card',
-  reading_summary: 'reading_summary',
-  collection_link: 'collection_link',
-  next_steps: 'next_steps',
 })
 
 export const CHAT_COMPONENT_TOOL_NAMES = Object.freeze({
   [CHAT_COMPONENTS.product_card]: 'display_product_card',
   [CHAT_COMPONENTS.product_carousel]: 'display_product_carousel',
-  [CHAT_COMPONENTS.ritual_card]: 'display_ritual_card',
-  [CHAT_COMPONENTS.reading_summary]: 'display_reading_summary',
-  [CHAT_COMPONENTS.collection_link]: 'display_collection_link',
-  [CHAT_COMPONENTS.next_steps]: 'display_next_steps',
 })
 
 export const CHAT_COMPONENT_BY_TOOL_NAME = Object.freeze(
@@ -62,16 +54,6 @@ const asBoolean = (value, fallback = true) => {
     return value
 
   return fallback
-}
-
-const asStringList = (value, limit = 6) => {
-  if (!Array.isArray(value))
-    return []
-
-  return value
-    .map(item => asNonEmptyString(typeof item === 'string' ? item : item?.label || item?.title || item?.text))
-    .filter(Boolean)
-    .slice(0, limit)
 }
 
 const normalizeProduct = (value) => {
@@ -146,78 +128,6 @@ const normalizeProductCarouselProps = (value) => {
   }
 }
 
-const normalizeRitualCardProps = (value) => {
-  if (!isRecord(value))
-    return null
-
-  const steps = asStringList(value.steps, 6)
-  if (steps.length === 0 && !asNonEmptyString(value.summary))
-    return null
-
-  return {
-    eyebrow: asNonEmptyString(value.eyebrow || value.kicker, 'Ritual'),
-    title: asNonEmptyString(value.title, 'How to work with this energy'),
-    summary: asOptionalString(value.summary || value.reason || value.description),
-    duration: asOptionalString(value.duration),
-    steps,
-    note: asOptionalString(value.note),
-    disclaimer: asOptionalString(value.disclaimer),
-    linkedProducts: normalizeProductList(value.linkedProducts || value.products, 3),
-  }
-}
-
-const normalizeReadingSummaryProps = (value) => {
-  if (!isRecord(value))
-    return null
-
-  const summary = asNonEmptyString(value.summary || value.description)
-  if (!summary)
-    return null
-
-  return {
-    eyebrow: asNonEmptyString(value.eyebrow || value.kicker, 'Energy blueprint'),
-    title: asNonEmptyString(value.title, 'What your energy is asking for'),
-    summary,
-    energyFocus: asOptionalString(value.energyFocus || value.energy || value.focus),
-    highlights: asStringList(value.highlights || value.bullets || value.keyPoints, 5),
-    disclaimer: asOptionalString(value.disclaimer),
-  }
-}
-
-const normalizeCollectionLinkProps = (value) => {
-  if (!isRecord(value))
-    return null
-
-  const url = asUrlLike(value.url || value.browseUrl)
-  if (!url)
-    return null
-
-  return {
-    eyebrow: asNonEmptyString(value.eyebrow || value.kicker, 'Browse deeper'),
-    title: asNonEmptyString(value.title, 'Open the full collection'),
-    description: asOptionalString(value.description || value.reason),
-    url,
-    label: asNonEmptyString(value.label || value.ctaLabel, 'Shop collection'),
-    image: asUrlLike(value.image || value.imageUrl),
-  }
-}
-
-const normalizeNextStepsProps = (value) => {
-  if (!isRecord(value))
-    return null
-
-  const steps = asStringList(value.steps, 5)
-  if (steps.length === 0)
-    return null
-
-  return {
-    eyebrow: asNonEmptyString(value.eyebrow || value.kicker, 'Next steps'),
-    title: asNonEmptyString(value.title, 'What to do next'),
-    steps,
-    closing: asOptionalString(value.closing || value.note),
-  }
-}
-
 const CHAT_COMPONENT_DEFINITIONS = Object.freeze({
   [CHAT_COMPONENTS.product_card]: {
     toolName: CHAT_COMPONENT_TOOL_NAMES.product_card,
@@ -226,22 +136,6 @@ const CHAT_COMPONENT_DEFINITIONS = Object.freeze({
   [CHAT_COMPONENTS.product_carousel]: {
     toolName: CHAT_COMPONENT_TOOL_NAMES.product_carousel,
     normalizeProps: normalizeProductCarouselProps,
-  },
-  [CHAT_COMPONENTS.ritual_card]: {
-    toolName: CHAT_COMPONENT_TOOL_NAMES.ritual_card,
-    normalizeProps: normalizeRitualCardProps,
-  },
-  [CHAT_COMPONENTS.reading_summary]: {
-    toolName: CHAT_COMPONENT_TOOL_NAMES.reading_summary,
-    normalizeProps: normalizeReadingSummaryProps,
-  },
-  [CHAT_COMPONENTS.collection_link]: {
-    toolName: CHAT_COMPONENT_TOOL_NAMES.collection_link,
-    normalizeProps: normalizeCollectionLinkProps,
-  },
-  [CHAT_COMPONENTS.next_steps]: {
-    toolName: CHAT_COMPONENT_TOOL_NAMES.next_steps,
-    normalizeProps: normalizeNextStepsProps,
   },
 })
 

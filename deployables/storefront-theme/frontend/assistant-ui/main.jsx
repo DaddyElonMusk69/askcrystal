@@ -26,6 +26,7 @@ const MOUNT_SELECTOR = '[data-askcrystal-homepage-root]';
 const rootRegistry = new Map();
 const DEFAULT_THREAD_ID = 'askcrystal-main-thread';
 const LOCAL_PROXY_ORIGIN = 'http://localhost:8787';
+const EMPTY_ARRAY = Object.freeze([]);
 const SESSION_STORAGE_KEY = 'askcrystal-theme-session-id';
 const CHAT_SESSIONS_STORAGE_KEY = 'askcrystal-theme-chat-sessions-v1';
 const ACTIVE_CHAT_SESSION_STORAGE_KEY = 'askcrystal-theme-active-session-id';
@@ -64,7 +65,6 @@ function extractTextFromParts(parts = []) {
   return parts
     .map((part) => {
       if (part.type === 'text') return part.text;
-      if (part.type === 'reasoning') return part.text;
       return '';
     })
     .join(' ')
@@ -80,7 +80,10 @@ function getPayloadText(payload) {
     payload?.reply ||
     payload?.output ||
     payload?.data?.answer ||
-    payload?.data?.text;
+    payload?.data?.text ||
+    payload?.data?.outputs?.answer ||
+    payload?.data?.outputs?.text ||
+    payload?.data?.outputs?.output;
   return typeof value === 'string' ? value : '';
 }
 
@@ -120,20 +123,60 @@ function normalizeThreadSuggestions(value) {
     .slice(0, 6);
 }
 
-function getPayloadSuggestions(payload) {
-  return normalizeThreadSuggestions(
-    payload?.suggestions ||
-      payload?.suggestedQuestions ||
-      payload?.suggested_questions ||
-      payload?.data?.suggestions ||
-      payload?.data?.suggestedQuestions ||
-      payload?.data?.suggested_questions ||
-      [],
-  );
+const INLINE_SUGGESTIONS_PATTERN = /```askcrystal-suggestions\s*([\s\S]*?)```|<askcrystal-suggestions>\s*([\s\S]*?)<\/askcrystal-suggestions>/gi;
+const INLINE_SUGGESTION_MARKERS = [
+  '```askcrystal-suggestions',
+  '<askcrystal-suggestions',
+];
+
+function parseInlineJsonPayload(rawValue) {
+  try {
+    return JSON.parse(rawValue);
+  } catch {
+    return null;
+  }
+}
+
+function extractInlineSuggestions(answer = '') {
+  let cleanedAnswer = String(answer || '');
+  const suggestions = [];
+  const matches = [...cleanedAnswer.matchAll(INLINE_SUGGESTIONS_PATTERN)];
+
+  for (const match of matches) {
+    const parsed = parseInlineJsonPayload(match[1] || match[2] || '');
+    const normalized = normalizeThreadSuggestions(parsed?.suggestions || parsed || []);
+    suggestions.push(...normalized);
+  }
+
+  cleanedAnswer = cleanedAnswer.replace(INLINE_SUGGESTIONS_PATTERN, '').replace(/\n{3,}/g, '\n\n').trim();
+
+  return {
+    answer: cleanedAnswer,
+    suggestions: normalizeThreadSuggestions(suggestions),
+  };
+}
+
+function stripInlineSuggestionsPreview(answer = '') {
+  let preview = String(answer || '').replace(INLINE_SUGGESTIONS_PATTERN, '');
+  const lowerPreview = preview.toLowerCase();
+  const markerIndexes = INLINE_SUGGESTION_MARKERS
+    .map(marker => lowerPreview.indexOf(marker))
+    .filter(index => index >= 0);
+
+  if (markerIndexes.length > 0)
+    preview = preview.slice(0, Math.min(...markerIndexes));
+
+  return preview.trimEnd();
 }
 
 function canUseLocalStorage() {
-  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+  if (typeof window === 'undefined') return false;
+
+  try {
+    return typeof window.localStorage !== 'undefined';
+  } catch {
+    return false;
+  }
 }
 
 function readLocalStorageValue(key) {
@@ -160,7 +203,13 @@ function writeLocalStorageValue(key, value) {
 }
 
 function canUseSessionStorage() {
-  return typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
+  if (typeof window === 'undefined') return false;
+
+  try {
+    return typeof window.sessionStorage !== 'undefined';
+  } catch {
+    return false;
+  }
 }
 
 function readSessionStorageValue(key) {
@@ -376,6 +425,9 @@ function createStoredChatSession(overrides = {}) {
       : null,
     messages,
     suggestions: normalizeThreadSuggestions(overrides.suggestions || []),
+    suggestionsMessageId: typeof overrides.suggestionsMessageId === 'string'
+      ? overrides.suggestionsMessageId
+      : '',
   };
 }
 
@@ -396,6 +448,9 @@ function normalizeStoredSession(value) {
     updatedAt,
     messages: normalizedMessages,
     suggestions: normalizeThreadSuggestions(value.suggestions || []),
+    suggestionsMessageId: typeof value.suggestionsMessageId === 'string'
+      ? value.suggestionsMessageId
+      : '',
     title: typeof value.title === 'string' && value.title.trim()
       ? value.title.trim()
       : deriveSessionTitle(normalizedMessages),
@@ -465,6 +520,9 @@ function upsertStoredSessionSnapshot(sessions, sessionId, updates = {}) {
       suggestions: updates.suggestions !== undefined
         ? normalizeThreadSuggestions(updates.suggestions)
         : session.suggestions,
+      suggestionsMessageId: updates.suggestionsMessageId !== undefined
+        ? updates.suggestionsMessageId || ''
+        : session.suggestionsMessageId || '',
       conversationId: updates.conversationId !== undefined
         ? updates.conversationId || null
         : session.conversationId,
@@ -915,7 +973,7 @@ function extractPartialFinalAnswerJsonString(value) {
 function extractStructuredFinalAnswer(rawValue) {
   if (typeof rawValue !== 'string') return '';
 
-  const normalized = rawValue
+  const normalized = stripModelThinkingMarkup(rawValue)
     .replace(/<minimax:tool_call>[\s\S]*?<\/minimax:tool_call>/gi, '')
     .replace(/<invoke\b[\s\S]*?<\/invoke>/gi, '')
     .replace(/<action_input\b[^>]*>[\s\S]*?<\/action_input>/gi, '')
@@ -948,6 +1006,20 @@ function extractStructuredFinalAnswer(rawValue) {
   }
 
   return '';
+}
+
+function stripModelThinkingMarkup(value) {
+  if (typeof value !== 'string') return '';
+
+  return value
+    .replace(/<think\b[^>]*>[\s\S]*?<\/think>/gi, '')
+    .replace(/<thinking\b[^>]*>[\s\S]*?<\/thinking>/gi, '')
+    .replace(/<reasoning\b[^>]*>[\s\S]*?<\/reasoning>/gi, '')
+    .replace(/<analysis\b[^>]*>[\s\S]*?<\/analysis>/gi, '')
+    .replace(/<think\b[^>]*>[\s\S]*$/gi, '')
+    .replace(/<thinking\b[^>]*>[\s\S]*$/gi, '')
+    .replace(/<reasoning\b[^>]*>[\s\S]*$/gi, '')
+    .replace(/<analysis\b[^>]*>[\s\S]*$/gi, '');
 }
 
 function stripLeadingFinalAnswerLabel(value) {
@@ -986,7 +1058,7 @@ function stripLeadingFinalAnswerLabel(value) {
 function sanitizeStreamingVisibleAnswer(rawAnswer) {
   if (typeof rawAnswer !== 'string') return '';
 
-  const answer = rawAnswer
+  const answer = stripInlineSuggestionsPreview(stripModelThinkingMarkup(rawAnswer))
     .replace(/<minimax:tool_call>[\s\S]*?<\/minimax:tool_call>/gi, '')
     .replace(/<invoke\b[\s\S]*?<\/invoke>/gi, '')
     .replace(/<action_input\b[^>]*>[\s\S]*?<\/action_input>/gi, '')
@@ -996,20 +1068,8 @@ function sanitizeStreamingVisibleAnswer(rawAnswer) {
   if (!answer) return '';
 
   const structuredFinalAnswer = extractStructuredFinalAnswer(answer);
-  let visibleAnswer = stripLeadingFinalAnswerLabel(structuredFinalAnswer || answer);
-
-  if (!structuredFinalAnswer) {
-    if (!visibleAnswer) return '';
-
-    const strippedParagraphs = stripLeadingInternalParagraphs(visibleAnswer);
-    if (strippedParagraphs) {
-      visibleAnswer = stripLeadingFinalAnswerLabel(strippedParagraphs) || visibleAnswer;
-    }
-
-    if (looksLikeReactTrace(visibleAnswer) || looksLikeInternalReasoningParagraph(visibleAnswer)) {
-      return '';
-    }
-  }
+  const visibleAnswer = stripInlineSuggestionsPreview(stripLeadingFinalAnswerLabel(structuredFinalAnswer || answer));
+  if (!visibleAnswer) return '';
 
   return visibleAnswer
     .replace(/\n{3,}/g, '\n\n')
@@ -1492,15 +1552,15 @@ function AmbientProgressLine({
 
 function getProgressExpectation(elapsedMs) {
   if (elapsedMs >= 55000) {
-    return 'This one is taking the longer orbit.';
+    return 'This reading is taking the longer orbit, but the thread is still moving.';
   }
 
   if (elapsedMs >= 30000) {
-    return 'Full readings can take 30-60 seconds to come through.';
+    return 'Detailed chart work can need a fuller minute to cross-check timing, symbols, and shelf.';
   }
 
   if (elapsedMs >= 12000) {
-    return 'A deeper read may take a few more moments.';
+    return 'Deeper readings sometimes need a few more breaths before they become useful.';
   }
 
   if (elapsedMs >= 4000) {
@@ -1530,6 +1590,7 @@ function ProgressCard({
   }, []);
 
   const elapsedMs = Math.max(Number(statusElapsedMs) || 0, localElapsedMs);
+  const expectationTone = elapsedMs >= 30000 ? 'long' : elapsedMs >= 12000 ? 'deep' : 'early';
   const showDetailedMilestones = elapsedMs >= 4000 || statusStage === 'tool' || statusStage === 'compose';
   const statusHistory = parseStatusHistory(statusHistoryText);
   const activeStatus = statusText || 'Opening the thread beneath your question...';
@@ -1587,7 +1648,14 @@ function ProgressCard({
       <div className="ac-progress-card__header">
         <div className="ac-progress-card__heading">
           <p className="ac-progress-card__eyebrow">AskCrystal is listening</p>
-          <h3>Reading the signs</h3>
+          <h3>
+            Reading the signs
+            <span className="ac-progress-card__heading-dots" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
+          </h3>
         </div>
       </div>
 
@@ -1612,7 +1680,9 @@ function ProgressCard({
       />
 
       <div className="ac-progress-card__footer">
-        <p className="ac-progress-card__expectation">{getProgressExpectation(elapsedMs)}</p>
+        <p className={`ac-progress-card__expectation ac-progress-card__expectation--${expectationTone}`}>
+          {getProgressExpectation(elapsedMs)}
+        </p>
       </div>
     </div>
   );
@@ -1872,9 +1942,9 @@ function sanitizeAssistantText(rawAnswer) {
   if (!answer) return '';
 
   const structuredFinalAnswer = extractStructuredFinalAnswer(answer);
-  const sourceAnswer = structuredFinalAnswer || answer;
+  const sourceAnswer = stripInlineSuggestionsPreview(structuredFinalAnswer || answer);
 
-  const cleaned = sourceAnswer
+  const cleaned = stripModelThinkingMarkup(sourceAnswer)
     .replace(/<minimax:tool_call>[\s\S]*?<\/minimax:tool_call>/gi, '')
     .replace(/<invoke\b[\s\S]*?<\/invoke>/gi, '')
     .replace(/<action_input\b[^>]*>[\s\S]*?<\/action_input>/gi, '')
@@ -1925,14 +1995,17 @@ function sanitizeAssistantAnswer(rawAnswer) {
 }
 
 function normalizeAssistantReply(rawAnswer, incomingComponents = []) {
-  const manifest = extractInlineChatComponentManifest(rawAnswer);
+  const suggestionManifest = extractInlineSuggestions(rawAnswer);
+  const manifest = extractInlineChatComponentManifest(suggestionManifest.answer);
   const components = mergeChatComponents(incomingComponents, manifest.components);
   const answer = sanitizeAssistantAnswer(manifest.answer);
+  const suggestions = suggestionManifest.suggestions;
 
   if (answer) {
     return {
       answer,
       components,
+      suggestions,
       sourceText: typeof rawAnswer === 'string' && rawAnswer.trim() ? rawAnswer : answer,
     };
   }
@@ -1941,6 +2014,7 @@ function normalizeAssistantReply(rawAnswer, incomingComponents = []) {
     return {
       answer: 'I found a store-backed match for you below.',
       components,
+      suggestions,
       sourceText: typeof rawAnswer === 'string' && rawAnswer.trim() ? rawAnswer : 'I found a store-backed match for you below.',
     };
   }
@@ -1948,6 +2022,7 @@ function normalizeAssistantReply(rawAnswer, incomingComponents = []) {
   return {
     answer: 'AskCrystal finished the request, but no guidance text came back. Please try again.',
     components: [],
+    suggestions,
     sourceText: 'AskCrystal finished the request, but no guidance text came back. Please try again.',
   };
 }
@@ -1970,7 +2045,7 @@ function buildAssistantParts({ text = '', components = [] } = {}) {
   }
 
   const appendTextPart = (value) => {
-    const previewText = stripInlineChatComponentManifestPreview(value).trim();
+    const previewText = stripInlineSuggestionsPreview(stripInlineChatComponentManifestPreview(value)).trim();
     const nextText = sanitizeAssistantText(previewText);
 
     if (!nextText) return;
@@ -2061,14 +2136,55 @@ function resolveStopEndpoint(apiEndpoint) {
   return resolveApiEndpoint(`${apiEndpoint.replace(/\/$/, '')}/stop`);
 }
 
-function resolveSuggestionsEndpoint(apiEndpoint) {
+function resolveProxyRootEndpoint(apiEndpoint) {
   if (!apiEndpoint) return '';
 
-  if (apiEndpoint.endsWith('/suggestions')) {
-    return resolveApiEndpoint(apiEndpoint);
+  return apiEndpoint
+    .replace(/\/$/, '')
+    .replace(/\/(?:stream|stop|suggestions)$/, '')
+    .replace(/\/chat$/, '');
+}
+
+function resolveIdentityBootstrapEndpoint(apiEndpoint) {
+  if (!apiEndpoint) return '';
+
+  const identityEndpoint = `${resolveProxyRootEndpoint(apiEndpoint)}/identity/bootstrap`;
+  return resolveApiEndpoint(identityEndpoint);
+}
+
+function resolveThreadMessagesEndpoint(apiEndpoint) {
+  if (!apiEndpoint) return '';
+
+  const threadMessagesEndpoint = `${resolveProxyRootEndpoint(apiEndpoint)}/threads/messages`;
+  return resolveApiEndpoint(threadMessagesEndpoint);
+}
+
+function isShopifyHtmlFallback(text) {
+  return /<html[\s>]/i.test(text || '') && /powered-by:\s*Shopify|cdn\/shop|shopify-section/i.test(text || '');
+}
+
+async function buildProxyFailureMessage(response) {
+  const fallbackMessage = `Proxy returned ${response.status}`;
+  const contentType = response.headers.get('content-type') || '';
+  const responseClone = response.clone();
+
+  if (contentType.includes('application/json')) {
+    try {
+      const payload = await response.json();
+      return payload?.error || payload?.message || fallbackMessage;
+    } catch {}
   }
 
-  return resolveApiEndpoint(`${apiEndpoint.replace(/\/$/, '')}/suggestions`);
+  let responseText = '';
+  try {
+    responseText = await responseClone.text();
+  } catch {}
+
+  if (isShopifyHtmlFallback(responseText)) {
+    return 'AskCrystal proxy is not connected. Shopify is serving the storefront page for /apps/askcrystal instead of forwarding the request to the app proxy.';
+  }
+
+  return fallbackMessage;
 }
 
 function getBrowserSessionId() {
@@ -2076,16 +2192,12 @@ function getBrowserSessionId() {
     return 'askcrystal-theme-preview';
   }
 
-  try {
-    const existingId = window.localStorage.getItem(SESSION_STORAGE_KEY);
-    if (existingId) return existingId;
+  const existingId = readLocalStorageValue(SESSION_STORAGE_KEY);
+  if (existingId) return existingId;
 
-    const sessionId = createMessageId('session');
-    window.localStorage.setItem(SESSION_STORAGE_KEY, sessionId);
-    return sessionId;
-  } catch {
-    return createMessageId('session');
-  }
+  const sessionId = createMessageId('session');
+  writeLocalStorageValue(SESSION_STORAGE_KEY, sessionId);
+  return sessionId;
 }
 
 function extractSseEvents(buffer) {
@@ -2135,6 +2247,98 @@ function getPayloadMessageId(payload) {
   return typeof value === 'string' ? value : '';
 }
 
+function getDifyEventName(payload) {
+  const value = payload?.event || payload?.data?.event;
+  return typeof value === 'string' ? value : '';
+}
+
+function getDifyToolName(payload) {
+  if (typeof payload?.tool === 'string' && payload.tool) return payload.tool;
+  if (typeof payload?.tool_name === 'string' && payload.tool_name) return payload.tool_name;
+  if (payload?.tool_labels && typeof payload.tool_labels === 'object') {
+    const label = Object.values(payload.tool_labels).find(value => typeof value === 'string' && value);
+    if (typeof label === 'string') return label;
+  }
+  return '';
+}
+
+function normalizeDifyThoughtPayload(payload) {
+  if (!payload || typeof payload !== 'object') return null;
+
+  const thought = typeof payload.thought === 'string'
+    ? payload.thought.trim()
+    : typeof payload.data?.thought === 'string'
+      ? payload.data.thought.trim()
+      : '';
+  const tool = getDifyToolName(payload).trim();
+  const toolInput = typeof payload.tool_input === 'string'
+    ? payload.tool_input
+    : typeof payload.toolInput === 'string'
+      ? payload.toolInput
+      : typeof payload.data?.tool_input === 'string'
+        ? payload.data.tool_input
+      : '';
+  const observation = typeof payload.observation === 'string'
+    ? payload.observation
+    : typeof payload.data?.observation === 'string'
+      ? payload.data.observation
+      : '';
+
+  if (!thought && !tool && !toolInput && !observation) return null;
+
+  const messageId = getPayloadMessageId(payload);
+  const taskId = getPayloadTaskId(payload);
+  const position = Number.isFinite(Number(payload.position)) ? Number(payload.position) : null;
+  const id = typeof payload.id === 'string' && payload.id
+    ? payload.id
+    : `${messageId || taskId || 'thought'}:${position ?? 0}`;
+
+  return {
+    id,
+    position,
+    thought,
+    tool,
+    toolInput,
+    observation,
+    messageId,
+    taskId,
+    sourceEvent: typeof payload.sourceEvent === 'string' ? payload.sourceEvent : getDifyEventName(payload),
+  };
+}
+
+function normalizeDifyThoughtList(value) {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map(normalizeDifyThoughtPayload)
+    .filter(Boolean);
+}
+
+function mergeDifyThoughts(currentThoughts, incomingPayload) {
+  const incomingThought = normalizeDifyThoughtPayload(incomingPayload);
+  if (!incomingThought) return normalizeDifyThoughtList(currentThoughts);
+
+  const thoughts = normalizeDifyThoughtList(currentThoughts);
+  const matchingIndex = thoughts.findIndex((thought) => {
+    if (thought.id && incomingThought.id && thought.id === incomingThought.id) return true;
+    if (thought.position !== null && incomingThought.position !== null && thought.position === incomingThought.position) return true;
+    return false;
+  });
+
+  if (matchingIndex >= 0) {
+    thoughts[matchingIndex] = {
+      ...thoughts[matchingIndex],
+      ...incomingThought,
+      thought: incomingThought.thought || thoughts[matchingIndex].thought,
+      toolInput: incomingThought.toolInput || thoughts[matchingIndex].toolInput,
+      observation: incomingThought.observation || thoughts[matchingIndex].observation,
+    };
+    return thoughts;
+  }
+
+  return [...thoughts, incomingThought];
+}
+
 function createAbortError() {
   if (typeof DOMException !== 'undefined') {
     return new DOMException('The operation was aborted.', 'AbortError');
@@ -2151,206 +2355,7 @@ function throwIfAborted(signal) {
   }
 }
 
-function countSharedPrefixLength(left = '', right = '') {
-  const maxLength = Math.min(left.length, right.length);
-  let index = 0;
-
-  while (index < maxLength && left[index] === right[index]) {
-    index += 1;
-  }
-
-  return index;
-}
-
-function splitTextIntoRevealSteps(text, maxSteps = 28, speed = 'normal') {
-  if (typeof text !== 'string' || !text) return [];
-
-  const tokens = text.match(/\n+|[^\s\n]+(?:\s+)?|[ \t]+/g) || [text];
-  if (tokens.length <= maxSteps) return tokens;
-
-  if (speed === 'final') {
-    const steps = [];
-    const targetStepCount = Math.min(tokens.length, maxSteps);
-    let index = 0;
-
-    while (index < tokens.length) {
-      const remainingTokens = tokens.length - index;
-      const remainingSteps = Math.max(1, targetStepCount - steps.length);
-      const averageGroupSize = remainingTokens / remainingSteps;
-      const baseGroupSize = Math.max(1, Math.floor(averageGroupSize));
-      const varianceRoll = deterministicJitter(index + text.length + steps.length);
-      const bump = varianceRoll > 0.72 ? 1 : varianceRoll < 0.18 ? -1 : 0;
-      let groupSize = Math.max(1, Math.round(baseGroupSize + bump));
-
-      const currentToken = tokens[index] || '';
-      const trimmedCurrentToken = currentToken.trim();
-      if (/[\n]/.test(currentToken) || /[.!?。！？]$/.test(trimmedCurrentToken)) {
-        groupSize = 1;
-      } else if (/[,:;，；：]$/.test(trimmedCurrentToken)) {
-        groupSize = Math.min(groupSize, 2);
-      } else {
-        groupSize = Math.min(groupSize, 3);
-      }
-
-      steps.push(tokens.slice(index, index + groupSize).join(''));
-      index += groupSize;
-    }
-
-    return steps;
-  }
-
-  const groupSize = Math.ceil(tokens.length / maxSteps);
-  const steps = [];
-
-  for (let index = 0; index < tokens.length; index += groupSize) {
-    steps.push(tokens.slice(index, index + groupSize).join(''));
-  }
-
-  return steps;
-}
-
-function getRevealStepDelay(stepCount, speed = 'normal', stepText = '', stepIndex = 0) {
-  let baseDelay = 0;
-
-  if (speed === 'fast') {
-    if (stepCount <= 1) return 0;
-    if (stepCount <= 10) baseDelay = 16;
-    else if (stepCount <= 20) baseDelay = 11;
-    else if (stepCount <= 32) baseDelay = 8;
-    else baseDelay = 6;
-  } else if (speed === 'final') {
-    if (stepCount <= 1) return 0;
-    if (stepCount <= 8) baseDelay = 112;
-    else if (stepCount <= 16) baseDelay = 94;
-    else if (stepCount <= 28) baseDelay = 78;
-    else if (stepCount <= 44) baseDelay = 64;
-    else if (stepCount <= 64) baseDelay = 54;
-    else baseDelay = 46;
-  } else {
-    if (stepCount <= 1) return 0;
-    if (stepCount <= 8) baseDelay = 24;
-    else if (stepCount <= 16) baseDelay = 18;
-    else baseDelay = 12;
-  }
-
-  const trimmed = typeof stepText === 'string' ? stepText.trim() : '';
-  const punctuationPause = /[.!?。！？]$/.test(trimmed)
-    ? 176
-    : /[,;:，；：]$/.test(trimmed)
-      ? 104
-      : /\n/.test(stepText)
-        ? 136
-        : 0;
-  const lengthBias = speed === 'final' ? Math.min(28, Math.max(0, trimmed.length * 2 - 10)) : 0;
-  const jitterRange = speed === 'final' ? 52 : 6;
-  const jitter = Math.round((deterministicJitter(stepIndex + stepCount + trimmed.length) - 0.5) * jitterRange);
-  const cadencePulse = speed === 'final' && deterministicJitter(stepIndex * 3.17 + stepCount) > 0.78
-    ? 64 + Math.round(deterministicJitter(stepIndex + 17) * 48)
-    : 0;
-
-  return Math.max(0, baseDelay + punctuationPause + lengthBias + jitter + cadencePulse);
-}
-
-function shouldProgressivelyRevealAnswer({ currentAnswer = '', nextAnswer = '', visibleDeltaCount = 0 }) {
-  if (!nextAnswer || nextAnswer === currentAnswer) return false;
-  if (!currentAnswer) return true;
-  if (nextAnswer.startsWith(currentAnswer)) return true;
-  if (visibleDeltaCount === 0) return true;
-
-  const sharedPrefixLength = countSharedPrefixLength(currentAnswer, nextAnswer);
-  const sharedPrefixRatio = sharedPrefixLength / Math.max(1, Math.min(currentAnswer.length, nextAnswer.length));
-  return sharedPrefixRatio >= 0.65 && nextAnswer.length > currentAnswer.length;
-}
-
-function getRevealSpeed({ currentAnswer = '', visibleDeltaCount = 0 }) {
-  if (!currentAnswer || visibleDeltaCount <= 1) {
-    return 'fast';
-  }
-
-  return 'normal';
-}
-
-function waitForRevealTick(delayMs, signal) {
-  if (!delayMs) return Promise.resolve();
-
-  return new Promise((resolve, reject) => {
-    const timeoutId = globalThis.setTimeout(() => {
-      cleanup();
-      resolve();
-    }, delayMs);
-
-    const handleAbort = () => {
-      cleanup();
-      reject(createAbortError());
-    };
-
-    function cleanup() {
-      globalThis.clearTimeout(timeoutId);
-      signal?.removeEventListener?.('abort', handleAbort);
-    }
-
-    signal?.addEventListener?.('abort', handleAbort, { once: true });
-  });
-}
-
-async function progressivelyRevealAnswer({
-  currentAnswer = '',
-  nextAnswer = '',
-  abortSignal,
-  onDelta,
-  eventPayload,
-  speed = 'normal',
-}) {
-  if (!nextAnswer || nextAnswer === currentAnswer) {
-    return nextAnswer || currentAnswer;
-  }
-
-  const appendFromCurrent = Boolean(currentAnswer) && nextAnswer.startsWith(currentAnswer);
-  let revealSeed = appendFromCurrent ? currentAnswer : '';
-
-  if (!appendFromCurrent && currentAnswer) {
-    const sharedPrefixLength = countSharedPrefixLength(currentAnswer, nextAnswer);
-    const sharedPrefixRatio = sharedPrefixLength / Math.max(1, Math.min(currentAnswer.length, nextAnswer.length));
-
-    if (sharedPrefixRatio >= 0.65) {
-      revealSeed = nextAnswer.slice(0, sharedPrefixLength);
-    }
-  }
-
-  const revealTail = nextAnswer.slice(revealSeed.length);
-  if (!revealTail) {
-    if (revealSeed !== currentAnswer) {
-      onDelta?.('', revealSeed, eventPayload);
-    }
-    return nextAnswer;
-  }
-
-  const maxSteps = speed === 'fast'
-    ? (nextAnswer.length > 1400 ? 64 : nextAnswer.length > 700 ? 52 : 40)
-    : speed === 'final'
-      ? (nextAnswer.length > 1800 ? 120 : nextAnswer.length > 1200 ? 104 : nextAnswer.length > 700 ? 88 : 68)
-      : (nextAnswer.length > 1400 ? 44 : nextAnswer.length > 700 ? 36 : 28);
-  const revealSteps = splitTextIntoRevealSteps(revealTail, maxSteps, speed);
-  let revealedAnswer = revealSeed;
-
-  for (let index = 0; index < revealSteps.length; index += 1) {
-    throwIfAborted(abortSignal);
-    const step = revealSteps[index];
-    revealedAnswer += step;
-
-    const isReplaceFrame = !appendFromCurrent && index === 0;
-    onDelta?.(isReplaceFrame ? '' : step, revealedAnswer, eventPayload);
-
-    if (index < revealSteps.length - 1) {
-      const revealDelay = getRevealStepDelay(revealSteps.length, speed, step, index);
-      await waitForRevealTick(revealDelay, abortSignal);
-    }
-  }
-
-  return nextAnswer;
-}
-
-async function requestProxyStop({ apiEndpoint, taskId, sessionId, conversationId }) {
+async function requestProxyStop({ apiEndpoint, taskId, sessionId, conversationId, storefrontSessionId }) {
   if (!apiEndpoint || !taskId) return;
 
   try {
@@ -2363,6 +2368,7 @@ async function requestProxyStop({ apiEndpoint, taskId, sessionId, conversationId
         taskId,
         sessionId,
         conversationId,
+        storefrontSessionId,
       }),
       keepalive: true,
     });
@@ -2371,38 +2377,52 @@ async function requestProxyStop({ apiEndpoint, taskId, sessionId, conversationId
   }
 }
 
-async function fetchProxySuggestions({ apiEndpoint, messageId, sessionId }) {
-  if (!apiEndpoint || !messageId) return [];
+async function fetchIdentityBootstrap({ apiEndpoint, sessionId }) {
+  if (!apiEndpoint || !sessionId) return null;
 
   try {
-    const response = await fetch(resolveSuggestionsEndpoint(apiEndpoint), {
-      method: 'POST',
+    const url = new URL(resolveIdentityBootstrapEndpoint(apiEndpoint), window.location.origin);
+    url.searchParams.set('guestToken', sessionId);
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        messageId,
-        sessionId,
-      }),
     });
 
-    if (!response.ok) return [];
-
-    const payload = await response.json();
-    return normalizeThreadSuggestions(
-      payload?.suggestions ||
-        payload?.data?.suggestions ||
-        payload?.data ||
-        [],
-    );
+    if (!response.ok) return null;
+    return await response.json();
   } catch (error) {
-    console.error('[AskCrystal] Suggested prompts request failed.', error);
-    return [];
+    console.error('[AskCrystal] Identity bootstrap failed.', error);
+    return null;
   }
 }
 
-async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversationId, sessionId, onStatus, onDelta, onComponents, onSuggestions }) {
+async function fetchPersistedThreadMessages({ apiEndpoint, sessionId, storefrontSessionId }) {
+  if (!apiEndpoint || !sessionId || !storefrontSessionId) return null;
+
+  try {
+    const url = new URL(resolveThreadMessagesEndpoint(apiEndpoint), window.location.origin);
+    url.searchParams.set('guestToken', sessionId);
+    url.searchParams.set('storefrontSessionId', storefrontSessionId);
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+      cache: 'no-store',
+    });
+
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversationId, sessionId, storefrontSessionId, onStatus, onThought, onDelta, onComponents }) {
   throwIfAborted(abortSignal);
   const response = await fetch(resolveStreamEndpoint(apiEndpoint), {
     method: 'POST',
@@ -2414,17 +2434,13 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
       message: getLastUserPrompt(messages),
       conversationId,
       sessionId,
+      storefrontSessionId,
     }),
     signal: abortSignal,
   });
 
   if (!response.ok) {
-    let errorMessage = `Proxy returned ${response.status}`;
-    try {
-      const payload = await response.json();
-      errorMessage = payload?.error || payload?.message || errorMessage;
-    } catch {}
-    throw new Error(errorMessage);
+    throw new Error(await buildProxyFailureMessage(response));
   }
 
   if (!response.body) {
@@ -2436,8 +2452,8 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
   let buffer = '';
   let streamedRawAnswer = '';
   let bufferedAnswer = '';
+  let streamedThoughts = [];
   let streamedComponents = [];
-  let streamedSuggestions = [];
   let latestConversationId = conversationId || null;
 
   while (true) {
@@ -2458,6 +2474,14 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
         onStatus?.(event.payload);
       }
 
+      if (event.event === 'thought') {
+        throwIfAborted(abortSignal);
+        streamedThoughts = mergeDifyThoughts(streamedThoughts, event.payload);
+        onThought?.(event.payload);
+        latestConversationId =
+          event.payload?.conversationId || event.payload?.conversation_id || latestConversationId;
+      }
+
       if (event.event === 'error') {
         throw new Error(event.payload?.error || event.payload?.message || 'The proxy stream failed.');
       }
@@ -2471,15 +2495,6 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
           event.payload?.conversationId || event.payload?.conversation_id || latestConversationId;
       }
 
-      const payloadSuggestions = getPayloadSuggestions(event.payload);
-      if (payloadSuggestions.length) {
-        throwIfAborted(abortSignal);
-        streamedSuggestions = payloadSuggestions;
-        onSuggestions?.(payloadSuggestions, event.payload);
-        latestConversationId =
-          event.payload?.conversationId || event.payload?.conversation_id || latestConversationId;
-      }
-
       if (event.event === 'replace') {
         throwIfAborted(abortSignal);
         const replacementRaw = getPayloadText(event.payload);
@@ -2487,7 +2502,11 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
           streamedRawAnswer = replacementRaw;
           const replacement = sanitizeStreamingVisibleAnswer(streamedRawAnswer);
           if (replacement) {
+            const previousAnswer = bufferedAnswer;
             bufferedAnswer = replacement;
+            if (replacement !== previousAnswer) {
+              onDelta?.('', replacement, event.payload);
+            }
           }
         }
 
@@ -2502,7 +2521,14 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
           streamedRawAnswer += delta;
           const nextVisibleAnswer = sanitizeStreamingVisibleAnswer(streamedRawAnswer);
           if (nextVisibleAnswer) {
+            const previousAnswer = bufferedAnswer;
             bufferedAnswer = nextVisibleAnswer;
+            if (nextVisibleAnswer !== previousAnswer) {
+              const visibleDelta = nextVisibleAnswer.startsWith(previousAnswer)
+                ? nextVisibleAnswer.slice(previousAnswer.length)
+                : nextVisibleAnswer;
+              onDelta?.(visibleDelta, nextVisibleAnswer, event.payload);
+            }
           }
         }
 
@@ -2515,15 +2541,28 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
         const completeRawAnswer = getPayloadText(event.payload) || streamedRawAnswer;
         const completeAnswer = sanitizeStreamingVisibleAnswer(completeRawAnswer) || bufferedAnswer;
         const finalAnswer = completeAnswer || bufferedAnswer;
+        if (!completeRawAnswer && !finalAnswer && streamedThoughts.length > 0) {
+          return {
+            answer: '',
+            components: streamedComponents,
+            sourceText: '',
+            suggestions: [],
+            conversationId: event.payload?.conversationId || event.payload?.conversation_id || latestConversationId || null,
+            messageId: getPayloadMessageId(event.payload) || null,
+            thoughts: streamedThoughts,
+          };
+        }
         const normalizedReply = normalizeAssistantReply(completeRawAnswer || finalAnswer, streamedComponents);
+        const inlineSuggestions = normalizeThreadSuggestions(normalizedReply.suggestions || []);
 
         return {
           answer: normalizedReply.answer,
           components: normalizedReply.components,
           sourceText: normalizedReply.sourceText,
-          suggestions: payloadSuggestions.length ? payloadSuggestions : streamedSuggestions,
+          suggestions: inlineSuggestions,
           conversationId: event.payload?.conversationId || event.payload?.conversation_id || latestConversationId || null,
           messageId: getPayloadMessageId(event.payload) || null,
+          thoughts: streamedThoughts,
         };
       }
     }
@@ -2535,9 +2574,22 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
       answer: normalizedReply.answer,
       components: normalizedReply.components,
       sourceText: normalizedReply.sourceText,
-      suggestions: streamedSuggestions,
+      suggestions: normalizedReply.suggestions || [],
       conversationId: latestConversationId,
       messageId: null,
+      thoughts: streamedThoughts,
+    };
+  }
+
+  if (streamedThoughts.length > 0) {
+    return {
+      answer: '',
+      components: [],
+      sourceText: '',
+      suggestions: [],
+      conversationId: latestConversationId,
+      messageId: null,
+      thoughts: streamedThoughts,
     };
   }
 
@@ -2579,9 +2631,15 @@ function createAssistantMessage({
   statusHistory = [],
   ambientStatusText = '',
   statusElapsedMs = null,
+  thoughts = [],
 }) {
   const statusHistoryText = parseStatusHistory(statusHistory).join('\n');
   const normalizedStatusElapsedMs = Number(statusElapsedMs);
+  const normalizedThoughts = normalizeDifyThoughtList(thoughts);
+  const maskedProgressEntries = buildMaskedProgressEntries(
+    normalizedThoughts,
+    status?.type === 'running',
+  );
 
   return {
     id,
@@ -2602,8 +2660,113 @@ function createAssistantMessage({
         ...(statusHistoryText ? { statusHistoryText } : {}),
         ...(ambientStatusText ? { ambientStatusText } : {}),
         ...(Number.isFinite(normalizedStatusElapsedMs) ? { statusElapsedMs: Math.max(0, normalizedStatusElapsedMs) } : {}),
+        ...(maskedProgressEntries.length ? { difyProgressEntries: maskedProgressEntries } : {}),
       },
     },
+  };
+}
+
+function normalizeComparableText(value) {
+  return String(value || '').replace(/\s+/g, ' ').trim();
+}
+
+function getLastRecoverableUserPrompt(messages) {
+  if (!Array.isArray(messages) || messages.length === 0) return '';
+
+  const pendingAssistantIndex = (() => {
+    for (let index = messages.length - 1; index >= 0; index -= 1) {
+      const message = messages[index];
+      if (message?.role !== 'assistant') continue;
+      if (message.status?.type === 'running') return index;
+      if (message.status?.type === 'incomplete' && message.status?.reason !== 'cancelled') return index;
+    }
+    return -1;
+  })();
+
+  if (pendingAssistantIndex === -1) return '';
+
+  for (let index = pendingAssistantIndex - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message?.role !== 'user') continue;
+    const text = extractTextFromParts(message.content || message.parts || []);
+    if (text) return text;
+  }
+
+  return '';
+}
+
+function createUserMessageFromPersisted(message) {
+  const text = typeof message?.text === 'string' ? message.text : '';
+  return {
+    id: typeof message?.id === 'string' && message.id ? message.id : createMessageId('user'),
+    role: 'user',
+    createdAt: message?.createdAt ? new Date(message.createdAt) : new Date(),
+    content: text ? [{ type: 'text', text }] : [],
+    attachments: [],
+    metadata: {
+      custom: {
+        source: 'server-recovery',
+      },
+    },
+  };
+}
+
+function createAssistantMessageFromPersisted(message) {
+  const components = Array.isArray(message?.components) ? message.components : [];
+  return createAssistantMessage({
+    id: typeof message?.id === 'string' && message.id ? message.id : createMessageId('assistant'),
+    text: typeof message?.text === 'string' ? message.text : '',
+    components,
+    status: {
+      type: 'complete',
+      reason: 'stop',
+    },
+  });
+}
+
+function buildRecoveredThreadState(payload, expectedUserPrompt) {
+  const remoteMessages = Array.isArray(payload?.messages) ? payload.messages : [];
+  const normalizedExpectedPrompt = normalizeComparableText(expectedUserPrompt);
+  if (!normalizedExpectedPrompt || remoteMessages.length === 0) return null;
+
+  let matchedUserIndex = -1;
+  let matchedAssistantIndex = -1;
+  for (let index = remoteMessages.length - 1; index >= 0; index -= 1) {
+    const message = remoteMessages[index];
+    if (message?.role !== 'user') continue;
+    if (normalizeComparableText(message.text) !== normalizedExpectedPrompt) continue;
+
+    const nextAssistantIndex = remoteMessages.findIndex((candidate, candidateIndex) =>
+      candidateIndex > index &&
+      candidate?.role === 'assistant' &&
+      (normalizeComparableText(candidate.text) || (Array.isArray(candidate.components) && candidate.components.length > 0)),
+    );
+    if (nextAssistantIndex === -1) continue;
+
+    matchedUserIndex = index;
+    matchedAssistantIndex = nextAssistantIndex;
+    break;
+  }
+
+  if (matchedUserIndex === -1 || matchedAssistantIndex === -1) return null;
+
+  const messages = remoteMessages.map((message) => {
+    if (message?.role === 'user') return createUserMessageFromPersisted(message);
+    if (message?.role === 'assistant') return createAssistantMessageFromPersisted(message);
+    return null;
+  }).filter(Boolean);
+  const lastAssistant = remoteMessages[matchedAssistantIndex];
+  const recoveredReply = normalizeAssistantReply(lastAssistant?.text || '', lastAssistant?.components || []);
+  const persistedSuggestions = normalizeThreadSuggestions(lastAssistant?.suggestions || []);
+  const suggestions = persistedSuggestions.length
+    ? persistedSuggestions
+    : normalizeThreadSuggestions(recoveredReply.suggestions || []);
+
+  return {
+    messages,
+    suggestions,
+    suggestionsMessageId: messages[matchedAssistantIndex]?.id || '',
+    conversationId: payload?.thread?.conversationId || null,
   };
 }
 
@@ -2625,7 +2788,7 @@ function appendStatusHistory(history, nextStatus) {
   return dedupedHistory.slice(-4);
 }
 
-function createCancelledAssistantMessage({ id, text = '', components = [] }) {
+function createCancelledAssistantMessage({ id, text = '', components = [], thoughts = [] }) {
   const trimmedText = typeof text === 'string' ? text.trim() : '';
   const hasVisibleContent = Boolean(trimmedText) || components.length > 0;
 
@@ -2643,6 +2806,7 @@ function createCancelledAssistantMessage({ id, text = '', components = [] }) {
     statusText: '',
     statusStage: '',
     statusTool: '',
+    thoughts,
   });
 }
 
@@ -2665,7 +2829,7 @@ function normalizeMessagesAfterCancel(nextMessages, cancelRequested) {
   return normalizedMessages;
 }
 
-async function resolveReply({ config, messages, abortSignal, conversationId, sessionId, onStatus, onDelta, onComponents, onSuggestions }) {
+async function resolveReply({ config, messages, abortSignal, conversationId, sessionId, storefrontSessionId, onStatus, onThought, onDelta, onComponents }) {
   const lastUserPrompt = getLastUserPrompt(messages);
 
   if (config.runtimeMode === 'proxy' && config.apiEndpoint) {
@@ -2676,10 +2840,11 @@ async function resolveReply({ config, messages, abortSignal, conversationId, ses
         abortSignal,
         conversationId,
         sessionId,
+        storefrontSessionId,
         onStatus,
+        onThought,
         onDelta,
         onComponents,
-        onSuggestions,
       });
     } catch (error) {
       if (error?.name === 'AbortError') {
@@ -2709,6 +2874,7 @@ function useAskCrystalRuntime(config) {
   const [activeSessionId, setActiveSessionId] = useState(initialSession.id);
   const [messages, setMessages] = useState(initialSession.messages);
   const [suggestions, setSuggestions] = useState(initialSession.suggestions);
+  const [suggestionsMessageId, setSuggestionsMessageId] = useState(initialSession.suggestionsMessageId || '');
   const [isRunning, setIsRunning] = useState(false);
   const activeRunRef = useRef(null);
   const activeAssistantIdRef = useRef('');
@@ -2720,6 +2886,30 @@ function useAskCrystalRuntime(config) {
   const activeSessionIdRef = useRef(activeSessionId);
   const isRunningRef = useRef(isRunning);
   const sessionIdRef = useRef(getBrowserSessionId());
+
+  useEffect(() => {
+    if (config.runtimeMode !== 'proxy' || !config.apiEndpoint) return undefined;
+
+    let cancelled = false;
+    fetchIdentityBootstrap({
+      apiEndpoint: config.apiEndpoint,
+      sessionId: sessionIdRef.current,
+    }).then((payload) => {
+      if (cancelled || !payload?.ok) return;
+
+      const nextGuestToken = typeof payload.identity?.guestToken === 'string'
+        ? payload.identity.guestToken.trim()
+        : '';
+      if (nextGuestToken && nextGuestToken !== sessionIdRef.current) {
+        sessionIdRef.current = nextGuestToken;
+        writeLocalStorageValue(SESSION_STORAGE_KEY, nextGuestToken);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [config.apiEndpoint, config.runtimeMode]);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -2741,10 +2931,11 @@ function useAskCrystalRuntime(config) {
     setSessions(currentSessions => upsertStoredSessionSnapshot(currentSessions, activeSessionId, {
       messages: normalizeMessagesAfterCancel(messages, cancelRequestedRef.current),
       suggestions,
+      suggestionsMessageId,
       conversationId: conversationIdRef.current,
       updatedAt: new Date().toISOString(),
     }));
-  }, [activeSessionId, messages, suggestions]);
+  }, [activeSessionId, messages, suggestions, suggestionsMessageId]);
 
   useEffect(() => {
     persistChatState({
@@ -2767,6 +2958,7 @@ function useAskCrystalRuntime(config) {
     setActiveSessionId(nextSession.id);
     setMessages(normalizeStoredMessages(nextSession.messages));
     setSuggestions(normalizeThreadSuggestions(nextSession.suggestions));
+    setSuggestionsMessageId(nextSession.suggestionsMessageId || '');
   }, []);
 
   const switchToSession = useCallback((nextSessionId) => {
@@ -2862,18 +3054,90 @@ function useAskCrystalRuntime(config) {
     );
   }, []);
 
+  const recoverActiveSessionFromServer = useCallback(async ({ expectedPrompt = '', poll = false } = {}) => {
+    if (config.runtimeMode !== 'proxy' || !config.apiEndpoint) return false;
+
+    const targetSessionId = activeSessionIdRef.current;
+    const prompt = expectedPrompt || getLastRecoverableUserPrompt(messagesRef.current);
+    if (!prompt || !targetSessionId) return false;
+
+    const deadline = Date.now() + (poll ? 75000 : 0);
+    do {
+      const payload = await fetchPersistedThreadMessages({
+        apiEndpoint: config.apiEndpoint,
+        sessionId: sessionIdRef.current,
+        storefrontSessionId: targetSessionId,
+      });
+      const recovered = buildRecoveredThreadState(payload, prompt);
+
+      if (recovered) {
+        if (activeSessionIdRef.current !== targetSessionId) return false;
+
+        conversationIdRef.current = recovered.conversationId || conversationIdRef.current;
+        cancelRequestedRef.current = false;
+        activeTaskIdRef.current = '';
+        activeAssistantIdRef.current = '';
+        activeRunRef.current = null;
+        isRunningRef.current = false;
+        setIsRunning(false);
+        setMessages(recovered.messages);
+        setSuggestions(recovered.suggestions);
+        setSuggestionsMessageId(recovered.suggestions.length ? recovered.suggestionsMessageId : '');
+        return true;
+      }
+
+      if (!poll || Date.now() >= deadline) break;
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    } while (true);
+
+    return false;
+  }, [config.apiEndpoint, config.runtimeMode]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    let cancelled = false;
+    const attemptRecovery = () => {
+      if (cancelled) return;
+      if (document.visibilityState && document.visibilityState !== 'visible') return;
+
+      const prompt = getLastRecoverableUserPrompt(messagesRef.current);
+      if (!prompt) return;
+
+      void recoverActiveSessionFromServer({
+        expectedPrompt: prompt,
+        poll: false,
+      });
+    };
+
+    const timeoutId = window.setTimeout(attemptRecovery, 800);
+    window.addEventListener('focus', attemptRecovery);
+    window.addEventListener('pageshow', attemptRecovery);
+    document.addEventListener('visibilitychange', attemptRecovery);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+      window.removeEventListener('focus', attemptRecovery);
+      window.removeEventListener('pageshow', attemptRecovery);
+      document.removeEventListener('visibilitychange', attemptRecovery);
+    };
+  }, [recoverActiveSessionFromServer]);
+
   const onCancel = useCallback(async () => {
     const activeRun = activeRunRef.current;
     const assistantId = activeAssistantIdRef.current;
     const taskId = activeTaskIdRef.current;
     const conversationId = conversationIdRef.current;
     const sessionId = sessionIdRef.current;
+    const storefrontSessionId = activeSessionIdRef.current;
 
     activeRun?.abort();
     cancelRequestedRef.current = true;
     isRunningRef.current = false;
     setIsRunning(false);
     setSuggestions([]);
+    setSuggestionsMessageId('');
 
     if (assistantId) {
       updateAssistantMessage(assistantId, (message) =>
@@ -2892,6 +3156,7 @@ function useAskCrystalRuntime(config) {
       taskId,
       sessionId,
       conversationId,
+      storefrontSessionId,
     });
   }, [config.apiEndpoint, updateAssistantMessage]);
 
@@ -2931,10 +3196,11 @@ function useAskCrystalRuntime(config) {
       isRunningRef.current = true;
       setIsRunning(true);
       setSuggestions([]);
+      setSuggestionsMessageId('');
       setMessages([...conversationForReply, assistantSeed]);
-      let revealedAnswer = '';
+      let streamedAnswer = '';
+      let streamedThoughts = [];
       let bufferedComponents = [];
-      let bufferedSuggestions = [];
 
       try {
         const result = await resolveReply({
@@ -2943,31 +3209,102 @@ function useAskCrystalRuntime(config) {
           abortSignal: abortController.signal,
           conversationId: conversationIdRef.current,
           sessionId: sessionIdRef.current,
+          storefrontSessionId: activeSessionIdRef.current,
           onStatus: (statusPayload) => {
             if (abortController.signal.aborted) return;
             const normalizedStatus = normalizeStatusPayload(statusPayload);
             if (normalizedStatus.taskId) {
               activeTaskIdRef.current = normalizedStatus.taskId;
             }
-            updateAssistantMessage(assistantId, (message) =>
-              createAssistantMessage({
+            updateAssistantMessage(assistantId, (message) => {
+              const currentText = extractTextFromParts(message.content || message.parts || []);
+              const existingComponents = Array.isArray(message.metadata?.unstable_data)
+                ? message.metadata.unstable_data
+                : [];
+              const currentComponents = existingComponents.length ? existingComponents : bufferedComponents;
+              const hasVisibleAnswer = Boolean(currentText.trim() || currentComponents.length || streamedThoughts.length);
+
+              return createAssistantMessage({
                 id: assistantId,
                 parts: buildAssistantParts({
-                  text: '',
-                  components: [],
+                  text: currentText,
+                  components: currentComponents,
                 }),
-                components: [],
+                components: currentComponents,
                 status: {
                   type: 'running',
                 },
-                statusText: normalizedStatus.message,
-                statusStage: normalizedStatus.stage,
-                statusTool: normalizedStatus.tool,
-                statusHistory: appendStatusHistory(message.metadata?.custom?.statusHistoryText, normalizedStatus),
-                ambientStatusText: normalizedStatus.stage === 'tool'
-                  ? (message.metadata?.custom?.ambientStatusText || 'Settling into your energy...')
-                  : normalizedStatus.message,
-                statusElapsedMs: normalizedStatus.elapsedMs,
+                thoughts: streamedThoughts,
+                statusText: hasVisibleAnswer ? '' : normalizedStatus.message,
+                statusStage: hasVisibleAnswer ? '' : normalizedStatus.stage,
+                statusTool: hasVisibleAnswer ? '' : normalizedStatus.tool,
+                statusHistory: hasVisibleAnswer
+                  ? []
+                  : appendStatusHistory(message.metadata?.custom?.statusHistoryText, normalizedStatus),
+                ambientStatusText: hasVisibleAnswer
+                  ? ''
+                  : normalizedStatus.stage === 'tool'
+                    ? (message.metadata?.custom?.ambientStatusText || 'Settling into your energy...')
+                    : normalizedStatus.message,
+                statusElapsedMs: hasVisibleAnswer ? null : normalizedStatus.elapsedMs,
+              });
+            });
+          },
+          onThought: (thoughtPayload) => {
+            if (abortController.signal.aborted) return;
+            const nextTaskId = getPayloadTaskId(thoughtPayload);
+            if (nextTaskId) {
+              activeTaskIdRef.current = nextTaskId;
+            }
+            streamedThoughts = mergeDifyThoughts(streamedThoughts, thoughtPayload);
+            updateAssistantMessage(assistantId, (message) => {
+              const existingComponents = Array.isArray(message.metadata?.unstable_data)
+                ? message.metadata.unstable_data
+                : [];
+              const currentComponents = existingComponents.length ? existingComponents : bufferedComponents;
+              const currentText = extractTextFromParts(message.content || message.parts || []) || streamedAnswer;
+
+              return createAssistantMessage({
+                id: assistantId,
+                parts: buildAssistantParts({
+                  text: currentText,
+                  components: currentComponents,
+                }),
+                components: currentComponents,
+                status: {
+                  type: 'running',
+                },
+                thoughts: streamedThoughts,
+                statusText: '',
+                statusStage: '',
+                statusTool: '',
+                statusHistory: [],
+              });
+            });
+          },
+          onDelta: (_delta, nextAnswer, eventPayload) => {
+            if (abortController.signal.aborted) return;
+            const nextTaskId = getPayloadTaskId(eventPayload);
+            if (nextTaskId) {
+              activeTaskIdRef.current = nextTaskId;
+            }
+            streamedAnswer = nextAnswer;
+            updateAssistantMessage(assistantId, () =>
+              createAssistantMessage({
+                id: assistantId,
+                parts: buildAssistantParts({
+                  text: nextAnswer,
+                  components: bufferedComponents,
+                }),
+                components: bufferedComponents,
+                status: {
+                  type: 'running',
+                },
+                thoughts: streamedThoughts,
+                statusText: '',
+                statusStage: '',
+                statusTool: '',
+                statusHistory: [],
               }),
             );
           },
@@ -2978,73 +3315,45 @@ function useAskCrystalRuntime(config) {
               activeTaskIdRef.current = nextTaskId;
             }
             bufferedComponents = nextComponents;
-          },
-          onSuggestions: (nextSuggestions) => {
-            if (abortController.signal.aborted) return;
-            bufferedSuggestions = normalizeThreadSuggestions(nextSuggestions);
+            updateAssistantMessage(assistantId, (message) => {
+              const currentText = extractTextFromParts(message.content || message.parts || []) || streamedAnswer;
+
+              return createAssistantMessage({
+                id: assistantId,
+                parts: buildAssistantParts({
+                  text: currentText,
+                  components: bufferedComponents,
+                }),
+                components: bufferedComponents,
+                status: {
+                  type: 'running',
+                },
+                thoughts: streamedThoughts,
+                statusText: '',
+                statusStage: '',
+                statusTool: '',
+                statusHistory: [],
+              });
+            });
           },
         });
 
         conversationIdRef.current = result.conversationId || conversationIdRef.current;
         activeTaskIdRef.current = '';
         cancelRequestedRef.current = false;
-        const finalComponents = result.components || bufferedComponents;
-        const finalSuggestions = normalizeThreadSuggestions(
-          result.suggestions?.length ? result.suggestions : bufferedSuggestions,
-        );
-
-        updateAssistantMessage(assistantId, () =>
-          createAssistantMessage({
-            id: assistantId,
-            parts: buildAssistantParts({
-              text: '',
-              components: [],
-            }),
-            components: [],
-            status: {
-              type: 'running',
-            },
-            statusText: '',
-            statusStage: '',
-            statusTool: '',
-            statusHistory: [],
-          }),
-        );
-
-        revealedAnswer = await progressivelyRevealAnswer({
-          currentAnswer: '',
-          nextAnswer: result.answer,
-          abortSignal: abortController.signal,
-          speed: 'final',
-          onDelta: (_delta, nextAnswer) => {
-            if (abortController.signal.aborted) return;
-            revealedAnswer = nextAnswer;
-            updateAssistantMessage(assistantId, () =>
-              createAssistantMessage({
-                id: assistantId,
-                parts: buildAssistantParts({
-                  text: nextAnswer,
-                  components: [],
-                }),
-                components: [],
-                status: {
-                  type: 'running',
-                },
-                statusText: '',
-                statusStage: '',
-                statusTool: '',
-                statusHistory: [],
-              }),
-            );
-          },
-        });
+        const finalComponents = result.components?.length ? result.components : bufferedComponents;
+        const finalThoughts = Array.isArray(result.thoughts) && result.thoughts.length
+          ? result.thoughts
+          : streamedThoughts;
+        const finalSuggestions = normalizeThreadSuggestions(result.suggestions || []);
+        const finalAnswer = result.answer || streamedAnswer || result.sourceText || '';
 
         setMessages([
           ...conversationForReply,
           createAssistantMessage({
             id: assistantId,
             parts: buildAssistantParts({
-              text: revealedAnswer || result.answer || result.sourceText,
+              text: finalAnswer,
               components: finalComponents,
             }),
             components: finalComponents,
@@ -3052,41 +3361,58 @@ function useAskCrystalRuntime(config) {
               type: 'complete',
               reason: 'stop',
             },
+            thoughts: finalThoughts,
           }),
         ]);
         setSuggestions(finalSuggestions);
-
-        if (result.messageId && config.apiEndpoint) {
-          const suggestionsSessionId = activeSessionIdRef.current;
-          fetchProxySuggestions({
-            apiEndpoint: config.apiEndpoint,
-            messageId: result.messageId,
-            sessionId: sessionIdRef.current,
-          }).then((nextSuggestions) => {
-            if (!nextSuggestions.length) return;
-            if (activeSessionIdRef.current !== suggestionsSessionId) return;
-            setSuggestions(nextSuggestions);
-          });
-        }
+        setSuggestionsMessageId(finalSuggestions.length ? assistantId : '');
       } catch (error) {
-        if (error?.name === 'AbortError') {
+        const isExplicitCancel = cancelRequestedRef.current || abortController.signal.aborted;
+        if (error?.name === 'AbortError' && isExplicitCancel) {
           activeTaskIdRef.current = '';
           setSuggestions([]);
+          setSuggestionsMessageId('');
           setMessages([
             ...conversationForReply,
             createCancelledAssistantMessage({
               id: assistantId,
-              text: revealedAnswer,
-              components: [],
+              text: streamedAnswer,
+              components: bufferedComponents,
+              thoughts: streamedThoughts,
             }),
           ]);
           return;
         }
 
         console.error('[AskCrystal] Assistant runtime failed.', error);
+        updateAssistantMessage(assistantId, (message) =>
+          createAssistantMessage({
+            id: assistantId,
+            parts: buildAssistantParts({
+              text: extractTextFromParts(message.content || message.parts || []) || streamedAnswer,
+              components: bufferedComponents,
+            }),
+            components: bufferedComponents,
+            status: {
+              type: 'running',
+            },
+            thoughts: streamedThoughts,
+            statusText: 'Reconnecting to your reading...',
+            statusStage: 'recover',
+            ambientStatusText: 'Reconnecting to your reading...',
+          }),
+        );
+
+        const recovered = await recoverActiveSessionFromServer({
+          expectedPrompt: getLastUserPrompt(conversationForReply),
+          poll: true,
+        });
+        if (recovered) return;
+
         activeTaskIdRef.current = '';
         cancelRequestedRef.current = false;
         setSuggestions([]);
+        setSuggestionsMessageId('');
         setMessages([
           ...conversationForReply,
           createAssistantMessage({
@@ -3114,7 +3440,7 @@ function useAskCrystalRuntime(config) {
         setIsRunning(false);
       }
     },
-    [config, updateAssistantMessage],
+    [config, recoverActiveSessionFromServer, updateAssistantMessage],
   );
 
   const sendPrompt = useCallback((prompt) => {
@@ -3141,6 +3467,7 @@ function useAskCrystalRuntime(config) {
     () => ({
       messages,
       suggestions,
+      suggestionsMessageId,
       isRunning,
       setMessages: replaceMessages,
       onImport: replaceMessages,
@@ -3157,7 +3484,7 @@ function useAskCrystalRuntime(config) {
         },
       },
     }),
-    [activeSessionId, isRunning, messages, onCancel, onNew, replaceMessages, sessions, suggestions],
+    [activeSessionId, isRunning, messages, onCancel, onNew, replaceMessages, sessions, suggestions, suggestionsMessageId],
   );
 
   return {
@@ -3194,12 +3521,9 @@ function WelcomeShelf({ config }) {
     <div className="ac-homepage__guide-shelf">
       <div className="ac-homepage__guide-shelf-header">
         <div>
-          <p className="ac-homepage__shelf-kicker">Best sellers</p>
+wa          <p className="ac-homepage__shelf-kicker">Best sellers</p>
           <h2>{config.shelfHeading}</h2>
         </div>
-        <a className="ac-homepage__browse-link" href={config.browseUrl}>
-          Browse all
-        </a>
       </div>
 
       {config.products.length ? (
@@ -3315,56 +3639,126 @@ function WelcomeState({ config }) {
   };
   const guidedCards = [
     {
-      id: 'compatibility',
+      id: 'yinyuan',
       layout: 'portrait',
-      eyebrow: 'Love',
+      eyebrow: 'Yinyuan',
       title: 'Read love and synastry',
       description: 'Explore soulmate, synastry, and relationship guidance.',
-      cta: 'Cosmic match',
+      cta: 'Cosmic Match',
       emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_1.png?v=1777105421',
-      prompt: 'Can you do a love and compatibility reading for me?',
+      prompt: 'Do a Yinyuan relationship reading. Ask me what relationship context you need.',
     },
     {
-      id: 'divination',
+      id: 'tarot',
       layout: 'portrait',
-      eyebrow: 'Readings',
-      title: 'Tarot, Bazi, and energy readings',
-      description: 'Use tarot, Bazi, or a daily check-in before you shop.',
-      cta: 'Start a reading',
+      eyebrow: 'Tarot',
+      title: 'Pull a focused spread',
+      description: 'Ask about a decision, relationship, block, or next step.',
+      cta: 'Open tarot',
       emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_2.png?v=1777105421',
-      prompt: 'Give me a reading using the best method for my current situation.',
-    },
-    {
-      id: 'ask-anything',
-      layout: 'wide',
-      eyebrow: 'Open chat',
-      title: 'Ask anything about crystals, rituals, or life',
-      description: 'Start with a question, a feeling, or a life situation.',
-      cta: 'Ask AskCrystal',
-      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_3.png?v=1777105421',
-      prompt: 'I have a situation in my life and want guidance plus crystal recommendations.',
+      prompt: 'I want a tarot spread for a question I am holding. Ask me for the question first.',
     },
     {
       id: 'horoscope',
       layout: 'wide',
       eyebrow: 'Horoscope',
-      title: 'Check today\'s cosmic weather',
-      description: 'Get zodiac timing, mood guidance, and crystal support.',
-      cta: 'Read my horoscope',
-      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_4.png?v=1777105421',
-      prompt: 'Give me a daily horoscope reading and crystal guidance. Ask for my zodiac sign if you need it.',
+      title: 'Today’s zodiac weather',
+      description: 'Get daily sign guidance, timing notes, and crystal support.',
+      cta: 'Read today',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_2.png?v=1777105421',
+      prompt: 'Give me today\'s horoscope guidance. Ask for my zodiac sign if you need it.',
     },
     {
-      id: 'browse-store',
+      id: 'ask-anything',
       layout: 'wide',
-      eyebrow: 'Storefront',
-      title: 'Browse the full crystal shop',
-      description: 'Open the wider shelf, then return whenever you want guidance.',
-      cta: 'Browse all products',
+      eyebrow: 'Open chat',
+      title: 'Enter the reading room',
+      description: 'Open a blank conversation and start with anything when you are ready.',
+      cta: 'Open chat',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_3.png?v=1777105421',
+      href: getChatPageUrl(config),
+    },
+    {
+      id: 'bazi',
+      layout: 'wide',
+      eyebrow: 'Bazi',
+      title: 'Four Pillars birth chart',
+      description: 'Read elemental balance, timing, and life patterns from birth details.',
+      cta: 'Start Bazi',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_1.png?v=1777105421',
+      prompt: 'I want a Bazi Four Pillars reading. Ask me for the birth details you need.',
+    },
+    {
+      id: 'fengshui',
+      layout: 'wide',
+      eyebrow: 'Feng shui',
+      title: 'Space energy audit',
+      description: 'Read a room layout for flow, blocked areas, and practical placement shifts.',
+      cta: 'Audit my room',
       emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_5.png?v=1777105421',
-      href: config.browseUrl,
+      prompt: 'Audit the feng shui of my room. Ask me for the room layout details you need.',
+    },
+    {
+      id: 'shushu',
+      layout: 'compact',
+      eyebrow: 'Numerology',
+      title: 'Shushu number profile',
+      description: 'Use birth numbers for personality themes, cycles, and current emphasis.',
+      cta: 'Read numbers',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_1.png?v=1777105421',
+      prompt: 'Create a Shushu numerology profile. Ask me for the birth date if you need it.',
+    },
+    {
+      id: 'taibu',
+      layout: 'compact',
+      eyebrow: 'Not sure?',
+      title: 'Choose the right reading',
+      description: 'Describe the situation and AskCrystal will choose the cleanest divination path.',
+      cta: 'Help me choose',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_2.png?v=1777105421',
+      prompt: 'Help me choose the right reading method for my situation.',
+    },
+    {
+      id: 'crystal-match',
+      layout: 'wide',
+      eyebrow: 'Crystal match',
+      title: 'Find one shop piece',
+      description: 'Turn a feeling, intention, or reading into a grounded jewelry recommendation.',
+      cta: 'Match me',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_4.png?v=1777105421',
+      prompt: 'Recommend one crystal jewelry piece from the shop for my current need.',
+    },
+    {
+      id: 'shop-intention',
+      layout: 'compact',
+      eyebrow: 'Shop intent',
+      title: 'Browse by intention',
+      description: 'Calm, protection, love, focus, abundance, sleep, or grounding.',
+      cta: 'Shop intent',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_5.png?v=1777105421',
+      prompt: 'Help me shop crystals by intention. Ask me which intention I want to focus on.',
+    },
+    {
+      id: 'care-ritual',
+      layout: 'compact',
+      eyebrow: 'Ritual',
+      title: 'Crystal care practice',
+      description: 'Learn a simple way to cleanse, charge, wear, or place a stone.',
+      cta: 'Create ritual',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_1.png?v=1777105421',
+      prompt: 'Teach me a simple crystal care ritual for a stone I own.',
     },
   ];
+  const storeHelpCard = {
+    id: 'store-help',
+    layout: 'strip',
+    eyebrow: 'Store help',
+    title: 'Product, policy, and cart questions',
+    description: 'Ask about a product, compare options, or check shop guidance.',
+    cta: 'Ask store',
+    emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_2.png?v=1777105421',
+    prompt: 'I have a store or product question. Help me find the answer.',
+  };
 
   return (
     <div className="ac-homepage__welcome">
@@ -3399,6 +3793,7 @@ function WelcomeState({ config }) {
             <WelcomeGuideCard key={card.id} card={card} />
           ))}
           <WelcomeShelf config={config} />
+          <WelcomeGuideCard card={storeHelpCard} />
         </div>
       </section>
     </div>
@@ -3488,7 +3883,7 @@ function MessageSuggestions() {
   const { sendPrompt, isRunning } = useAskCrystalActions();
   const messageId = useMessage((message) => message.id || '');
   const messageCompleted = useMessage((message) => message.status?.type === 'complete');
-  const suggestions = useAssistantState(({ thread }) => thread.suggestions || []);
+  const suggestions = useAssistantState(({ thread }) => thread.suggestions || EMPTY_ARRAY);
   const isThreadRunning = useAssistantState(({ thread }) => thread.isRunning);
   const isLatestAssistantMessage = useAssistantState(({ thread }) => {
     for (let index = thread.messages.length - 1; index >= 0; index -= 1) {
@@ -3501,7 +3896,12 @@ function MessageSuggestions() {
     return false;
   });
 
-  if (!messageCompleted || isThreadRunning || !isLatestAssistantMessage || !suggestions.length) {
+  if (
+    !messageCompleted ||
+    isThreadRunning ||
+    !isLatestAssistantMessage ||
+    !suggestions.length
+  ) {
     return null;
   }
 
@@ -3522,8 +3922,220 @@ function MessageSuggestions() {
   );
 }
 
+function formatDifyToolName(tool = '') {
+  if (typeof tool !== 'string' || !tool.trim()) return '';
+
+  try {
+    const parsed = JSON.parse(tool);
+    if (Array.isArray(parsed)) {
+      return parsed
+        .map((item) => (typeof item === 'string' ? item : ''))
+        .filter(Boolean)
+        .join(', ');
+    }
+  } catch {}
+
+  return tool;
+}
+
+const MASKED_PROGRESS_FALLBACKS = [
+  'Settling into the shape of your question...',
+  'Listening for the clearest thread...',
+  'Letting the reading gather itself...',
+  'Bringing the guidance into plain language...',
+];
+
+function normalizeProgressSearchText(value = '') {
+  return String(value)
+    .toLowerCase()
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function getMaskedToolProgressLabel(toolName = '', context = '') {
+  const normalizedTool = normalizeProgressSearchText(toolName);
+  const normalizedContext = normalizeProgressSearchText(`${toolName} ${context}`);
+
+  if (/search catalog|catalog|collection|product search|shopify search/.test(normalizedContext)) {
+    return 'Checking the crystal shelf...';
+  }
+
+  if (/get product details|product details|variant|inventory|price/.test(normalizedContext)) {
+    return 'Verifying the strongest match...';
+  }
+
+  if (/cart|checkout|update cart|get cart/.test(normalizedContext)) {
+    return /update/.test(normalizedTool)
+      ? 'Preparing the cart update...'
+      : 'Opening your cart...';
+  }
+
+  if (/policy|faq|shipping|return|store question/.test(normalizedContext)) {
+    return 'Checking the store guidance...';
+  }
+
+  if (/horoscope|zodiac|astrology|planet|daily guidance|star/.test(normalizedContext)) {
+    return 'Reading the sky pattern...';
+  }
+
+  if (/bazi|four pillars|day master|heavenly stem|earthly branch/.test(normalizedContext)) {
+    return 'Mapping the elemental chart...';
+  }
+
+  if (/tarot|spread|card/.test(normalizedContext)) {
+    return 'Laying out the spread...';
+  }
+
+  if (/fengshui|feng shui|space audit|room|placement/.test(normalizedContext)) {
+    return 'Reading the room’s flow...';
+  }
+
+  if (/yinyuan|matchmaking|relationship|compatib|connection/.test(normalizedContext)) {
+    return 'Tracing the connection pattern...';
+  }
+
+  if (/numerology|shushu|number profile/.test(normalizedContext)) {
+    return 'Reducing the numbers...';
+  }
+
+  if (/taibu|router|structured divination|route/.test(normalizedContext)) {
+    return 'Choosing the clearest reading path...';
+  }
+
+  if (/crystal|stone|chakra|ritual|intention|energy/.test(normalizedContext)) {
+    return 'Matching the energy to a crystal...';
+  }
+
+  return toolName ? 'Consulting the right tool...' : '';
+}
+
+function getMaskedThoughtProgressLabel(thought, index = 0) {
+  const toolName = formatDifyToolName(thought?.tool || '');
+  const context = [
+    thought?.thought,
+    thought?.toolInput,
+    thought?.observation,
+  ].filter(Boolean).join(' ');
+  const toolLabel = getMaskedToolProgressLabel(toolName, context);
+  if (toolLabel) return toolLabel;
+
+  const normalizedContext = normalizeProgressSearchText(context);
+  if (/search|look up|find|catalog|product|shop|store|inventory/.test(normalizedContext)) {
+    return 'Checking the crystal shelf...';
+  }
+  if (/chart|zodiac|horoscope|planet|bazi|tarot|feng|numerology|relationship|compatib/.test(normalizedContext)) {
+    return 'Reading the pattern...';
+  }
+  if (/recommend|guidance|answer|respond|final|compose/.test(normalizedContext)) {
+    return 'Bringing the guidance into focus...';
+  }
+  if (/tool|workflow|call|input|observation/.test(normalizedContext)) {
+    return 'Consulting the right tool...';
+  }
+
+  return MASKED_PROGRESS_FALLBACKS[index % MASKED_PROGRESS_FALLBACKS.length];
+}
+
+function buildMaskedProgressEntries(thoughts = [], isRunning = false) {
+  const normalizedThoughts = normalizeDifyThoughtList(thoughts);
+  const seen = new Map();
+
+  normalizedThoughts.forEach((thought, index) => {
+    const label = getMaskedThoughtProgressLabel(thought, index);
+    if (!label) return;
+
+    const stableKey = `${label}:${thought.tool || ''}`;
+    const existing = seen.get(stableKey);
+    const isFinished = Boolean(thought.observation) || (!isRunning && index < normalizedThoughts.length - 1);
+    seen.set(stableKey, {
+      id: thought.id || stableKey,
+      label,
+      isFinished: existing?.isFinished || isFinished,
+      order: existing?.order ?? index,
+    });
+  });
+
+  const entries = Array.from(seen.values())
+    .sort((left, right) => left.order - right.order);
+
+  if (!entries.length) return [];
+
+  return entries.map((entry, index) => {
+    const isCurrent = isRunning && index === entries.length - 1 && !entry.isFinished;
+    return {
+      ...entry,
+      isCurrent,
+      isFinished: !isCurrent && (entry.isFinished || index < entries.length - 1),
+    };
+  });
+}
+
+function normalizeMaskedProgressEntry(entry, index = 0) {
+  if (!entry || typeof entry !== 'object') return null;
+
+  const label = typeof entry.label === 'string' ? entry.label.trim() : '';
+  if (!label) return null;
+
+  return {
+    id: typeof entry.id === 'string' && entry.id ? entry.id : `${label}:${index}`,
+    label,
+    isCurrent: Boolean(entry.isCurrent),
+    isFinished: Boolean(entry.isFinished),
+    order: Number.isFinite(Number(entry.order)) ? Number(entry.order) : index,
+  };
+}
+
+function normalizeMaskedProgressEntries(value) {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map(normalizeMaskedProgressEntry)
+    .filter(Boolean)
+    .sort((left, right) => left.order - right.order);
+}
+
+function DifyPendingLine({ statusText = '' }) {
+  return (
+    <div className="ac-dify-pending" role="status" aria-live="polite">
+      <span className="ac-dify-pending__dot" aria-hidden="true" />
+      <span>{statusText || 'Thinking...'}</span>
+    </div>
+  );
+}
+
+function DifyProgressStream({ entries = [] }) {
+  const progressEntries = normalizeMaskedProgressEntries(entries);
+  if (!progressEntries.length) return null;
+
+  const visibleEntries = progressEntries.slice(-4);
+
+  return (
+    <div className="ac-dify-progress" role="status" aria-live="polite" aria-label="Reading progress">
+      <ol className="ac-dify-progress__list">
+        {visibleEntries.map((entry, index) => (
+          <li
+            className={[
+              'ac-dify-progress__item',
+              entry.isCurrent ? 'is-current' : '',
+              entry.isFinished ? 'is-finished' : '',
+            ].filter(Boolean).join(' ')}
+            key={`${entry.id}-${entry.label}`}
+            style={{ '--ac-progress-index': index }}
+          >
+            <span className="ac-dify-progress__mark" aria-hidden="true">
+              {entry.isFinished ? '✓' : ''}
+            </span>
+            <span className="ac-dify-progress__label">{entry.label}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
 function AssistantMessage() {
-  const assistantParts = useMessage((message) => message.content || message.parts || []);
+  const assistantParts = useMessage((message) => message.content || message.parts || EMPTY_ARRAY);
   const assistantText = extractTextFromParts(assistantParts);
   const hasToolParts = assistantParts.some((part) => part.type === 'tool-call');
   const isRunning = useMessage((message) => message.status?.type === 'running');
@@ -3533,23 +4145,31 @@ function AssistantMessage() {
   const statusHistoryText = useMessage((message) => message.metadata?.custom?.statusHistoryText || '');
   const ambientStatusText = useMessage((message) => message.metadata?.custom?.ambientStatusText || '');
   const statusElapsedMs = useMessage((message) => message.metadata?.custom?.statusElapsedMs || 0);
-  const isThinking = isRunning && !assistantText && !hasToolParts;
-  const showInlineStatus = isRunning && (Boolean(assistantText) || hasToolParts) && statusStage === 'tool' && Boolean(statusText);
+  const rawProgressEntries = useMessage((message) => message.metadata?.custom?.difyProgressEntries);
+  const difyProgressEntries = useMemo(() => normalizeMaskedProgressEntries(rawProgressEntries), [rawProgressEntries]);
+  const hasProgress = difyProgressEntries.length > 0;
+  const isThinking = isRunning && !assistantText && !hasToolParts && !hasProgress;
+  const hasAssistantContent = Boolean(assistantText) || hasToolParts;
+  const shouldShowProgress = isRunning && !hasAssistantContent;
+  const latestDifyProgress = difyProgressEntries.find(entry => entry.isCurrent) || difyProgressEntries[difyProgressEntries.length - 1] || null;
+  const progressHistoryText = statusHistoryText || difyProgressEntries.map(entry => entry.label).join('\n');
+  const progressStatusText = statusText || latestDifyProgress?.label || '';
 
   return (
     <MessagePrimitive.Root className="ac-message ac-message--assistant">
       <div className="ac-message__label">AskCrystal Guide</div>
       <div className="ac-message__bubble ac-message__bubble--assistant">
-        {isThinking ? (
+        {shouldShowProgress ? (
           <ProgressCard
-            statusText={statusText}
-            statusHistoryText={statusHistoryText}
-            statusStage={statusStage}
+            statusText={progressStatusText}
+            statusHistoryText={progressHistoryText}
+            statusStage={statusStage || (hasProgress ? 'tool' : 'listen')}
             statusTool={statusTool}
             ambientStatusText={ambientStatusText}
             statusElapsedMs={statusElapsedMs}
           />
-        ) : (
+        ) : null}
+        {hasAssistantContent ? (
           <div className="ac-message__content-layer">
             <MessagePrimitive.Parts
               components={{
@@ -3558,13 +4178,10 @@ function AssistantMessage() {
               }}
             />
           </div>
-        )}
+        ) : isThinking && !shouldShowProgress ? (
+          <DifyPendingLine statusText={statusText} />
+        ) : null}
       </div>
-      {showInlineStatus ? (
-        <div className="ac-message__status">
-          <LiveStatus statusText={statusText} />
-        </div>
-      ) : null}
       <MessageSuggestions />
       <MessagePrimitive.Error>
         <div className="ac-message__error">The response was interrupted. You can retry from the composer below.</div>
@@ -3602,30 +4219,69 @@ function ChatPageHeader({ config }) {
   );
 }
 
-function ChatEmptyState() {
-  const { sendPrompt, isRunning } = useAskCrystalActions();
-  const starters = [
-    'Give me a reading for what I need today.',
-    'Help me find a crystal for calm sleep.',
-    'Can you do a Bazi reading?',
+function CrystalBallScene({ className = '' }) {
+  const sceneClassName = ['ac-chat-page__crystal-scene', className].filter(Boolean).join(' ');
+
+  return (
+    <div className={sceneClassName} aria-hidden="true">
+      <span className="ac-chat-page__crystal-arc ac-chat-page__crystal-arc--left" />
+      <span className="ac-chat-page__crystal-arc ac-chat-page__crystal-arc--right" />
+      <span className="ac-chat-page__crystal-star ac-chat-page__crystal-star--one" />
+      <span className="ac-chat-page__crystal-star ac-chat-page__crystal-star--two" />
+      <span className="ac-chat-page__crystal-star ac-chat-page__crystal-star--three" />
+      <div className="ac-chat-page__crystal-orb">
+        <span className="ac-chat-page__crystal-orb-shine" />
+        <span className="ac-chat-page__crystal-orb-star" />
+      </div>
+      <div className="ac-chat-page__crystal-base">
+        <span />
+        <span />
+      </div>
+    </div>
+  );
+}
+
+function ChatWelcomeMessage() {
+  const capabilities = [
+    'Bazi',
+    'Horoscope',
+    'Tarot',
+    'Yinyuan',
+    'Feng shui',
+    'Numerology',
+    'Crystal shopping',
+    'Ritual care',
   ];
 
   return (
-    <section className="ac-chat-page__empty" aria-label="Start an AskCrystal reading">
-      <p className="ac-chat-page__empty-kicker">Reading room is open</p>
-      <h2>Begin with a feeling, a question, or a sign you keep noticing.</h2>
-      <div className="ac-chat-page__starter-row">
-        {starters.map((starter) => (
-          <button
-            type="button"
-            key={starter}
-            disabled={isRunning}
-            onClick={() => sendPrompt(starter)}
-          >
-            {starter}
-          </button>
+    <div className="ac-chat-page__welcome-card">
+      <p className="ac-chat-page__welcome-kicker">Welcome in</p>
+      <h2>Ask for a reading, a crystal match, or a practical next step.</h2>
+      <p>
+        AskCrystal can read Bazi charts, daily horoscopes, tarot spreads, relationship patterns,
+        feng shui layouts, Shushu numerology, and then connect the guidance to real crystal jewelry
+        and care rituals when shopping is useful.
+      </p>
+      <div className="ac-chat-page__welcome-chips" aria-label="AskCrystal capabilities">
+        {capabilities.map(capability => (
+          <span key={capability}>{capability}</span>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ChatReadingRoomHero({ hasUserMessages = false }) {
+  return (
+    <section className="ac-chat-page__hero" aria-label="AskCrystal reading room">
+      <div className="ac-chat-page__hero-backdrop" aria-hidden="true" />
+      <div className="ac-chat-page__hero-rule" aria-hidden="true" />
+      <div className="ac-chat-page__hero-copy">
+        <h1>Hi, I’m AskCrystal</h1>
+        <p>Your guide for readings, crystals, rituals, and clarity.</p>
+      </div>
+      {!hasUserMessages ? <ChatWelcomeMessage /> : null}
+      <CrystalBallScene />
     </section>
   );
 }
@@ -3688,41 +4344,77 @@ function AskCrystalThread({ config }) {
 
     const reduceMotionMedia = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     let rafId = 0;
+    let viewportHeight = Math.max(1, viewport.clientHeight || 1);
+    const lastVars = new Map();
+
+    const roundPx = value => Math.round(value);
+    const roundOpacity = value => Math.round(value * 100) / 100;
+    const setCssVar = (name, value) => {
+      if (lastVars.get(name) === value) return;
+      lastVars.set(name, value);
+      homepage.style.setProperty(name, value);
+    };
 
     const syncBackdropPresentation = () => {
       rafId = 0;
 
-      const fadeDistance = Math.max(180, Math.min(320, viewport.clientHeight * 0.4));
-      const nextOffset = reduceMotionMedia?.matches
-        ? 0
-        : Math.min(54, viewport.scrollTop * 0.18);
-      const nextOpacity = Math.max(0, 1 - viewport.scrollTop / fadeDistance);
+      const scrollTop = viewport.scrollTop;
+      const fadeDistance = Math.max(280, Math.min(520, viewportHeight * 0.68));
+      const nextOpacity = Math.max(0, 1 - scrollTop / fadeDistance);
 
-      homepage.style.setProperty('--ac-homepage-backdrop-offset', `${nextOffset.toFixed(2)}px`);
-      homepage.style.setProperty('--ac-homepage-backdrop-opacity', nextOpacity.toFixed(3));
+      if (!isChatMode) {
+        const nextOffset = reduceMotionMedia?.matches
+          ? 0
+          : Math.min(92, scrollTop * 0.28);
+
+        setCssVar('--ac-homepage-backdrop-offset', `${roundPx(nextOffset)}px`);
+        setCssVar('--ac-homepage-backdrop-opacity', String(roundOpacity(nextOpacity)));
+        return;
+      }
+
+      const nextChatBgOffset = reduceMotionMedia?.matches
+        ? 0
+        : Math.min(260, scrollTop * 0.34);
+
+      setCssVar('--ac-chat-bg-offset', `${roundPx(nextChatBgOffset)}px`);
+      setCssVar('--ac-chat-bg-opacity', String(roundOpacity(nextOpacity)));
     };
 
     const requestBackdropPresentationSync = () => {
       if (rafId) return;
       rafId = window.requestAnimationFrame(syncBackdropPresentation);
     };
+    const handleViewportResize = () => {
+      viewportHeight = Math.max(1, viewport.clientHeight || 1);
+      requestBackdropPresentationSync();
+    };
 
     syncBackdropPresentation();
     viewport.addEventListener('scroll', requestBackdropPresentationSync, { passive: true });
+    window.addEventListener('resize', handleViewportResize, { passive: true });
 
     return () => {
       viewport.removeEventListener('scroll', requestBackdropPresentationSync);
+      window.removeEventListener('resize', handleViewportResize);
       if (rafId) window.cancelAnimationFrame(rafId);
     };
-  }, [activeSessionId]);
+  }, [activeSessionId, hasUserMessages, isChatMode]);
+
+  const homepageClassName = [
+    'ac-homepage',
+    `ac-homepage--${displayMode}`,
+    isChatMode ? (hasUserMessages ? 'ac-homepage--has-messages' : 'ac-homepage--empty') : '',
+  ].filter(Boolean).join(' ');
 
   return (
     <AskCrystalActionsContext.Provider value={askCrystalActions}>
       <AssistantRuntimeProvider runtime={runtime}>
-        <div ref={homepageRef} className={`ac-homepage ac-homepage--${displayMode}`}>
-          <div className="ac-homepage__backdrop" aria-hidden="true">
-            <img src={HOMEPAGE_BACKDROP_URL} alt="" loading="eager" decoding="async" />
-          </div>
+        <div ref={homepageRef} className={homepageClassName}>
+          {!isChatMode ? (
+            <div className="ac-homepage__backdrop" aria-hidden="true">
+              <img src={HOMEPAGE_BACKDROP_URL} alt="" loading="eager" decoding="async" />
+            </div>
+          ) : null}
           <ThreadPrimitive.Root className="ac-homepage__thread">
             <ThreadPrimitive.Viewport
               ref={viewportRef}
@@ -3734,10 +4426,7 @@ function AskCrystalThread({ config }) {
               scrollToBottomOnThreadSwitch={shouldAutoScrollConversation}
             >
               {isChatMode ? (
-                <>
-                  <ChatPageHeader config={config} />
-                  {!hasUserMessages ? <ChatEmptyState /> : null}
-                </>
+                <ChatReadingRoomHero hasUserMessages={hasUserMessages} />
               ) : (
                 <WelcomeState config={config} />
               )}

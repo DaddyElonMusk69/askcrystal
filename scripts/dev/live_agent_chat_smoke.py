@@ -30,6 +30,8 @@ def parse_args() -> argparse.Namespace:
         default=[],
         help="Query to test (can be specified multiple times). If omitted, built-in smoke queries are used.",
     )
+    parser.add_argument("--show-answer", action="store_true", help="Print the full assistant answer for debugging.")
+    parser.add_argument("--show-agent-events", action="store_true", help="Print agent thought/tool events for debugging.")
     return parser.parse_args()
 
 
@@ -92,6 +94,16 @@ def run_stream_query(
                 if event.get("event") == "agent_thought" and isinstance(event.get("tool"), str) and event.get("tool")
             }
         )
+        agent_events = [
+            {
+                "thought": event.get("thought") or "",
+                "tool": event.get("tool") or "",
+                "tool_input": event.get("tool_input") or "",
+                "observation": event.get("observation") or "",
+            }
+            for event in events
+            if event.get("event") == "agent_thought"
+        ]
         answer = "".join(
             event.get("answer", "")
             for event in events
@@ -104,6 +116,8 @@ def run_stream_query(
                 "events": len(events),
                 "errors": 0,
                 "tools": tools,
+                "agent_events": agent_events,
+                "answer": answer,
                 "answer_len": len(answer),
                 "answer_preview": answer[:280].replace("\n", " "),
             }
@@ -156,6 +170,10 @@ def main() -> int:
                 )
             )
             print(f"[chat] case {idx} answer_preview={result['answer_preview']}")
+            if args.show_agent_events:
+                print(f"[chat] case {idx} agent_events={json.dumps(result['agent_events'], ensure_ascii=False, indent=2)}")
+            if args.show_answer:
+                print(f"[chat] case {idx} answer={result['answer']}")
 
         if all_ok:
             print("[chat] all live chat smoke cases passed")

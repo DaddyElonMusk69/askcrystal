@@ -8,8 +8,7 @@ In the current phase, it should do four things reliably:
 
 1. validate the minimum charting intake,
 2. compute a deterministic chart brief from solar birth input,
-3. interpret that chart in a fixed non-fatalistic order,
-4. return stable JSON in `askcrystal_skill_result_v1`.
+3. return stable JSON in `askcrystal_skill_result_v1` for the main AskCrystal agent to interpret.
 
 It should not behave like a loose fortune-telling prompt blob.
 
@@ -134,9 +133,9 @@ Expected metadata shape for incomplete intake:
 }
 ```
 
-## Reading Sequence
+## Master-Agent Reading Sequence
 
-The workflow should interpret in this order:
+The workflow should not write the final user-facing reading. It should return chart facts and seed guidance; the main AskCrystal agent should interpret in this order:
 
 1. charting basis and assumptions,
 2. day master and strength,
@@ -171,30 +170,14 @@ Implementation note:
 
 - this code node is adapted from `external_skills/bazi-mingli-main/scripts/bazi_calc.py`, not from the older prompt-pack-only Bazi sources.
 
-### Node 3: Interpret Bazi Reading
+### Node 3: Finalize Bazi Contract
 
 Purpose:
 
-- turn the deterministic chart brief into a concise human-readable reading,
-- preserve uncertainty when time intake is approximate,
-- keep the output modern, calm, and non-fatalistic.
-
-Hard constraints:
-
-- do not invent chart facts,
-- do not use deterministic fate language,
-- do not use medical, legal, or financial directives,
-- do not hide intake weakness when confidence should be lower.
-
-### Node 4: Finalize Bazi Contract
-
-Purpose:
-
-- parse the LLM response,
 - normalize the result into `askcrystal_skill_result_v1`,
-- preserve fallback seed findings if the LLM drifts out of strict JSON.
+- preserve chart facts, chart-basis notes, and seed findings for the main AskCrystal agent.
 
-### Node 5: End
+### Node 4: End
 
 Return JSON only.
 
@@ -204,17 +187,16 @@ Return JSON only.
 {
   "status": "ok",
   "skill": "bazi_chart_analysis",
-  "summary": "This chart points to a thoughtful but pressure-sensitive pattern, with the current cycle favoring steadier growth over impulsive leaps.",
+  "summary": "The Bazi chart is ready for interpretation.",
   "findings": [
-    "The day master appears to respond better to structure and recovery than to constant external pressure.",
-    "Supportive elements currently lean toward restoration, clarity, and better pacing rather than forced output.",
-    "Because the birth time is exact in this case, the timing layer can be framed with moderate confidence rather than only broad themes."
+    "Four Pillars resolve to 甲戌 / 甲戌 / 癸亥 / 丙辰.",
+    "Day master is 癸（水）, and the current strength read is 中和.",
+    "Supportive elements currently lean toward 金、水, while the more challenging load leans toward 木、火、土."
   ],
   "follow_up_questions": [],
   "recommendations": [
-    "Concentrate on one medium-term goal instead of scattering energy across too many fronts.",
-    "Notice where pressure makes you override your natural pacing.",
-    "Treat the reading as a planning lens, not a command about fate."
+    "Use the reading for pattern recognition and planning, not as a rigid prediction about fate.",
+    "Let the main AskCrystal agent interpret these facts in the user's conversational context."
   ],
   "safety_note": "For self-reflection and wellness support only, not deterministic fate analysis.",
   "metadata": {
@@ -223,7 +205,14 @@ Return JSON only.
     "source_family": "bazi-mingli-main",
     "mode": "reading",
     "intent_type": "reading",
-    "primary_method": "bazi"
+    "primary_method": "bazi",
+    "day_master": "癸（水）",
+    "strength": "中和",
+    "year_pillar": "甲戌",
+    "month_pillar": "甲戌",
+    "day_pillar": "癸亥",
+    "hour_pillar": "丙辰",
+    "fact_brief": "- Birth timestamp: 1994-11-03T08:40\n- Four Pillars: 甲戌 / 甲戌 / 癸亥 / 丙辰"
   }
 }
 ```

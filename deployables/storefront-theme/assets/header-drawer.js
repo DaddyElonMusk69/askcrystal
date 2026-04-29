@@ -359,7 +359,13 @@ function reset(element) {
 }
 
 function canUseLocalStorage() {
-  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+  if (typeof window === 'undefined') return false;
+
+  try {
+    return typeof window.localStorage !== 'undefined';
+  } catch {
+    return false;
+  }
 }
 
 function readLocalStorageValue(key) {

@@ -17,7 +17,7 @@
     "components": {
       "type": "array",
       "description": "Ordered storefront component intents that Shopify will hydrate and render.",
-      "maxItems": 4,
+      "maxItems": 1,
       "items": {
         "$ref": "#/$defs/componentIntent"
       }
@@ -35,12 +35,6 @@
     "nonEmptyString": {
       "type": "string",
       "minLength": 1
-    },
-    "stringList": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/nonEmptyString"
-      }
     },
     "productRef": {
       "type": "object",
@@ -207,187 +201,6 @@
         }
       ]
     },
-    "ritualCardComponent": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/componentBase"
-        },
-        {
-          "properties": {
-            "component": {
-              "const": "ritual_card"
-            },
-            "props": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "title"
-              ],
-              "properties": {
-                "eyebrow": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "title": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "summary": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "duration": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "steps": {
-                  "$ref": "#/$defs/stringList"
-                },
-                "note": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "disclaimer": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "linked_product_refs": {
-                  "type": "array",
-                  "maxItems": 3,
-                  "items": {
-                    "$ref": "#/$defs/productRef"
-                  }
-                }
-              },
-              "anyOf": [
-                {
-                  "required": [
-                    "summary"
-                  ]
-                },
-                {
-                  "required": [
-                    "steps"
-                  ]
-                }
-              ]
-            }
-          }
-        }
-      ]
-    },
-    "readingSummaryComponent": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/componentBase"
-        },
-        {
-          "properties": {
-            "component": {
-              "const": "reading_summary"
-            },
-            "props": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "title",
-                "summary"
-              ],
-              "properties": {
-                "eyebrow": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "title": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "summary": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "energy_focus": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "highlights": {
-                  "$ref": "#/$defs/stringList"
-                },
-                "disclaimer": {
-                  "$ref": "#/$defs/nonEmptyString"
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
-    "collectionLinkComponent": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/componentBase"
-        },
-        {
-          "properties": {
-            "component": {
-              "const": "collection_link"
-            },
-            "props": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "title",
-                "label",
-                "collection_ref"
-              ],
-              "properties": {
-                "eyebrow": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "title": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "description": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "label": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "collection_ref": {
-                  "$ref": "#/$defs/collectionRef"
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
-    "nextStepsComponent": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/componentBase"
-        },
-        {
-          "properties": {
-            "component": {
-              "const": "next_steps"
-            },
-            "props": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "title",
-                "steps"
-              ],
-              "properties": {
-                "eyebrow": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "title": {
-                  "$ref": "#/$defs/nonEmptyString"
-                },
-                "steps": {
-                  "$ref": "#/$defs/stringList"
-                },
-                "closing": {
-                  "$ref": "#/$defs/nonEmptyString"
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
     "componentIntent": {
       "oneOf": [
         {
@@ -395,18 +208,6 @@
         },
         {
           "$ref": "#/$defs/productCarouselComponent"
-        },
-        {
-          "$ref": "#/$defs/ritualCardComponent"
-        },
-        {
-          "$ref": "#/$defs/readingSummaryComponent"
-        },
-        {
-          "$ref": "#/$defs/collectionLinkComponent"
-        },
-        {
-          "$ref": "#/$defs/nextStepsComponent"
         }
       ]
     }

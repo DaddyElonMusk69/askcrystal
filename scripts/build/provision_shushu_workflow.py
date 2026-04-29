@@ -21,7 +21,7 @@ DEFAULT_DSL_PATH = REPO_ROOT / "services" / "dify-agent" / "dsl" / "askcrystal-s
 WORKFLOW_TOOL_NAME = "workflow_shushu_numerology_profile"
 WORKFLOW_TOOL_LABEL = "Shushu Numerology Profile"
 WORKFLOW_TOOL_DESCRIPTION = (
-    "Provides a lightweight birthday-pattern numerology profile with practical, non-deterministic reflection guidance."
+    "Builds a lightweight birthday-pattern numerology contract for the main AskCrystal agent to interpret."
 )
 WORKFLOW_TOOL_ICON = {"type": "emoji", "emoji": "🔢"}
 WORKFLOW_TOOL_LABELS = ["utilities"]
@@ -38,7 +38,7 @@ WORKFLOW_TOOL_PARAMETERS = [
     },
     {
         "name": "analysis_focus",
-        "description": "Optional focus area such as confidence, career, relationships, reset, or emotional pattern.",
+        "description": "Optional focus area such as confidence, career, relationships, reset, or emotional pattern. Include the AskCrystal runtime year for current personal-year requests.",
         "form": "llm",
     },
 ]
@@ -84,7 +84,8 @@ def ensure_workflow_tool(client: DifyConsoleClient, workflow_app_id: str) -> dic
         existing = client.get_workflow_tool(workflow_app_id=workflow_app_id)
         if isinstance(existing, dict) and existing:
             workflow_tool_id = existing.get("workflow_tool_id") or existing.get("id")
-            if existing.get("synced") is False and isinstance(workflow_tool_id, str) and workflow_tool_id:
+            if isinstance(workflow_tool_id, str) and workflow_tool_id:
+                # Refresh the pinned workflow version and parameter contract after every publish.
                 client.update_workflow_tool(
                     workflow_tool_id=workflow_tool_id,
                     name=WORKFLOW_TOOL_NAME,
@@ -94,7 +95,7 @@ def ensure_workflow_tool(client: DifyConsoleClient, workflow_app_id: str) -> dic
                     icon=WORKFLOW_TOOL_ICON,
                     labels=WORKFLOW_TOOL_LABELS,
                 )
-                existing = client.get_workflow_tool(workflow_tool_id=workflow_tool_id)
+                return client.get_workflow_tool(workflow_tool_id=workflow_tool_id)
             return existing
     except DifyConsoleError:
         pass

@@ -8,11 +8,7 @@
   endif
 
   if browse_url == blank
-    if shelf_collection != blank
-      assign browse_url = shelf_collection.url
-    else
-      assign browse_url = routes.all_products_collection_url
-    endif
+    assign browse_url = '/collections'
   endif
 %}
 

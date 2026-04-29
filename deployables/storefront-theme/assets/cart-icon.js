@@ -2,6 +2,34 @@ import { Component } from '@theme/component';
 import { onAnimationEnd } from '@theme/utilities';
 import { ThemeEvents, CartUpdateEvent } from '@theme/events';
 
+function canUseSessionStorage() {
+  if (typeof window === 'undefined') return false;
+
+  try {
+    return typeof window.sessionStorage !== 'undefined';
+  } catch {
+    return false;
+  }
+}
+
+function readSessionStorageValue(key) {
+  if (!canUseSessionStorage()) return '';
+
+  try {
+    return window.sessionStorage.getItem(key) || '';
+  } catch {
+    return '';
+  }
+}
+
+function writeSessionStorageValue(key, value) {
+  if (!canUseSessionStorage()) return;
+
+  try {
+    window.sessionStorage.setItem(key, value);
+  } catch {}
+}
+
 /**
  * A custom element that displays a cart icon.
  *
@@ -75,7 +103,7 @@ class CartIcon extends Component {
 
     this.classList.toggle('header-actions__cart-icon--has-cart', itemCount > 0);
 
-    sessionStorage.setItem(
+    writeSessionStorageValue(
       'cart-count',
       JSON.stringify({
         value: String(this.currentCartCount),
@@ -102,10 +130,10 @@ class CartIcon extends Component {
     // Ensure refs are available
     if (!this.refs.cartBubbleCount) return;
 
-    const sessionStorageCount = sessionStorage.getItem('cart-count');
+    const sessionStorageCount = readSessionStorageValue('cart-count');
 
     // If no session storage data, nothing to check
-    if (sessionStorageCount === null) return;
+    if (!sessionStorageCount) return;
 
     const visibleCount = this.refs.cartBubbleCount.textContent;
 

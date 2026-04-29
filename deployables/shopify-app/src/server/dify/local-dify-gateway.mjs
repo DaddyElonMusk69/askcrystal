@@ -1045,27 +1045,6 @@ const normalizeSuggestedQuestions = (value) => {
   return deduped.slice(0, 6)
 }
 
-const buildServiceSuggestedQuestionsRequest = ({
-  chatUrl,
-  apiKey,
-  messageId,
-  userId,
-}) => {
-  const suggestedUrl = new URL(`../messages/${messageId}/suggested`, `${chatUrl.replace(/\/$/, '')}/`)
-  suggestedUrl.searchParams.set('user', userId || 'shopify-guest')
-
-  return {
-    url: suggestedUrl.toString(),
-    options: {
-      method: 'GET',
-      headers: {
-        accept: 'application/json',
-        authorization: `Bearer ${apiKey}`,
-      },
-    },
-  }
-}
-
 const buildServiceAppParametersRequest = ({
   chatUrl,
   apiKey,
@@ -1132,94 +1111,6 @@ const fetchServiceAppParameters = async ({
       message: error instanceof Error ? error.message : 'Failed to load Dify app parameters',
     }
   }
-}
-
-const fetchServiceSuggestedQuestions = async ({
-  chatUrl,
-  apiKey,
-  messageId,
-  userId,
-}) => {
-  if (!messageId)
-    return {
-      ok: false,
-      status: 0,
-      suggestions: [],
-    }
-
-  try {
-    const request = buildServiceSuggestedQuestionsRequest({
-      chatUrl,
-      apiKey,
-      messageId,
-      userId,
-    })
-    const { response, text } = await fetchTextWithTimeout(
-      request.url,
-      request.options,
-      Math.min(SUGGESTED_QUESTIONS_REQUEST_TIMEOUT_MS, config.difyRequestTimeoutMs),
-    )
-
-    if (!response.ok) {
-      return {
-        ok: false,
-        status: response.status,
-        suggestions: [],
-      }
-    }
-
-    return {
-      ok: true,
-      status: response.status,
-      suggestions: normalizeSuggestedQuestions(parseTextPayload(text)),
-    }
-  }
-  catch {
-    return {
-      ok: false,
-      status: 0,
-      suggestions: [],
-    }
-  }
-}
-
-const attachSuggestedQuestions = async ({
-  payload,
-  chatUrl,
-  apiKey,
-  userId,
-  onProgress = null,
-}) => {
-  if (!payload || typeof payload !== 'object')
-    return payload
-
-  const suggestedQuestionsResult = await fetchServiceSuggestedQuestions({
-    chatUrl,
-    apiKey,
-    messageId: payload.messageId,
-    userId,
-  })
-  const suggestions = suggestedQuestionsResult.suggestions.length > 0
-    ? suggestedQuestionsResult.suggestions
-    : []
-
-  const nextPayload = {
-    ...payload,
-    suggestions,
-  }
-
-  if (suggestions.length > 0 && onProgress) {
-    onProgress({
-      type: 'suggestions',
-      payload: {
-        suggestions,
-        messageId: payload.messageId || null,
-        conversationId: payload.conversationId || null,
-      },
-    })
-  }
-
-  return nextPayload
 }
 
 const compressToDifyParam = (value) => gzipSync(String(value), { level: 9 }).toString('base64')
@@ -1360,13 +1251,7 @@ const sendServiceApiChat = async ({
 
     if (!contentType.includes('text/event-stream') || !response.body) {
       const text = await response.text()
-      let payload = await normalizeDifyAnswer(parseTextPayload(text), hydrationContext)
-      payload = await attachSuggestedQuestions({
-        payload,
-        chatUrl,
-        apiKey,
-        userId,
-      })
+      const payload = await normalizeDifyAnswer(parseTextPayload(text), hydrationContext)
       onProgress?.({
         type: 'complete',
         payload,
@@ -1895,24 +1780,6 @@ export class LocalDifyGateway {
 
     if (!difyResult.ok)
       return difyResult
-
-    return {
-      ...difyResult,
-      mode: serviceApiConfig.value.mode,
-    }
-  }
-
-  async getSuggestedQuestions({ messageId, userId }) {
-    const serviceApiConfig = await this._resolveServiceApiConfig()
-    if (!serviceApiConfig.ok)
-      return serviceApiConfig
-
-    const difyResult = await fetchServiceSuggestedQuestions({
-      chatUrl: serviceApiConfig.value.chatUrl,
-      apiKey: serviceApiConfig.value.apiKey,
-      messageId,
-      userId,
-    })
 
     return {
       ...difyResult,

@@ -1,0 +1,250 @@
+{
+  "version": "2026-04-28",
+  "namespace": "askcrystal",
+  "owner_type": "PRODUCT",
+  "notes": [
+    "These are product-level metafield definitions for AskCrystal storefront storytelling and agent grounding.",
+    "Do not duplicate native Shopify fields such as title, price, SKU, inventory, images, vendor, type, or collections.",
+    "List fields are intended to be imported as JSON arrays in Shopify CSV or written through Admin API metafieldsSet."
+  ],
+  "definitions": [
+    {
+      "key": "primary_intention",
+      "name": "AskCrystal Primary Intention",
+      "type": "single_line_text_field",
+      "required_for_launch": true,
+      "allowed_values": ["calm", "protection", "love", "sleep", "grounding", "focus", "abundance", "clarity", "confidence", "emotional_healing", "intuition", "self_love", "emotional_balance"],
+      "collection_facet": true,
+      "facet_tag_prefix": "intention",
+      "ui_slot": "Product hero, product story, recommendation logic",
+      "example": "calm"
+    },
+    {
+      "key": "secondary_intentions",
+      "name": "AskCrystal Secondary Intentions",
+      "type": "list.single_line_text_field",
+      "required_for_launch": true,
+      "allowed_values": ["calm", "protection", "love", "sleep", "grounding", "focus", "abundance", "clarity", "confidence", "emotional_healing", "intuition", "self_love", "emotional_balance"],
+      "collection_facet": true,
+      "facet_tag_prefix": "intention",
+      "ui_slot": "Benefit chips, recommendation logic",
+      "example": ["sleep", "intuition", "emotional balance"]
+    },
+    {
+      "key": "product_form",
+      "name": "AskCrystal Product Form",
+      "type": "single_line_text_field",
+      "required_for_launch": true,
+      "allowed_values": ["bracelet", "necklace", "ring", "earrings", "anklet", "pendant", "tumbled_stone", "raw_stone", "set", "ritual_kit"],
+      "collection_facet": true,
+      "facet_tag_prefix": "form",
+      "ui_slot": "Product details, collection automation, product recommendations",
+      "example": "necklace"
+    },
+    {
+      "key": "crystal_materials",
+      "name": "AskCrystal Crystal Materials",
+      "type": "list.metaobject_reference",
+      "metaobject_type": "askcrystal_crystal_material",
+      "required_for_launch": true,
+      "collection_facet": true,
+      "facet_tag_prefix": "material",
+      "ui_slot": "Properties panel, agent grounding, collection filters",
+      "example": ["amethyst"]
+    },
+    {
+      "key": "chakras",
+      "name": "AskCrystal Chakras",
+      "type": "list.single_line_text_field",
+      "required_for_launch": true,
+      "allowed_values": ["root", "sacral", "solar_plexus", "heart", "throat", "third_eye", "crown"],
+      "collection_facet": true,
+      "facet_tag_prefix": "chakra",
+      "ui_slot": "Associated chakra row",
+      "example": ["third_eye", "crown"]
+    },
+    {
+      "key": "color_families",
+      "name": "AskCrystal Color Families",
+      "type": "list.single_line_text_field",
+      "required_for_launch": true,
+      "allowed_values": ["purple", "pink", "black", "clear", "green", "blue", "gold", "white"],
+      "collection_facet": true,
+      "facet_tag_prefix": "color",
+      "ui_slot": "Product details, collection automation, visual browsing",
+      "example": ["purple"]
+    },
+    {
+      "key": "ritual_uses",
+      "name": "AskCrystal Ritual Uses",
+      "type": "list.single_line_text_field",
+      "required_for_launch": true,
+      "allowed_values": ["meditation", "bedside", "daily_wear", "cleansing", "manifestation", "travel", "work_desk"],
+      "collection_facet": true,
+      "facet_tag_prefix": "ritual",
+      "ui_slot": "Product details, collection automation, recommendation logic",
+      "example": ["bedside", "daily_wear"]
+    },
+    {
+      "key": "gift_for",
+      "name": "AskCrystal Gift For",
+      "type": "list.single_line_text_field",
+      "required_for_launch": false,
+      "allowed_values": ["partner", "friend", "mother", "birthday", "breakup_support", "new_beginning", "stress_relief"],
+      "collection_facet": true,
+      "facet_tag_prefix": "gift",
+      "ui_slot": "Gift browsing, collection automation, recommendation logic",
+      "example": ["partner", "stress_relief"]
+    },
+    {
+      "key": "western_elements",
+      "name": "AskCrystal Western Elements",
+      "type": "list.single_line_text_field",
+      "required_for_launch": false,
+      "allowed_values": ["fire", "earth", "air", "water"],
+      "ui_slot": "Energy properties, future filtering",
+      "example": ["water", "air"]
+    },
+    {
+      "key": "five_elements",
+      "name": "AskCrystal Five Elements",
+      "type": "list.single_line_text_field",
+      "required_for_launch": false,
+      "allowed_values": ["wood", "fire", "earth", "metal", "water"],
+      "ui_slot": "Bazi/Five Elements recommendations",
+      "example": ["water", "metal"]
+    },
+    {
+      "key": "zodiac_signs",
+      "name": "AskCrystal Zodiac Signs",
+      "type": "list.single_line_text_field",
+      "required_for_launch": false,
+      "allowed_values": ["aries", "taurus", "gemini", "cancer", "leo", "virgo", "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"],
+      "collection_facet": true,
+      "facet_tag_prefix": "zodiac",
+      "ui_slot": "Associated zodiac row",
+      "example": ["pisces", "sagittarius", "scorpio"]
+    },
+    {
+      "key": "energetic_properties",
+      "name": "AskCrystal Energetic Properties",
+      "type": "list.single_line_text_field",
+      "required_for_launch": true,
+      "ui_slot": "Energetic properties row, benefit cards",
+      "example": ["calming", "dream clarity", "spiritual protection"]
+    },
+    {
+      "key": "archetype_name",
+      "name": "AskCrystal Archetype Name",
+      "type": "single_line_text_field",
+      "required_for_launch": false,
+      "ui_slot": "Story card headline accent",
+      "example": "The Dream Keeper"
+    },
+    {
+      "key": "story_headline",
+      "name": "AskCrystal Story Headline",
+      "type": "single_line_text_field",
+      "required_for_launch": true,
+      "ui_slot": "Why this piece / product story heading",
+      "example": "A quiet anchor for overstimulated nights"
+    },
+    {
+      "key": "story_summary",
+      "name": "AskCrystal Story Summary",
+      "type": "multi_line_text_field",
+      "required_for_launch": true,
+      "ui_slot": "Why this piece body copy",
+      "example": "Amethyst is traditionally used when the mind feels too bright at night. This piece keeps that calming signal close without making the ritual complicated."
+    },
+    {
+      "key": "benefits",
+      "name": "AskCrystal Benefits",
+      "type": "list.single_line_text_field",
+      "required_for_launch": true,
+      "ui_slot": "Benefits accordion/list",
+      "example": ["Softens mental chatter before sleep", "Supports intuitive reflection", "Pairs easily with a bedside ritual"]
+    },
+    {
+      "key": "ritual_title",
+      "name": "AskCrystal Ritual Title",
+      "type": "single_line_text_field",
+      "required_for_launch": true,
+      "ui_slot": "Care/ritual section title",
+      "example": "Nightstand Release Ritual"
+    },
+    {
+      "key": "ritual_steps",
+      "name": "AskCrystal Ritual Steps",
+      "type": "list.single_line_text_field",
+      "required_for_launch": true,
+      "ui_slot": "Ritual steps list",
+      "example": ["Hold the crystal for three slow breaths", "Name one thought you are ready to release", "Place it beside your bed before sleep"]
+    },
+    {
+      "key": "care_steps",
+      "name": "AskCrystal Care Steps",
+      "type": "list.single_line_text_field",
+      "required_for_launch": true,
+      "ui_slot": "Care guide list",
+      "example": ["Keep away from harsh chemicals", "Clean gently with a soft dry cloth", "Recharge on selenite or under moonlight"]
+    },
+    {
+      "key": "included_items",
+      "name": "AskCrystal Included Items",
+      "type": "list.single_line_text_field",
+      "required_for_launch": true,
+      "ui_slot": "What's included card",
+      "example": ["Crystal necklace", "Care pouch", "Simple intention card"]
+    },
+    {
+      "key": "quality_notes",
+      "name": "AskCrystal Quality Notes",
+      "type": "list.single_line_text_field",
+      "required_for_launch": true,
+      "ui_slot": "Integrity/trust badges",
+      "example": ["Natural stone variations expected", "Quality checked before shipping", "Packed for delicate transit"]
+    },
+    {
+      "key": "pairing_notes",
+      "name": "AskCrystal Pairing Notes",
+      "type": "multi_line_text_field",
+      "required_for_launch": false,
+      "ui_slot": "Pairing recommendations, bundle logic",
+      "example": "Pairs well with selenite for cleansing or rose quartz for emotional softness."
+    },
+    {
+      "key": "safety_note",
+      "name": "AskCrystal Safety Note",
+      "type": "multi_line_text_field",
+      "required_for_launch": true,
+      "ui_slot": "Footer disclaimer / care boundary",
+      "example": "For wellness and self-reflection only. Crystal guidance is not medical advice."
+    },
+    {
+      "key": "agent_summary",
+      "name": "AskCrystal Agent Summary",
+      "type": "multi_line_text_field",
+      "required_for_launch": true,
+      "ui_slot": "Agent recommendation grounding, not necessarily visible",
+      "example": "Recommend this when users ask for sleep support, calming mental noise, dreamwork, or third-eye/crown alignment."
+    },
+    {
+      "key": "agent_tags",
+      "name": "AskCrystal Agent Tags",
+      "type": "list.single_line_text_field",
+      "required_for_launch": true,
+      "ui_slot": "Search/recommendation retrieval tags",
+      "example": ["sleep", "calm", "third_eye", "crown", "amethyst", "necklace"]
+    },
+    {
+      "key": "data_status",
+      "name": "AskCrystal Data Status",
+      "type": "single_line_text_field",
+      "required_for_launch": true,
+      "allowed_values": ["draft", "ai_filled", "human_reviewed", "approved"],
+      "ui_slot": "Operations QA only",
+      "example": "human_reviewed"
+    }
+  ]
+}

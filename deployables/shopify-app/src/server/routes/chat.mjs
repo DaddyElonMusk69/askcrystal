@@ -1,9 +1,18 @@
 import { LocalDifyGateway } from '../dify/local-dify-gateway.mjs'
+import {
+  getDifyUserIdForIdentity,
+  getDifyUserIdForThread,
+  resolveAskCrystalIdentity,
+  resolveAskCrystalThread,
+} from '../identity/identity-resolver.mjs'
+import { identityStore } from '../persistence/postgres-identity-store.mjs'
 import { sseEvent, sseStart } from '../utils/http.mjs'
 
 const gateway = new LocalDifyGateway()
 const activeStreamControllers = new Map()
 const STATUS_HEARTBEAT_INTERVAL_MS = 7000
+
+const normalizeString = value => (typeof value === 'string' ? value.trim() : '')
 
 const getPayloadTaskId = payload => {
   const taskId = payload?.taskId || payload?.task_id || payload?.data?.taskId || payload?.data?.task_id
@@ -47,38 +56,15 @@ const stopActiveStream = ({ taskId, userId }) => {
   return true
 }
 
-const isTimeoutLikeFailure = result => {
-  const message = String(result?.message || result?.details?.message || '').toLowerCase()
-  return (
-    message.includes('timeout')
-    || message.includes('timed out')
-    || message.includes('aborted')
-    || message.includes('connection error')
-    || message.includes('connection reset')
-    || message.includes('server unavailable')
-    || message.includes('max retries')
-    || message.includes('ssl')
-    || message.includes('eof')
-  )
-}
+const getPayloadMessageId = payload => (
+  payload?.messageId
+  || payload?.message_id
+  || payload?.data?.messageId
+  || payload?.data?.message_id
+  || ''
+)
 
-const buildTimeoutFallbackAnswer = message => {
-  const normalizedMessage = String(message || '').toLowerCase()
-
-  if (/sleep|calm|anxious|anxiety|rest|overthink/.test(normalizedMessage)) {
-    return [
-      'The live reading model is taking longer than expected, so I will give you a simple grounding recommendation instead of leaving you waiting.',
-      'For calm and sleep tonight, start with amethyst. Keep it near your bedside, place one hand on your chest, and take three slow breaths before setting the intention: “I let the day soften, and I allow rest to come easily.”',
-      'If you want a more personal match, send one more detail: is this mostly anxiety, overthinking, emotional heaviness, or restless energy?',
-    ].join('\n\n')
-  }
-
-  return [
-    'The live reading model is taking longer than expected, so I will give you a simple grounding recommendation instead of leaving you waiting.',
-    'Start with clear quartz if you want a flexible everyday stone, or black tourmaline if the main need is protection and grounding.',
-    'If you share the situation you are shopping for, I can narrow the recommendation once the live guide is responsive again.',
-  ].join('\n\n')
-}
+const getPreviewText = text => normalizeString(text).replace(/\s+/g, ' ').slice(0, 240)
 
 const validateChatBody = (body) => {
   if (!body?.message || typeof body.message !== 'string') {
@@ -91,7 +77,6 @@ const validateChatBody = (body) => {
 
   return {
     ok: true,
-    userId: body?.customer?.id || body?.sessionId || 'shopify-guest',
     memoryContext: body?.memoryContext || null,
     message: body.message,
     conversationId: body.conversationId || null,
@@ -110,23 +95,85 @@ const validateChatStopBody = (body) => {
   return {
     ok: true,
     taskId: body.taskId,
-    userId: body?.customer?.id || body?.sessionId || 'shopify-guest',
   }
 }
 
-const validateChatSuggestionsBody = (body) => {
-  if (!body?.messageId || typeof body.messageId !== 'string') {
-    return {
-      ok: false,
-      statusCode: 400,
-      error: 'messageId is required',
-    }
-  }
+const resolveChatExecution = async (body, req) => {
+  const validation = validateChatBody(body)
+  if (!validation.ok)
+    return validation
+
+  const identity = await resolveAskCrystalIdentity(req, body)
+  const thread = await resolveAskCrystalThread({
+    identity,
+    body,
+    initialMessage: validation.message,
+  })
 
   return {
-    ok: true,
-    messageId: body.messageId,
-    userId: body?.customer?.id || body?.sessionId || 'shopify-guest',
+    ...validation,
+    identity,
+    thread,
+    userId: getDifyUserIdForThread({ identity, thread }),
+    conversationId: thread?.difyConversationId || validation.conversationId || null,
+  }
+}
+
+const resolveAuxiliaryChatUser = async (body, req) => {
+  const identity = await resolveAskCrystalIdentity(req, body)
+  const thread = await resolveAskCrystalThread({
+    identity,
+    body,
+  })
+
+  return {
+    identity,
+    thread,
+    userId: getDifyUserIdForThread({ identity, thread }) || getDifyUserIdForIdentity(identity),
+  }
+}
+
+const persistChatTurn = async ({
+  thread,
+  userMessage,
+  assistantAnswer,
+  components = [],
+  suggestions = [],
+  metadata = {},
+  conversationId = '',
+  messageId = '',
+  taskId = '',
+}) => {
+  if (!thread?.id || !identityStore.enabled)
+    return
+
+  try {
+    await identityStore.insertMessage({
+      threadId: thread.id,
+      role: 'user',
+      contentText: userMessage,
+      metadata: {
+        source: 'storefront_chat',
+      },
+    })
+    await identityStore.insertMessage({
+      threadId: thread.id,
+      role: 'assistant',
+      contentText: assistantAnswer,
+      components,
+      suggestions,
+      difyMessageId: messageId,
+      difyTaskId: taskId,
+      metadata,
+    })
+    await identityStore.updateThreadAfterDify({
+      threadId: thread.id,
+      difyConversationId: conversationId,
+      lastMessagePreview: getPreviewText(assistantAnswer),
+    })
+  }
+  catch (error) {
+    console.error('[AskCrystal] Failed to persist chat turn.', error)
   }
 }
 
@@ -154,8 +201,8 @@ export const handleChatParameters = async (_req) => {
   }
 }
 
-export const handleChat = async (body) => {
-  const validation = validateChatBody(body)
+export const handleChat = async (body, req = null) => {
+  const validation = await resolveChatExecution(body, req)
   if (!validation.ok) {
     return {
       statusCode: validation.statusCode,
@@ -190,6 +237,17 @@ export const handleChat = async (body) => {
     }
   }
 
+  await persistChatTurn({
+    thread: validation.thread,
+    userMessage: validation.message,
+    assistantAnswer: difyResult.data.answer,
+    components: difyResult.data.components || [],
+    suggestions: [],
+    metadata: difyResult.data.metadata || {},
+    conversationId: difyResult.data.conversationId || validation.conversationId || '',
+    messageId: difyResult.data.messageId || '',
+  })
+
   return {
     statusCode: 200,
     payload: {
@@ -201,48 +259,14 @@ export const handleChat = async (body) => {
       references: difyResult.data.references,
       metadata: difyResult.data.metadata,
       components: difyResult.data.components || [],
-      suggestions: difyResult.data.suggestions || [],
+      suggestions: [],
       storefrontHydration: difyResult.data.storefrontHydration || null,
       products: [],
     },
   }
 }
 
-export const handleChatSuggestions = async (body) => {
-  const validation = validateChatSuggestionsBody(body)
-  if (!validation.ok) {
-    return {
-      statusCode: validation.statusCode,
-      payload: {
-        ok: false,
-        error: validation.error,
-        suggestions: [],
-      },
-    }
-  }
-
-  const difyResult = await gateway.getSuggestedQuestions({
-    messageId: validation.messageId,
-    userId: validation.userId,
-  })
-
-  return {
-    statusCode: 200,
-    payload: {
-      ok: Boolean(difyResult.ok),
-      suggestions: difyResult.suggestions || [],
-      messageId: validation.messageId,
-      ...(difyResult.ok
-        ? {}
-        : {
-            error: difyResult.message || 'Failed to load suggested questions',
-            code: difyResult.code || 'dify_suggestions_failed',
-          }),
-    },
-  }
-}
-
-export const handleChatStop = async (body) => {
+export const handleChatStop = async (body, req = null) => {
   const validation = validateChatStopBody(body)
   if (!validation.ok) {
     return {
@@ -253,15 +277,16 @@ export const handleChatStop = async (body) => {
       },
     }
   }
+  const execution = await resolveAuxiliaryChatUser(body, req)
 
   const localStopped = stopActiveStream({
     taskId: validation.taskId,
-    userId: validation.userId,
+    userId: execution.userId,
   })
 
   const difyResult = await gateway.stopChat({
     taskId: validation.taskId,
-    userId: validation.userId,
+    userId: execution.userId,
   })
 
   if (!difyResult.ok && !localStopped) {
@@ -290,7 +315,7 @@ export const handleChatStop = async (body) => {
 }
 
 export const handleChatStream = async (body, res, req = null) => {
-  const validation = validateChatBody(body)
+  const validation = await resolveChatExecution(body, req)
   if (!validation.ok) {
     return {
       statusCode: validation.statusCode,
@@ -314,20 +339,35 @@ export const handleChatStream = async (body, res, req = null) => {
   })
   const emitStatusEvent = (payload, options) => {
     if (clientAbortController.signal.aborted || res.writableEnded || res.destroyed)
-      return
+      return false
 
     latestStatusPayload = {
       ...latestStatusPayload,
       ...(payload || {}),
     }
-    sseEvent(res, 'status', enrichStatusPayload(latestStatusPayload, options))
+    return sseEvent(res, 'status', enrichStatusPayload(latestStatusPayload, options))
   }
+  const canWriteToClient = () => !res.writableEnded && !res.destroyed
 
   const clientAbortController = new AbortController()
-  const abortUpstream = () => clientAbortController.abort()
-  req?.on?.('close', abortUpstream)
-  res?.on?.('close', abortUpstream)
-  sseStart(res)
+  let streamClosed = false
+  const abortClientStream = () => {
+    if (streamClosed || clientAbortController.signal.aborted)
+      return
+
+    clientAbortController.abort()
+  }
+  req?.on?.('aborted', abortClientStream)
+  req?.on?.('error', abortClientStream)
+  res.on?.('close', () => {
+    if (!res.writableEnded)
+      abortClientStream()
+  })
+  res.on?.('error', abortClientStream)
+
+  if (!sseStart(res))
+    return
+
   emitStatusEvent(latestStatusPayload)
 
   let statusHeartbeatHandle = setInterval(() => {
@@ -356,7 +396,6 @@ export const handleChatStream = async (body, res, req = null) => {
   let sawVisibleStream = false
   let latestConversationId = validation.conversationId
   let latestMetadata = null
-  let latestSuggestions = []
 
   let difyResult
   try {
@@ -410,15 +449,8 @@ export const handleChatStream = async (body, res, req = null) => {
             streamedComponents = nextComponents
         }
 
-        if (type === 'suggestions') {
-          latestSuggestions = Array.isArray(payload?.suggestions) ? payload.suggestions : latestSuggestions
-        }
-
         if (type === 'complete' && payload && typeof payload === 'object')
           latestMetadata = payload.metadata || latestMetadata
-
-        if (type === 'complete' && Array.isArray(payload?.suggestions))
-          latestSuggestions = payload.suggestions
 
         if (type === 'status') {
           emitStatusEvent(payload)
@@ -430,9 +462,8 @@ export const handleChatStream = async (body, res, req = null) => {
     })
   }
   finally {
+    streamClosed = true
     clearStatusHeartbeat()
-    req?.off?.('close', abortUpstream)
-    res?.off?.('close', abortUpstream)
     clearActiveStream({
       taskId: activeTaskId,
       controller: clientAbortController,
@@ -440,55 +471,70 @@ export const handleChatStream = async (body, res, req = null) => {
   }
 
   if (clientAbortController.signal.aborted) {
-    if (!res.writableEnded)
+    if (canWriteToClient())
       res.end()
     return
   }
 
   if (!difyResult.ok) {
     if (sawVisibleStream || streamedComponents.length > 0) {
-      sseEvent(res, 'complete', {
-        answer: streamedAnswer,
-        conversationId: latestConversationId,
-        metadata: {
-          ...(latestMetadata || {}),
-          fallback: 'partial-upstream-failure',
-          partial: true,
-          upstreamError: difyResult.message,
-          upstreamCode: difyResult.code || null,
-        },
-        references: [],
+      const partialMetadata = {
+        ...(latestMetadata || {}),
+        fallback: 'partial-upstream-failure',
+        partial: true,
+        upstreamError: difyResult.message,
+        upstreamCode: difyResult.code || null,
+      }
+
+      await persistChatTurn({
+        thread: validation.thread,
+        userMessage: validation.message,
+        assistantAnswer: streamedAnswer,
         components: streamedComponents,
-        suggestions: latestSuggestions,
-      })
-      res.end()
-      return
-    }
-
-    if (isTimeoutLikeFailure(difyResult)) {
-      sseEvent(res, 'complete', {
-        answer: buildTimeoutFallbackAnswer(validation.message),
-        conversationId: validation.conversationId,
-        metadata: {
-          fallback: 'dify-timeout',
-          upstreamError: difyResult.message,
-        },
-        references: [],
         suggestions: [],
+        metadata: partialMetadata,
+        conversationId: latestConversationId || validation.conversationId || '',
+        taskId: activeTaskId,
       })
-      res.end()
+
+      if (canWriteToClient()) {
+        sseEvent(res, 'complete', {
+          answer: streamedAnswer,
+          conversationId: latestConversationId,
+          metadata: partialMetadata,
+          references: [],
+          components: streamedComponents,
+          suggestions: [],
+        })
+        res.end()
+      }
       return
     }
 
-    sseEvent(res, 'error', {
-      ok: false,
-      error: difyResult.message,
-      code: difyResult.code,
-      details: difyResult.details || null,
-    })
-    res.end()
+    if (canWriteToClient()) {
+      sseEvent(res, 'error', {
+        ok: false,
+        error: difyResult.message,
+        code: difyResult.code,
+        details: difyResult.details || null,
+      })
+      res.end()
+    }
     return
   }
 
-  res.end()
+  await persistChatTurn({
+    thread: validation.thread,
+    userMessage: validation.message,
+    assistantAnswer: difyResult.data?.answer || streamedAnswer,
+    components: difyResult.data?.components || streamedComponents,
+    suggestions: [],
+    metadata: difyResult.data?.metadata || latestMetadata || {},
+    conversationId: difyResult.data?.conversationId || latestConversationId || validation.conversationId || '',
+    messageId: getPayloadMessageId(difyResult.data) || '',
+    taskId: activeTaskId,
+  })
+
+  if (!res.writableEnded && !res.destroyed)
+    res.end()
 }

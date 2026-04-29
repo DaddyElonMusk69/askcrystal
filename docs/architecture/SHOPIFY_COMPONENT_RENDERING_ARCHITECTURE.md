@@ -49,9 +49,10 @@ The agent does not call the browser. The agent calls tools or emits structured U
 
 - `product_card`: Single product recommendation with image, price, reason, and link.
 - `product_carousel`: Horizontal shelf of products for a specific intention.
-- `ritual_card`: Short ritual instructions tied to one or more products.
-- `reading_summary`: Tarot, astrology, bazi, or numerology summary with key takeaways.
-- `collection_link`: Guided entry point into a Shopify collection.
+
+V1 keeps the model-facing component suite product-only. Rituals, reading summaries,
+next steps, and collection navigation should be normal assistant prose or native
+Shopify UI so the model does not choose between overlapping card types.
 
 ## Dify Tooling Needed
 
@@ -69,8 +70,6 @@ The Shopify theme should keep a registry like:
 const COMPONENTS = {
   product_card: ProductCardMessage,
   product_carousel: ProductCarouselMessage,
-  ritual_card: RitualCardMessage,
-  reading_summary: ReadingSummaryMessage,
 };
 ```
 

@@ -1,0 +1,400 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://askcrystal.local/schemas/shopify-catalog-product.schema.json",
+  "title": "AskCrystal Local Shopify Catalog Product",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "handle",
+    "workflow_status",
+    "shopify_status",
+    "title",
+    "description",
+    "vendor",
+    "product_type",
+    "tags",
+    "collections",
+    "variants",
+    "media",
+    "askcrystal"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "handle": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "workflow_status": {
+      "type": "string",
+      "enum": ["draft", "ai_filled", "human_reviewed", "approved"]
+    },
+    "shopify_status": {
+      "type": "string",
+      "enum": ["draft", "active", "archived"]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "vendor": {
+      "type": "string",
+      "minLength": 1,
+      "default": "AskCrystal"
+    },
+    "product_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "collections": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      },
+      "uniqueItems": true
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "values"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "variants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sku", "price", "option_values"],
+        "properties": {
+          "sku": {
+            "type": "string",
+            "minLength": 1
+          },
+          "price": {
+            "type": "string",
+            "pattern": "^[0-9]+(?:\\.[0-9]{2})$"
+          },
+          "compare_at_price": {
+            "type": ["string", "null"],
+            "pattern": "^[0-9]+(?:\\.[0-9]{2})$"
+          },
+          "barcode": {
+            "type": ["string", "null"]
+          },
+          "option_values": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "taxable": {
+            "type": "boolean",
+            "default": true
+          },
+          "requires_shipping": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "not": {
+          "anyOf": [
+            { "required": ["inventory_quantity"] },
+            { "required": ["inventory_level"] },
+            { "required": ["available_quantity"] },
+            { "required": ["stock"] }
+          ]
+        }
+      }
+    },
+    "media": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["src", "alt"],
+        "properties": {
+          "src": {
+            "type": "string",
+            "minLength": 1
+          },
+          "alt": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "askcrystal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_intention",
+        "secondary_intentions",
+        "product_form",
+        "crystal_material_handles",
+        "chakras",
+        "color_families",
+        "ritual_uses",
+        "energetic_properties",
+        "story_headline",
+        "story_summary",
+        "benefits",
+        "ritual_title",
+        "ritual_steps",
+        "care_steps",
+        "included_items",
+        "quality_notes",
+        "safety_note",
+        "agent_summary",
+        "agent_tags",
+        "data_status"
+      ],
+      "properties": {
+        "primary_intention": {
+          "type": "string",
+          "enum": [
+            "calm",
+            "protection",
+            "love",
+            "sleep",
+            "grounding",
+            "focus",
+            "abundance",
+            "clarity",
+            "confidence",
+            "emotional_healing",
+            "intuition",
+            "self_love",
+            "emotional_balance"
+          ]
+        },
+        "secondary_intentions": {
+          "$ref": "#/$defs/intention_list"
+        },
+        "product_form": {
+          "type": "string",
+          "enum": [
+            "bracelet",
+            "necklace",
+            "ring",
+            "earrings",
+            "anklet",
+            "pendant",
+            "tumbled_stone",
+            "raw_stone",
+            "set",
+            "ritual_kit"
+          ]
+        },
+        "crystal_material_handles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "chakras": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["root", "sacral", "solar_plexus", "heart", "throat", "third_eye", "crown"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "color_families": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["purple", "pink", "black", "clear", "green", "blue", "gold", "white"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "ritual_uses": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["meditation", "bedside", "daily_wear", "cleansing", "manifestation", "travel", "work_desk"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "gift_for": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["partner", "friend", "mother", "birthday", "breakup_support", "new_beginning", "stress_relief"]
+          },
+          "uniqueItems": true
+        },
+        "western_elements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["fire", "earth", "air", "water"]
+          },
+          "uniqueItems": true
+        },
+        "five_elements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["wood", "fire", "earth", "metal", "water"]
+          },
+          "uniqueItems": true
+        },
+        "zodiac_signs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "aries",
+              "taurus",
+              "gemini",
+              "cancer",
+              "leo",
+              "virgo",
+              "libra",
+              "scorpio",
+              "sagittarius",
+              "capricorn",
+              "aquarius",
+              "pisces"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "energetic_properties": {
+          "$ref": "#/$defs/string_list"
+        },
+        "archetype_name": {
+          "type": ["string", "null"]
+        },
+        "story_headline": {
+          "type": "string",
+          "minLength": 1
+        },
+        "story_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "benefits": {
+          "$ref": "#/$defs/string_list"
+        },
+        "ritual_title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ritual_steps": {
+          "$ref": "#/$defs/string_list"
+        },
+        "care_steps": {
+          "$ref": "#/$defs/string_list"
+        },
+        "included_items": {
+          "$ref": "#/$defs/string_list"
+        },
+        "quality_notes": {
+          "$ref": "#/$defs/string_list"
+        },
+        "pairing_notes": {
+          "type": ["string", "null"]
+        },
+        "safety_note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "agent_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "agent_tags": {
+          "$ref": "#/$defs/string_list"
+        },
+        "data_status": {
+          "type": "string",
+          "enum": ["draft", "ai_filled", "human_reviewed", "approved"]
+        }
+      }
+    }
+  },
+  "not": {
+    "anyOf": [
+      { "required": ["inventory_quantity"] },
+      { "required": ["inventory_levels"] },
+      { "required": ["stock"] }
+    ]
+  },
+  "$defs": {
+    "intention_list": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "calm",
+          "protection",
+          "love",
+          "sleep",
+          "grounding",
+          "focus",
+          "abundance",
+          "clarity",
+          "confidence",
+          "emotional_healing",
+          "intuition",
+          "self_love",
+          "emotional_balance"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "string_list": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  }
+}

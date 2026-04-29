@@ -1,0 +1,169 @@
+{
+  "version": "2026-04-28",
+  "metaobjects": [
+    {
+      "type": "askcrystal_crystal_material",
+      "name": "AskCrystal Crystal Material",
+      "description": "Reusable material profile shared by products, product pages, filters, and agent recommendations.",
+      "display_name_field": "name",
+      "fields": [
+        {
+          "key": "name",
+          "name": "Name",
+          "type": "single_line_text_field",
+          "required": true,
+          "example": "Amethyst"
+        },
+        {
+          "key": "short_meaning",
+          "name": "Short Meaning",
+          "type": "multi_line_text_field",
+          "required": true,
+          "example": "Calming, intuitive, and traditionally linked with dreamwork."
+        },
+        {
+          "key": "primary_intentions",
+          "name": "Primary Intentions",
+          "type": "list.single_line_text_field",
+          "required": true,
+          "example": [
+            "calm",
+            "sleep",
+            "intuition"
+          ]
+        },
+        {
+          "key": "chakras",
+          "name": "Chakras",
+          "type": "list.single_line_text_field",
+          "required": true,
+          "example": [
+            "third_eye",
+            "crown"
+          ]
+        },
+        {
+          "key": "western_elements",
+          "name": "Western Elements",
+          "type": "list.single_line_text_field",
+          "required": false,
+          "example": [
+            "water",
+            "air"
+          ]
+        },
+        {
+          "key": "five_elements",
+          "name": "Five Elements",
+          "type": "list.single_line_text_field",
+          "required": false,
+          "example": [
+            "water",
+            "metal"
+          ]
+        },
+        {
+          "key": "zodiac_signs",
+          "name": "Zodiac Signs",
+          "type": "list.single_line_text_field",
+          "required": false,
+          "example": [
+            "pisces",
+            "sagittarius",
+            "scorpio"
+          ]
+        },
+        {
+          "key": "care_notes",
+          "name": "Care Notes",
+          "type": "multi_line_text_field",
+          "required": true,
+          "example": "Avoid harsh chemicals. Clean gently with a soft cloth."
+        },
+        {
+          "key": "cleansing_methods",
+          "name": "Cleansing Methods",
+          "type": "list.single_line_text_field",
+          "required": true,
+          "example": [
+            "selenite",
+            "moonlight",
+            "sound"
+          ]
+        },
+        {
+          "key": "pairing_notes",
+          "name": "Pairing Notes",
+          "type": "multi_line_text_field",
+          "required": false,
+          "example": "Pairs with selenite for clearing or rose quartz for emotional softness."
+        },
+        {
+          "key": "safety_note",
+          "name": "Safety Note",
+          "type": "multi_line_text_field",
+          "required": true,
+          "example": "For wellness and self-reflection only. Not medical advice."
+        }
+      ]
+    },
+    {
+      "type": "askcrystal_ritual",
+      "name": "AskCrystal Ritual",
+      "description": "Reusable ritual template for product pages and assistant answers.",
+      "display_name_field": "title",
+      "fields": [
+        {
+          "key": "title",
+          "name": "Title",
+          "type": "single_line_text_field",
+          "required": true,
+          "example": "Nightstand Release Ritual"
+        },
+        {
+          "key": "intention",
+          "name": "Intention",
+          "type": "single_line_text_field",
+          "required": true,
+          "example": "sleep"
+        },
+        {
+          "key": "duration",
+          "name": "Duration",
+          "type": "single_line_text_field",
+          "required": false,
+          "example": "2 minutes"
+        },
+        {
+          "key": "steps",
+          "name": "Steps",
+          "type": "list.single_line_text_field",
+          "required": true,
+          "example": [
+            "Hold the crystal",
+            "Take three breaths",
+            "Name one release intention"
+          ]
+        },
+        {
+          "key": "supporting_items",
+          "name": "Supporting Items",
+          "type": "list.single_line_text_field",
+          "required": false,
+          "example": [
+            "journal",
+            "candle",
+            "selenite plate"
+          ]
+        },
+        {
+          "key": "safety_note",
+          "name": "Safety Note",
+          "type": "multi_line_text_field",
+          "required": true,
+          "example": "For wellness and self-reflection only."
+        }
+      ]
+    }
+  ]
+}

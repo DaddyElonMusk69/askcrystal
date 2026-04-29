@@ -1,0 +1,6 @@
+interface:
+  display_name: "AskCrystal Shopify COO"
+  short_description: "Manage AskCrystal Shopify catalog ops"
+  default_prompt: "Use $askcrystal-shopify-coo to create or update an AskCrystal Shopify product listing, validate it, and prepare safe Shopify sync steps."
+policy:
+  allow_implicit_invocation: true

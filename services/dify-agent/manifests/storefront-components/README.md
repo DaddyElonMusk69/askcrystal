@@ -4,6 +4,13 @@ This folder defines the Dify-side contract for rich storefront components.
 
 These files describe what Dify should output before the Shopify proxy hydrates the payload into the storefront render contract.
 
+V1 intentionally exposes only product-focused components:
+
+- `product_card`
+- `product_carousel`
+
+Reading summaries, rituals, next steps, and collection browsing prompts should stay in normal assistant prose or native storefront UI. Keeping the manifest surface small reduces duplicate cards and makes model behavior more stable.
+
 ## Files
 
 - `storefront-component-intent.schema.json`
@@ -15,7 +22,7 @@ These files describe what Dify should output before the Shopify proxy hydrates t
 
 This schema is not the same as the frontend component payload shape.
 
-Dify should return lightweight intent objects with product or collection references.
+Dify should return lightweight intent objects with product references. `product_carousel` may include an optional `browse_collection` reference only to populate the card's "browse more" link.
 
 The Shopify proxy then:
 

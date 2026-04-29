@@ -6,12 +6,7 @@ app:
   mode: workflow
   name: AskCrystal Fengshui Space Audit
   use_icon_as_answer_icon: false
-dependencies:
-- current_identifier: null
-  type: marketplace
-  value:
-    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.45@3b8f3c50ee48f62e45f95957f3441492052f0b1dbc1c6eae71034d7c6d69fe11
-    version: null
+dependencies: []
 kind: app
 version: 0.6.0
 workflow:
@@ -52,21 +47,9 @@ workflow:
         isInIteration: false
         isInLoop: false
         sourceType: code
-        targetType: llm
-      id: fengshui-prepare-to-llm
-      source: fengshui_prepare
-      sourceHandle: source
-      target: fengshui_llm
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
-        isInIteration: false
-        isInLoop: false
-        sourceType: llm
         targetType: code
-      id: fengshui-llm-to-finalize
-      source: fengshui_llm
+      id: fengshui-prepare-to-finalize
+      source: fengshui_prepare
       sourceHandle: source
       target: fengshui_finalize
       targetHandle: target
@@ -152,8 +135,8 @@ workflow:
                   "calm": ["calm", "peace", "anxiety", "quiet", "情绪", "平静", "焦虑"],
               }
               space_type_keywords = {
-                  "workspace": ["office", "desk", "studio", "workspace", "shop", "公司", "办公室", "工位", "店"],
                   "bedroom": ["bedroom", "bed", "睡房", "卧室", "床"],
+                  "workspace": ["office", "desk", "studio", "workspace", "shop", "公司", "办公室", "工位", "店"],
                   "home": ["home", "apartment", "house", "living room", "kitchen", "bathroom", "家", "客厅", "厨房", "卫生间"],
               }
               period_labels = {
@@ -256,7 +239,12 @@ workflow:
                   lowered = clean(text).lower()
                   for canonical, aliases in direction_aliases.items():
                       for alias in aliases:
-                          if alias.lower() in lowered:
+                          alias_lower = alias.lower()
+                          if len(alias_lower) <= 2 and re.match(r"^[a-z]+$", alias_lower):
+                              if re.search(rf"(?<![a-z]){re.escape(alias_lower)}(?![a-z])", lowered):
+                                  return canonical
+                              continue
+                          if alias_lower in lowered:
                               return canonical
                   return ""
 
@@ -557,187 +545,26 @@ workflow:
       type: custom
       width: 244
     - data:
-        context:
-          enabled: false
-          variable_selector: []
-        desc: Interpret the fengshui audit signals and return strict JSON only.
-        memory:
-          enabled: false
-          window:
-            enabled: false
-            size: 50
-        model:
-          completion_params:
-            temperature: 0.4
-          mode: chat
-          name: glm-5
-          provider: langgenius/openai_api_compatible/openai_api_compatible
-        prompt_template:
-        - role: system
-          text: |-
-            You are the AskCrystal fengshui space-audit workflow for a structured six-skill phase.
-
-            Return strict JSON only. Do not use markdown fences. Do not include any explanation outside the JSON object.
-
-            Output shape:
-            {
-              "status": "ok",
-              "skill": "fengshui_space_audit",
-              "summary": "1-2 sentence audit summary",
-              "findings": ["3-5 concise insights"],
-              "follow_up_questions": [],
-              "recommendations": ["2-5 concrete actions"],
-              "safety_note": "For environmental reflection only, not a substitute for structural, safety, or professional building advice.",
-              "metadata": {
-                "confidence": "medium",
-                "missing_inputs": [],
-                "source_family": "fengshui.skill",
-                "mode": "space-audit",
-                "intent_type": "audit",
-                "primary_method": "fengshui",
-                "space_type": "{{#fengshui_prepare.space_type#}}",
-                "goal_detected": "{{#fengshui_prepare.goal_detected#}}",
-                "facing_direction": "{{#fengshui_prepare.facing_direction_normalized#}}",
-                "move_in_period": "{{#fengshui_prepare.move_in_period#}}",
-                "issue_tags": "{{#fengshui_prepare.issue_tags#}}",
-                "audit_scope": "{{#fengshui_prepare.audit_scope#}}"
-              }
-            }
-
-            Rules:
-            - Keep the tone calm, practical, and non-fear-based.
-            - Never talk as if luck is mechanically guaranteed by one object or one rearrangement.
-            - Never mention tools, workflows, or hidden reasoning.
-            - Use the same language as the user's request.
-            - Separate what is observed from what is inferred.
-            - Prefer layout, light, flow, cleanliness, and function over decorative cures.
-            - If the current workflow status is needs_input, preserve that status and focus on a concise intake-style response instead of a completed audit.
-        - role: user
-          text: |-
-            Current workflow status:
-            {{#fengshui_prepare.status#}}
-
-            Space description:
-            {{#fengshui_prepare.space_description_clean#}}
-
-            Facing direction:
-            {{#fengshui_prepare.facing_direction_normalized#}}
-
-            Priority goal:
-            {{#fengshui_prepare.goal_detected#}}
-
-            Move-in year:
-            {{#fengshui_prepare.move_in_year_normalized#}}
-
-            Space type:
-            {{#fengshui_prepare.space_type#}}
-
-            Audit scope:
-            {{#fengshui_prepare.audit_scope#}}
-
-            Detected issue tags:
-            {{#fengshui_prepare.issue_tags#}}
-
-            Structured facts:
-            {{#fengshui_prepare.fact_brief#}}
-
-            Seed findings:
-            {{#fengshui_prepare.findings#}}
-
-            Seed follow-up questions:
-            {{#fengshui_prepare.follow_up_questions#}}
-
-            Seed recommendations:
-            {{#fengshui_prepare.recommendations#}}
-        retry_config:
-          enabled: false
-          exponential_backoff:
-            enabled: false
-            max_interval: 10000
-            multiplier: 2
-          max_retries: 1
-          retry_interval: 1000
-        selected: false
-        structured_output:
-          enabled: false
-        title: Interpret Fengshui Audit
-        type: llm
-        variables: []
-        vision:
-          configs:
-            variable_selector: []
-          enabled: false
-      height: 116
-      id: fengshui_llm
-      position:
-        x: 648
-        y: 260
-      positionAbsolute:
-        x: 648
-        y: 260
-      selected: false
-      sourcePosition: right
-      targetPosition: left
-      type: custom
-      width: 244
-    - data:
         code: |
-          def main(text: str, prepare_status: str, prepare_findings: list = None, prepare_follow_up_questions: list = None, prepare_recommendations: list = None, prepare_metadata: dict = None) -> dict:
-              import json
-              import re
-
-              def fallback_payload(raw_text: str) -> dict:
-                  cleaned = (raw_text or "").strip()
-                  summary = cleaned.split("\n")[0][:280] if cleaned else "The fengshui audit completed, but the structured format needs a retry."
-                  findings = [line.strip("-• ") for line in cleaned.splitlines() if line.strip()][:4] or (prepare_findings or [summary])
-                  return {
-                      "status": prepare_status if prepare_status in {"ok", "needs_input"} else "ok",
-                      "skill": "fengshui_space_audit",
-                      "summary": summary,
-                      "findings": findings,
-                      "follow_up_questions": prepare_follow_up_questions or [],
-                      "recommendations": prepare_recommendations or ["Retry the fengshui audit if a cleaner structured result is needed."],
-                      "safety_note": "For environmental reflection only, not a substitute for structural, safety, or professional building advice.",
-                      "metadata": dict(prepare_metadata or {}),
-                  }
-
-              raw = (text or "").strip()
-              parsed = None
-              if raw:
-                  candidates = [raw]
-                  fenced = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.S)
-                  candidates.extend(fenced)
-                  brace_match = re.search(r"(\{.*\})", raw, re.S)
-                  if brace_match:
-                      candidates.append(brace_match.group(1))
-                  for candidate in candidates:
-                      try:
-                          parsed = json.loads(candidate)
-                          break
-                      except Exception:
-                          continue
-
-              payload = parsed if isinstance(parsed, dict) else fallback_payload(raw)
-              payload["status"] = payload.get("status") or (prepare_status if prepare_status in {"ok", "needs_input"} else "ok")
-              if payload["status"] not in {"ok", "needs_input"}:
-                  payload["status"] = prepare_status if prepare_status in {"ok", "needs_input"} else "ok"
-              payload["skill"] = "fengshui_space_audit"
-              payload["summary"] = str(payload.get("summary") or "")
-              payload["findings"] = payload.get("findings") if isinstance(payload.get("findings"), list) else (prepare_findings or [])
-              payload["follow_up_questions"] = payload.get("follow_up_questions") if isinstance(payload.get("follow_up_questions"), list) else (prepare_follow_up_questions or [])
-              payload["recommendations"] = payload.get("recommendations") if isinstance(payload.get("recommendations"), list) else (prepare_recommendations or [])
-              payload["safety_note"] = str(payload.get("safety_note") or "For environmental reflection only, not a substitute for structural, safety, or professional building advice.")
-
+          def main(prepare_status: str, prepare_summary: str = "", prepare_findings: list = None, prepare_follow_up_questions: list = None, prepare_recommendations: list = None, prepare_safety_note: str = "", prepare_metadata: dict = None, fact_brief: str = "") -> dict:
               metadata = dict(prepare_metadata or {})
-              llm_metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
-              metadata.update(llm_metadata)
-              metadata.setdefault("confidence", "medium" if payload["status"] == "ok" else "low")
+              status = prepare_status if prepare_status in {"ok", "needs_input"} else "ok"
+              metadata.setdefault("confidence", "medium" if status == "ok" else "low")
               metadata.setdefault("missing_inputs", [])
-              payload["metadata"] = metadata
-
-              return payload
+              if fact_brief:
+                  metadata["fact_brief"] = fact_brief
+              return {
+                  "status": status,
+                  "skill": "fengshui_space_audit",
+                  "summary": str(prepare_summary or "The fengshui audit signals are ready for interpretation."),
+                  "findings": prepare_findings or [],
+                  "follow_up_questions": prepare_follow_up_questions or [],
+                  "recommendations": prepare_recommendations or [],
+                  "safety_note": str(prepare_safety_note or "For environmental reflection only, not a substitute for structural, safety, or professional building advice."),
+                  "metadata": metadata,
+              }
         code_language: python3
-        desc: Parse the LLM response into the shared fengshui workflow contract.
+        desc: Return the structured fengshui audit contract for the master agent to interpret.
         outputs:
           status:
             children: null
@@ -768,15 +595,15 @@ workflow:
         type: code
         variables:
         - value_selector:
-          - fengshui_llm
-          - text
-          value_type: string
-          variable: text
-        - value_selector:
           - fengshui_prepare
           - status
           value_type: string
           variable: prepare_status
+        - value_selector:
+          - fengshui_prepare
+          - summary
+          value_type: string
+          variable: prepare_summary
         - value_selector:
           - fengshui_prepare
           - findings
@@ -794,16 +621,26 @@ workflow:
           variable: prepare_recommendations
         - value_selector:
           - fengshui_prepare
+          - safety_note
+          value_type: string
+          variable: prepare_safety_note
+        - value_selector:
+          - fengshui_prepare
           - metadata
           value_type: object
           variable: prepare_metadata
+        - value_selector:
+          - fengshui_prepare
+          - fact_brief
+          value_type: string
+          variable: fact_brief
       height: 84
       id: fengshui_finalize
       position:
-        x: 960
+        x: 648
         y: 260
       positionAbsolute:
-        x: 960
+        x: 648
         y: 260
       selected: false
       sourcePosition: right

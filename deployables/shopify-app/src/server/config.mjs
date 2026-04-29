@@ -57,6 +57,27 @@ const asRequired = (value, key) => {
 
 const resolveUrl = (baseUrl, pathname) => new URL(pathname, `${baseUrl.replace(/\/$/, '')}/`).toString()
 
+const asPositiveNumber = (value) => {
+  const number = Number(value)
+  return Number.isFinite(number) && number > 0 ? number : null
+}
+
+const resolveDifyRequestTimeoutMs = () => {
+  const explicitTimeoutMs = asPositiveNumber(process.env.DIFY_REQUEST_TIMEOUT_MS)
+  if (explicitTimeoutMs)
+    return explicitTimeoutMs
+
+  const appExecutionSeconds = asPositiveNumber(process.env.APP_MAX_EXECUTION_TIME)
+  if (appExecutionSeconds)
+    return appExecutionSeconds * 1000
+
+  const workflowExecutionSeconds = asPositiveNumber(process.env.WORKFLOW_MAX_EXECUTION_TIME)
+  if (workflowExecutionSeconds)
+    return workflowExecutionSeconds * 1000
+
+  return 1200 * 1000
+}
+
 const difyBaseUrl = process.env.DIFY_BASE_URL || 'http://localhost:18080'
 const difyResolvedChatUrl = process.env.DIFY_APP_CHAT_URL || resolveUrl(difyBaseUrl, '/v1/chat-messages')
 
@@ -80,9 +101,11 @@ export const config = {
   difyAdminEmail: process.env.DIFY_ADMIN_EMAIL || '',
   difyAdminPassword: process.env.DIFY_ADMIN_PASSWORD || '',
   difyDevUseConsole: asBoolean(process.env.DIFY_DEV_USE_CONSOLE, true),
-  difyRequestTimeoutMs: Number(process.env.DIFY_REQUEST_TIMEOUT_MS || 20000),
+  difyRequestTimeoutMs: resolveDifyRequestTimeoutMs(),
+  defaultTimezone: process.env.ASKCRYSTAL_DEFAULT_TIMEZONE || 'Asia/Shanghai',
   sessionSecret: process.env.ASKCRYSTAL_SESSION_SECRET || '',
   memoryDatabaseUrl: process.env.ASKCRYSTAL_MEMORY_DATABASE_URL || '',
+  memoryDatabaseSsl: asBoolean(process.env.ASKCRYSTAL_MEMORY_DATABASE_SSL, false),
 }
 
 export const configStatus = {
@@ -105,10 +128,12 @@ export const configStatus = {
     adminPassword: Boolean(config.difyAdminPassword),
     devUseConsole: config.difyDevUseConsole,
     requestTimeoutMs: config.difyRequestTimeoutMs,
+    defaultTimezone: config.defaultTimezone,
   },
   persistence: {
     sessionSecret: Boolean(config.sessionSecret),
     memoryDatabaseUrl: Boolean(config.memoryDatabaseUrl),
+    memoryDatabaseSsl: config.memoryDatabaseSsl,
   },
 }
 

@@ -24,10 +24,6 @@ Our frontend should treat rich storefront surfaces as completed tool-call parts:
 
 - `display_product_card`
 - `display_product_carousel`
-- `display_ritual_card`
-- `display_reading_summary`
-- `display_collection_link`
-- `display_next_steps`
 
 Each tool-call part carries normalized result data. The frontend picks the renderer from the allowlist and displays it inline with the assistant's text.
 
@@ -127,6 +123,10 @@ This fallback is for bridge mode only. The long-term contract should be structur
 
 ## Component Suite
 
+V1 intentionally exposes only product-focused components to the model. Reading
+summaries, rituals, next steps, and browse prompts should be normal assistant
+prose or native storefront/navigation UI, not additional model-selected cards.
+
 ### `display_product_card`
 
 Use when:
@@ -156,65 +156,6 @@ Core props:
 - `reason`
 - `products`
 - `browseUrl`
-
-### `display_ritual_card`
-
-Use when:
-
-- the agent gives a practice or care instruction
-- a product recommendation needs a ritual context
-- the experience should feel more companion-like and less transactional
-
-Core props:
-
-- `title`
-- `summary`
-- `steps`
-- `linkedProducts`
-
-### `display_reading_summary`
-
-Use when:
-
-- the agent has diagnosed the emotional or energetic state
-- we want an "Energy Blueprint" moment before commerce
-- the turn needs structure and trust before the recommendation
-
-Core props:
-
-- `title`
-- `summary`
-- `energyFocus`
-- `highlights`
-
-### `display_collection_link`
-
-Use when:
-
-- the user wants to browse rather than decide now
-- the agent wants to hand off into Shopify-native discovery
-- a recommendation should open a wider intention collection
-
-Core props:
-
-- `title`
-- `description`
-- `url`
-- `label`
-
-### `display_next_steps`
-
-Use when:
-
-- the agent wants to keep momentum after a recommendation
-- the turn should end with a small guided checklist
-- there is no immediate product card but the flow should still feel active
-
-Core props:
-
-- `title`
-- `steps`
-- `closing`
 
 ## Dify Guidance
 

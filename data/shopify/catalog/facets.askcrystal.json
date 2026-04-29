@@ -1,0 +1,162 @@
+{
+  "version": "2026-04-29",
+  "notes": [
+    "Canonical collection-facing facets for AskCrystal products.",
+    "Local product JSON and AskCrystal metafields are the source of truth; Shopify tags are generated deployment artifacts for reliable automated collection rules.",
+    "Do not create every possible facet permutation. Generate single-axis collections by default, then add high-intent intersections manually as curated collections."
+  ],
+  "generated_tag_format": "{prefix}:{value}",
+  "axes": [
+    {
+      "key": "crystal_materials",
+      "label": "Crystal Material",
+      "source": "metaobject_entries",
+      "metaobject_type": "askcrystal_crystal_material",
+      "local_field": "crystal_material_handles",
+      "tag_prefix": "material",
+      "collection_handle_template": "{handle_value}-crystals",
+      "collection_title_template": "{label} Crystals",
+      "collection_description_template": "Browse {label} pieces selected for AskCrystal rituals, readings, and daily energetic support."
+    },
+    {
+      "key": "product_form",
+      "label": "Product Form",
+      "local_field": "product_form",
+      "metafield_key": "product_form",
+      "tag_prefix": "form",
+      "values": [
+        { "value": "bracelet", "label": "Bracelet", "collection_handle": "bracelets", "collection_title": "Bracelets" },
+        { "value": "necklace", "label": "Necklace", "collection_handle": "necklaces", "collection_title": "Necklaces" },
+        { "value": "ring", "label": "Ring", "collection_handle": "rings", "collection_title": "Rings" },
+        { "value": "earrings", "label": "Earrings", "collection_handle": "earrings", "collection_title": "Earrings" },
+        { "value": "anklet", "label": "Anklet", "collection_handle": "anklets", "collection_title": "Anklets" },
+        { "value": "pendant", "label": "Pendant", "collection_handle": "pendants", "collection_title": "Pendants" },
+        { "value": "tumbled_stone", "label": "Tumbled Stone", "collection_handle": "tumbled-stones", "collection_title": "Tumbled Stones" },
+        { "value": "raw_stone", "label": "Raw Stone", "collection_handle": "raw-stones", "collection_title": "Raw Stones" },
+        { "value": "set", "label": "Set", "collection_handle": "crystal-sets", "collection_title": "Crystal Sets" },
+        { "value": "ritual_kit", "label": "Ritual Kit", "collection_handle": "ritual-kits", "collection_title": "Ritual Kits" }
+      ],
+      "collection_description_template": "Shop {label} pieces designed for everyday wear, ritual support, and intentional gifting."
+    },
+    {
+      "key": "intentions",
+      "label": "Intention",
+      "local_fields": ["primary_intention", "secondary_intentions"],
+      "tag_prefix": "intention",
+      "values": [
+        { "value": "calm", "label": "Calm" },
+        { "value": "protection", "label": "Protection" },
+        { "value": "love", "label": "Love" },
+        { "value": "sleep", "label": "Sleep" },
+        { "value": "grounding", "label": "Grounding" },
+        { "value": "focus", "label": "Focus" },
+        { "value": "abundance", "label": "Abundance" },
+        { "value": "clarity", "label": "Clarity" },
+        { "value": "confidence", "label": "Confidence" },
+        { "value": "emotional_healing", "label": "Emotional Healing" }
+      ],
+      "collection_handle_template": "{handle_value}-crystals",
+      "collection_title_template": "{label} Crystals",
+      "collection_description_template": "Find crystals traditionally associated with {label_lower} support, chosen for thoughtful rituals and daily reflection."
+    },
+    {
+      "key": "chakras",
+      "label": "Chakra",
+      "local_field": "chakras",
+      "metafield_key": "chakras",
+      "tag_prefix": "chakra",
+      "values": [
+        { "value": "root", "label": "Root" },
+        { "value": "sacral", "label": "Sacral" },
+        { "value": "solar_plexus", "label": "Solar Plexus" },
+        { "value": "heart", "label": "Heart" },
+        { "value": "throat", "label": "Throat" },
+        { "value": "third_eye", "label": "Third Eye" },
+        { "value": "crown", "label": "Crown" }
+      ],
+      "collection_handle_template": "{handle_value}-chakra-crystals",
+      "collection_title_template": "{label} Chakra Crystals",
+      "collection_description_template": "Explore crystals traditionally connected with the {label} chakra for gentle energetic reflection."
+    },
+    {
+      "key": "zodiac_signs",
+      "label": "Zodiac Sign",
+      "local_field": "zodiac_signs",
+      "metafield_key": "zodiac_signs",
+      "tag_prefix": "zodiac",
+      "values": [
+        { "value": "aries", "label": "Aries" },
+        { "value": "taurus", "label": "Taurus" },
+        { "value": "gemini", "label": "Gemini" },
+        { "value": "cancer", "label": "Cancer" },
+        { "value": "leo", "label": "Leo" },
+        { "value": "virgo", "label": "Virgo" },
+        { "value": "libra", "label": "Libra" },
+        { "value": "scorpio", "label": "Scorpio" },
+        { "value": "sagittarius", "label": "Sagittarius" },
+        { "value": "capricorn", "label": "Capricorn" },
+        { "value": "aquarius", "label": "Aquarius" },
+        { "value": "pisces", "label": "Pisces" }
+      ],
+      "collection_handle_template": "{handle_value}-crystals",
+      "collection_title_template": "{label} Crystals",
+      "collection_description_template": "Shop crystals traditionally paired with {label} energy, seasonality, and self-reflection."
+    },
+    {
+      "key": "color_families",
+      "label": "Color Family",
+      "local_field": "color_families",
+      "metafield_key": "color_families",
+      "tag_prefix": "color",
+      "values": [
+        { "value": "purple", "label": "Purple" },
+        { "value": "pink", "label": "Pink" },
+        { "value": "black", "label": "Black" },
+        { "value": "clear", "label": "Clear" },
+        { "value": "green", "label": "Green" },
+        { "value": "blue", "label": "Blue" },
+        { "value": "gold", "label": "Gold" },
+        { "value": "white", "label": "White" }
+      ],
+      "collection_handle_template": "{handle_value}-crystals",
+      "collection_title_template": "{label} Crystals",
+      "collection_description_template": "Browse {label_lower} crystals and jewelry by visual tone, material mood, and styling intention."
+    },
+    {
+      "key": "ritual_uses",
+      "label": "Ritual Use",
+      "local_field": "ritual_uses",
+      "metafield_key": "ritual_uses",
+      "tag_prefix": "ritual",
+      "values": [
+        { "value": "meditation", "label": "Meditation" },
+        { "value": "bedside", "label": "Bedside" },
+        { "value": "daily_wear", "label": "Daily Wear" },
+        { "value": "cleansing", "label": "Cleansing" },
+        { "value": "manifestation", "label": "Manifestation" },
+        { "value": "travel", "label": "Travel" },
+        { "value": "work_desk", "label": "Work Desk" }
+      ],
+      "collection_handle_template": "{handle_value}-crystals",
+      "collection_title_template": "{label} Crystals",
+      "collection_description_template": "Find crystals suited for {label_lower} rituals, routines, and intentional spaces."
+    },
+    {
+      "key": "gift_for",
+      "label": "Gift For",
+      "local_field": "gift_for",
+      "metafield_key": "gift_for",
+      "tag_prefix": "gift",
+      "values": [
+        { "value": "partner", "label": "Partner", "collection_handle": "gifts-for-partner", "collection_title": "Gifts for Partner" },
+        { "value": "friend", "label": "Friend", "collection_handle": "gifts-for-friend", "collection_title": "Gifts for Friend" },
+        { "value": "mother", "label": "Mother", "collection_handle": "gifts-for-mother", "collection_title": "Gifts for Mother" },
+        { "value": "birthday", "label": "Birthday", "collection_handle": "birthday-gifts", "collection_title": "Birthday Gifts" },
+        { "value": "breakup_support", "label": "Breakup Support", "collection_handle": "breakup-support-gifts", "collection_title": "Breakup Support Gifts" },
+        { "value": "new_beginning", "label": "New Beginning", "collection_handle": "new-beginning-gifts", "collection_title": "New Beginning Gifts" },
+        { "value": "stress_relief", "label": "Stress Relief", "collection_handle": "stress-relief-gifts", "collection_title": "Stress Relief Gifts" }
+      ],
+      "collection_description_template": "Thoughtful crystal gifts for {label_lower}, chosen for supportive rituals and meaningful everyday use."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "handle": "example-collection",
+  "workflow_status": "draft",
+  "shopify_status": "draft",
+  "title": "Example Collection",
+  "description": "Customer-facing collection description.",
+  "image": null,
+  "rules": {
+    "mode": "manual",
+    "product_handles": ["example-crystal-product"]
+  },
+  "sort_order": "manual"
+}

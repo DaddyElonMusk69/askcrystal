@@ -1,0 +1,429 @@
+{
+  "version": "2026-04-29",
+  "notes": [
+    "Seed entries for reusable AskCrystal metaobjects.",
+    "These entries are safe defaults for storefront education and agent grounding.",
+    "Operational claims should stay generic unless verified by store operations."
+  ],
+  "entries": [
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "amethyst",
+      "fields": {
+        "name": "Amethyst",
+        "short_meaning": "A calming purple quartz traditionally associated with quieting mental noise, dreamwork, and intuitive reflection.",
+        "primary_intentions": [
+          "calm",
+          "sleep",
+          "intuition"
+        ],
+        "chakras": [
+          "third_eye",
+          "crown"
+        ],
+        "western_elements": [
+          "water",
+          "air"
+        ],
+        "five_elements": [
+          "water",
+          "metal"
+        ],
+        "zodiac_signs": [
+          "pisces",
+          "sagittarius",
+          "scorpio"
+        ],
+        "care_notes": "Avoid harsh chemicals and prolonged direct sunlight. Clean gently with a soft dry cloth.",
+        "cleansing_methods": [
+          "selenite",
+          "moonlight",
+          "sound"
+        ],
+        "pairing_notes": "Pairs well with selenite for clearing and rose quartz for emotional softness.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "rose_quartz",
+      "fields": {
+        "name": "Rose Quartz",
+        "short_meaning": "A gentle pink quartz traditionally linked with self-love, emotional softness, and heart-centered repair.",
+        "primary_intentions": [
+          "love",
+          "self-love",
+          "emotional balance"
+        ],
+        "chakras": [
+          "heart"
+        ],
+        "western_elements": [
+          "water",
+          "earth"
+        ],
+        "five_elements": [
+          "earth",
+          "water"
+        ],
+        "zodiac_signs": [
+          "taurus",
+          "libra",
+          "cancer"
+        ],
+        "care_notes": "Keep away from harsh chemicals and extended sun exposure. Wipe with a soft cloth after wear.",
+        "cleansing_methods": [
+          "moonlight",
+          "selenite",
+          "sound"
+        ],
+        "pairing_notes": "Pairs well with amethyst for calm or clear quartz for amplifying a heart intention.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "black_tourmaline",
+      "fields": {
+        "name": "Black Tourmaline",
+        "short_meaning": "A grounding black crystal traditionally used for energetic boundaries, protection, and steadiness.",
+        "primary_intentions": [
+          "protection",
+          "grounding",
+          "boundaries"
+        ],
+        "chakras": [
+          "root"
+        ],
+        "western_elements": [
+          "earth"
+        ],
+        "five_elements": [
+          "water",
+          "earth"
+        ],
+        "zodiac_signs": [
+          "capricorn",
+          "scorpio"
+        ],
+        "care_notes": "Avoid soaking. Clean with a soft dry cloth and store separately from softer stones.",
+        "cleansing_methods": [
+          "smoke",
+          "sound",
+          "selenite"
+        ],
+        "pairing_notes": "Pairs well with clear quartz for focus or selenite for regular energetic clearing.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "clear_quartz",
+      "fields": {
+        "name": "Clear Quartz",
+        "short_meaning": "A versatile crystal traditionally associated with clarity, amplification, and intention-setting.",
+        "primary_intentions": [
+          "clarity",
+          "focus",
+          "amplification"
+        ],
+        "chakras": [
+          "crown"
+        ],
+        "western_elements": [
+          "air"
+        ],
+        "five_elements": [
+          "metal"
+        ],
+        "zodiac_signs": [
+          "leo",
+          "capricorn",
+          "gemini"
+        ],
+        "care_notes": "Clean gently with a soft cloth. Avoid impact against harder surfaces.",
+        "cleansing_methods": [
+          "moonlight",
+          "sound",
+          "selenite"
+        ],
+        "pairing_notes": "Pairs with most crystals when you want to clarify or strengthen an intention.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "citrine",
+      "fields": {
+        "name": "Citrine",
+        "short_meaning": "A warm golden quartz traditionally connected with confidence, creative momentum, and abundance mindset.",
+        "primary_intentions": [
+          "abundance",
+          "confidence",
+          "creativity"
+        ],
+        "chakras": [
+          "solar_plexus"
+        ],
+        "western_elements": [
+          "fire"
+        ],
+        "five_elements": [
+          "fire",
+          "earth"
+        ],
+        "zodiac_signs": [
+          "leo",
+          "aries",
+          "gemini"
+        ],
+        "care_notes": "Avoid prolonged direct sunlight to protect color. Clean with a soft dry cloth.",
+        "cleansing_methods": [
+          "sound",
+          "selenite",
+          "morning light"
+        ],
+        "pairing_notes": "Pairs well with green aventurine for opportunity work or tiger's eye for practical confidence.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "selenite",
+      "fields": {
+        "name": "Selenite",
+        "short_meaning": "A luminous crystal traditionally used for cleansing, spaciousness, and creating a calm ritual field.",
+        "primary_intentions": [
+          "cleansing",
+          "clarity",
+          "peace"
+        ],
+        "chakras": [
+          "crown"
+        ],
+        "western_elements": [
+          "air"
+        ],
+        "five_elements": [
+          "metal"
+        ],
+        "zodiac_signs": [
+          "taurus",
+          "cancer"
+        ],
+        "care_notes": "Keep dry. Selenite is soft and can dissolve or flake with water exposure.",
+        "cleansing_methods": [
+          "sound",
+          "moonlight",
+          "dry cloth"
+        ],
+        "pairing_notes": "Pairs well with almost any crystal as a cleansing companion.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice. Keep selenite dry."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "moonstone",
+      "fields": {
+        "name": "Moonstone",
+        "short_meaning": "A softly luminous feldspar traditionally associated with emotional rhythm, intuition, and new beginnings.",
+        "primary_intentions": [
+          "intuition",
+          "transition",
+          "emotional balance"
+        ],
+        "chakras": [
+          "sacral",
+          "third_eye"
+        ],
+        "western_elements": [
+          "water"
+        ],
+        "five_elements": [
+          "water"
+        ],
+        "zodiac_signs": [
+          "cancer",
+          "pisces",
+          "libra"
+        ],
+        "care_notes": "Avoid harsh chemicals and hard impact. Wipe gently with a soft cloth after wear.",
+        "cleansing_methods": [
+          "moonlight",
+          "selenite",
+          "sound"
+        ],
+        "pairing_notes": "Pairs well with rose quartz for emotional gentleness or amethyst for dreamwork.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "lapis_lazuli",
+      "fields": {
+        "name": "Lapis Lazuli",
+        "short_meaning": "A deep blue stone traditionally linked with truth, inner authority, and thoughtful communication.",
+        "primary_intentions": [
+          "truth",
+          "wisdom",
+          "communication"
+        ],
+        "chakras": [
+          "throat",
+          "third_eye"
+        ],
+        "western_elements": [
+          "air",
+          "water"
+        ],
+        "five_elements": [
+          "water",
+          "metal"
+        ],
+        "zodiac_signs": [
+          "sagittarius",
+          "libra",
+          "taurus"
+        ],
+        "care_notes": "Avoid soaking, ultrasonic cleaners, and harsh chemicals. Clean with a soft dry cloth.",
+        "cleansing_methods": [
+          "sound",
+          "selenite",
+          "smoke"
+        ],
+        "pairing_notes": "Pairs well with clear quartz for clarity or amethyst for reflective insight.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "tigers_eye",
+      "fields": {
+        "name": "Tiger's Eye",
+        "short_meaning": "A golden-brown stone traditionally associated with courage, grounded action, and practical confidence.",
+        "primary_intentions": [
+          "confidence",
+          "protection",
+          "focus"
+        ],
+        "chakras": [
+          "root",
+          "solar_plexus"
+        ],
+        "western_elements": [
+          "fire",
+          "earth"
+        ],
+        "five_elements": [
+          "earth",
+          "fire"
+        ],
+        "zodiac_signs": [
+          "leo",
+          "capricorn",
+          "gemini"
+        ],
+        "care_notes": "Clean with a soft cloth and avoid harsh chemicals. Store separately to prevent scratches.",
+        "cleansing_methods": [
+          "sound",
+          "smoke",
+          "selenite"
+        ],
+        "pairing_notes": "Pairs well with citrine for momentum or black tourmaline for stronger boundaries.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "green_aventurine",
+      "fields": {
+        "name": "Green Aventurine",
+        "short_meaning": "A green quartzite traditionally connected with opportunity, optimism, and gentle heart renewal.",
+        "primary_intentions": [
+          "abundance",
+          "growth",
+          "heart renewal"
+        ],
+        "chakras": [
+          "heart"
+        ],
+        "western_elements": [
+          "earth"
+        ],
+        "five_elements": [
+          "wood",
+          "earth"
+        ],
+        "zodiac_signs": [
+          "taurus",
+          "virgo"
+        ],
+        "care_notes": "Clean gently with a soft cloth. Avoid harsh chemicals and abrasive surfaces.",
+        "cleansing_methods": [
+          "moonlight",
+          "selenite",
+          "sound"
+        ],
+        "pairing_notes": "Pairs well with citrine for abundance work or rose quartz for heart softness.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_ritual",
+      "handle": "sleep-release",
+      "fields": {
+        "title": "Sleep Release Ritual",
+        "intention": "sleep",
+        "duration": "2 minutes",
+        "steps": [
+          "Hold the crystal for three slow breaths",
+          "Name one thought you are ready to release",
+          "Place the crystal near your bedside before sleep"
+        ],
+        "supporting_items": [
+          "journal",
+          "selenite plate"
+        ],
+        "safety_note": "For wellness and self-reflection only."
+      }
+    },
+    {
+      "type": "askcrystal_ritual",
+      "handle": "self-love-reset",
+      "fields": {
+        "title": "Self-Love Reset Ritual",
+        "intention": "self-love",
+        "duration": "3 minutes",
+        "steps": [
+          "Place one hand over your heart",
+          "Hold the crystal and take three steady breaths",
+          "Speak one kind sentence to yourself"
+        ],
+        "supporting_items": [
+          "mirror",
+          "journal"
+        ],
+        "safety_note": "For wellness and self-reflection only."
+      }
+    },
+    {
+      "type": "askcrystal_ritual",
+      "handle": "boundary-setting",
+      "fields": {
+        "title": "Boundary Setting Ritual",
+        "intention": "protection",
+        "duration": "2 minutes",
+        "steps": [
+          "Hold the crystal near your lower body",
+          "Name one boundary you are choosing today",
+          "Carry or place the crystal where you need steadiness"
+        ],
+        "supporting_items": [
+          "black cloth",
+          "selenite"
+        ],
+        "safety_note": "For wellness and self-reflection only."
+      }
+    }
+  ]
+}

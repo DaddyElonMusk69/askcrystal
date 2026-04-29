@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 if str(ROOT_DIR) not in sys.path:
@@ -43,7 +44,7 @@ def extract_block_scalar(lines: list[str], key: str) -> str | None:
             continue
 
         remainder = line[len(prefix):].strip()
-        if remainder != "|":
+        if remainder not in {"|", "|-"}:
             return None
 
         block_lines: list[str] = []
