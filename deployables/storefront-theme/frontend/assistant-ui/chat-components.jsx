@@ -8,6 +8,8 @@ import {
 const NATIVE_PRODUCT_CARD_SECTION_ID = 'section-rendering-askcrystal-chat-product-card'
 const nativeProductCardMarkupCache = new Map()
 const nativeProductCardRequestCache = new Map()
+const productRefResolveCache = new Map()
+const productRefResolveRequestCache = new Map()
 const nativeProductCardLayoutStyle = {
   '--product-card-gap': '12px',
   '--product-card-alignment': 'stretch',
@@ -15,6 +17,16 @@ const nativeProductCardLayoutStyle = {
   '--padding-block-end': '0px',
   '--padding-inline-start': '0px',
   '--padding-inline-end': '0px',
+}
+
+function resolveProxyEndpoint(path) {
+  if (typeof window === 'undefined')
+    return path
+
+  if (/^(127\.0\.0\.1|localhost):9292$/.test(window.location.host) && path.startsWith('/apps/'))
+    return `http://localhost:8787${path}`
+
+  return path
 }
 
 function resolveComponentPayload(part) {
@@ -38,18 +50,114 @@ function asShopifyVariantQueryId(value) {
   return match ? match[1] : null
 }
 
-function buildNativeProductCardRequestUrl(product, ctaLabel) {
-  if (!product?.handle || typeof window === 'undefined')
+function normalizeProductRef(productRef) {
+  if (!productRef || typeof productRef !== 'object')
+    return null
+
+  const handle = typeof productRef.handle === 'string' ? productRef.handle.trim() : ''
+  const productId = typeof productRef.product_id === 'string' ? productRef.product_id.trim() : ''
+  const variantId = typeof productRef.variant_id === 'string' ? productRef.variant_id.trim() : ''
+
+  if (!handle && !productId && !variantId)
+    return null
+
+  return {
+    handle,
+    productId,
+    variantId,
+    title: typeof productRef.title === 'string' ? productRef.title.trim() : '',
+    image: typeof productRef.image === 'string' ? productRef.image.trim() : '',
+    imageAlt: typeof productRef.imageAlt === 'string' ? productRef.imageAlt.trim() : '',
+    price: typeof productRef.price === 'string' ? productRef.price.trim() : '',
+    compareAtPrice: typeof productRef.compareAtPrice === 'string' ? productRef.compareAtPrice.trim() : '',
+  }
+}
+
+function getProductRefCacheKey(productRef) {
+  const normalizedRef = normalizeProductRef(productRef)
+  if (!normalizedRef)
+    return ''
+
+  return JSON.stringify({
+    handle: normalizedRef.handle || '',
+    product_id: normalizedRef.productId || '',
+    variant_id: normalizedRef.variantId || '',
+  })
+}
+
+async function resolveProductRef(productRef) {
+  const normalizedRef = normalizeProductRef(productRef)
+  if (!normalizedRef)
+    throw new Error('Missing product reference')
+
+  if (normalizedRef.handle)
+    return normalizedRef
+
+  const cacheKey = getProductRefCacheKey(productRef)
+  if (!cacheKey)
+    throw new Error('Missing product reference')
+
+  const cachedRef = productRefResolveCache.get(cacheKey)
+  if (cachedRef)
+    return cachedRef
+
+  if (!productRefResolveRequestCache.has(cacheKey)) {
+    const request = fetch(resolveProxyEndpoint('/apps/askcrystal/catalog/resolve-product-card'), {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({
+        product_ref: {
+          ...(normalizedRef.productId ? { product_id: normalizedRef.productId } : {}),
+          ...(normalizedRef.handle ? { handle: normalizedRef.handle } : {}),
+          ...(normalizedRef.variantId ? { variant_id: normalizedRef.variantId } : {}),
+        },
+      }),
+    })
+      .then(async (response) => {
+        const payload = await response.json().catch(() => null)
+        if (!response.ok || !payload?.ok || !payload?.product?.handle)
+          throw new Error(payload?.error || `Failed to resolve product reference (${response.status})`)
+
+        const resolvedRef = normalizeProductRef({
+          product_id: payload.product.product_id || normalizedRef.productId,
+          handle: payload.product.handle,
+          variant_id: payload.product.variant_id || normalizedRef.variantId,
+          title: payload.product.title || '',
+          image: payload.product.image || '',
+          imageAlt: payload.product.imageAlt || '',
+          price: payload.product.price || '',
+          compareAtPrice: payload.product.compareAtPrice || '',
+        })
+        productRefResolveCache.set(cacheKey, resolvedRef)
+        return resolvedRef
+      })
+      .finally(() => {
+        productRefResolveRequestCache.delete(cacheKey)
+      })
+
+    productRefResolveRequestCache.set(cacheKey, request)
+  }
+
+  return productRefResolveRequestCache.get(cacheKey)
+}
+
+function buildNativeProductCardRequestUrl(productRef, ctaLabel) {
+  const normalizedRef = normalizeProductRef(productRef)
+  if (!normalizedRef?.handle || typeof window === 'undefined')
     return null
 
   const storefrontRoot = typeof window.Shopify?.routes?.root === 'string'
     ? window.Shopify.routes.root
     : '/'
-  const requestUrl = new URL(`products/${product.handle}`, new URL(storefrontRoot, window.location.origin))
+  const requestUrl = new URL(`products/${normalizedRef.handle}`, new URL(storefrontRoot, window.location.origin))
   requestUrl.searchParams.set('section_id', NATIVE_PRODUCT_CARD_SECTION_ID)
-  requestUrl.searchParams.set('askcrystal_handle', product.handle)
+  requestUrl.searchParams.set('askcrystal_handle', normalizedRef.handle)
 
-  const variantQueryId = asShopifyVariantQueryId(product?.variantId || product?.merchandiseId)
+  const variantQueryId = asShopifyVariantQueryId(normalizedRef.variantId)
   if (variantQueryId)
     requestUrl.searchParams.set('variant', variantQueryId)
 
@@ -59,52 +167,25 @@ function buildNativeProductCardRequestUrl(product, ctaLabel) {
   return requestUrl.toString()
 }
 
-function resolveProductHref(product) {
-  const candidate = typeof product?.url === 'string' ? product.url.trim() : ''
-  if (candidate)
-    return candidate
-
-  const handle = typeof product?.handle === 'string' ? product.handle.trim() : ''
+function resolveProductHref(productRef) {
+  const handle = typeof productRef?.handle === 'string' ? productRef.handle.trim() : ''
   return handle ? `/products/${handle}` : null
 }
 
-function resolveProductImageUrl(product) {
-  const image = product?.image
-  if (typeof image === 'string' && image.trim())
-    return image.trim()
+function humanizeProductHandle(productRef) {
+  const title = typeof productRef?.title === 'string' ? productRef.title.trim() : ''
+  if (title)
+    return title
 
-  if (image && typeof image === 'object') {
-    const candidate = image.url || image.src
-    if (typeof candidate === 'string' && candidate.trim())
-      return candidate.trim()
-  }
+  const handle = typeof productRef?.handle === 'string' ? productRef.handle.trim() : ''
+  if (!handle)
+    return 'Recommended crystal'
 
-  const featuredImage = product?.featuredImage || product?.featured_image
-  if (featuredImage && typeof featuredImage === 'object') {
-    const candidate = featuredImage.url || featuredImage.src
-    if (typeof candidate === 'string' && candidate.trim())
-      return candidate.trim()
-  }
-
-  return null
-}
-
-function resolveProductImageAlt(product) {
-  const image = product?.image
-  if (image && typeof image === 'object') {
-    const candidate = image.alt || image.altText
-    if (typeof candidate === 'string' && candidate.trim())
-      return candidate.trim()
-  }
-
-  const featuredImage = product?.featuredImage || product?.featured_image
-  if (featuredImage && typeof featuredImage === 'object') {
-    const candidate = featuredImage.alt || featuredImage.altText
-    if (typeof candidate === 'string' && candidate.trim())
-      return candidate.trim()
-  }
-
-  return product?.title || 'Product image'
+  return handle
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, character => character.toUpperCase())
 }
 
 function isRenderableNativeProductCard(cardElement) {
@@ -176,55 +257,35 @@ function ToolShell({ eyebrow, title, children, className = '' }) {
   )
 }
 
-function ProductMedia({ image, title, compact = false }) {
-  return (
-    <div className={`ac-tool-product__media${compact ? ' ac-tool-product__media--compact' : ''}`}>
-      {image
-        ? <img src={image} alt={title} loading="lazy" />
-        : <div className="ac-tool-product__placeholder">Crystal</div>}
-    </div>
-  )
-}
-
-function ProductMeta({ product, ctaLabel }) {
-  return (
-    <div className="ac-tool-product__meta">
-      <div className="ac-tool-product__price-group">
-        {product.price ? <span className="ac-tool-product__price">{product.price}</span> : null}
-        {product.compareAtPrice ? <span className="ac-tool-product__compare">{product.compareAtPrice}</span> : null}
-      </div>
-      <span className="ac-tool-product__cta">{ctaLabel || 'View crystal'}</span>
-    </div>
-  )
-}
-
-function FallbackProductCard({ product, ctaLabel }) {
-  const productHref = resolveProductHref(product)
-  const imageUrl = resolveProductImageUrl(product)
-  const imageAlt = resolveProductImageAlt(product)
+function FallbackProductCard({ productRef, ctaLabel }) {
+  const productHref = resolveProductHref(productRef)
+  const productTitle = humanizeProductHandle(productRef)
   const ctaText = ctaLabel || 'View'
-
-  const media = imageUrl
-    ? <img className="askcrystal-chat-product-card__image" src={imageUrl} alt={imageAlt} loading="lazy" />
-    : <div className="askcrystal-chat-product-card__placeholder">Crystal</div>
+  const imageUrl = typeof productRef?.image === 'string' ? productRef.image.trim() : ''
+  const imageAlt = typeof productRef?.imageAlt === 'string' ? productRef.imageAlt.trim() : productTitle
 
   const surface = (
     <>
       <div className="askcrystal-chat-product-card__media">
-        {media}
+        {imageUrl
+          ? <img className="askcrystal-chat-product-card__image" src={imageUrl} alt={imageAlt} loading="lazy" />
+          : <div className="askcrystal-chat-product-card__placeholder">Crystal</div>}
       </div>
 
       <div className="askcrystal-chat-product-card__body">
         <product-title className="askcrystal-chat-product-card__title">
-          <span className="title-text">{product.title}</span>
+          <span className="title-text">{productTitle}</span>
         </product-title>
 
         <div className="askcrystal-chat-product-card__meta">
-          <div className="askcrystal-chat-product-card__price-group">
-            {product.price ? <span className="askcrystal-chat-product-card__price askcrystal-chat-product-card__price--hydrated">{product.price}</span> : null}
-            {product.compareAtPrice ? <span className="askcrystal-chat-product-card__compare">{product.compareAtPrice}</span> : null}
-          </div>
-
+          {productRef?.price
+            ? (
+                <div className="askcrystal-chat-product-card__price-group">
+                  <span className="askcrystal-chat-product-card__price askcrystal-chat-product-card__price--hydrated">{productRef.price}</span>
+                  {productRef.compareAtPrice ? <span className="askcrystal-chat-product-card__compare">{productRef.compareAtPrice}</span> : null}
+                </div>
+              )
+            : null}
           <span className="askcrystal-chat-product-card__cta">
             {ctaText}
           </span>
@@ -241,7 +302,7 @@ function FallbackProductCard({ product, ctaLabel }) {
     >
       <div
         className="product-card askcrystal-chat-product-card__card"
-        data-product-id={product.id || undefined}
+        data-product-id={productRef?.productId || undefined}
       >
         <div
           className="product-card__content product-grid__card askcrystal-chat-product-card__content"
@@ -297,10 +358,41 @@ function NativeProductCardSkeleton() {
   )
 }
 
-function NativeProductCard({ product, ctaLabel }) {
-  const requestUrl = buildNativeProductCardRequestUrl(product, ctaLabel)
+function NativeProductCard({ productRef, ctaLabel, variant = 'block' }) {
+  const [resolvedProductRef, setResolvedProductRef] = useState(() => normalizeProductRef(productRef))
+  const requestUrl = buildNativeProductCardRequestUrl(resolvedProductRef, ctaLabel)
   const [markup, setMarkup] = useState(() => (requestUrl ? nativeProductCardMarkupCache.get(requestUrl) || null : null))
   const [loadError, setLoadError] = useState(null)
+  const variantClassName = variant === 'carousel'
+    ? ' ac-tool-product-native--carousel'
+    : ''
+
+  useEffect(() => {
+    let isActive = true
+
+    resolveProductRef(productRef)
+      .then((nextProductRef) => {
+        if (!isActive)
+          return
+
+        startTransition(() => {
+          setResolvedProductRef(nextProductRef)
+        })
+      })
+      .catch((error) => {
+        if (!isActive)
+          return
+
+        startTransition(() => {
+          setLoadError(error)
+          setResolvedProductRef(normalizeProductRef(productRef))
+        })
+      })
+
+    return () => {
+      isActive = false
+    }
+  }, [productRef])
 
   useEffect(() => {
     let isActive = true
@@ -349,7 +441,7 @@ function NativeProductCard({ product, ctaLabel }) {
           console.warn('[AskCrystal] Native product card render fell back to hydrated shell.', {
             requestUrl,
             error,
-            product,
+            productRef: resolvedProductRef,
           })
         }
 
@@ -362,12 +454,12 @@ function NativeProductCard({ product, ctaLabel }) {
     return () => {
       isActive = false
     }
-  }, [requestUrl])
+  }, [requestUrl, resolvedProductRef])
 
   if (markup) {
     return (
       <div
-        className="ac-tool-product-native ac-tool-product-native--native"
+        className={`ac-tool-product-native ac-tool-product-native--native${variantClassName}`}
         dangerouslySetInnerHTML={{ __html: markup }}
       />
     )
@@ -375,12 +467,12 @@ function NativeProductCard({ product, ctaLabel }) {
 
   return (
     <div
-      className={`ac-tool-product-native ${loadError ? 'ac-tool-product-native--fallback' : 'ac-tool-product-native--loading'}`.trim()}
+      className={`ac-tool-product-native${variantClassName} ${loadError ? 'ac-tool-product-native--fallback' : 'ac-tool-product-native--loading'}`.trim()}
       aria-busy={loadError ? undefined : 'true'}
       aria-live="polite"
     >
       {loadError
-        ? <FallbackProductCard product={product} ctaLabel={ctaLabel} />
+        ? <FallbackProductCard productRef={resolvedProductRef || productRef} ctaLabel={ctaLabel} />
         : (
             <>
               <span className="ac-tool-product-native__loading-label">Polishing the storefront card...</span>
@@ -396,7 +488,7 @@ function ProductCardTool(part) {
   if (!payload)
     return null
 
-  const { ctaLabel, eyebrow, note, product, reason } = payload.props
+  const { ctaLabel, eyebrow, note, product_ref: productRef, reason } = payload.props
 
   return (
     <section className="ac-tool-product-block">
@@ -409,7 +501,7 @@ function ProductCardTool(part) {
             </div>
           )
         : null}
-      <NativeProductCard product={product} ctaLabel={ctaLabel} />
+      <NativeProductCard productRef={productRef} ctaLabel={ctaLabel} />
     </section>
   )
 }
@@ -423,9 +515,7 @@ function ProductCarouselTool(part) {
     eyebrow,
     title,
     reason,
-    browseUrl,
-    browseLabel,
-    products,
+    product_refs: productRefs,
   } = payload.props
 
   return (
@@ -433,215 +523,16 @@ function ProductCarouselTool(part) {
       {reason ? <p className="ac-tool__lede">{reason}</p> : null}
 
       <div className="ac-tool-carousel" role="list" aria-label={title}>
-        {products.map((product, index) => {
-          const card = (
-            <>
-              <ProductMedia image={product.image} title={product.title} compact />
-              <div className="ac-tool-carousel__copy">
-                {product.badge ? <p className="ac-tool-product__badge">{product.badge}</p> : null}
-                <h4 className="ac-tool-product__title">{product.title}</h4>
-                <ProductMeta product={product} ctaLabel={product.ctaLabel || 'View'} />
-              </div>
-            </>
-          )
+        {productRefs.map((productRef, index) => {
+          const key = productRef.product_id || productRef.handle || productRef.variant_id || index
 
-          return product.url
-            ? (
-                <a key={product.id || product.handle || index} className="ac-tool-carousel__card" href={product.url} role="listitem">
-                  {card}
-                </a>
-              )
-            : (
-                <div key={product.id || product.handle || index} className="ac-tool-carousel__card" role="listitem">
-                  {card}
-                </div>
-              )
+          return (
+            <div key={key} className="ac-tool-carousel__item" role="listitem">
+              <NativeProductCard productRef={productRef} ctaLabel="View" variant="carousel" />
+            </div>
+          )
         })}
       </div>
-
-      {browseUrl
-        ? (
-            <div className="ac-tool__footer">
-              <a className="ac-tool__footer-link" href={browseUrl}>
-                {browseLabel}
-              </a>
-            </div>
-          )
-        : null}
-    </ToolShell>
-  )
-}
-
-function RitualCardTool(part) {
-  const payload = resolveComponentPayload(part)
-  if (!payload)
-    return null
-
-  const {
-    eyebrow,
-    title,
-    summary,
-    duration,
-    steps,
-    note,
-    disclaimer,
-    linkedProducts,
-  } = payload.props
-
-  return (
-    <ToolShell eyebrow={eyebrow} title={title} className="ac-tool--ritual">
-      {summary ? <p className="ac-tool__lede">{summary}</p> : null}
-
-      {duration
-        ? (
-            <p className="ac-tool__detail">
-              {duration}
-            </p>
-          )
-        : null}
-
-      <ol className="ac-ritual-steps">
-        {steps.map(step => (
-          <li key={step} className="ac-ritual-steps__item">
-            <span className="ac-ritual-steps__dot" aria-hidden="true" />
-            <span>{step}</span>
-          </li>
-        ))}
-      </ol>
-
-      {linkedProducts.length > 0
-        ? (
-            <div className="ac-tool-chip-row" role="list" aria-label="Linked products">
-              {linkedProducts.map((product, index) => (
-                product.url
-                  ? (
-                      <a key={product.id || product.handle || index} className="ac-tool-chip" href={product.url} role="listitem">
-                        {product.title}
-                      </a>
-                    )
-                  : (
-                      <span key={product.id || product.handle || index} className="ac-tool-chip" role="listitem">
-                        {product.title}
-                      </span>
-                    )
-              ))}
-            </div>
-          )
-        : null}
-
-      {note ? <p className="ac-tool__note">{note}</p> : null}
-      {disclaimer ? <p className="ac-tool__disclaimer">{disclaimer}</p> : null}
-    </ToolShell>
-  )
-}
-
-function ReadingSummaryTool(part) {
-  const payload = resolveComponentPayload(part)
-  if (!payload)
-    return null
-
-  const {
-    eyebrow,
-    title,
-    summary,
-    energyFocus,
-    highlights,
-    disclaimer,
-  } = payload.props
-
-  return (
-    <ToolShell eyebrow={eyebrow} title={title} className="ac-tool--summary">
-      {energyFocus
-        ? (
-            <p className="ac-summary__focus">
-              {energyFocus}
-            </p>
-          )
-        : null}
-
-      <p className="ac-tool__lede">{summary}</p>
-
-      {highlights.length > 0
-        ? (
-            <ul className="ac-summary__list">
-              {highlights.map(item => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          )
-        : null}
-
-      {disclaimer ? <p className="ac-tool__disclaimer">{disclaimer}</p> : null}
-    </ToolShell>
-  )
-}
-
-function CollectionLinkTool(part) {
-  const payload = resolveComponentPayload(part)
-  if (!payload)
-    return null
-
-  const {
-    eyebrow,
-    title,
-    description,
-    url,
-    label,
-    image,
-  } = payload.props
-
-  const content = (
-    <>
-      <div className="ac-tool-collection__copy">
-        {eyebrow ? <p className="ac-tool__eyebrow">{eyebrow}</p> : null}
-        <h3 className="ac-tool__title">{title}</h3>
-        {description ? <p className="ac-tool__lede">{description}</p> : null}
-      </div>
-      <div className="ac-tool-collection__action">
-        <span>{label}</span>
-      </div>
-      {image
-        ? (
-            <div className="ac-tool-collection__image" aria-hidden="true">
-              <img src={image} alt="" loading="lazy" />
-            </div>
-          )
-        : null}
-    </>
-  )
-
-  return (
-    <section className="ac-tool ac-tool--collection">
-      {url
-        ? <a className="ac-tool-collection" href={url}>{content}</a>
-        : <div className="ac-tool-collection">{content}</div>}
-    </section>
-  )
-}
-
-function NextStepsTool(part) {
-  const payload = resolveComponentPayload(part)
-  if (!payload)
-    return null
-
-  const {
-    eyebrow,
-    title,
-    steps,
-    closing,
-  } = payload.props
-
-  return (
-    <ToolShell eyebrow={eyebrow} title={title} className="ac-tool--next-steps">
-      <ul className="ac-next-steps">
-        {steps.map((step, index) => (
-          <li key={step} className="ac-next-steps__item">
-            <span className="ac-next-steps__index">{index + 1}</span>
-            <span>{step}</span>
-          </li>
-        ))}
-      </ul>
-      {closing ? <p className="ac-tool__note">{closing}</p> : null}
     </ToolShell>
   )
 }
@@ -667,27 +558,44 @@ const TOOL_COMPONENTS_BY_NAME = {
   [CHAT_COMPONENT_TOOL_NAMES.product_carousel]: ProductCarouselTool,
 }
 
+function getDebugProductRef(product) {
+  if (!product || typeof product !== 'object')
+    return null
+
+  const productRef = {
+    ...(typeof product.id === 'string' && product.id.trim() ? { product_id: product.id.trim() } : {}),
+    ...(typeof product.handle === 'string' && product.handle.trim() ? { handle: product.handle.trim() } : {}),
+    ...(typeof product.variantId === 'string' && product.variantId.trim() ? { variant_id: product.variantId.trim() } : {}),
+  }
+
+  return productRef.product_id || productRef.handle || productRef.variant_id
+    ? productRef
+    : null
+}
+
 function buildDebugComponentPayloads(products = []) {
   const availableProducts = Array.isArray(products)
     ? products.filter(product => product?.title)
     : []
   const shelfProducts = availableProducts.slice(0, 4)
   const primaryProduct = shelfProducts[0]
+  const primaryProductRef = getDebugProductRef(primaryProduct)
+  const shelfProductRefs = shelfProducts.map(getDebugProductRef).filter(Boolean)
 
   return [
-    primaryProduct
+    primaryProductRef
       ? {
           component: 'product_card',
           id: 'debug-product-card',
           props: {
             eyebrow: 'Prescription',
             reason: 'Single-product recommendation card using a real product from the current Shopify shelf.',
-            ctaLabel: 'View crystal',
-            product: primaryProduct,
+            cta_label: 'View crystal',
+            product_ref: primaryProductRef,
           },
         }
       : null,
-    shelfProducts.length
+    shelfProductRefs.length
       ? {
           component: 'product_carousel',
           id: 'debug-product-carousel',
@@ -695,9 +603,7 @@ function buildDebugComponentPayloads(products = []) {
             eyebrow: 'Curated shelf',
             title: 'A few grounded options',
             reason: 'Carousel surface for 2-4 products when comparison is more useful than one answer.',
-            browseUrl: '/collections',
-            browseLabel: 'Browse collections',
-            products: shelfProducts,
+            product_refs: shelfProductRefs,
           },
         }
       : null,

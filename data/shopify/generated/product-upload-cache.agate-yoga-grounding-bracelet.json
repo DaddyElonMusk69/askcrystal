@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "product_handle": "agate-yoga-grounding-bracelet",
+  "synced_at_unix": 1777565660,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14960062857579",
+    "handle": "agate-yoga-grounding-bracelet",
+    "title": "Agate Yoga Grounding Bracelet",
+    "status": "DRAFT",
+    "media": {
+      "nodes": []
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53147044217195",
+          "sku": "CJZBLXSL03931-Picture color",
+          "title": "Picture color"
+        }
+      ]
+    }
+  },
+  "staged_media": [],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ]
+}

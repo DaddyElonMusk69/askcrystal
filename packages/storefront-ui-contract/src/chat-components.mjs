@@ -38,57 +38,28 @@ const asOptionalString = (value) => {
   return next || null
 }
 
-const asUrlLike = (value) => {
-  const next = asNonEmptyString(value)
-  if (!next)
-    return null
-
-  if (/^(https?:\/\/|\/)/i.test(next))
-    return next
-
-  return `/${next.replace(/^\/+/, '')}`
-}
-
-const asBoolean = (value, fallback = true) => {
-  if (typeof value === 'boolean')
-    return value
-
-  return fallback
-}
-
-const normalizeProduct = (value) => {
+const normalizeProductRef = (value) => {
   if (!isRecord(value))
     return null
 
-  const title = asNonEmptyString(value.title, 'Untitled crystal')
-  const url = asUrlLike(value.url)
-  const product = {
-    id: asOptionalString(value.id || value.productId),
+  const productRef = {
+    product_id: asOptionalString(value.product_id),
     handle: asOptionalString(value.handle),
-    title,
-    url: url || (value.handle ? `/products/${value.handle}` : null),
-    image: asUrlLike(value.image || value.featuredImage || value.imageUrl),
-    price: asOptionalString(value.price || value.priceText),
-    compareAtPrice: asOptionalString(value.compareAtPrice || value.compareAt),
-    badge: asOptionalString(value.badge || value.tag || value.intent || value.eyebrow),
-    summary: asOptionalString(value.summary || value.description || value.body),
-    reason: asOptionalString(value.reason),
-    note: asOptionalString(value.note || value.ritual || value.howToUse || value.how_to_use),
-    ctaLabel: asOptionalString(value.ctaLabel || value.buttonLabel || value.linkLabel),
-    merchandiseId: asOptionalString(value.merchandiseId || value.variantId),
-    variantId: asOptionalString(value.variantId || value.merchandiseId),
-    available: asBoolean(value.available, true),
+    variant_id: asOptionalString(value.variant_id),
   }
 
-  return product
+  if (!productRef.product_id && !productRef.handle && !productRef.variant_id)
+    return null
+
+  return productRef
 }
 
-const normalizeProductList = (value, limit = 6) => {
+const normalizeProductRefs = (value, limit = 4) => {
   if (!Array.isArray(value))
     return []
 
   return value
-    .map(normalizeProduct)
+    .map(normalizeProductRef)
     .filter(Boolean)
     .slice(0, limit)
 }
@@ -97,16 +68,16 @@ const normalizeProductCardProps = (value) => {
   if (!isRecord(value))
     return null
 
-  const product = normalizeProduct(value.product || value)
-  if (!product)
+  const productRef = normalizeProductRef(value.product_ref)
+  if (!productRef)
     return null
 
   return {
     eyebrow: asNonEmptyString(value.eyebrow || value.kicker || value.intent, 'Prescription'),
-    reason: asOptionalString(value.reason || product.reason),
-    note: asOptionalString(value.note || value.ritual || product.note),
-    ctaLabel: asNonEmptyString(value.ctaLabel || value.buttonLabel || product.ctaLabel, 'View crystal'),
-    product,
+    reason: asOptionalString(value.reason),
+    note: asOptionalString(value.note || value.ritual),
+    ctaLabel: asNonEmptyString(value.cta_label, 'View crystal'),
+    product_ref: productRef,
   }
 }
 
@@ -114,17 +85,15 @@ const normalizeProductCarouselProps = (value) => {
   if (!isRecord(value))
     return null
 
-  const products = normalizeProductList(value.products, 8)
-  if (products.length === 0)
+  const productRefs = normalizeProductRefs(value.product_refs, 4)
+  if (productRefs.length === 0)
     return null
 
   return {
     eyebrow: asNonEmptyString(value.eyebrow || value.kicker, 'Matched for you'),
     title: asNonEmptyString(value.title, 'Recommended crystals'),
     reason: asOptionalString(value.reason || value.description),
-    browseUrl: asUrlLike(value.browseUrl || value.url),
-    browseLabel: asNonEmptyString(value.browseLabel || value.ctaLabel, 'Browse all'),
-    products,
+    product_refs: productRefs,
   }
 }
 
@@ -190,43 +159,13 @@ export const mergeChatComponents = (current = [], incoming = []) => {
 }
 
 export const extractChatComponentsFromPayload = (value) => {
-  const components = []
+  const manifestComponents = Array.isArray(value)
+    ? value
+    : isRecord(value) && Array.isArray(value.components)
+      ? value.components
+      : []
 
-  const visit = (candidate, depth = 0) => {
-    if (depth > 3 || candidate == null)
-      return
-
-    if (Array.isArray(candidate)) {
-      candidate.forEach((item, index) => {
-        const normalized = normalizeChatComponent(item, `${depth}-${index}`)
-        if (normalized)
-          components.push(normalized)
-      })
-      return
-    }
-
-    const normalized = normalizeChatComponent(candidate, `${depth}`)
-    if (normalized) {
-      components.push(normalized)
-      return
-    }
-
-    if (!isRecord(candidate))
-      return
-
-    visit(candidate.components, depth + 1)
-    visit(candidate.component, depth + 1)
-    visit(candidate.ui?.components, depth + 1)
-    visit(candidate.payload?.components, depth + 1)
-    visit(candidate.data?.components, depth + 1)
-    visit(candidate.data?.ui?.components, depth + 1)
-    visit(candidate.metadata?.components, depth + 1)
-    visit(candidate.metadata?.ui?.components, depth + 1)
-  }
-
-  visit(value)
-
-  return mergeChatComponents([], components)
+  return mergeChatComponents([], manifestComponents)
 }
 
 export const createChatComponentToolPart = (value, fallbackId = 'component') => {

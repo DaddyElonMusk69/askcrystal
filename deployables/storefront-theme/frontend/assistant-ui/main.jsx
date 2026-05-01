@@ -1731,212 +1731,6 @@ function getLastUserPrompt(messages) {
   return '';
 }
 
-function chooseProduct(products, matcher) {
-  return products.find((product) => matcher(product));
-}
-
-function buildDemoComponents({ matchedIntention, fallbackProduct, products }) {
-  if (matchedIntention?.product) {
-    return mergeChatComponents([], [
-      {
-        component: 'reading_summary',
-        id: `summary-${matchedIntention.key}`,
-        props: {
-          title: 'What your energy is asking for',
-          summary: matchedIntention.summary,
-          energyFocus: matchedIntention.energyFocus,
-          highlights: matchedIntention.highlights,
-          disclaimer: 'Spiritual wellness guidance only. Let your own judgment lead the final choice.',
-        },
-      },
-      {
-        component: matchedIntention.key === 'calm' ? 'product_card' : 'product_carousel',
-        id: `products-${matchedIntention.key}`,
-        props: matchedIntention.key === 'calm'
-          ? {
-              eyebrow: 'Best first match',
-              reason: matchedIntention.cardReason,
-              note: matchedIntention.ritual,
-              product: matchedIntention.product,
-            }
-          : {
-              eyebrow: 'Curated shelf',
-              title: matchedIntention.carouselTitle,
-              reason: matchedIntention.cardReason,
-              products: [
-                matchedIntention.product,
-                ...products.filter((product) => product.id !== matchedIntention.product.id).slice(0, 2),
-              ],
-            },
-      },
-      {
-        component: 'ritual_card',
-        id: `ritual-${matchedIntention.key}`,
-        props: {
-          title: matchedIntention.ritualTitle,
-          summary: matchedIntention.ritualSummary,
-          steps: matchedIntention.ritualSteps,
-          linkedProducts: matchedIntention.product ? [matchedIntention.product] : [],
-          note: matchedIntention.ritual,
-        },
-      },
-    ]);
-  }
-
-  return mergeChatComponents([], [
-    {
-      component: 'collection_link',
-      id: 'browse-collections',
-      props: {
-        title: 'Browse by intention while we learn more',
-        description: 'If you already know the feeling or outcome you want, open the wider shelf and keep the conversation going.',
-        url: '/collections/all',
-        label: 'Shop all crystals',
-      },
-    },
-    fallbackProduct
-      ? {
-          component: 'product_card',
-          id: 'fallback-product',
-          props: {
-            eyebrow: 'A gentle starting point',
-            reason: 'This is a strong first shelf item while the guide narrows your intention.',
-            product: fallbackProduct,
-          },
-        }
-      : null,
-    {
-      component: 'next_steps',
-      id: 'guided-next-steps',
-      props: {
-        title: 'How this storefront works best',
-        steps: [
-          'Start with the feeling that is most present right now.',
-          'Let the guide narrow the intention before shopping too broadly.',
-          'Use the recommendation cards to move into a product or ritual without leaving the thread.',
-        ],
-      },
-    },
-  ]);
-}
-
-function buildDemoReply(prompt, products) {
-  const normalizedPrompt = prompt.toLowerCase();
-  const intentionMap = [
-    {
-      key: 'calm',
-      test: /sleep|rest|anxious|stress|calm|ground|peace/,
-      lead:
-        'I would start by softening the energy around your nervous system before recommending anything too activating.',
-      product:
-        chooseProduct(products, (product) => /amethyst|selenite|moonstone|calm|sleep/i.test(`${product.title} ${product.summary || ''}`)) ||
-        products[0],
-      summary:
-        'There is a strong need to reduce static first. The most supportive move is to favor calm, sleep, and grounding over anything intensely energizing.',
-      energyFocus: 'Soften + ground',
-      highlights: [
-        'Your nervous system wants steadiness before action.',
-        'Sleep, safety, and gentleness matter more than intensity right now.',
-        'A quieter ritual will likely work better than a complicated one.',
-      ],
-      cardReason:
-        'This recommendation leans calm, quiet, and easy to return to at the end of the day.',
-      ritualTitle: 'A quick evening grounding ritual',
-      ritualSummary: 'Keep the ritual simple enough that you can actually repeat it tonight.',
-      ritualSteps: [
-        'Hold the crystal somewhere visible or easy to reach.',
-        'Take three slow breaths and let your shoulders drop.',
-        'Name one thing you are releasing from today.',
-      ],
-      ritual:
-        'A good starting ritual is one grounding breath, one clear intention, and one stone you can keep within reach tonight.',
-    },
-    {
-      key: 'love',
-      test: /love|relationship|heart|marriage|partner|friendship/,
-      lead:
-        'This sounds less like a product hunt and more like a heart-reading moment, so I would slow the recommendation down and keep it gentle.',
-      product:
-        chooseProduct(products, (product) => /rose|heart|love|pink/i.test(`${product.title} ${product.summary || ''}`)) ||
-        products[0],
-      summary:
-        'This turn feels centered on tenderness, boundaries, and emotional clarity. The right recommendation should support the heart without forcing urgency.',
-      energyFocus: 'Heart clarity',
-      highlights: [
-        'Gentleness matters more than intensity here.',
-        'You may need reassurance and discernment at the same time.',
-        'A ritual that centers boundaries can support the product recommendation.',
-      ],
-      cardReason:
-        'These picks keep the energy soft, relational, and emotionally supportive rather than overly dramatic.',
-      carouselTitle: 'Crystals for heart clarity',
-      ritualTitle: 'A small heart-centering ritual',
-      ritualSummary: 'Use a short reset that helps you notice what feels true before making any promises.',
-      ritualSteps: [
-        'Place the crystal near your heart or in your palm.',
-        'Name the kind of love or safety you want more of.',
-        'Choose one boundary that protects that intention this week.',
-      ],
-      ritual:
-        'If you want, we can frame the next step around heart clarity, boundaries, or reconciliation instead of jumping straight to a purchase.',
-    },
-    {
-      key: 'career',
-      test: /money|career|work|abundance|business|confidence|success/,
-      lead:
-        'I would treat this as an intention and momentum question first, then narrow into stones that support focus, confidence, and abundance.',
-      product:
-        chooseProduct(products, (product) => /citrine|pyrite|tiger|success|abundance/i.test(`${product.title} ${product.summary || ''}`)) ||
-        products[0],
-      summary:
-        'The energy here is not just about manifestation. It is about focus, self-trust, and practical momentum around work or money.',
-      energyFocus: 'Clarity + momentum',
-      highlights: [
-        'Confidence works best when tied to a concrete next move.',
-        'A visible object can act as a daily reset for intention and follow-through.',
-        'The recommendation should feel energizing but still grounded in action.',
-      ],
-      cardReason:
-        'These recommendations support focus, direction, and steady abundance rather than vague hype.',
-      carouselTitle: 'Crystals for work and abundance',
-      ritualTitle: 'A work-intention ritual',
-      ritualSummary: 'Use the product as a prompt for action, not only a symbol for wishing.',
-      ritualSteps: [
-        'Place the crystal beside the task that matters most this week.',
-        'Write one measurable outcome you want to move toward.',
-        'Return to the crystal before you begin the work block.',
-      ],
-      ritual:
-        'The strongest commerce-friendly flow here is intention first, then one practical object you can return to during work or planning.',
-    },
-  ];
-
-  const matchedIntention = intentionMap.find((item) => item.test.test(normalizedPrompt));
-
-  const fallbackProduct = products[0];
-  const components = buildDemoComponents({
-    matchedIntention,
-    fallbackProduct,
-    products,
-  });
-
-  if (matchedIntention?.product) {
-    return {
-      answer: `${matchedIntention.lead}\n\nA likely fit from the current shelf is ${matchedIntention.product.title}. ${matchedIntention.product.summary || 'It looks aligned with the intention you mentioned.'}\n\n${matchedIntention.ritual}`,
-      components,
-    };
-  }
-
-  const productLine = fallbackProduct
-    ? `A natural first shelf item to explore is ${fallbackProduct.title}. ${fallbackProduct.summary || 'It is a strong general starting point while we learn more about the user.'}`
-    : 'Once the catalog feed is connected, this space can surface a small set of best-fit crystals without leaving the thread.';
-
-  return {
-    answer: `I can already support the guided-storefront shape we want here: start with the feeling, clarify the intention, and only then move into product curation.\n\n${productLine}\n\nIf you tell me what is most present right now, I can narrow the reading and the recommendation together.`,
-    components,
-  };
-}
-
 function sanitizeAssistantText(rawAnswer) {
   const answer = typeof rawAnswer === 'string' ? rawAnswer.trim() : '';
   if (!answer) return '';
@@ -1988,9 +1782,8 @@ function sanitizeAssistantAnswer(rawAnswer) {
   }
 
   return [
-    'I tried to check the shelf for you, but the live catalog result was not available in this moment.',
-    'For calm and sleep tonight, start with amethyst. Keep it near your bedside, take three slow breaths, and set a simple intention: “I let the day soften, and I allow rest to come easily.”',
-    'If you want, tell me whether this is more about anxiety, overthinking, or emotional heaviness, and I can narrow the stone and ritual more precisely.',
+    'AskCrystal finished the request, but the final guidance was not readable.',
+    'Please try once more, or ask the question in a slightly simpler way so the reading can come through cleanly.',
   ].join('\n\n');
 }
 
@@ -2247,6 +2040,104 @@ function getPayloadMessageId(payload) {
   return typeof value === 'string' ? value : '';
 }
 
+function getLatestAssistantMessageId(messages = []) {
+  if (!Array.isArray(messages)) return '';
+
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message?.role === 'assistant') {
+      return typeof message.id === 'string' ? message.id : '';
+    }
+  }
+
+  return '';
+}
+
+function normalizeSuggestionEventPayload(payload) {
+  return normalizeThreadSuggestions(
+    payload?.suggestions
+    || payload?.data?.suggestions
+    || payload?.data
+    || [],
+  );
+}
+
+function mergeThreadSuggestions(currentSuggestions = [], incomingSuggestions = []) {
+  return normalizeThreadSuggestions([
+    ...normalizeThreadSuggestions(currentSuggestions),
+    ...normalizeThreadSuggestions(incomingSuggestions),
+  ]);
+}
+
+async function drainTrailingSuggestionEvents({
+  reader,
+  decoder,
+  initialBuffer = '',
+  abortSignal,
+  initialSuggestions = [],
+  messageId = '',
+  onSuggestions,
+}) {
+  if (!reader || !decoder) {
+    return {
+      suggestions: normalizeThreadSuggestions(initialSuggestions),
+      messageId,
+    };
+  }
+
+  let buffer = initialBuffer;
+  let currentSuggestions = normalizeThreadSuggestions(initialSuggestions);
+  let currentMessageId = messageId;
+
+  const publishSuggestions = (payload) => {
+    const nextSuggestions = mergeThreadSuggestions(currentSuggestions, normalizeSuggestionEventPayload(payload));
+    if (nextSuggestions.length === currentSuggestions.length) return;
+
+    currentSuggestions = nextSuggestions;
+    currentMessageId = getPayloadMessageId(payload) || currentMessageId;
+    onSuggestions?.(currentSuggestions, currentMessageId);
+  };
+
+  try {
+    while (true) {
+      throwIfAborted(abortSignal);
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      throwIfAborted(abortSignal);
+      buffer += decoder.decode(value, { stream: true });
+      const parsed = extractSseEvents(buffer);
+      buffer = parsed.remaining;
+
+      for (const event of parsed.events) {
+        throwIfAborted(abortSignal);
+        if (event.event === 'suggestions') {
+          publishSuggestions(event.payload);
+        }
+      }
+    }
+
+    const tail = decoder.decode();
+    if (tail || buffer) {
+      const parsed = extractSseEvents(`${buffer}${tail}\n\n`);
+      for (const event of parsed.events) {
+        if (event.event === 'suggestions') {
+          publishSuggestions(event.payload);
+        }
+      }
+    }
+  } catch (error) {
+    if (error?.name !== 'AbortError') {
+      console.warn('[AskCrystal] Late suggestion stream could not be drained.', error);
+    }
+  }
+
+  return {
+    suggestions: currentSuggestions,
+    messageId: currentMessageId,
+  };
+}
+
 function getDifyEventName(payload) {
   const value = payload?.event || payload?.data?.event;
   return typeof value === 'string' ? value : '';
@@ -2422,7 +2313,7 @@ async function fetchPersistedThreadMessages({ apiEndpoint, sessionId, storefront
   }
 }
 
-async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversationId, sessionId, storefrontSessionId, onStatus, onThought, onDelta, onComponents }) {
+async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversationId, sessionId, storefrontSessionId, onStatus, onThought, onDelta, onSuggestions }) {
   throwIfAborted(abortSignal);
   const response = await fetch(resolveStreamEndpoint(apiEndpoint), {
     method: 'POST',
@@ -2453,7 +2344,7 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
   let streamedRawAnswer = '';
   let bufferedAnswer = '';
   let streamedThoughts = [];
-  let streamedComponents = [];
+  let streamedSuggestions = [];
   let latestConversationId = conversationId || null;
 
   while (true) {
@@ -2466,7 +2357,8 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
     const parsed = extractSseEvents(buffer);
     buffer = parsed.remaining;
 
-    for (const event of parsed.events) {
+    for (let eventIndex = 0; eventIndex < parsed.events.length; eventIndex += 1) {
+      const event = parsed.events[eventIndex];
       throwIfAborted(abortSignal);
 
       if (event.event === 'status' && typeof event.payload?.message === 'string') {
@@ -2486,13 +2378,10 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
         throw new Error(event.payload?.error || event.payload?.message || 'The proxy stream failed.');
       }
 
-      const payloadComponents = extractChatComponentsFromPayload(event.payload);
-      if (payloadComponents.length) {
-        throwIfAborted(abortSignal);
-        streamedComponents = mergeChatComponents(streamedComponents, payloadComponents);
-        onComponents?.(streamedComponents, payloadComponents, event.payload);
-        latestConversationId =
-          event.payload?.conversationId || event.payload?.conversation_id || latestConversationId;
+      if (event.event === 'suggestions') {
+        streamedSuggestions = mergeThreadSuggestions(streamedSuggestions, normalizeSuggestionEventPayload(event.payload));
+        onSuggestions?.(streamedSuggestions, getPayloadMessageId(event.payload) || '');
+        continue;
       }
 
       if (event.event === 'replace') {
@@ -2539,42 +2428,68 @@ async function fetchProxyReply({ apiEndpoint, messages, abortSignal, conversatio
       if (event.event === 'complete') {
         throwIfAborted(abortSignal);
         const completeRawAnswer = getPayloadText(event.payload) || streamedRawAnswer;
+        const completeSourceText = typeof event.payload?.sourceText === 'string' && event.payload.sourceText.trim()
+          ? event.payload.sourceText
+          : typeof event.payload?.source_text === 'string' && event.payload.source_text.trim()
+            ? event.payload.source_text
+            : completeRawAnswer;
         const completeAnswer = sanitizeStreamingVisibleAnswer(completeRawAnswer) || bufferedAnswer;
         const finalAnswer = completeAnswer || bufferedAnswer;
+        const payloadSuggestions = normalizeThreadSuggestions(event.payload?.suggestions || event.payload?.data?.suggestions || []);
+        const messageId = getPayloadMessageId(event.payload) || null;
         if (!completeRawAnswer && !finalAnswer && streamedThoughts.length > 0) {
           return {
             answer: '',
-            components: streamedComponents,
+            components: [],
             sourceText: '',
-            suggestions: [],
+            suggestions: mergeThreadSuggestions(streamedSuggestions, payloadSuggestions),
             conversationId: event.payload?.conversationId || event.payload?.conversation_id || latestConversationId || null,
-            messageId: getPayloadMessageId(event.payload) || null,
+            messageId,
             thoughts: streamedThoughts,
           };
         }
-        const normalizedReply = normalizeAssistantReply(completeRawAnswer || finalAnswer, streamedComponents);
+        const normalizedReply = normalizeAssistantReply(completeSourceText || finalAnswer);
         const inlineSuggestions = normalizeThreadSuggestions(normalizedReply.suggestions || []);
+        const finalSuggestions = normalizeThreadSuggestions([
+          ...streamedSuggestions,
+          ...inlineSuggestions,
+          ...payloadSuggestions,
+        ]);
+        for (const trailingEvent of parsed.events.slice(eventIndex + 1)) {
+          if (trailingEvent.event !== 'suggestions') continue;
+          streamedSuggestions = mergeThreadSuggestions(streamedSuggestions, normalizeSuggestionEventPayload(trailingEvent.payload));
+        }
+        const completeSuggestions = mergeThreadSuggestions(finalSuggestions, streamedSuggestions);
+        void drainTrailingSuggestionEvents({
+          reader,
+          decoder,
+          initialBuffer: buffer,
+          abortSignal,
+          initialSuggestions: completeSuggestions,
+          messageId: messageId || '',
+          onSuggestions,
+        });
 
         return {
           answer: normalizedReply.answer,
           components: normalizedReply.components,
           sourceText: normalizedReply.sourceText,
-          suggestions: inlineSuggestions,
+          suggestions: completeSuggestions,
           conversationId: event.payload?.conversationId || event.payload?.conversation_id || latestConversationId || null,
-          messageId: getPayloadMessageId(event.payload) || null,
+          messageId,
           thoughts: streamedThoughts,
         };
       }
     }
   }
 
-  if (bufferedAnswer || streamedComponents.length > 0) {
-    const normalizedReply = normalizeAssistantReply(bufferedAnswer, streamedComponents);
+  if (bufferedAnswer) {
+    const normalizedReply = normalizeAssistantReply(bufferedAnswer);
     return {
       answer: normalizedReply.answer,
       components: normalizedReply.components,
       sourceText: normalizedReply.sourceText,
-      suggestions: normalizedReply.suggestions || [],
+      suggestions: mergeThreadSuggestions(streamedSuggestions, normalizedReply.suggestions || []),
       conversationId: latestConversationId,
       messageId: null,
       thoughts: streamedThoughts,
@@ -2829,42 +2744,32 @@ function normalizeMessagesAfterCancel(nextMessages, cancelRequested) {
   return normalizedMessages;
 }
 
-async function resolveReply({ config, messages, abortSignal, conversationId, sessionId, storefrontSessionId, onStatus, onThought, onDelta, onComponents }) {
-  const lastUserPrompt = getLastUserPrompt(messages);
-
-  if (config.runtimeMode === 'proxy' && config.apiEndpoint) {
-    try {
-      return await fetchProxyReply({
-        apiEndpoint: config.apiEndpoint,
-        messages,
-        abortSignal,
-        conversationId,
-        sessionId,
-        storefrontSessionId,
-        onStatus,
-        onThought,
-        onDelta,
-        onComponents,
-      });
-    } catch (error) {
-      if (error?.name === 'AbortError') {
-        throw error;
-      }
-
-      console.error('[AskCrystal] Proxy runtime failed.', error);
-      throw error;
-    }
+async function resolveReply({ config, messages, abortSignal, conversationId, sessionId, storefrontSessionId, onStatus, onThought, onDelta, onSuggestions }) {
+  if (!config.apiEndpoint) {
+    throw new Error('AskCrystal backend endpoint is not configured.');
   }
 
-  const demoReply = buildDemoReply(lastUserPrompt, config.products);
-  return {
-    answer: demoReply.answer,
-    components: demoReply.components || [],
-    suggestions: [],
-    sourceText: demoReply.answer,
-    conversationId,
-    messageId: null,
-  };
+  try {
+    return await fetchProxyReply({
+      apiEndpoint: config.apiEndpoint,
+      messages,
+      abortSignal,
+      conversationId,
+      sessionId,
+      storefrontSessionId,
+      onStatus,
+      onThought,
+      onDelta,
+      onSuggestions,
+    });
+  } catch (error) {
+    if (error?.name === 'AbortError') {
+      throw error;
+    }
+
+    console.error('[AskCrystal] Backend runtime failed.', error);
+    throw error;
+  }
 }
 
 function useAskCrystalRuntime(config) {
@@ -2888,7 +2793,7 @@ function useAskCrystalRuntime(config) {
   const sessionIdRef = useRef(getBrowserSessionId());
 
   useEffect(() => {
-    if (config.runtimeMode !== 'proxy' || !config.apiEndpoint) return undefined;
+    if (!config.apiEndpoint) return undefined;
 
     let cancelled = false;
     fetchIdentityBootstrap({
@@ -2909,7 +2814,7 @@ function useAskCrystalRuntime(config) {
     return () => {
       cancelled = true;
     };
-  }, [config.apiEndpoint, config.runtimeMode]);
+  }, [config.apiEndpoint]);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -3055,7 +2960,7 @@ function useAskCrystalRuntime(config) {
   }, []);
 
   const recoverActiveSessionFromServer = useCallback(async ({ expectedPrompt = '', poll = false } = {}) => {
-    if (config.runtimeMode !== 'proxy' || !config.apiEndpoint) return false;
+    if (!config.apiEndpoint) return false;
 
     const targetSessionId = activeSessionIdRef.current;
     const prompt = expectedPrompt || getLastRecoverableUserPrompt(messagesRef.current);
@@ -3091,7 +2996,7 @@ function useAskCrystalRuntime(config) {
     } while (true);
 
     return false;
-  }, [config.apiEndpoint, config.runtimeMode]);
+  }, [config.apiEndpoint]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -3200,7 +3105,7 @@ function useAskCrystalRuntime(config) {
       setMessages([...conversationForReply, assistantSeed]);
       let streamedAnswer = '';
       let streamedThoughts = [];
-      let bufferedComponents = [];
+      const targetSessionId = activeSessionIdRef.current;
 
       try {
         const result = await resolveReply({
@@ -3209,7 +3114,7 @@ function useAskCrystalRuntime(config) {
           abortSignal: abortController.signal,
           conversationId: conversationIdRef.current,
           sessionId: sessionIdRef.current,
-          storefrontSessionId: activeSessionIdRef.current,
+          storefrontSessionId: targetSessionId,
           onStatus: (statusPayload) => {
             if (abortController.signal.aborted) return;
             const normalizedStatus = normalizeStatusPayload(statusPayload);
@@ -3221,7 +3126,7 @@ function useAskCrystalRuntime(config) {
               const existingComponents = Array.isArray(message.metadata?.unstable_data)
                 ? message.metadata.unstable_data
                 : [];
-              const currentComponents = existingComponents.length ? existingComponents : bufferedComponents;
+              const currentComponents = existingComponents;
               const hasVisibleAnswer = Boolean(currentText.trim() || currentComponents.length || streamedThoughts.length);
 
               return createAssistantMessage({
@@ -3261,7 +3166,7 @@ function useAskCrystalRuntime(config) {
               const existingComponents = Array.isArray(message.metadata?.unstable_data)
                 ? message.metadata.unstable_data
                 : [];
-              const currentComponents = existingComponents.length ? existingComponents : bufferedComponents;
+              const currentComponents = existingComponents;
               const currentText = extractTextFromParts(message.content || message.parts || []) || streamedAnswer;
 
               return createAssistantMessage({
@@ -3294,9 +3199,8 @@ function useAskCrystalRuntime(config) {
                 id: assistantId,
                 parts: buildAssistantParts({
                   text: nextAnswer,
-                  components: bufferedComponents,
                 }),
-                components: bufferedComponents,
+                components: [],
                 status: {
                   type: 'running',
                 },
@@ -3308,64 +3212,57 @@ function useAskCrystalRuntime(config) {
               }),
             );
           },
-          onComponents: (nextComponents, _newComponents, eventPayload) => {
-            if (abortController.signal.aborted) return;
-            const nextTaskId = getPayloadTaskId(eventPayload);
-            if (nextTaskId) {
-              activeTaskIdRef.current = nextTaskId;
-            }
-            bufferedComponents = nextComponents;
-            updateAssistantMessage(assistantId, (message) => {
-              const currentText = extractTextFromParts(message.content || message.parts || []) || streamedAnswer;
+          onSuggestions: (nextSuggestions, messageId) => {
+            if (abortController.signal.aborted || cancelRequestedRef.current) return;
+            if (activeSessionIdRef.current !== targetSessionId) return;
 
-              return createAssistantMessage({
-                id: assistantId,
-                parts: buildAssistantParts({
-                  text: currentText,
-                  components: bufferedComponents,
-                }),
-                components: bufferedComponents,
-                status: {
-                  type: 'running',
-                },
-                thoughts: streamedThoughts,
-                statusText: '',
-                statusStage: '',
-                statusTool: '',
-                statusHistory: [],
-              });
-            });
+            const normalizedSuggestions = normalizeThreadSuggestions(nextSuggestions || []);
+            if (!normalizedSuggestions.length) return;
+
+            const activeAssistantMessageId = activeAssistantIdRef.current;
+            const latestAssistantMessageId = getLatestAssistantMessageId(messagesRef.current);
+            if (activeAssistantMessageId && activeAssistantMessageId !== assistantId) return;
+            if (!activeAssistantMessageId && latestAssistantMessageId !== assistantId) return;
+
+            setSuggestions(normalizedSuggestions);
+            setSuggestionsMessageId(messageId || assistantId);
           },
         });
 
         conversationIdRef.current = result.conversationId || conversationIdRef.current;
         activeTaskIdRef.current = '';
         cancelRequestedRef.current = false;
-        const finalComponents = result.components?.length ? result.components : bufferedComponents;
+        const finalComponents = result.components || [];
         const finalThoughts = Array.isArray(result.thoughts) && result.thoughts.length
           ? result.thoughts
           : streamedThoughts;
         const finalSuggestions = normalizeThreadSuggestions(result.suggestions || []);
         const finalAnswer = result.answer || streamedAnswer || result.sourceText || '';
-
-        setMessages([
-          ...conversationForReply,
-          createAssistantMessage({
-            id: assistantId,
-            parts: buildAssistantParts({
-              text: finalAnswer,
-              components: finalComponents,
-            }),
+        const finalSourceText = result.sourceText || finalAnswer;
+        const finalAssistantMessage = createAssistantMessage({
+          id: assistantId,
+          parts: buildAssistantParts({
+            text: finalSourceText,
             components: finalComponents,
-            status: {
-              type: 'complete',
-              reason: 'stop',
-            },
-            thoughts: finalThoughts,
           }),
-        ]);
-        setSuggestions(finalSuggestions);
-        setSuggestionsMessageId(finalSuggestions.length ? assistantId : '');
+          components: finalComponents,
+          status: {
+            type: 'complete',
+            reason: 'stop',
+          },
+          thoughts: finalThoughts,
+        });
+        const nextMessages = [
+          ...conversationForReply,
+          finalAssistantMessage,
+        ];
+
+        messagesRef.current = nextMessages;
+        setMessages(nextMessages);
+        if (finalSuggestions.length) {
+          setSuggestions(finalSuggestions);
+          setSuggestionsMessageId(assistantId);
+        }
       } catch (error) {
         const isExplicitCancel = cancelRequestedRef.current || abortController.signal.aborted;
         if (error?.name === 'AbortError' && isExplicitCancel) {
@@ -3377,7 +3274,7 @@ function useAskCrystalRuntime(config) {
             createCancelledAssistantMessage({
               id: assistantId,
               text: streamedAnswer,
-              components: bufferedComponents,
+              components: [],
               thoughts: streamedThoughts,
             }),
           ]);
@@ -3390,9 +3287,8 @@ function useAskCrystalRuntime(config) {
             id: assistantId,
             parts: buildAssistantParts({
               text: extractTextFromParts(message.content || message.parts || []) || streamedAnswer,
-              components: bufferedComponents,
             }),
-            components: bufferedComponents,
+            components: [],
             status: {
               type: 'running',
             },
@@ -3521,7 +3417,7 @@ function WelcomeShelf({ config }) {
     <div className="ac-homepage__guide-shelf">
       <div className="ac-homepage__guide-shelf-header">
         <div>
-wa          <p className="ac-homepage__shelf-kicker">Best sellers</p>
+          <p className="ac-homepage__shelf-kicker">Best sellers</p>
           <h2>{config.shelfHeading}</h2>
         </div>
       </div>

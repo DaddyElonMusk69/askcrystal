@@ -9,9 +9,11 @@ are skipped, not overwritten.
 from __future__ import annotations
 
 import argparse
+import http.client
 import json
 import os
 import ssl
+import subprocess
 import sys
 import time
 import urllib.error
@@ -215,6 +217,18 @@ class ShopifyAdminClient:
         self.ssl_context = build_ssl_context()
 
     def graphql(self, query: str, variables: dict[str, Any] | None = None) -> dict[str, Any]:
+        payload_dict = {"query": query, "variables": variables or {}}
+        if os.getenv("SHOPIFY_USE_CURL", "") == "1":
+            body = post_json_with_curl(
+                self.endpoint,
+                payload_dict,
+                {
+                    "Content-Type": "application/json",
+                    "X-Shopify-Access-Token": self.access_token,
+                },
+            )
+            return decode_shopify_graphql_response(body)
+
         payload = json.dumps({"query": query, "variables": variables or {}}).encode("utf-8")
         request = urllib.request.Request(
             self.endpoint,
@@ -245,16 +259,66 @@ class ShopifyAdminClient:
                     print(f"  retry Shopify Admin API network error in {wait_seconds}s: {exc.reason}")
                     time.sleep(wait_seconds)
                     continue
+                if shutil_which_curl():
+                    print("  urllib Shopify Admin API call failed; retrying with curl")
+                    body = post_json_with_curl(
+                        self.endpoint,
+                        payload_dict,
+                        {
+                            "Content-Type": "application/json",
+                            "X-Shopify-Access-Token": self.access_token,
+                        },
+                    )
+                    break
                 raise ProvisioningError(f"failed to reach Shopify Admin API: {exc.reason}") from exc
+            except http.client.RemoteDisconnected as exc:
+                if attempt < 4:
+                    wait_seconds = 2 ** attempt
+                    print(f"  retry Shopify Admin API remote disconnect in {wait_seconds}s")
+                    time.sleep(wait_seconds)
+                    continue
+                if shutil_which_curl():
+                    print("  urllib Shopify Admin API call disconnected; retrying with curl")
+                    body = post_json_with_curl(
+                        self.endpoint,
+                        payload_dict,
+                        {
+                            "Content-Type": "application/json",
+                            "X-Shopify-Access-Token": self.access_token,
+                        },
+                    )
+                    break
+                raise ProvisioningError("failed to reach Shopify Admin API: remote disconnected") from exc
 
-        try:
-            decoded = json.loads(body)
-        except json.JSONDecodeError as exc:
-            raise ProvisioningError(f"Shopify Admin API returned non-JSON response: {body[:500]}") from exc
+        return decode_shopify_graphql_response(body)
 
-        if decoded.get("errors"):
-            raise ProvisioningError(f"Shopify GraphQL errors: {json.dumps(decoded['errors'], ensure_ascii=False)}")
-        return decoded.get("data") or {}
+
+def shutil_which_curl() -> str:
+    from shutil import which
+
+    return which("curl") or ""
+
+
+def post_json_with_curl(url: str, payload: dict[str, Any], headers: dict[str, str]) -> str:
+    command = ["curl", "-fsS", "-X", "POST", url]
+    for key, value in headers.items():
+        command.extend(["-H", f"{key}: {value}"])
+    command.extend(["--data-binary", json.dumps(payload, ensure_ascii=False)])
+    result = subprocess.run(command, text=True, capture_output=True, check=False)
+    if result.returncode != 0:
+        raise ProvisioningError(f"curl request failed ({result.returncode}): {result.stderr.strip()}")
+    return result.stdout
+
+
+def decode_shopify_graphql_response(body: str) -> dict[str, Any]:
+    try:
+        decoded = json.loads(body)
+    except json.JSONDecodeError as exc:
+        raise ProvisioningError(f"Shopify Admin API returned non-JSON response: {body[:500]}") from exc
+
+    if decoded.get("errors"):
+        raise ProvisioningError(f"Shopify GraphQL errors: {json.dumps(decoded['errors'], ensure_ascii=False)}")
+    return decoded.get("data") or {}
 
 
 def build_ssl_context() -> ssl.SSLContext:
@@ -300,7 +364,25 @@ def fetch_admin_access_token_with_client_credentials(
         response_body = exc.read().decode("utf-8", errors="replace")
         raise ProvisioningError(f"Shopify token request HTTP {exc.code}: {response_body}") from exc
     except urllib.error.URLError as exc:
-        raise ProvisioningError(f"failed to reach Shopify token endpoint: {exc.reason}") from exc
+        if shutil_which_curl():
+            print("  urllib Shopify token request failed; retrying with curl")
+            response_body = fetch_admin_access_token_with_curl(
+                endpoint=endpoint,
+                client_id=client_id,
+                client_secret=client_secret,
+            )
+        else:
+            raise ProvisioningError(f"failed to reach Shopify token endpoint: {exc.reason}") from exc
+    except http.client.RemoteDisconnected as exc:
+        if shutil_which_curl():
+            print("  urllib Shopify token request disconnected; retrying with curl")
+            response_body = fetch_admin_access_token_with_curl(
+                endpoint=endpoint,
+                client_id=client_id,
+                client_secret=client_secret,
+            )
+        else:
+            raise ProvisioningError("failed to reach Shopify token endpoint: remote disconnected") from exc
 
     try:
         decoded = json.loads(response_body)
@@ -311,6 +393,32 @@ def fetch_admin_access_token_with_client_credentials(
     if not token:
         raise ProvisioningError(f"Shopify token endpoint did not return access_token: {response_body[:500]}")
     return str(token)
+
+
+def fetch_admin_access_token_with_curl(*, endpoint: str, client_id: str, client_secret: str) -> str:
+    result = subprocess.run(
+        [
+            "curl",
+            "-fsS",
+            "-X",
+            "POST",
+            endpoint,
+            "-H",
+            "Content-Type: application/x-www-form-urlencoded",
+            "--data-urlencode",
+            "grant_type=client_credentials",
+            "--data-urlencode",
+            f"client_id={client_id}",
+            "--data-urlencode",
+            f"client_secret={client_secret}",
+        ],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise ProvisioningError(f"curl Shopify token request failed ({result.returncode}): {result.stderr.strip()}")
+    return result.stdout
 
 
 def resolve_admin_access_token(args: argparse.Namespace) -> str:

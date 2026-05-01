@@ -10,7 +10,6 @@
         "note": "This scaffold keeps the store visible from the first screen. The guide can listen first, recommend later, and eventually hand off to richer catalog and ritual surfaces.",
         "shelf_heading": "Start with the shelf",
         "product_limit": 8,
-        "runtime_mode": "proxy",
         "api_endpoint": "/apps/askcrystal/chat",
         "suggestion_1": "Sleep & calm",
         "suggestion_2": "Love reading",

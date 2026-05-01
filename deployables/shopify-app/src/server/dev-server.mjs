@@ -72,7 +72,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     const result = await handler(req, res)
-    if (res.writableEnded)
+    if (res.writableEnded || res.destroyed)
       return
 
     return json(res, result.statusCode || 200, result.payload)

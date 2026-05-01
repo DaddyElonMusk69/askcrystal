@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "handle": "agate-yoga-grounding-bracelet",
+  "workflow_status": "human_reviewed",
+  "shopify_status": "draft",
+  "title": "Agate Yoga Grounding Bracelet",
+  "description": "A simple agate bracelet for the moments when you want your ritual to feel close to the body: before practice, beside your mat, or on the wrist while the day is still gathering itself.\n\nAgate is traditionally used as a stone of steadiness. Its grounding quality makes this bracelet easy to pair with yoga, breathwork, journaling, or any small pause where you want to come back to yourself without making the ritual complicated.\n\nThe silhouette is intentionally low-key: polished stone beads, an everyday elastic bracelet form, and a natural color story that can move between practice, errands, and quiet evening reset. Wear it as a tactile reminder to slow down, choose one breath, and return to center.",
+  "vendor": "AskCrystal",
+  "product_type": "Bracelet",
+  "tags": [
+    "cj-source:D9B08F8D-6299-4501-B1F4-5FA5A4F3849F",
+    "supplier:yiwu-renfan-trading",
+    "test-import"
+  ],
+  "collections": [],
+  "options": [
+    {
+      "name": "Color",
+      "values": [
+        "Picture color"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "CJZBLXSL03931-Picture color",
+      "price": "4.48",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "Picture color"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/source/source-01.webp",
+      "alt": "Agate yoga grounding bracelet supplier reference front view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/source/source-02.webp",
+      "alt": "Agate yoga grounding bracelet supplier reference detail view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/source/source-03.webp",
+      "alt": "Agate yoga grounding bracelet supplier reference alternate view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/source/source-04.webp",
+      "alt": "Agate yoga grounding bracelet supplier reference wrist view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/source/source-05.webp",
+      "alt": "Agate yoga grounding bracelet supplier reference lifestyle view"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "grounding",
+    "secondary_intentions": [
+      "calm",
+      "emotional_balance"
+    ],
+    "product_form": "bracelet",
+    "crystal_material_handles": [
+      "agate"
+    ],
+    "chakras": [
+      "root",
+      "heart"
+    ],
+    "color_families": [
+      "black",
+      "white"
+    ],
+    "ritual_uses": [
+      "meditation",
+      "daily_wear",
+      "travel"
+    ],
+    "gift_for": [
+      "friend",
+      "stress_relief",
+      "new_beginning"
+    ],
+    "western_elements": [
+      "earth"
+    ],
+    "five_elements": [
+      "earth",
+      "metal"
+    ],
+    "zodiac_signs": [
+      "gemini",
+      "virgo",
+      "capricorn"
+    ],
+    "energetic_properties": [
+      "steady grounding",
+      "calm focus",
+      "emotional balance"
+    ],
+    "archetype_name": "The Returning Breath",
+    "story_headline": "A wrist-worn pause for grounding and calm",
+    "story_summary": "This agate bracelet is designed as a quiet tactile anchor for yoga, meditation, travel, and everyday reset moments.",
+    "benefits": [
+      "Keeps a grounding reminder close to the wrist",
+      "Pairs naturally with yoga, breathwork, and meditation",
+      "Supports a calm daily-wear ritual without feeling ceremonial",
+      "Easy to gift for stress relief, fresh starts, or gentle encouragement"
+    ],
+    "ritual_title": "Return to Center Ritual",
+    "ritual_steps": [
+      "Place the bracelet on your wrist before practice or before leaving home.",
+      "Take three slow breaths while touching one bead with your thumb.",
+      "Name one steady quality you want to carry through the next part of the day."
+    ],
+    "care_steps": [
+      "Wipe gently with a soft dry cloth after wear.",
+      "Avoid harsh chemicals, perfume, and prolonged soaking.",
+      "Store separately from harder jewelry to reduce scratching.",
+      "Refresh with sound, selenite, or soft moonlight when the ritual feels complete."
+    ],
+    "included_items": [
+      "Agate bead bracelet",
+      "Simple protective packaging"
+    ],
+    "quality_notes": [
+      "Natural stone color and pattern variation expected",
+      "Elastic bracelet form for easy daily wear",
+      "Supplier package size listed as 120 x 120 x 30 mm",
+      "Supplier source lists material as agate"
+    ],
+    "pairing_notes": "Pair with black tourmaline for deeper grounding, rose quartz for emotional softness, or clear quartz when the intention is calm clarity.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice. Remove before sleep, swimming, or strenuous activity if the bracelet feels tight or uncomfortable.",
+    "agent_summary": "Recommend this bracelet when users ask for grounding, yoga support, calm focus, meditation, travel steadiness, stress relief gifting, or an easy everyday agate piece.",
+    "agent_tags": [
+      "agate",
+      "bracelet",
+      "calm",
+      "capricorn",
+      "daily_wear",
+      "earth",
+      "emotional_balance",
+      "friend",
+      "gemini",
+      "grounding",
+      "heart",
+      "meditation",
+      "new_beginning",
+      "root",
+      "stress_relief",
+      "travel",
+      "virgo",
+      "yoga"
+    ],
+    "data_status": "human_reviewed"
+  }
+}

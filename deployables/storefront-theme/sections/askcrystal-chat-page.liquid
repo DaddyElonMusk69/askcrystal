@@ -48,7 +48,6 @@
     {
       "sectionId": {{ section.id | json }},
       "displayMode": "chat",
-      "runtimeMode": {{ section.settings.runtime_mode | json }},
       "apiEndpoint": {{ section.settings.api_endpoint | json }},
       "chatPageUrl": "/pages/askcrystal",
       "homeUrl": {{ routes.root_url | json }},
@@ -96,12 +95,12 @@
     {
       "type": "collection",
       "id": "featured_collection",
-      "label": "Demo fallback collection"
+      "label": "Featured collection"
     },
     {
       "type": "range",
       "id": "product_limit",
-      "label": "Demo fallback products",
+      "label": "Featured products",
       "min": 2,
       "max": 8,
       "step": 1,
@@ -110,22 +109,6 @@
     {
       "type": "header",
       "content": "Runtime"
-    },
-    {
-      "type": "select",
-      "id": "runtime_mode",
-      "label": "Runtime mode",
-      "default": "proxy",
-      "options": [
-        {
-          "value": "demo",
-          "label": "Demo scaffold"
-        },
-        {
-          "value": "proxy",
-          "label": "Backend proxy"
-        }
-      ]
     },
     {
       "type": "text",

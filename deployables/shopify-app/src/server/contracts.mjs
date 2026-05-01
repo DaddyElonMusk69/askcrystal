@@ -16,6 +16,7 @@ export const ROUTES = {
   threadMessages: `${APP_PROXY_PREFIX}/threads/messages`,
   catalogSearch: `${APP_PROXY_PREFIX}/catalog/search`,
   catalogRecommend: `${APP_PROXY_PREFIX}/catalog/recommend`,
+  catalogResolveProductCard: `${APP_PROXY_PREFIX}/catalog/resolve-product-card`,
   cartAdd: `${APP_PROXY_PREFIX}/cart/add`,
   cartUpdate: `${APP_PROXY_PREFIX}/cart/update`,
 }

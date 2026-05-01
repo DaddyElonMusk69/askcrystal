@@ -1,6 +1,6 @@
 interface:
   display_name: "AskCrystal Shopify COO"
-  short_description: "Manage AskCrystal Shopify catalog ops"
-  default_prompt: "Use $askcrystal-shopify-coo to create or update an AskCrystal Shopify product listing, validate it, and prepare safe Shopify sync steps."
+  short_description: "Manage AskCrystal products, media, and Shopify sync"
+  default_prompt: "Use $askcrystal-shopify-coo to create or update an AskCrystal Shopify product listing, generate Jimeng/Dreamina image plans with SEO metadata, avoid raw source media unless explicitly requested, validate it, and dry-run or apply safe Shopify product upload steps."
 policy:
   allow_implicit_invocation: true

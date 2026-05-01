@@ -3,6 +3,7 @@ import { readJson } from './utils/http.mjs'
 import { handleCartAdd } from './routes/cart-add.mjs'
 import { handleCartUpdate } from './routes/cart-update.mjs'
 import { handleCatalogRecommend } from './routes/catalog-recommend.mjs'
+import { handleCatalogResolveProductCard } from './routes/catalog-resolve-product-card.mjs'
 import { handleCatalogSearch } from './routes/catalog-search.mjs'
 import { handleChat, handleChatParameters, handleChatStop, handleChatStream } from './routes/chat.mjs'
 import { handleChatEmbed } from './routes/chat-embed.mjs'
@@ -28,6 +29,7 @@ const routeTable = {
   [`POST ${ROUTES.chatStop}`]: async req => handleChatStop(await readJson(req), req),
   [`POST ${ROUTES.catalogSearch}`]: async req => handleCatalogSearch(await readJson(req)),
   [`POST ${ROUTES.catalogRecommend}`]: async req => handleCatalogRecommend(await readJson(req)),
+  [`POST ${ROUTES.catalogResolveProductCard}`]: async req => handleCatalogResolveProductCard(await readJson(req)),
   [`POST ${ROUTES.cartAdd}`]: async req => handleCartAdd(await readJson(req)),
   [`POST ${ROUTES.cartUpdate}`]: async req => handleCartUpdate(await readJson(req)),
 }

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import os
 import re
@@ -180,6 +181,47 @@ query AskCrystalPublications {
 }
 """
 
+PRODUCT_SET = """
+mutation AskCrystalProductSet(
+  $input: ProductSetInput!
+  $identifier: ProductSetIdentifiers
+  $synchronous: Boolean!
+) {
+  productSet(input: $input, identifier: $identifier, synchronous: $synchronous) {
+    product {
+      id
+      handle
+      title
+      status
+    }
+    productSetOperation {
+      id
+      status
+      userErrors {
+        field
+        message
+        code
+      }
+    }
+    userErrors {
+      field
+      message
+      code
+    }
+  }
+}
+"""
+
+METAOBJECT_BY_HANDLE = """
+query AskCrystalMetaobjectByHandle($type: String!, $handle: String!) {
+  metaobjectByHandle(handle: { type: $type, handle: $handle }) {
+    id
+    handle
+    type
+  }
+}
+"""
+
 ASKCRYSTAL_METAFIELD_SOURCES = {
     "primary_intention": ("primary_intention", "scalar"),
     "secondary_intentions": ("secondary_intentions", "list"),
@@ -208,6 +250,9 @@ ASKCRYSTAL_METAFIELD_SOURCES = {
     "agent_tags": ("agent_tags", "list"),
     "data_status": ("data_status", "scalar"),
 }
+
+REVIEWED_PRODUCT_STATUSES = {"human_reviewed", "approved"}
+OPTION_VALUE_FIELDS = {"gift_for", "western_elements", "five_elements", "zodiac_signs"}
 
 COLLECTION_SORT_ORDER_INPUT = {
     "manual": "MANUAL",
@@ -919,6 +964,16 @@ def remote_collection_by_handle(client: ShopifyAdminClient, handle: str) -> dict
         raise SystemExit(f"error fetching collection {handle}: {exc}") from exc
 
 
+def remote_metaobject_id_by_handle(client: ShopifyAdminClient, metaobject_type: str, handle: str) -> str | None:
+    try:
+        result = client.graphql(METAOBJECT_BY_HANDLE, {"type": metaobject_type, "handle": handle})["metaobjectByHandle"]
+    except ProvisioningError as exc:
+        raise SystemExit(f"error fetching metaobject {metaobject_type}/{handle}: {exc}") from exc
+    if not result:
+        return None
+    return str(result["id"])
+
+
 def graphql_user_error_message(errors: list[dict[str, Any]]) -> str:
     parts: list[str] = []
     for error in errors:
@@ -934,6 +989,154 @@ def graphql_user_error_message(errors: list[dict[str, Any]]) -> str:
         else:
             parts.append(message)
     return "; ".join(parts)
+
+
+def text_to_description_html(value: str) -> str:
+    paragraphs = [paragraph.strip() for paragraph in re.split(r"\n{2,}", value or "") if paragraph.strip()]
+    if not paragraphs:
+        return ""
+    return "\n".join(f"<p>{html.escape(paragraph).replace(chr(10), '<br>')}</p>" for paragraph in paragraphs)
+
+
+def product_status_input(value: Any) -> str:
+    normalized = normalize_status(value)
+    if normalized == "active":
+        return "ACTIVE"
+    if normalized == "archived":
+        return "ARCHIVED"
+    return "DRAFT"
+
+
+def metafield_value_for_product(
+    *,
+    client: ShopifyAdminClient | None,
+    askcrystal: dict[str, Any],
+    local_key: str,
+    mode: str,
+    material_cache: dict[str, str],
+    resolve_remote_refs: bool,
+) -> str | None:
+    value = askcrystal.get(local_key)
+    if mode == "scalar_optional":
+        return None if value is None or str(value).strip() == "" else str(value)
+    if mode == "scalar":
+        return str(value or "")
+    if mode == "list":
+        values = value if isinstance(value, list) else []
+        if not values and local_key in OPTION_VALUE_FIELDS:
+            return None
+        return json.dumps(values, ensure_ascii=False)
+    if mode == "material_refs":
+        handles = value if isinstance(value, list) else []
+        if not resolve_remote_refs:
+            return json.dumps(handles, ensure_ascii=False)
+        assert client is not None
+        material_ids: list[str] = []
+        missing: list[str] = []
+        for handle in handles:
+            handle = str(handle)
+            if handle not in material_cache:
+                metaobject_id = remote_metaobject_id_by_handle(client, "askcrystal_crystal_material", handle)
+                if metaobject_id:
+                    material_cache[handle] = metaobject_id
+            if handle in material_cache:
+                material_ids.append(material_cache[handle])
+            else:
+                missing.append(handle)
+        if missing:
+            raise SystemExit(f"material metaobject handles not found in Shopify: {', '.join(missing)}")
+        return json.dumps(material_ids, ensure_ascii=False)
+    return str(value or "")
+
+
+def product_metafields_input(
+    *,
+    client: ShopifyAdminClient | None,
+    product: dict[str, Any],
+    material_cache: dict[str, str],
+    resolve_remote_refs: bool,
+) -> list[dict[str, str]]:
+    askcrystal = product.get("askcrystal") or {}
+    metafields: list[dict[str, str]] = []
+    for remote_key, (local_key, mode) in ASKCRYSTAL_METAFIELD_SOURCES.items():
+        value = metafield_value_for_product(
+            client=client,
+            askcrystal=askcrystal,
+            local_key=local_key,
+            mode=mode,
+            material_cache=material_cache,
+            resolve_remote_refs=resolve_remote_refs,
+        )
+        if value is None:
+            continue
+        metafields.append(
+            {
+                "namespace": "askcrystal",
+                "key": remote_key,
+                "value": value,
+            }
+        )
+    return metafields
+
+
+def product_options_input(product: dict[str, Any]) -> list[dict[str, Any]]:
+    options: list[dict[str, Any]] = []
+    for option in product.get("options") or []:
+        values = [{"name": str(value)} for value in option.get("values", [])]
+        if not values:
+            continue
+        options.append({"name": str(option["name"]), "values": values})
+    return options
+
+
+def product_variants_input(product: dict[str, Any]) -> list[dict[str, Any]]:
+    options = product.get("options") or []
+    option_names = [str(option.get("name") or f"Option {index}") for index, option in enumerate(options, start=1)]
+    variants: list[dict[str, Any]] = []
+    for variant in product.get("variants") or []:
+        option_values = [
+            {"optionName": option_name, "name": str(value)}
+            for option_name, value in zip(option_names, variant.get("option_values") or [])
+        ]
+        payload: dict[str, Any] = {
+            "price": str(variant["price"]),
+            "sku": str(variant["sku"]),
+            "optionValues": option_values,
+        }
+        if variant.get("compare_at_price") is not None:
+            payload["compareAtPrice"] = str(variant["compare_at_price"])
+        if variant.get("barcode") is not None:
+            payload["barcode"] = str(variant["barcode"])
+        if "taxable" in variant:
+            payload["taxable"] = bool(variant["taxable"])
+        variants.append(payload)
+    return variants
+
+
+def product_set_input(
+    *,
+    client: ShopifyAdminClient | None,
+    product: dict[str, Any],
+    material_cache: dict[str, str],
+    resolve_remote_refs: bool,
+) -> dict[str, Any]:
+    return {
+        "handle": product["handle"],
+        "title": product["title"],
+        "descriptionHtml": text_to_description_html(product.get("description", "")),
+        "vendor": product.get("vendor") or "AskCrystal",
+        "productType": product.get("product_type") or "",
+        "status": product_status_input(product.get("shopify_status")),
+        "tags": effective_product_tags(product),
+        "productOptions": product_options_input(product),
+        "variants": product_variants_input(product),
+        "metafields": product_metafields_input(
+            client=client,
+            product=product,
+            material_cache=material_cache,
+            resolve_remote_refs=resolve_remote_refs,
+        ),
+    }
 
 
 def validate_catalog(args: argparse.Namespace) -> int:
@@ -1042,6 +1245,102 @@ def diff_catalog(args: argparse.Namespace) -> int:
             print(diff.format())
 
     return 2 if diffs and args.fail_on_diff else 0
+
+
+def selected_product_files(args: argparse.Namespace) -> list[Path]:
+    files = json_files(args.products_dir)
+    if not args.handle:
+        return files
+    selected = set(args.handle)
+    return [path for path in files if path.stem in selected]
+
+
+def print_product_sync_plan(products: list[dict[str, Any]], *, apply: bool, include_unreviewed: bool) -> None:
+    mode = "apply" if apply else "dry-run"
+    print(f"AskCrystal product sync ({mode})")
+    print(f"  products selected: {len(products)}")
+    if include_unreviewed:
+        print("  review gate: include unreviewed")
+    for product in products:
+        print(
+            "  "
+            f"{product['handle']} [{product['title']}] "
+            f"status={product.get('shopify_status', 'draft')} "
+            f"workflow={product.get('workflow_status', '')} "
+            f"variants={len(product.get('variants', []))} "
+            f"metafields={len(ASKCRYSTAL_METAFIELD_SOURCES)} "
+            f"tags={len(effective_product_tags(product))}"
+        )
+
+
+def sync_products(args: argparse.Namespace) -> int:
+    validation_code = validate_catalog(args)
+    if validation_code != 0:
+        print("\nProduct sync aborted because local catalog validation failed.")
+        return validation_code
+
+    product_files = selected_product_files(args)
+    products = [load_json(path) for path in product_files]
+
+    if args.handle:
+        found_handles = {product["handle"] for product in products}
+        missing_handles = sorted(set(args.handle) - found_handles)
+        if missing_handles:
+            raise SystemExit(f"product handle(s) not found locally: {', '.join(missing_handles)}")
+
+    planned: list[dict[str, Any]] = []
+    skipped = 0
+    for product in products:
+        workflow_status = product.get("workflow_status")
+        if not args.include_unreviewed and workflow_status not in REVIEWED_PRODUCT_STATUSES:
+            skipped += 1
+            print(f"  skip {product['handle']}: workflow_status={workflow_status} (pass --include-unreviewed to sync)")
+            continue
+        planned.append(product)
+
+    print_product_sync_plan(planned, apply=args.apply, include_unreviewed=args.include_unreviewed)
+    if skipped:
+        print(f"  skipped: {skipped}")
+
+    if not args.apply:
+        print("\nNo Shopify calls were made. Pass --apply to create/update draft products.")
+        return 0
+
+    client = resolve_shopify_client(args)
+    material_cache: dict[str, str] = {}
+    print("")
+    for product in planned:
+        result = client.graphql(
+            PRODUCT_SET,
+            {
+                "identifier": {"handle": product["handle"]},
+                "input": product_set_input(
+                    client=client,
+                    product=product,
+                    material_cache=material_cache,
+                    resolve_remote_refs=True,
+                ),
+                "synchronous": True,
+            },
+        )["productSet"]
+        if result.get("userErrors"):
+            raise SystemExit(f"failed to sync product {product['handle']}: {graphql_user_error_message(result['userErrors'])}")
+        operation = result.get("productSetOperation") or {}
+        if operation.get("userErrors"):
+            raise SystemExit(
+                f"failed to sync product {product['handle']}: "
+                f"{graphql_user_error_message(operation['userErrors'])}"
+            )
+        product_result = result.get("product") or {}
+        print(
+            "  synced "
+            f"{product_result.get('handle') or product['handle']} -> "
+            f"{product_result.get('id', 'unknown-id')} "
+            f"status={product_result.get('status', product.get('shopify_status'))}"
+        )
+
+    print("\nNote: product sync does not publish products or mutate inventory.")
+    return 0
 
 
 def collection_input(collection: dict[str, Any], *, collection_id: str | None = None) -> dict[str, Any]:
@@ -1200,6 +1499,28 @@ def build_parser() -> argparse.ArgumentParser:
     diff.add_argument("--api-version", default="2026-04", help="Shopify Admin API version.")
     diff.add_argument("--fail-on-diff", action="store_true", help="Exit 2 when any differences are found.")
     diff.set_defaults(func=diff_catalog)
+
+    sync_products_parser = catalog_subparsers.add_parser(
+        "sync-products",
+        help="Create/update Shopify draft products from local product JSON files",
+    )
+    sync_products_parser.add_argument("--apply", action="store_true", help="Write product changes to Shopify.")
+    sync_products_parser.add_argument("--handle", action="append", help="Limit sync to a local product handle. Repeat as needed.")
+    sync_products_parser.add_argument(
+        "--include-unreviewed",
+        action="store_true",
+        help="Allow products with workflow_status=draft or ai_filled.",
+    )
+    sync_products_parser.add_argument("--products-dir", type=Path, default=PRODUCTS_DIR)
+    sync_products_parser.add_argument("--collections-dir", type=Path, default=COLLECTIONS_DIR)
+    sync_products_parser.add_argument("--product-schema", type=Path, default=PRODUCT_SCHEMA)
+    sync_products_parser.add_argument("--collection-schema", type=Path, default=COLLECTION_SCHEMA)
+    sync_products_parser.add_argument("--store-domain", default="", help="Shopify myshopify domain. Defaults to SHOPIFY_STORE_DOMAIN.")
+    sync_products_parser.add_argument("--access-token", default="", help="Shopify Admin API access token. Defaults to SHOPIFY_ADMIN_ACCESS_TOKEN.")
+    sync_products_parser.add_argument("--client-id", default="", help="Shopify app Client ID. Defaults to SHOPIFY_CLIENT_ID or SHOPIFY_API_KEY.")
+    sync_products_parser.add_argument("--client-secret", default="", help="Shopify app Client secret. Defaults to SHOPIFY_CLIENT_SECRET or SHOPIFY_API_SECRET.")
+    sync_products_parser.add_argument("--api-version", default="2026-04", help="Shopify Admin API version.")
+    sync_products_parser.set_defaults(func=sync_products)
 
     provision_collections_parser = catalog_subparsers.add_parser(
         "provision-collections",

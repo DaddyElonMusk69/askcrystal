@@ -242,7 +242,7 @@ export const handleChat = async (body, req = null) => {
     userMessage: validation.message,
     assistantAnswer: difyResult.data.answer,
     components: difyResult.data.components || [],
-    suggestions: [],
+    suggestions: difyResult.data.suggestions || [],
     metadata: difyResult.data.metadata || {},
     conversationId: difyResult.data.conversationId || validation.conversationId || '',
     messageId: difyResult.data.messageId || '',
@@ -259,8 +259,7 @@ export const handleChat = async (body, req = null) => {
       references: difyResult.data.references,
       metadata: difyResult.data.metadata,
       components: difyResult.data.components || [],
-      suggestions: [],
-      storefrontHydration: difyResult.data.storefrontHydration || null,
+      suggestions: difyResult.data.suggestions || [],
       products: [],
     },
   }
@@ -337,33 +336,38 @@ export const handleChatStream = async (body, res, req = null) => {
     heartbeat,
     elapsedMs: Date.now() - streamStartedAt,
   })
+
+  const clientAbortController = new AbortController()
+  let clientConnected = true
+  const canWriteToClient = () => clientConnected && !res.writableEnded && !res.destroyed
   const emitStatusEvent = (payload, options) => {
-    if (clientAbortController.signal.aborted || res.writableEnded || res.destroyed)
+    if (clientAbortController.signal.aborted)
       return false
 
     latestStatusPayload = {
       ...latestStatusPayload,
       ...(payload || {}),
     }
+    if (!canWriteToClient())
+      return false
+
     return sseEvent(res, 'status', enrichStatusPayload(latestStatusPayload, options))
   }
-  const canWriteToClient = () => !res.writableEnded && !res.destroyed
 
-  const clientAbortController = new AbortController()
   let streamClosed = false
-  const abortClientStream = () => {
-    if (streamClosed || clientAbortController.signal.aborted)
+  const detachClientStream = () => {
+    if (streamClosed)
       return
 
-    clientAbortController.abort()
+    clientConnected = false
   }
-  req?.on?.('aborted', abortClientStream)
-  req?.on?.('error', abortClientStream)
+  req?.on?.('aborted', detachClientStream)
+  req?.on?.('error', detachClientStream)
   res.on?.('close', () => {
     if (!res.writableEnded)
-      abortClientStream()
+      detachClientStream()
   })
-  res.on?.('error', abortClientStream)
+  res.on?.('error', detachClientStream)
 
   if (!sseStart(res))
     return
@@ -371,7 +375,7 @@ export const handleChatStream = async (body, res, req = null) => {
   emitStatusEvent(latestStatusPayload)
 
   let statusHeartbeatHandle = setInterval(() => {
-    if (clientAbortController.signal.aborted || res.writableEnded || res.destroyed) {
+    if (clientAbortController.signal.aborted || !canWriteToClient()) {
       clearInterval(statusHeartbeatHandle)
       statusHeartbeatHandle = null
       return
@@ -392,7 +396,7 @@ export const handleChatStream = async (body, res, req = null) => {
   }
   let activeTaskId = ''
   let streamedAnswer = ''
-  let streamedComponents = []
+  let streamedSuggestions = []
   let sawVisibleStream = false
   let latestConversationId = validation.conversationId
   let latestMetadata = null
@@ -421,7 +425,7 @@ export const handleChatStream = async (body, res, req = null) => {
           })
         }
 
-        if (clientAbortController.signal.aborted || res.writableEnded || res.destroyed)
+        if (clientAbortController.signal.aborted)
           return
 
         if (payload?.conversationId || payload?.conversation_id)
@@ -443,10 +447,10 @@ export const handleChatStream = async (body, res, req = null) => {
           }
         }
 
-        if (type === 'component') {
-          const nextComponents = Array.isArray(payload?.components) ? payload.components : []
-          if (nextComponents.length > 0)
-            streamedComponents = nextComponents
+        if (type === 'suggestions') {
+          const nextSuggestions = Array.isArray(payload?.suggestions) ? payload.suggestions : []
+          if (nextSuggestions.length > 0)
+            streamedSuggestions = nextSuggestions
         }
 
         if (type === 'complete' && payload && typeof payload === 'object')
@@ -456,6 +460,9 @@ export const handleChatStream = async (body, res, req = null) => {
           emitStatusEvent(payload)
           return
         }
+
+        if (!canWriteToClient())
+          return
 
         sseEvent(res, type, payload)
       },
@@ -477,7 +484,7 @@ export const handleChatStream = async (body, res, req = null) => {
   }
 
   if (!difyResult.ok) {
-    if (sawVisibleStream || streamedComponents.length > 0) {
+    if (sawVisibleStream) {
       const partialMetadata = {
         ...(latestMetadata || {}),
         fallback: 'partial-upstream-failure',
@@ -490,7 +497,7 @@ export const handleChatStream = async (body, res, req = null) => {
         thread: validation.thread,
         userMessage: validation.message,
         assistantAnswer: streamedAnswer,
-        components: streamedComponents,
+        components: [],
         suggestions: [],
         metadata: partialMetadata,
         conversationId: latestConversationId || validation.conversationId || '',
@@ -503,7 +510,7 @@ export const handleChatStream = async (body, res, req = null) => {
           conversationId: latestConversationId,
           metadata: partialMetadata,
           references: [],
-          components: streamedComponents,
+          components: [],
           suggestions: [],
         })
         res.end()
@@ -527,14 +534,14 @@ export const handleChatStream = async (body, res, req = null) => {
     thread: validation.thread,
     userMessage: validation.message,
     assistantAnswer: difyResult.data?.answer || streamedAnswer,
-    components: difyResult.data?.components || streamedComponents,
-    suggestions: [],
+    components: difyResult.data?.components || [],
+    suggestions: streamedSuggestions.length ? streamedSuggestions : difyResult.data?.suggestions || [],
     metadata: difyResult.data?.metadata || latestMetadata || {},
     conversationId: difyResult.data?.conversationId || latestConversationId || validation.conversationId || '',
     messageId: getPayloadMessageId(difyResult.data) || '',
     taskId: activeTaskId,
   })
 
-  if (!res.writableEnded && !res.destroyed)
+  if (canWriteToClient())
     res.end()
 }

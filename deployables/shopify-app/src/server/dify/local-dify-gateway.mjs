@@ -2,14 +2,9 @@ import { Buffer } from 'node:buffer'
 import { gzipSync } from 'node:zlib'
 
 import {
-  mergeChatComponents,
+  extractInlineChatComponentManifest,
   stripInlineChatComponentManifestPreview,
 } from '../../../../../packages/storefront-ui-contract/src/chat-components.mjs'
-import {
-  createStorefrontComponentHydrationContext,
-  describeStorefrontHydrationStatus,
-  hydrateChatComponentsFromPayload,
-} from './storefront-component-hydrator.mjs'
 import { config, requireDifyChatConfig, requireDifyConsoleDevConfig } from '../config.mjs'
 
 const TERMINAL_EVENTS = new Set([
@@ -25,8 +20,15 @@ const STREAM_DECISION_AFTER_REASONING_MIN_CHARS = 48
 const SUGGESTED_QUESTIONS_REQUEST_TIMEOUT_MS = Number(
   process.env.DIFY_SUGGESTED_QUESTIONS_REQUEST_TIMEOUT_MS || 45000,
 )
+const INLINE_SUGGESTIONS_PATTERN = /```askcrystal-suggestions\s*([\s\S]*?)```|<askcrystal-suggestions>\s*([\s\S]*?)<\/askcrystal-suggestions>/gi
+const INLINE_SUGGESTION_MARKERS = [
+  '```askcrystal-suggestions',
+  '<askcrystal-suggestions',
+]
 
 const joinUrl = (baseUrl, path) => new URL(path, `${baseUrl.replace(/\/$/, '')}/`).toString()
+
+const getDifyServiceApiRoot = (chatUrl) => new URL('./', chatUrl.replace(/\/$/, '')).toString()
 
 const getSetCookies = (response) => {
   if (typeof response.headers.getSetCookie === 'function')
@@ -59,6 +61,47 @@ const parseTextPayload = (text) => {
   }
   catch {
     return text
+  }
+}
+
+const parseInlineJsonPayload = (rawValue) => {
+  if (typeof rawValue !== 'string' || !rawValue.trim())
+    return null
+
+  try {
+    return JSON.parse(rawValue)
+  }
+  catch {
+    return null
+  }
+}
+
+const stripInlineSuggestedQuestionsPreview = (value = '') => {
+  let preview = String(value || '').replace(INLINE_SUGGESTIONS_PATTERN, '')
+  const lowerPreview = preview.toLowerCase()
+  const markerIndexes = INLINE_SUGGESTION_MARKERS
+    .map(marker => lowerPreview.indexOf(marker))
+    .filter(index => index >= 0)
+
+  if (markerIndexes.length > 0)
+    preview = preview.slice(0, Math.min(...markerIndexes))
+
+  return preview.trimEnd()
+}
+
+const extractInlineSuggestedQuestions = (value = '') => {
+  const answer = String(value || '')
+  const suggestions = []
+  const matches = [...answer.matchAll(INLINE_SUGGESTIONS_PATTERN)]
+
+  for (const match of matches) {
+    const parsed = parseInlineJsonPayload(match[1] || match[2] || '')
+    suggestions.push(...normalizeSuggestedQuestions(parsed?.suggestions || parsed?.data || parsed || []))
+  }
+
+  return {
+    answer: stripInlineSuggestedQuestionsPreview(answer).replace(/\n{3,}/g, '\n\n').trim(),
+    suggestions: normalizeSuggestedQuestions(suggestions),
   }
 }
 
@@ -190,17 +233,6 @@ const selectorLooksLikeFinalAnswer = (selector = []) => {
     return false
 
   return /\b(final[-_\s]?answer|finalanswer)\b/.test(searchText)
-}
-
-const getChatComponentKey = (component) => {
-  const toolName = typeof component?.toolName === 'string' ? component.toolName : ''
-  const id = typeof component?.id === 'string' ? component.id : ''
-  return `${toolName}:${id}`
-}
-
-const diffChatComponents = (current = [], incoming = []) => {
-  const existingKeys = new Set(current.map(getChatComponentKey))
-  return incoming.filter(component => !existingKeys.has(getChatComponentKey(component)))
 }
 
 const getToolName = (event) => {
@@ -445,6 +477,21 @@ const stripModelToolMarkup = value => value
   .replace(/\n{3,}/g, '\n\n')
   .trim()
 
+const stripModelThinkingMarkup = (value) => {
+  if (typeof value !== 'string')
+    return ''
+
+  return value
+    .replace(/<think\b[^>]*>[\s\S]*?<\/think>/gi, '')
+    .replace(/<thinking\b[^>]*>[\s\S]*?<\/thinking>/gi, '')
+    .replace(/<reasoning\b[^>]*>[\s\S]*?<\/reasoning>/gi, '')
+    .replace(/<analysis\b[^>]*>[\s\S]*?<\/analysis>/gi, '')
+    .replace(/<think\b[^>]*>[\s\S]*$/gi, '')
+    .replace(/<thinking\b[^>]*>[\s\S]*$/gi, '')
+    .replace(/<reasoning\b[^>]*>[\s\S]*$/gi, '')
+    .replace(/<analysis\b[^>]*>[\s\S]*$/gi, '')
+}
+
 const decodeJsonStringLiteral = (literal) => {
   if (typeof literal !== 'string' || !literal)
     return ''
@@ -563,7 +610,7 @@ const extractStructuredFinalAnswer = (value) => {
   if (typeof value !== 'string')
     return ''
 
-  const normalized = stripModelToolMarkup(stripInlineChatComponentManifestPreview(value))
+  const normalized = stripModelToolMarkup(stripInlineChatComponentManifestPreview(stripModelThinkingMarkup(value)))
   if (!normalized)
     return ''
 
@@ -714,11 +761,12 @@ const cleanStreamingVisibleAnswer = (value, { sawReasoningActivity = false } = {
   if (typeof value !== 'string')
     return null
 
-  const directFinalAnswer = extractStructuredFinalAnswer(value)
+  const valueWithoutSuggestions = stripInlineSuggestedQuestionsPreview(stripModelThinkingMarkup(value))
+  const directFinalAnswer = extractStructuredFinalAnswer(valueWithoutSuggestions)
   if (directFinalAnswer)
     return directFinalAnswer
 
-  const normalized = stripModelToolMarkup(stripInlineChatComponentManifestPreview(value))
+  const normalized = stripModelToolMarkup(stripInlineChatComponentManifestPreview(valueWithoutSuggestions))
   if (!normalized)
     return null
 
@@ -739,9 +787,6 @@ const cleanStreamingVisibleAnswer = (value, { sawReasoningActivity = false } = {
   if (normalized.length < decisionThreshold)
     return null
 
-  if (sawReasoningActivity && !looksLikeDirectAnswerLead(cleanedLeadingParagraph))
-    return null
-
   return cleaned || null
 }
 
@@ -749,7 +794,7 @@ const sanitizeModelAnswerText = (value) => {
   if (typeof value !== 'string')
     return null
 
-  const withoutToolMarkup = stripModelToolMarkup(value)
+  const withoutToolMarkup = stripModelToolMarkup(stripInlineSuggestedQuestionsPreview(stripModelThinkingMarkup(value)))
 
   if (!withoutToolMarkup)
     return null
@@ -782,11 +827,12 @@ const cleanVisibleAnswer = (value) => {
   if (typeof value !== 'string')
     return null
 
-  const directFinalAnswer = extractStructuredFinalAnswer(value)
+  const valueWithoutSuggestions = stripInlineSuggestedQuestionsPreview(stripModelThinkingMarkup(value))
+  const directFinalAnswer = extractStructuredFinalAnswer(valueWithoutSuggestions)
   if (directFinalAnswer)
     return sanitizeModelAnswerText(directFinalAnswer)
 
-  const normalized = stripInlineChatComponentManifestPreview(value)
+  const normalized = stripInlineChatComponentManifestPreview(valueWithoutSuggestions)
   if (looksLikeReactTrace(normalized))
     return null
 
@@ -886,45 +932,52 @@ const buildStatusPayload = ({ stage, event = null } = {}) => {
   }
 }
 
-const normalizeDifyAnswer = async (payload, hydrationContext) => {
+const normalizeDifyAnswer = (payload) => {
   const references = payload?.retriever_resources
     || payload?.metadata?.retriever_resources
     || []
-  const components = await hydrateChatComponentsFromPayload(payload, hydrationContext)
-  const storefrontHydration = describeStorefrontHydrationStatus(hydrationContext)
 
   if (typeof payload === 'string') {
+    const inlineSuggestions = extractInlineSuggestedQuestions(payload)
+    const sourceText = stripModelThinkingMarkup(inlineSuggestions.answer).trim()
+    const components = extractInlineChatComponentManifest(sourceText).components
     return {
-      answer: cleanVisibleAnswer(payload),
+      answer: cleanVisibleAnswer(inlineSuggestions.answer),
+      sourceText,
       conversationId: null,
       messageId: null,
       metadata: {},
       references,
       components,
-      storefrontHydration,
+      suggestions: inlineSuggestions.suggestions,
     }
   }
 
   if (typeof payload?.answer === 'string') {
+    const inlineSuggestions = extractInlineSuggestedQuestions(payload.answer)
+    const sourceText = stripModelThinkingMarkup(inlineSuggestions.answer).trim()
+    const components = extractInlineChatComponentManifest(sourceText).components
     return {
-      answer: cleanVisibleAnswer(payload.answer),
+      answer: cleanVisibleAnswer(inlineSuggestions.answer),
+      sourceText,
       conversationId: payload.conversation_id || null,
       messageId: typeof payload?.message_id === 'string' ? payload.message_id : null,
       metadata: payload.metadata || {},
       references,
       components,
-      storefrontHydration,
+      suggestions: inlineSuggestions.suggestions,
     }
   }
 
   return {
     answer: null,
+    sourceText: '',
     conversationId: payload?.conversation_id || null,
     messageId: typeof payload?.message_id === 'string' ? payload.message_id : null,
     metadata: payload?.metadata || {},
     references,
-    components,
-    storefrontHydration,
+    components: [],
+    suggestions: [],
   }
 }
 
@@ -952,6 +1005,9 @@ const normalizeDifyStream = (events) => {
   const terminalAnswerText = getEventText(terminalAnswerEvent)
 
   const answer = terminalAnswerText || replacementText || streamedAnswer
+  const inlineSuggestions = extractInlineSuggestedQuestions(answer || '')
+  const sourceText = stripModelThinkingMarkup(inlineSuggestions.answer).trim()
+  const components = extractInlineChatComponentManifest(sourceText).components
 
   const conversationId = events
     .map(event => event?.conversation_id)
@@ -976,13 +1032,15 @@ const normalizeDifyStream = (events) => {
   const metadata = messageEndEvent?.metadata || {}
   const references = metadata?.retriever_resources || messageEndEvent?.retriever_resources || []
   return {
-    answer: answer || null,
+    answer: inlineSuggestions.answer || null,
+    sourceText,
     conversationId,
     messageId,
     taskId,
     metadata,
     references,
-    components: [],
+    components,
+    suggestions: inlineSuggestions.suggestions,
   }
 }
 
@@ -1008,9 +1066,8 @@ const fetchTextWithTimeout = async (url, options, timeoutMs) => {
   }
 }
 
-const appendStreamMetadata = (payload, events, storefrontHydration = null) => ({
+const appendStreamMetadata = (payload, events) => ({
   ...payload,
-  ...(storefrontHydration ? { storefrontHydration } : {}),
   metadata: {
     ...(payload.metadata || {}),
     streamEvents: events.length,
@@ -1030,7 +1087,11 @@ const normalizeSuggestedQuestions = (value) => {
   const seen = new Set()
 
   for (const suggestion of suggestions) {
-    const prompt = typeof suggestion === 'string' ? suggestion.trim() : ''
+    const prompt = typeof suggestion === 'string'
+      ? suggestion.trim()
+      : typeof suggestion?.prompt === 'string'
+        ? suggestion.prompt.trim()
+        : ''
     if (!prompt)
       continue
 
@@ -1049,7 +1110,7 @@ const buildServiceAppParametersRequest = ({
   chatUrl,
   apiKey,
 }) => ({
-  url: new URL('../parameters', `${chatUrl.replace(/\/$/, '')}/`).toString(),
+  url: new URL('parameters', getDifyServiceApiRoot(chatUrl)).toString(),
   options: {
     method: 'GET',
     headers: {
@@ -1194,6 +1255,309 @@ const buildServiceChatStopRequest = ({
   },
 })
 
+const buildServiceSuggestedQuestionsRequest = ({
+  chatUrl,
+  apiKey,
+  messageId,
+  userId,
+}) => ({
+  url: new URL(`messages/${messageId}/suggested`, getDifyServiceApiRoot(chatUrl)).toString(),
+  options: {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      authorization: `Bearer ${apiKey}`,
+    },
+    signal: AbortSignal.timeout(Math.min(SUGGESTED_QUESTIONS_REQUEST_TIMEOUT_MS, config.difyRequestTimeoutMs)),
+  },
+  query: {
+    user: userId || 'shopify-guest',
+  },
+})
+
+const buildServiceConversationMessagesRequest = ({
+  chatUrl,
+  apiKey,
+  conversationId,
+  userId,
+  limit = 80,
+  firstId = '',
+}) => {
+  const requestUrl = new URL('messages', getDifyServiceApiRoot(chatUrl))
+  requestUrl.searchParams.set('conversation_id', conversationId)
+  requestUrl.searchParams.set('user', userId || 'shopify-guest')
+  requestUrl.searchParams.set('limit', String(Math.max(1, Math.min(Number(limit) || 80, 100))))
+  if (firstId)
+    requestUrl.searchParams.set('first_id', firstId)
+
+  return {
+    url: requestUrl.toString(),
+    options: {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        authorization: `Bearer ${apiKey}`,
+      },
+    },
+  }
+}
+
+const normalizeDifyHistoryCreatedAt = (value) => {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    const milliseconds = value > 9999999999 ? value : value * 1000
+    return new Date(milliseconds).toISOString()
+  }
+
+  if (typeof value === 'string' && value.trim()) {
+    const date = new Date(value)
+    if (!Number.isNaN(date.getTime()))
+      return date.toISOString()
+    return value.trim()
+  }
+
+  return new Date().toISOString()
+}
+
+const getDifyHistoryMessageTime = (message) => {
+  const rawValue = message?.created_at || message?.createdAt
+  if (typeof rawValue === 'number' && Number.isFinite(rawValue))
+    return rawValue > 9999999999 ? rawValue : rawValue * 1000
+
+  if (typeof rawValue === 'string' && rawValue.trim()) {
+    const parsed = Date.parse(rawValue)
+    if (Number.isFinite(parsed))
+      return parsed
+  }
+
+  return null
+}
+
+const getDifyHistoryItems = payload => (
+  Array.isArray(payload?.data)
+    ? payload.data
+    : Array.isArray(payload?.messages)
+      ? payload.messages
+      : Array.isArray(payload)
+        ? payload
+        : []
+)
+
+const getDifyHistoryQuery = message => (
+  typeof message?.query === 'string'
+    ? message.query
+    : typeof message?.inputs?.query === 'string'
+      ? message.inputs.query
+      : ''
+)
+
+const getDifyHistoryAnswer = message => (
+  typeof message?.answer === 'string'
+    ? message.answer
+    : typeof message?.message === 'string'
+      ? message.message
+      : ''
+)
+
+const normalizeDifyHistoryMessages = (payload) => {
+  const items = getDifyHistoryItems(payload)
+    .map((message, index) => ({
+      message,
+      index,
+      time: getDifyHistoryMessageTime(message),
+    }))
+    .sort((left, right) => {
+      if (left.time !== null && right.time !== null && left.time !== right.time)
+        return left.time - right.time
+
+      if (left.time !== null && right.time === null)
+        return -1
+
+      if (left.time === null && right.time !== null)
+        return 1
+
+      return right.index - left.index
+    })
+
+  const messages = []
+
+  for (const { message } of items) {
+    const messageId = typeof message?.id === 'string' && message.id
+      ? message.id
+      : `dify-message-${messages.length}`
+    const createdAt = normalizeDifyHistoryCreatedAt(message?.created_at || message?.createdAt)
+    const query = getDifyHistoryQuery(message).trim()
+    const answer = getDifyHistoryAnswer(message)
+
+    if (query) {
+      messages.push({
+        id: `${messageId}:user`,
+        role: 'user',
+        contentText: query,
+        components: [],
+        suggestions: [],
+        difyMessageId: messageId,
+        metadata: {
+          source: 'dify-history',
+        },
+        createdAt,
+      })
+    }
+
+    const normalizedAnswer = normalizeDifyAnswer({
+      answer,
+      conversation_id: message?.conversation_id || message?.conversationId || null,
+      message_id: messageId,
+      metadata: message?.metadata || {
+        retriever_resources: message?.retriever_resources || [],
+      },
+    })
+    if (normalizedAnswer.answer || normalizedAnswer.components.length > 0) {
+      messages.push({
+        id: `${messageId}:assistant`,
+        role: 'assistant',
+        contentText: normalizedAnswer.answer || '',
+        components: normalizedAnswer.components || [],
+        suggestions: normalizedAnswer.suggestions || [],
+        difyMessageId: messageId,
+        metadata: {
+          ...(normalizedAnswer.metadata || {}),
+          source: 'dify-history',
+        },
+        createdAt,
+      })
+    }
+  }
+
+  return messages
+}
+
+const fetchServiceConversationMessages = async ({
+  chatUrl,
+  apiKey,
+  conversationId,
+  userId,
+  limit = 80,
+}) => {
+  if (!conversationId) {
+    return {
+      ok: false,
+      status: 400,
+      code: 'dify_conversation_id_required',
+      message: 'conversation_id is required',
+    }
+  }
+
+  try {
+    const request = buildServiceConversationMessagesRequest({
+      chatUrl,
+      apiKey,
+      conversationId,
+      userId,
+      limit,
+    })
+    const { response, text } = await fetchTextWithTimeout(
+      request.url,
+      request.options,
+      Math.min(config.difyRequestTimeoutMs, 30000),
+    )
+    const payload = parseTextPayload(text)
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        status: response.status,
+        code: 'dify_conversation_messages_failed',
+        message: payload?.message || 'Failed to load Dify conversation messages',
+        details: payload,
+      }
+    }
+
+    return {
+      ok: true,
+      status: response.status,
+      data: {
+        messages: normalizeDifyHistoryMessages(payload),
+        raw: payload,
+      },
+    }
+  }
+  catch (error) {
+    return {
+      ok: false,
+      status: 502,
+      code: 'dify_conversation_messages_failed',
+      message: error instanceof Error ? error.message : 'Failed to load Dify conversation messages',
+    }
+  }
+}
+
+const fetchServiceSuggestedQuestions = async ({
+  chatUrl,
+  apiKey,
+  messageId,
+  userId,
+}) => {
+  if (!messageId)
+    return []
+
+  try {
+    const request = buildServiceSuggestedQuestionsRequest({
+      chatUrl,
+      apiKey,
+      messageId,
+      userId,
+    })
+    const requestUrl = new URL(request.url)
+    requestUrl.searchParams.set('user', request.query.user)
+
+    const response = await fetch(requestUrl, request.options)
+    const text = await response.text()
+    const payload = parseTextPayload(text)
+
+    if (!response.ok)
+      return []
+
+    return normalizeSuggestedQuestions(payload)
+  }
+  catch {
+    return []
+  }
+}
+
+const emitNativeSuggestedQuestions = ({
+  payload,
+  chatUrl,
+  apiKey,
+  userId,
+  onProgress,
+}) => {
+  const messageId = payload?.messageId
+  if (!messageId)
+    return Promise.resolve([])
+
+  return fetchServiceSuggestedQuestions({
+    chatUrl,
+    apiKey,
+    messageId,
+    userId,
+  })
+    .then((suggestions) => {
+      const normalizedSuggestions = normalizeSuggestedQuestions(suggestions)
+      if (normalizedSuggestions.length === 0)
+        return
+
+      onProgress?.({
+        type: 'suggestions',
+        payload: {
+          messageId,
+          suggestions: normalizedSuggestions,
+        },
+      })
+      return normalizedSuggestions
+    })
+    .catch(() => [])
+}
+
 const sendServiceApiChat = async ({
   chatUrl,
   apiKey,
@@ -1205,9 +1569,9 @@ const sendServiceApiChat = async ({
   responseMode = 'streaming',
   emitErrors = true,
   externalAbortSignal = null,
+  waitForSuggestions = false,
 }) => {
   const controller = new AbortController()
-  const hydrationContext = createStorefrontComponentHydrationContext()
   const timeoutHandle = setTimeout(() => controller.abort(), config.difyRequestTimeoutMs)
   const handleExternalAbort = () => controller.abort()
   const throwIfAborted = () => {
@@ -1251,11 +1615,20 @@ const sendServiceApiChat = async ({
 
     if (!contentType.includes('text/event-stream') || !response.body) {
       const text = await response.text()
-      const payload = await normalizeDifyAnswer(parseTextPayload(text), hydrationContext)
+      const payload = normalizeDifyAnswer(parseTextPayload(text))
       onProgress?.({
         type: 'complete',
         payload,
       })
+      const suggestionsPromise = emitNativeSuggestedQuestions({
+        payload,
+        chatUrl,
+        apiKey,
+        userId,
+        onProgress,
+      })
+      if (waitForSuggestions)
+        await suggestionsPromise
       return {
         ok: true,
         status: 200,
@@ -1270,7 +1643,6 @@ const sendServiceApiChat = async ({
     let emittedResponseStatus = false
     let forwardedAnswer = ''
     let forwardedVisibleAnswer = ''
-    let forwardedComponents = []
     let lastStatusKey = ''
     let sawReasoningActivity = false
     let hasForwardedVisibleDelta = false
@@ -1304,27 +1676,6 @@ const sendServiceApiChat = async ({
       for (const event of parsed.events) {
         throwIfAborted()
         events.push(event)
-
-        const eventComponents = await hydrateChatComponentsFromPayload(event, hydrationContext)
-        if (eventComponents.length > 0) {
-          const nextComponents = diffChatComponents(forwardedComponents, eventComponents)
-          forwardedComponents = mergeChatComponents(forwardedComponents, eventComponents)
-
-          if (nextComponents.length > 0) {
-            onProgress?.({
-              type: 'component',
-              payload: {
-                conversationId: getEventConversationId(event),
-                taskId: getEventTaskId(event),
-                sourceEvent: event.event || null,
-                nodeId: event?.data?.node_id || null,
-                nodeType: event?.data?.node_type || null,
-                storefrontHydration: describeStorefrontHydrationStatus(hydrationContext),
-                components: nextComponents,
-              },
-            })
-          }
-        }
 
         if (event?.event === 'agent_thought') {
           throwIfAborted()
@@ -1373,18 +1724,17 @@ const sendServiceApiChat = async ({
             emitStatus(buildStatusPayload({ stage: 'compose' }))
           }
 
-          const shouldBufferVisibleStreaming = sawReasoningActivity && !hasForwardedVisibleDelta
           const previousVisibleAnswer = forwardedVisibleAnswer
-          if (nextVisibleAnswer)
-            forwardedVisibleAnswer = nextVisibleAnswer
-
-          if (!shouldBufferVisibleStreaming && nextVisibleAnswer !== previousVisibleAnswer) {
-            const shouldReplace = isReplaceEvent || !nextVisibleAnswer.startsWith(previousVisibleAnswer)
+          if (nextVisibleAnswer && nextVisibleAnswer !== previousVisibleAnswer) {
+            const shouldReplace = isReplaceEvent
+              || !hasForwardedVisibleDelta
+              || !nextVisibleAnswer.startsWith(previousVisibleAnswer)
             const visibleText = shouldReplace
               ? nextVisibleAnswer
               : nextVisibleAnswer.slice(previousVisibleAnswer.length)
             if (visibleText)
               hasForwardedVisibleDelta = true
+            forwardedVisibleAnswer = nextVisibleAnswer
 
             onProgress?.({
               type: shouldReplace ? 'replace' : 'delta',
@@ -1424,17 +1774,25 @@ const sendServiceApiChat = async ({
           let payload = appendStreamMetadata(
             normalizeDifyStream(events),
             events,
-            describeStorefrontHydrationStatus(hydrationContext),
           )
           payload.answer = cleanVisibleAnswer(payload.answer)
           if (!payload.answer && forwardedVisibleAnswer)
             payload.answer = forwardedVisibleAnswer
-          if (forwardedComponents.length > 0)
-            payload.components = mergeChatComponents(payload.components, forwardedComponents)
+          if (!payload.sourceText && payload.answer)
+            payload.sourceText = payload.answer
           onProgress?.({
             type: 'complete',
             payload,
           })
+          const suggestionsPromise = emitNativeSuggestedQuestions({
+            payload,
+            chatUrl,
+            apiKey,
+            userId,
+            onProgress,
+          })
+          if (waitForSuggestions)
+            await suggestionsPromise
           await reader.cancel()
           return {
             ok: true,
@@ -1455,17 +1813,25 @@ const sendServiceApiChat = async ({
     let payload = appendStreamMetadata(
       normalizeDifyStream(events),
       events,
-      describeStorefrontHydrationStatus(hydrationContext),
     )
     payload.answer = cleanVisibleAnswer(payload.answer)
     if (!payload.answer && forwardedVisibleAnswer)
       payload.answer = forwardedVisibleAnswer
-    if (forwardedComponents.length > 0)
-      payload.components = mergeChatComponents(payload.components, forwardedComponents)
+    if (!payload.sourceText && payload.answer)
+      payload.sourceText = payload.answer
     onProgress?.({
       type: 'complete',
       payload,
     })
+    const suggestionsPromise = emitNativeSuggestedQuestions({
+      payload,
+      chatUrl,
+      apiKey,
+      userId,
+      onProgress,
+    })
+    if (waitForSuggestions)
+      await suggestionsPromise
     return {
       ok: true,
       status: 200,
@@ -1787,6 +2153,28 @@ export class LocalDifyGateway {
     }
   }
 
+  async getConversationMessages({ conversationId, userId, limit = 80 }) {
+    const serviceApiConfig = await this._resolveServiceApiConfig()
+    if (!serviceApiConfig.ok)
+      return serviceApiConfig
+
+    const difyResult = await fetchServiceConversationMessages({
+      chatUrl: serviceApiConfig.value.chatUrl,
+      apiKey: serviceApiConfig.value.apiKey,
+      conversationId,
+      userId,
+      limit,
+    })
+
+    if (!difyResult.ok)
+      return difyResult
+
+    return {
+      ...difyResult,
+      mode: serviceApiConfig.value.mode,
+    }
+  }
+
   async streamChat({ message, conversationId, userId, memoryContext = null, onProgress = null, externalAbortSignal = null }) {
     const serviceApiConfig = await this._resolveServiceApiConfig()
     if (!serviceApiConfig.ok)
@@ -1805,6 +2193,7 @@ export class LocalDifyGateway {
         responseMode: 'streaming',
         emitErrors: false,
         externalAbortSignal,
+        waitForSuggestions: true,
       })
 
       if (difyResult.ok || attempt >= DEFAULT_STREAM_RETRY_ATTEMPTS || !isRetryableDifyFailure(difyResult))

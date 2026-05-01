@@ -369,6 +369,81 @@
       }
     },
     {
+      "type": "askcrystal_crystal_material",
+      "handle": "copper",
+      "fields": {
+        "name": "Copper",
+        "short_meaning": "A warm conductive metal traditionally associated with circulation of intention, creative confidence, and everyday energetic connection.",
+        "primary_intentions": [
+          "confidence",
+          "grounding",
+          "abundance"
+        ],
+        "chakras": [
+          "heart",
+          "solar_plexus"
+        ],
+        "western_elements": [
+          "fire",
+          "earth"
+        ],
+        "five_elements": [
+          "metal",
+          "fire"
+        ],
+        "zodiac_signs": [
+          "taurus",
+          "libra",
+          "leo"
+        ],
+        "care_notes": "Keep dry when possible. Wipe with a soft cloth after wear and store away from harsh chemicals or abrasive surfaces.",
+        "cleansing_methods": [
+          "sound",
+          "selenite",
+          "dry cloth"
+        ],
+        "pairing_notes": "Pairs well with clear quartz for clarity, citrine for momentum, or rose quartz for a softer heart-led intention.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice. Avoid if you have a known copper sensitivity."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "agate",
+      "fields": {
+        "name": "Agate",
+        "short_meaning": "A banded chalcedony traditionally associated with steady grounding, emotional balance, and calm focus.",
+        "primary_intentions": [
+          "grounding",
+          "calm",
+          "emotional balance"
+        ],
+        "chakras": [
+          "root",
+          "heart"
+        ],
+        "western_elements": [
+          "earth"
+        ],
+        "five_elements": [
+          "earth",
+          "metal"
+        ],
+        "zodiac_signs": [
+          "gemini",
+          "virgo",
+          "capricorn"
+        ],
+        "care_notes": "Clean gently with a soft dry cloth. Avoid harsh chemicals, hard impact, and prolonged soaking.",
+        "cleansing_methods": [
+          "sound",
+          "selenite",
+          "moonlight"
+        ],
+        "pairing_notes": "Pairs well with black tourmaline for stronger grounding or rose quartz for a softer emotional reset.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
       "type": "askcrystal_ritual",
       "handle": "sleep-release",
       "fields": {
