@@ -3,6 +3,7 @@ PRODUCT,askcrystal,primary_intention,single_line_text_field,true,metafield,"Hero
 PRODUCT,askcrystal,secondary_intentions,list.single_line_text_field,true,metafield,"Benefit chips; recommendation logic","Choose 2-5 lowercase intent keys; do not duplicate primary intention","[\"sleep\",\"intuition\",\"emotional_healing\"]"
 PRODUCT,askcrystal,product_form,single_line_text_field,true,metafield,"Product details; collection automation","Use one canonical form key: bracelet, necklace, ring, earrings, anklet, pendant, tumbled_stone, raw_stone, set, or ritual_kit","necklace"
 PRODUCT,askcrystal,crystal_materials,list.metaobject_reference,true,metafield,"Properties panel; agent grounding","Map product materials to askcrystal_crystal_material handles; use exact existing handles","[\"amethyst\"]"
+PRODUCT,askcrystal,artist,metaobject_reference,false,metafield,"Premium product human story / artist card","For products priced at $99.99+, use one seeded askcrystal_artist handle; do not invent artists or maker claims","elise-hartmann"
 PRODUCT,askcrystal,chakras,list.single_line_text_field,true,metafield,"Associated chakra row","Use canonical chakra keys only","[\"third_eye\",\"crown\"]"
 PRODUCT,askcrystal,color_families,list.single_line_text_field,true,metafield,"Product details; color browsing collections","Use canonical color family keys only","[\"purple\"]"
 PRODUCT,askcrystal,ritual_uses,list.single_line_text_field,true,metafield,"Product details; ritual browsing collections","Use canonical ritual-use keys only","[\"bedside\",\"daily_wear\"]"

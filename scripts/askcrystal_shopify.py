@@ -28,6 +28,7 @@ PRODUCT_SCHEMA = CATALOG_DIR / "schemas/product.schema.json"
 COLLECTION_SCHEMA = CATALOG_DIR / "schemas/collection.schema.json"
 FACETS_CONFIG = CATALOG_DIR / "facets.askcrystal.json"
 METAOBJECT_ENTRIES = REPO_ROOT / "data/shopify/metaobject-entries.askcrystal.json"
+PREMIUM_ARTIST_PRICE_THRESHOLD = 99.99
 
 INVENTORY_KEYS = {
     "inventory_quantity",
@@ -130,7 +131,6 @@ mutation AskCrystalCollectionCreate($input: CollectionInput!) {
     userErrors {
       field
       message
-      code
     }
   }
 }
@@ -147,7 +147,6 @@ mutation AskCrystalCollectionUpdate($input: CollectionInput!) {
     userErrors {
       field
       message
-      code
     }
   }
 }
@@ -164,7 +163,6 @@ mutation AskCrystalPublishCollection($id: ID!, $input: [PublicationInput!]!) {
     userErrors {
       field
       message
-      code
     }
   }
 }
@@ -227,6 +225,7 @@ ASKCRYSTAL_METAFIELD_SOURCES = {
     "secondary_intentions": ("secondary_intentions", "list"),
     "product_form": ("product_form", "scalar"),
     "crystal_materials": ("crystal_material_handles", "material_refs"),
+    "artist": ("artist_handle", "artist_ref_optional"),
     "chakras": ("chakras", "list"),
     "color_families": ("color_families", "list"),
     "ritual_uses": ("ritual_uses", "list"),
@@ -253,6 +252,7 @@ ASKCRYSTAL_METAFIELD_SOURCES = {
 
 REVIEWED_PRODUCT_STATUSES = {"human_reviewed", "approved"}
 OPTION_VALUE_FIELDS = {"gift_for", "western_elements", "five_elements", "zodiac_signs"}
+SINGLE_METAOBJECT_REF_MODES = {"artist_ref_optional": "askcrystal_artist"}
 
 COLLECTION_SORT_ORDER_INPUT = {
     "manual": "MANUAL",
@@ -441,6 +441,15 @@ def load_material_handles() -> set[str]:
     }
 
 
+def load_artist_handles() -> set[str]:
+    entries = load_json(METAOBJECT_ENTRIES).get("entries", [])
+    return {
+        entry["handle"]
+        for entry in entries
+        if entry.get("type") == "askcrystal_artist" and entry.get("handle")
+    }
+
+
 def load_material_values() -> list[dict[str, str]]:
     entries = load_json(METAOBJECT_ENTRIES).get("entries", [])
     values: list[dict[str, str]] = []
@@ -598,12 +607,62 @@ def remote_collection_required_tags(collection: dict[str, Any] | None) -> list[s
     return sorted(tags)
 
 
+def variant_prices(product: dict[str, Any]) -> list[float]:
+    prices: list[float] = []
+    for variant in product.get("variants") or []:
+        try:
+            prices.append(float(variant.get("price")))
+        except (TypeError, ValueError):
+            continue
+    return prices
+
+
+def is_premium_product(product: dict[str, Any]) -> bool:
+    return any(price >= PREMIUM_ARTIST_PRICE_THRESHOLD for price in variant_prices(product))
+
+
+def validate_premium_artist_policy(
+    *,
+    product: dict[str, Any],
+    file: Path,
+    artist_handles: set[str],
+) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    askcrystal = product.get("askcrystal") or {}
+    artist_handle = askcrystal.get("artist_handle")
+    normalized_artist_handle = str(artist_handle).strip() if artist_handle is not None else ""
+
+    if is_premium_product(product) and not normalized_artist_handle:
+        issues.append(
+            ValidationIssue(
+                "error",
+                file,
+                "askcrystal.artist_handle",
+                f"products priced at ${PREMIUM_ARTIST_PRICE_THRESHOLD:.2f}+ require a seeded artist_handle",
+            )
+        )
+        return issues
+
+    if normalized_artist_handle and normalized_artist_handle not in artist_handles:
+        issues.append(
+            ValidationIssue(
+                "error",
+                file,
+                "askcrystal.artist_handle",
+                f"references missing artist metaobject seed {normalized_artist_handle!r}",
+            )
+        )
+
+    return issues
+
+
 def validate_product_cross_refs(
     *,
     product: dict[str, Any],
     file: Path,
     collection_handles: set[str],
     material_handles: set[str],
+    artist_handles: set[str],
     sku_registry: dict[str, Path],
 ) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
@@ -633,6 +692,8 @@ def validate_product_cross_refs(
                     f"references missing material metaobject seed {material_handle!r}",
                 )
             )
+
+    issues.extend(validate_premium_artist_policy(product=product, file=file, artist_handles=artist_handles))
 
     workflow_status = product.get("workflow_status")
     data_status = askcrystal.get("data_status")
@@ -768,6 +829,8 @@ def expected_metafield_value(askcrystal: dict[str, Any], local_key: str, mode: s
         return "" if value is None else str(value)
     if mode in {"list", "material_refs"}:
         return value if isinstance(value, list) else []
+    if mode in SINGLE_METAOBJECT_REF_MODES:
+        return "" if value is None else str(value)
     return value
 
 
@@ -777,6 +840,13 @@ def remote_metafield_value(metafield: dict[str, Any] | None, mode: str) -> Any:
     if mode == "material_refs":
         nodes = ((metafield.get("references") or {}).get("nodes") or [])
         return sorted(node.get("handle") for node in nodes if node.get("type") == "askcrystal_crystal_material")
+    if mode in SINGLE_METAOBJECT_REF_MODES:
+        metaobject_type = SINGLE_METAOBJECT_REF_MODES[mode]
+        nodes = ((metafield.get("references") or {}).get("nodes") or [])
+        for node in nodes:
+            if node.get("type") == metaobject_type and node.get("handle"):
+                return str(node["handle"])
+        return ""
     if mode == "list":
         try:
             decoded = json.loads(metafield.get("value") or "[]")
@@ -974,6 +1044,21 @@ def remote_metaobject_id_by_handle(client: ShopifyAdminClient, metaobject_type: 
     return str(result["id"])
 
 
+def resolve_metaobject_id(
+    *,
+    client: ShopifyAdminClient,
+    metaobject_type: str,
+    handle: str,
+    cache: dict[tuple[str, str], str],
+) -> str | None:
+    key = (metaobject_type, handle)
+    if key not in cache:
+        metaobject_id = remote_metaobject_id_by_handle(client, metaobject_type, handle)
+        if metaobject_id:
+            cache[key] = metaobject_id
+    return cache.get(key)
+
+
 def graphql_user_error_message(errors: list[dict[str, Any]]) -> str:
     parts: list[str] = []
     for error in errors:
@@ -1015,6 +1100,7 @@ def metafield_value_for_product(
     mode: str,
     material_cache: dict[str, str],
     resolve_remote_refs: bool,
+    metaobject_cache: dict[tuple[str, str], str] | None = None,
 ) -> str | None:
     value = askcrystal.get(local_key)
     if mode == "scalar_optional":
@@ -1046,6 +1132,24 @@ def metafield_value_for_product(
         if missing:
             raise SystemExit(f"material metaobject handles not found in Shopify: {', '.join(missing)}")
         return json.dumps(material_ids, ensure_ascii=False)
+    if mode in SINGLE_METAOBJECT_REF_MODES:
+        handle = str(value or "").strip()
+        if not handle:
+            return None
+        if not resolve_remote_refs:
+            return json.dumps(handle, ensure_ascii=False)
+        assert client is not None
+        metaobject_type = SINGLE_METAOBJECT_REF_MODES[mode]
+        cache = metaobject_cache if metaobject_cache is not None else {}
+        metaobject_id = resolve_metaobject_id(
+            client=client,
+            metaobject_type=metaobject_type,
+            handle=handle,
+            cache=cache,
+        )
+        if not metaobject_id:
+            raise SystemExit(f"{metaobject_type} metaobject handle not found in Shopify: {handle}")
+        return metaobject_id
     return str(value or "")
 
 
@@ -1055,6 +1159,7 @@ def product_metafields_input(
     product: dict[str, Any],
     material_cache: dict[str, str],
     resolve_remote_refs: bool,
+    metaobject_cache: dict[tuple[str, str], str] | None = None,
 ) -> list[dict[str, str]]:
     askcrystal = product.get("askcrystal") or {}
     metafields: list[dict[str, str]] = []
@@ -1065,6 +1170,7 @@ def product_metafields_input(
             local_key=local_key,
             mode=mode,
             material_cache=material_cache,
+            metaobject_cache=metaobject_cache,
             resolve_remote_refs=resolve_remote_refs,
         )
         if value is None:
@@ -1118,6 +1224,7 @@ def product_set_input(
     client: ShopifyAdminClient | None,
     product: dict[str, Any],
     material_cache: dict[str, str],
+    metaobject_cache: dict[tuple[str, str], str] | None = None,
     resolve_remote_refs: bool,
 ) -> dict[str, Any]:
     return {
@@ -1134,6 +1241,7 @@ def product_set_input(
             client=client,
             product=product,
             material_cache=material_cache,
+            metaobject_cache=metaobject_cache,
             resolve_remote_refs=resolve_remote_refs,
         ),
     }
@@ -1143,6 +1251,7 @@ def validate_catalog(args: argparse.Namespace) -> int:
     product_schema = load_json(args.product_schema)
     collection_schema = load_json(args.collection_schema)
     material_handles = load_material_handles()
+    artist_handles = load_artist_handles()
 
     product_files = json_files(args.products_dir)
     collection_files = json_files(args.collections_dir)
@@ -1178,6 +1287,7 @@ def validate_catalog(args: argparse.Namespace) -> int:
                     file=path,
                     collection_handles=collection_handles,
                     material_handles=material_handles,
+                    artist_handles=artist_handles,
                     sku_registry=sku_registry,
                 )
             )
@@ -1193,6 +1303,7 @@ def validate_catalog(args: argparse.Namespace) -> int:
     print(f"  products: {len(product_files)}")
     print(f"  collections: {len(collection_files)}")
     print(f"  material registry entries: {len(material_handles)}")
+    print(f"  artist registry entries: {len(artist_handles)}")
 
     if issues:
         print("")
@@ -1308,6 +1419,7 @@ def sync_products(args: argparse.Namespace) -> int:
 
     client = resolve_shopify_client(args)
     material_cache: dict[str, str] = {}
+    metaobject_cache: dict[tuple[str, str], str] = {}
     print("")
     for product in planned:
         result = client.graphql(
@@ -1318,6 +1430,7 @@ def sync_products(args: argparse.Namespace) -> int:
                     client=client,
                     product=product,
                     material_cache=material_cache,
+                    metaobject_cache=metaobject_cache,
                     resolve_remote_refs=True,
                 ),
                 "synchronous": True,

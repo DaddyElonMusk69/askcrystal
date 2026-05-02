@@ -4,7 +4,7 @@
   "workflow_status": "human_reviewed",
   "shopify_status": "draft",
   "title": "Agate Yoga Grounding Bracelet",
-  "description": "A simple agate bracelet for the moments when you want your ritual to feel close to the body: before practice, beside your mat, or on the wrist while the day is still gathering itself.\n\nAgate is traditionally used as a stone of steadiness. Its grounding quality makes this bracelet easy to pair with yoga, breathwork, journaling, or any small pause where you want to come back to yourself without making the ritual complicated.\n\nThe silhouette is intentionally low-key: polished stone beads, an everyday elastic bracelet form, and a natural color story that can move between practice, errands, and quiet evening reset. Wear it as a tactile reminder to slow down, choose one breath, and return to center.",
+  "description": "A studio-curated agate bracelet for the moments when you want your ritual to feel close to the body: before practice, beside your mat, or on the wrist while the day is still gathering itself.\n\nAgate is traditionally used as a stone of steadiness. Its grounding quality makes this bracelet easy to pair with yoga, breathwork, journaling, or any small pause where you want to come back to yourself without making the ritual complicated.\n\nSelected for the AskCrystal artist edit by Daniel Moreau, the silhouette leans into contrast and restraint: polished stone beads, cool translucent whites, matte black grounding notes, and silver-tone spacers that give the piece a quiet architectural rhythm. Wear it as a tactile reminder to slow down, choose one breath, and return to center.",
   "vendor": "AskCrystal",
   "product_type": "Bracelet",
   "tags": [
@@ -24,7 +24,7 @@
   "variants": [
     {
       "sku": "CJZBLXSL03931-Picture color",
-      "price": "4.48",
+      "price": "199.99",
       "compare_at_price": null,
       "barcode": null,
       "option_values": [
@@ -36,24 +36,40 @@
   ],
   "media": [
     {
-      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/source/source-01.webp",
-      "alt": "Agate yoga grounding bracelet supplier reference front view"
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/01-hero-front.webp",
+      "alt": "Agate Yoga Grounding Bracelet front view on a dark atmospheric backdrop"
     },
     {
-      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/source/source-02.webp",
-      "alt": "Agate yoga grounding bracelet supplier reference detail view"
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/02-three-quarter.webp",
+      "alt": "Agate Yoga Grounding Bracelet angled three-quarter product view"
     },
     {
-      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/source/source-03.webp",
-      "alt": "Agate yoga grounding bracelet supplier reference alternate view"
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/03-side-or-back-detail.webp",
+      "alt": "Agate Yoga Grounding Bracelet side or closure detail"
     },
     {
-      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/source/source-04.webp",
-      "alt": "Agate yoga grounding bracelet supplier reference wrist view"
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/04-macro-crystal.webp",
+      "alt": "Agate Yoga Grounding Bracelet crystal texture close-up"
     },
     {
-      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/source/source-05.webp",
-      "alt": "Agate yoga grounding bracelet supplier reference lifestyle view"
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/05-scale-in-hand.webp",
+      "alt": "Agate Yoga Grounding Bracelet shown in hand for scale"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/06-faceless-wearing-closeup.webp",
+      "alt": "Agate Yoga Grounding Bracelet faceless model close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/07-lifestyle-context.webp",
+      "alt": "Agate Yoga Grounding Bracelet lifestyle ritual context"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/08-ritual-still-life.webp",
+      "alt": "Agate Yoga Grounding Bracelet styled for meditation, daily wear, travel ritual use"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/09-packaging-flatlay.webp",
+      "alt": "Agate Yoga Grounding Bracelet packaging flat lay"
     }
   ],
   "askcrystal": {
@@ -66,6 +82,7 @@
     "crystal_material_handles": [
       "agate"
     ],
+    "artist_handle": "daniel-moreau",
     "chakras": [
       "root",
       "heart"
@@ -103,7 +120,7 @@
     ],
     "archetype_name": "The Returning Breath",
     "story_headline": "A wrist-worn pause for grounding and calm",
-    "story_summary": "This agate bracelet is designed as a quiet tactile anchor for yoga, meditation, travel, and everyday reset moments.",
+    "story_summary": "This artist-curated agate bracelet is designed as a quiet tactile anchor for yoga, meditation, travel, and everyday reset moments.",
     "benefits": [
       "Keeps a grounding reminder close to the wrist",
       "Pairs naturally with yoga, breathwork, and meditation",
@@ -129,6 +146,7 @@
     "quality_notes": [
       "Natural stone color and pattern variation expected",
       "Elastic bracelet form for easy daily wear",
+      "Curated for the AskCrystal artist edit by Daniel Moreau",
       "Supplier package size listed as 120 x 120 x 30 mm",
       "Supplier source lists material as agate"
     ],

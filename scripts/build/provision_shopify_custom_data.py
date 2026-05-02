@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import argparse
 import http.client
+import io
 import json
+import mimetypes
 import os
 import ssl
 import subprocess
@@ -19,6 +21,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -27,6 +30,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_METAOBJECT_DEFINITIONS = REPO_ROOT / "data/shopify/metaobject-definitions.askcrystal.json"
 DEFAULT_METAFIELD_DEFINITIONS = REPO_ROOT / "data/shopify/metafield-definitions.askcrystal.json"
 DEFAULT_METAOBJECT_ENTRIES = REPO_ROOT / "data/shopify/metaobject-entries.askcrystal.json"
+DEFAULT_ARTIST_PROFILE_IMAGE_CACHE = REPO_ROOT / "data/shopify/generated/artist-profile-images.askcrystal.json"
+ARTIST_METAOBJECT_TYPE = "askcrystal_artist"
+ARTIST_PROFILE_IMAGE_FIELD = "profile_image"
+ARTIST_PROFILE_IMAGE_ALT_FIELD = "profile_image_alt"
 
 METAOBJECT_DEFINITION_BY_TYPE = """
 query AskCrystalMetaobjectDefinitionByType($type: String!) {
@@ -37,6 +44,9 @@ query AskCrystalMetaobjectDefinitionByType($type: String!) {
     fieldDefinitions {
       key
       name
+      type {
+        name
+      }
     }
   }
 }
@@ -52,6 +62,30 @@ mutation AskCrystalCreateMetaobjectDefinition($definition: MetaobjectDefinitionC
       fieldDefinitions {
         key
         name
+      }
+    }
+    userErrors {
+      field
+      message
+      code
+    }
+  }
+}
+"""
+
+UPDATE_METAOBJECT_DEFINITION = """
+mutation AskCrystalUpdateMetaobjectDefinition($id: ID!, $definition: MetaobjectDefinitionUpdateInput!) {
+  metaobjectDefinitionUpdate(id: $id, definition: $definition) {
+    metaobjectDefinition {
+      id
+      name
+      type
+      fieldDefinitions {
+        key
+        name
+        type {
+          name
+        }
       }
     }
     userErrors {
@@ -135,6 +169,91 @@ mutation AskCrystalCreateMetaobject($metaobject: MetaobjectCreateInput!) {
 }
 """
 
+STAGED_UPLOADS_CREATE = """
+mutation AskCrystalStagedUploadsCreate($input: [StagedUploadInput!]!) {
+  stagedUploadsCreate(input: $input) {
+    stagedTargets {
+      url
+      resourceUrl
+      parameters {
+        name
+        value
+      }
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
+"""
+
+FILE_CREATE = """
+mutation AskCrystalFileCreate($files: [FileCreateInput!]!) {
+  fileCreate(files: $files) {
+    files {
+      id
+      alt
+      fileStatus
+      ... on MediaImage {
+        image {
+          url
+          width
+          height
+        }
+      }
+      ... on GenericFile {
+        url
+      }
+    }
+    userErrors {
+      field
+      message
+      code
+    }
+  }
+}
+"""
+
+FILE_NODES_BY_IDS = """
+query AskCrystalFileNodesByIds($ids: [ID!]!) {
+  nodes(ids: $ids) {
+    id
+    ... on MediaImage {
+      alt
+      fileStatus
+      image {
+        url
+        width
+        height
+      }
+    }
+    ... on GenericFile {
+      alt
+      fileStatus
+      url
+    }
+  }
+}
+"""
+
+UPDATE_METAOBJECT = """
+mutation AskCrystalUpdateMetaobject($id: ID!, $metaobject: MetaobjectUpdateInput!) {
+  metaobjectUpdate(id: $id, metaobject: $metaobject) {
+    metaobject {
+      id
+      handle
+      type
+    }
+    userErrors {
+      field
+      message
+      code
+    }
+  }
+}
+"""
+
 
 class ProvisioningError(RuntimeError):
     """Raised when the Shopify provisioning operation cannot continue."""
@@ -144,11 +263,31 @@ class ProvisioningError(RuntimeError):
 class ProvisioningCounts:
     metaobject_definitions_created: int = 0
     metaobject_definitions_existing: int = 0
+    metaobject_definition_fields_created: int = 0
     metafield_definitions_created: int = 0
     metafield_definitions_existing: int = 0
     metaobject_entries_created: int = 0
     metaobject_entries_existing: int = 0
+    artist_profile_images_synced: int = 0
     warnings: int = 0
+
+
+@dataclass(frozen=True)
+class ArtistProfileImageAssetPlan:
+    entry_type: str
+    handle: str
+    field_key: str
+    local_path: Path
+    alt: str
+
+
+@dataclass(frozen=True)
+class ArtistProfileImageSyncResult:
+    plan: ArtistProfileImageAssetPlan
+    metaobject_id: str
+    file_id: str
+    image_url: str
+    status: str
 
 
 def load_env_file(path: Path) -> None:
@@ -454,6 +593,13 @@ def field_definition_payload(field: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
+def metaobject_field_create_payload(field: dict[str, Any]) -> dict[str, Any]:
+    """Payload shape used when adding fields to an existing metaobject definition."""
+    payload = field_definition_payload(field)
+    payload["type"] = field["type"]
+    return payload
+
+
 def metaobject_definition_payload(definition: dict[str, Any], *, storefront_public_read: bool) -> dict[str, Any]:
     payload = {
         "name": definition["name"],
@@ -513,6 +659,318 @@ def encode_metaobject_field_value(value: Any) -> str:
     return str(value)
 
 
+def resolve_repo_path(path: str | Path) -> Path:
+    candidate = Path(path).expanduser()
+    if candidate.is_absolute():
+        return candidate
+    return REPO_ROOT / candidate
+
+
+def display_repo_path(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(REPO_ROOT.resolve()))
+    except ValueError:
+        return str(path)
+
+
+def file_content_type(path: Path) -> str:
+    content_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+    if content_type == "image/jpg":
+        return "image/jpeg"
+    return content_type
+
+
+def staged_upload_input(path: Path) -> dict[str, str]:
+    return {
+        "resource": "IMAGE",
+        "filename": path.name,
+        "mimeType": file_content_type(path),
+        "httpMethod": "POST",
+    }
+
+
+def multipart_form_data(
+    *,
+    fields: list[dict[str, str]],
+    file_path: Path,
+    file_field_name: str = "file",
+) -> tuple[bytes, str]:
+    boundary = f"----AskCrystal{uuid.uuid4().hex}"
+    buffer = io.BytesIO()
+    for field in fields:
+        buffer.write(f"--{boundary}\r\n".encode("utf-8"))
+        buffer.write(f'Content-Disposition: form-data; name="{field["name"]}"\r\n\r\n'.encode("utf-8"))
+        buffer.write(str(field["value"]).encode("utf-8"))
+        buffer.write(b"\r\n")
+    buffer.write(f"--{boundary}\r\n".encode("utf-8"))
+    buffer.write(
+        (
+            f'Content-Disposition: form-data; name="{file_field_name}"; filename="{file_path.name}"\r\n'
+            f"Content-Type: {file_content_type(file_path)}\r\n\r\n"
+        ).encode("utf-8")
+    )
+    buffer.write(file_path.read_bytes())
+    buffer.write(b"\r\n")
+    buffer.write(f"--{boundary}--\r\n".encode("utf-8"))
+    return buffer.getvalue(), boundary
+
+
+def staged_target_request(target: dict[str, Any], file_path: Path, *, http_method: str) -> urllib.request.Request:
+    method = http_method.upper()
+    if method == "PUT":
+        headers = {
+            str(parameter["name"]): str(parameter["value"])
+            for parameter in target.get("parameters") or []
+            if parameter.get("name")
+        }
+        return urllib.request.Request(
+            str(target["url"]),
+            data=file_path.read_bytes(),
+            headers=headers,
+            method="PUT",
+        )
+
+    if method == "POST":
+        body, boundary = multipart_form_data(fields=target.get("parameters") or [], file_path=file_path)
+        return urllib.request.Request(
+            str(target["url"]),
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+            method="POST",
+        )
+
+    raise ProvisioningError(f"unsupported staged upload HTTP method for {file_path}: {http_method}")
+
+
+def upload_to_staged_target(target: dict[str, Any], file_path: Path, *, http_method: str) -> None:
+    for attempt in range(1, 4):
+        try:
+            request = staged_target_request(target, file_path, http_method=http_method)
+            with urllib.request.urlopen(request, timeout=60, context=build_ssl_context()) as response:
+                response.read()
+            return
+        except urllib.error.HTTPError as exc:
+            response_body = exc.read().decode("utf-8", errors="replace")
+            if exc.code in {429, 500, 502, 503, 504} and attempt < 3:
+                time.sleep(2**attempt)
+                continue
+            raise ProvisioningError(f"failed staged artist asset upload for {file_path}: HTTP {exc.code}: {response_body}") from exc
+        except urllib.error.URLError as exc:
+            if attempt < 3:
+                time.sleep(2**attempt)
+                continue
+            raise ProvisioningError(f"failed staged artist asset upload for {file_path}: {exc.reason}") from exc
+        except http.client.RemoteDisconnected as exc:
+            if attempt < 3:
+                time.sleep(2**attempt)
+                continue
+            raise ProvisioningError(f"failed staged artist asset upload for {file_path}: remote disconnected") from exc
+
+
+def artist_profile_image_asset_plans(entries: list[dict[str, Any]]) -> list[ArtistProfileImageAssetPlan]:
+    plans: list[ArtistProfileImageAssetPlan] = []
+    for entry in entries:
+        if entry.get("type") != ARTIST_METAOBJECT_TYPE:
+            continue
+        handle = str(entry.get("handle") or "").strip()
+        if not handle:
+            continue
+        assets = entry.get("assets") or {}
+        profile_image = assets.get(ARTIST_PROFILE_IMAGE_FIELD) or {}
+        local_path = profile_image.get("local_path")
+        if not local_path:
+            continue
+        fields = entry.get("fields") or {}
+        alt = str(
+            profile_image.get("alt")
+            or fields.get(ARTIST_PROFILE_IMAGE_ALT_FIELD)
+            or fields.get("name")
+            or f"{handle} profile portrait"
+        ).strip()
+        plans.append(
+            ArtistProfileImageAssetPlan(
+                entry_type=ARTIST_METAOBJECT_TYPE,
+                handle=handle,
+                field_key=ARTIST_PROFILE_IMAGE_FIELD,
+                local_path=resolve_repo_path(str(local_path)),
+                alt=alt,
+            )
+        )
+    return plans
+
+
+def file_create_input_for_artist_asset(plan: ArtistProfileImageAssetPlan, *, resource_url: str) -> dict[str, str]:
+    suffix = plan.local_path.suffix.lower() or ".jpg"
+    return {
+        "originalSource": resource_url,
+        "contentType": "IMAGE",
+        "filename": f"askcrystal-artist-{plan.handle}-profile{suffix}",
+        "alt": plan.alt,
+        "duplicateResolutionMode": "REPLACE",
+    }
+
+
+def artist_profile_image_metaobject_update_fields(
+    plan: ArtistProfileImageAssetPlan,
+    *,
+    file_id: str,
+) -> list[dict[str, str]]:
+    fields = [{"key": plan.field_key, "value": file_id}]
+    if plan.alt:
+        fields.append({"key": ARTIST_PROFILE_IMAGE_ALT_FIELD, "value": plan.alt})
+    return fields
+
+
+def extract_file_url(file_node: dict[str, Any]) -> str:
+    image = file_node.get("image") or {}
+    if image.get("url"):
+        return str(image["url"])
+    if file_node.get("url"):
+        return str(file_node["url"])
+    return ""
+
+
+def write_artist_profile_image_cache(path: Path, results: list[ArtistProfileImageSyncResult]) -> None:
+    cache: dict[str, Any] = {
+        "version": "2026-05-02",
+        "artists": {},
+    }
+    for result in results:
+        cache["artists"][result.plan.handle] = {
+            result.plan.field_key: {
+                "local_path": display_repo_path(result.plan.local_path),
+                "file_id": result.file_id,
+                "image_url": result.image_url,
+                "status": result.status,
+                "metaobject_id": result.metaobject_id,
+                "alt": result.plan.alt,
+            }
+        }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(cache, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def stage_artist_profile_image(
+    client: ShopifyAdminClient,
+    plan: ArtistProfileImageAssetPlan,
+) -> tuple[dict[str, Any], str]:
+    upload_input = staged_upload_input(plan.local_path)
+    result = client.graphql(STAGED_UPLOADS_CREATE, {"input": [upload_input]})["stagedUploadsCreate"]
+    if result.get("userErrors"):
+        raise ProvisioningError(
+            f"failed to create staged upload for artist {plan.handle}: "
+            f"{graphql_user_error_message(result['userErrors'])}"
+        )
+    targets = result.get("stagedTargets") or []
+    if len(targets) != 1:
+        raise ProvisioningError(f"Shopify returned {len(targets)} staged targets for artist {plan.handle}")
+    target = targets[0]
+    upload_to_staged_target(target, plan.local_path, http_method=upload_input["httpMethod"])
+    return file_create_input_for_artist_asset(plan, resource_url=str(target["resourceUrl"])), str(target["resourceUrl"])
+
+
+def fetch_file_node(client: ShopifyAdminClient, file_id: str) -> dict[str, Any]:
+    result = client.graphql(FILE_NODES_BY_IDS, {"ids": [file_id]})
+    nodes = result.get("nodes") or []
+    if not nodes:
+        return {"id": file_id}
+    return nodes[0] or {"id": file_id}
+
+
+def create_shopify_file_for_artist_asset(
+    client: ShopifyAdminClient,
+    plan: ArtistProfileImageAssetPlan,
+) -> tuple[str, str, str]:
+    file_input, _resource_url = stage_artist_profile_image(client, plan)
+    result = client.graphql(FILE_CREATE, {"files": [file_input]})["fileCreate"]
+    if result.get("userErrors"):
+        raise ProvisioningError(
+            f"failed to create Shopify file for artist {plan.handle}: "
+            f"{graphql_user_error_message(result['userErrors'])}"
+        )
+    files = result.get("files") or []
+    if len(files) != 1 or not files[0].get("id"):
+        raise ProvisioningError(f"Shopify did not return a file ID for artist {plan.handle}")
+    file_node = files[0]
+    file_id = str(file_node["id"])
+    image_url = extract_file_url(file_node)
+    status = str(file_node.get("fileStatus") or "")
+    if not image_url:
+        hydrated_node = fetch_file_node(client, file_id)
+        image_url = extract_file_url(hydrated_node)
+        status = str(hydrated_node.get("fileStatus") or status)
+    return file_id, image_url, status
+
+
+def sync_artist_profile_images(
+    client: ShopifyAdminClient,
+    plans: list[ArtistProfileImageAssetPlan],
+    *,
+    counts: ProvisioningCounts,
+) -> list[ArtistProfileImageSyncResult]:
+    results: list[ArtistProfileImageSyncResult] = []
+    if not plans:
+        return results
+
+    print("Artist profile image assets")
+    for plan in plans:
+        if not plan.local_path.exists():
+            raise ProvisioningError(
+                f"artist {plan.handle} profile image does not exist: {display_repo_path(plan.local_path)}"
+            )
+        existing = client.graphql(METAOBJECT_BY_HANDLE, {"type": plan.entry_type, "handle": plan.handle})[
+            "metaobjectByHandle"
+        ]
+        if not existing:
+            raise ProvisioningError(f"artist metaobject {plan.entry_type}/{plan.handle} does not exist on Shopify")
+
+        file_id, image_url, status = create_shopify_file_for_artist_asset(client, plan)
+        update_fields = artist_profile_image_metaobject_update_fields(plan, file_id=file_id)
+        result = client.graphql(
+            UPDATE_METAOBJECT,
+            {"id": existing["id"], "metaobject": {"fields": update_fields}},
+        )["metaobjectUpdate"]
+        if result.get("userErrors"):
+            raise ProvisioningError(
+                f"failed to update artist metaobject {plan.handle}: "
+                f"{graphql_user_error_message(result['userErrors'])}"
+            )
+        counts.artist_profile_images_synced += 1
+        print(f"  synced {plan.handle} {plan.field_key} -> {file_id}")
+        results.append(
+            ArtistProfileImageSyncResult(
+                plan=plan,
+                metaobject_id=str(existing["id"]),
+                file_id=file_id,
+                image_url=image_url,
+                status=status,
+            )
+        )
+    return results
+
+
+def print_artist_profile_image_plan(
+    plans: list[ArtistProfileImageAssetPlan],
+    *,
+    apply: bool,
+    sync_assets: bool,
+    counts: ProvisioningCounts,
+) -> None:
+    if not plans:
+        return
+    if apply and sync_assets:
+        return
+    print("Artist profile image assets")
+    for plan in plans:
+        exists = plan.local_path.exists()
+        if not exists:
+            counts.warnings += 1
+        suffix = "" if exists else " (missing local file)"
+        print(f"  dry-run sync {plan.handle}.{plan.field_key} <- {display_repo_path(plan.local_path)}{suffix}")
+    if apply and not sync_assets:
+        print("  not uploaded; pass --sync-artist-assets with --apply to upload and attach profile images")
+
+
 def metaobject_entry_payload(entry: dict[str, Any]) -> dict[str, Any]:
     fields = [
         {"key": key, "value": encode_metaobject_field_value(value)}
@@ -558,7 +1016,30 @@ def provision_metaobject_definitions(
             definition_ids[metaobject_type] = existing["id"]
             existing_fields = {field["key"] for field in existing.get("fieldDefinitions", [])}
             print(f"  exists {metaobject_type} -> {existing['id']}")
-            warn_missing_fields("metaobject definition", metaobject_type, expected_fields, existing_fields, counts)
+            missing_fields = [field for field in definition.get("fields", []) if field["key"] not in existing_fields]
+            if missing_fields:
+                variables = {
+                    "id": existing["id"],
+                    "definition": {
+                        "fieldDefinitions": [
+                            {"create": metaobject_field_create_payload(field)} for field in missing_fields
+                        ]
+                    },
+                }
+                result = client.graphql(UPDATE_METAOBJECT_DEFINITION, variables)["metaobjectDefinitionUpdate"]
+                if result.get("userErrors"):
+                    counts.warnings += 1
+                    print(
+                        f"  ! existing metaobject definition {metaobject_type} is missing fields: "
+                        f"{', '.join(field['key'] for field in missing_fields)}"
+                    )
+                    print(f"    update failed: {graphql_user_error_message(result['userErrors'])}")
+                else:
+                    counts.metaobject_definition_fields_created += len(missing_fields)
+                    print(
+                        f"  added fields to {metaobject_type}: "
+                        f"{', '.join(field['key'] for field in missing_fields)}"
+                    )
             continue
 
         variables = {
@@ -671,10 +1152,12 @@ def print_summary(counts: ProvisioningCounts, *, apply: bool) -> None:
     print(f"\nSummary ({mode})")
     print(f"  metaobject definitions created: {counts.metaobject_definitions_created}")
     print(f"  metaobject definitions existing: {counts.metaobject_definitions_existing}")
+    print(f"  metaobject definition fields created: {counts.metaobject_definition_fields_created}")
     print(f"  metafield definitions created: {counts.metafield_definitions_created}")
     print(f"  metafield definitions existing: {counts.metafield_definitions_existing}")
     print(f"  metaobject entries created: {counts.metaobject_entries_created}")
     print(f"  metaobject entries existing: {counts.metaobject_entries_existing}")
+    print(f"  artist profile images synced: {counts.artist_profile_images_synced}")
     print(f"  warnings: {counts.warnings}")
 
 
@@ -726,6 +1209,17 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_METAOBJECT_ENTRIES,
         help="Path to AskCrystal seed metaobject entry JSON.",
     )
+    parser.add_argument(
+        "--sync-artist-assets",
+        action="store_true",
+        help="With --apply, upload local askcrystal_artist profile images to Shopify Files and attach them to artist metaobjects.",
+    )
+    parser.add_argument(
+        "--artist-assets-cache",
+        type=Path,
+        default=DEFAULT_ARTIST_PROFILE_IMAGE_CACHE,
+        help="Generated cache path for Shopify artist profile image file IDs and CDN URLs.",
+    )
     return parser.parse_args()
 
 
@@ -757,6 +1251,7 @@ def main() -> int:
     metafield_definitions = metafield_config["definitions"]
     namespace = metafield_config.get("namespace") or "askcrystal"
     entries = entries_config.get("entries", [])
+    artist_asset_plans = [] if args.skip_entries else artist_profile_image_asset_plans(entries)
 
     metaobject_definition_ids = provision_metaobject_definitions(
         client,
@@ -776,6 +1271,18 @@ def main() -> int:
     )
     if not args.skip_entries:
         provision_metaobject_entries(client, entries, apply=args.apply, counts=counts)
+        print_artist_profile_image_plan(
+            artist_asset_plans,
+            apply=args.apply,
+            sync_assets=args.sync_artist_assets,
+            counts=counts,
+        )
+        if args.apply and args.sync_artist_assets:
+            assert client is not None
+            artist_results = sync_artist_profile_images(client, artist_asset_plans, counts=counts)
+            if artist_results:
+                write_artist_profile_image_cache(args.artist_assets_cache, artist_results)
+                print(f"  wrote artist asset cache -> {display_repo_path(args.artist_assets_cache)}")
 
     print_summary(counts, apply=args.apply)
     return 0

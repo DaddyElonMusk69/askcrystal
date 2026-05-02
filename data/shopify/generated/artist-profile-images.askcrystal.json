@@ -1,0 +1,105 @@
+{
+  "version": "2026-05-02",
+  "artists": {
+    "elise-hartmann": {
+      "profile_image": {
+        "local_path": "data/shopify/catalog/assets/artists/elise-hartmann/profile.png",
+        "file_id": "gid://shopify/MediaImage/47779189981547",
+        "image_url": "",
+        "status": "PROCESSING",
+        "metaobject_id": "gid://shopify/Metaobject/301681082731",
+        "alt": "Black and white portrait of Elise Hartmann"
+      }
+    },
+    "naomi-watanabe": {
+      "profile_image": {
+        "local_path": "data/shopify/catalog/assets/artists/naomi-watanabe/profile.png",
+        "file_id": "gid://shopify/MediaImage/47779190112619",
+        "image_url": "",
+        "status": "PROCESSING",
+        "metaobject_id": "gid://shopify/Metaobject/301681115499",
+        "alt": "Black and white portrait of Naomi Watanabe"
+      }
+    },
+    "mara-kessler": {
+      "profile_image": {
+        "local_path": "data/shopify/catalog/assets/artists/mara-kessler/profile.png",
+        "file_id": "gid://shopify/MediaImage/47779190210923",
+        "image_url": "https://cdn.shopify.com/s/files/1/0981/4786/0843/files/askcrystal-artist-mara-kessler-profile.png?v=1777688892",
+        "status": "READY",
+        "metaobject_id": "gid://shopify/Metaobject/301681148267",
+        "alt": "Black and white portrait of Mara Kessler"
+      }
+    },
+    "daniel-moreau": {
+      "profile_image": {
+        "local_path": "data/shopify/catalog/assets/artists/daniel-moreau/profile.png",
+        "file_id": "gid://shopify/MediaImage/47779190341995",
+        "image_url": "https://cdn.shopify.com/s/files/1/0981/4786/0843/files/askcrystal-artist-daniel-moreau-profile.png?v=1777688900",
+        "status": "READY",
+        "metaobject_id": "gid://shopify/Metaobject/301681181035",
+        "alt": "Black and white portrait of Daniel Moreau"
+      }
+    },
+    "priya-nair": {
+      "profile_image": {
+        "local_path": "data/shopify/catalog/assets/artists/priya-nair/profile.png",
+        "file_id": "gid://shopify/MediaImage/47779190440299",
+        "image_url": "",
+        "status": "PROCESSING",
+        "metaobject_id": "gid://shopify/Metaobject/301681213803",
+        "alt": "Black and white portrait of Priya Nair"
+      }
+    },
+    "sofia-lind": {
+      "profile_image": {
+        "local_path": "data/shopify/catalog/assets/artists/sofia-lind/profile.png",
+        "file_id": "gid://shopify/MediaImage/47779190571371",
+        "image_url": "",
+        "status": "PROCESSING",
+        "metaobject_id": "gid://shopify/Metaobject/301681246571",
+        "alt": "Black and white portrait of Sofia Lind"
+      }
+    },
+    "amina-darzi": {
+      "profile_image": {
+        "local_path": "data/shopify/catalog/assets/artists/amina-darzi/profile.png",
+        "file_id": "gid://shopify/MediaImage/47779190735211",
+        "image_url": "",
+        "status": "PROCESSING",
+        "metaobject_id": "gid://shopify/Metaobject/301681279339",
+        "alt": "Black and white portrait of Amina Darzi"
+      }
+    },
+    "julian-becker": {
+      "profile_image": {
+        "local_path": "data/shopify/catalog/assets/artists/julian-becker/profile.png",
+        "file_id": "gid://shopify/MediaImage/47779191521643",
+        "image_url": "",
+        "status": "PROCESSING",
+        "metaobject_id": "gid://shopify/Metaobject/301681312107",
+        "alt": "Black and white portrait of Julian Becker"
+      }
+    },
+    "mei-chen": {
+      "profile_image": {
+        "local_path": "data/shopify/catalog/assets/artists/mei-chen/profile.png",
+        "file_id": "gid://shopify/MediaImage/47779191652715",
+        "image_url": "",
+        "status": "PROCESSING",
+        "metaobject_id": "gid://shopify/Metaobject/301681344875",
+        "alt": "Black and white portrait of Mei Chen"
+      }
+    },
+    "rafael-ortega": {
+      "profile_image": {
+        "local_path": "data/shopify/catalog/assets/artists/rafael-ortega/profile.png",
+        "file_id": "gid://shopify/MediaImage/47779191783787",
+        "image_url": "",
+        "status": "PROCESSING",
+        "metaobject_id": "gid://shopify/Metaobject/301681377643",
+        "alt": "Black and white portrait of Rafael Ortega"
+      }
+    }
+  }
+}

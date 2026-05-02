@@ -22,6 +22,7 @@ Use the repo-local catalog as the source of truth:
 
 Never put inventory counts, inventory levels, or stock quantities into local product files. Shopify or a future inventory system owns live inventory.
 Product media is also repo-owned: approved generated local image paths belong in local product JSON `media`; raw source/reference photos belong under `data/shopify/catalog/assets/products/<handle>/source/`; Shopify staged upload URLs, media IDs, and CDN details belong only in generated sync caches.
+Artist profile media is repo-owned too: local portrait paths live in `data/shopify/metaobject-entries.askcrystal.json` under `assets.profile_image.local_path`; Shopify file IDs/CDN URLs belong only in generated sync caches.
 
 ## First Move
 
@@ -41,9 +42,11 @@ python3 skills/askcrystal-shopify-coo/scripts/product_ops.py summary
 When asked to create a product/listing:
 
 1. Extract concrete commerce facts: title, form, material(s), price, SKU, variants/options, images/media, product type, and customer-facing description.
-2. Extract AskCrystal facts: primary intention, secondary intentions, chakras, color families, ritual uses, zodiac signs, gift fit, story, benefits, ritual, care, included items, quality notes, safety note, and agent summary.
-3. If price/SKU/material/form is missing and cannot be safely inferred, ask one focused question before creating a publishable listing.
-4. Create or update `data/shopify/catalog/products/<handle>.json`. Use the helper for a valid skeleton, then improve the copy manually:
+2. Extract AskCrystal facts: primary intention, secondary intentions, chakras, color families, ritual uses, zodiac signs, gift fit, premium artist handle when applicable, story, benefits, ritual, care, included items, quality notes, safety note, and agent summary.
+3. Price products with at least a 7x supplier item-cost markup unless the user gives a different explicit rule. Round to a psychological `.99` ending without going below the 7x floor; use the nearest upward `$x.99` / `$x99.99` style price. Example: `$0.64 * 7 = $4.48`, so list at `$4.99`.
+4. Products priced at `$99.99+` must set `askcrystal.artist_handle` to one seeded `askcrystal_artist` handle from `data/shopify/metaobject-entries.askcrystal.json`. Do not invent artists, bios, or maker claims; if no seeded artist fits, ask one focused question or leave the product below publishable review.
+5. If price/SKU/material/form is missing and cannot be safely inferred, ask one focused question before creating a publishable listing.
+6. Create or update `data/shopify/catalog/products/<handle>.json`. Use the helper for a valid skeleton, then improve the copy manually:
 
 ```bash
 python3 skills/askcrystal-shopify-coo/scripts/product_ops.py draft-product \
@@ -53,6 +56,7 @@ python3 skills/askcrystal-shopify-coo/scripts/product_ops.py draft-product \
   --product-form necklace \
   --product-type Necklace \
   --material amethyst \
+  --artist-handle elise-hartmann \
   --primary-intention calm \
   --secondary-intention sleep \
   --secondary-intention intuition \
@@ -64,9 +68,9 @@ python3 skills/askcrystal-shopify-coo/scripts/product_ops.py draft-product \
   --description "Customer-facing sales copy..."
 ```
 
-5. Edit the generated JSON until it reads like a real product page, not placeholder data.
-6. Keep new products as `workflow_status = "ai_filled"` and `shopify_status = "draft"` until human review.
-7. Run validation:
+7. Edit the generated JSON until it reads like a real product page, not placeholder data.
+8. Keep new products as `workflow_status = "ai_filled"` and `shopify_status = "draft"` until human review.
+9. Run validation:
 
 ```bash
 python3 scripts/askcrystal_shopify.py catalog validate
@@ -111,7 +115,7 @@ python3 scripts/askcrystal_shopify.py catalog provision-collections --apply --pu
 When creating a product/listing with provided or reference images, the media workflow is mandatory unless the user explicitly asks for product-data-only upload, no image generation, or raw source image upload. Do not silently skip image generation.
 
 When asked to create product images or prompts, generate a nine-shot image manifest for the local product. Do not treat Shopify CDN URLs as source of truth.
-AskCrystal uses Jimeng/Dreamina for generation through the local `dreamina` CLI.
+Use the system `imagegen` skill and its default built-in image generation path for product images. Do not use Jimeng/Dreamina unless the user explicitly asks for Jimeng, Dreamina, or 即梦.
 
 Canonical local image location:
 
@@ -127,7 +131,7 @@ data/shopify/catalog/assets/products/<product-handle>/source/
 
 Raw/provided source photos are references only. Do not add files from `source/` to product JSON `media`, and do not upload them to Shopify, unless the user explicitly asks to use raw source images.
 
-When source photos exist, use Jimeng `image2image` so the exact product design, materials, and colors are preserved. Use `text2image` only for products without source photos or when the user explicitly asks for `--text-only`.
+When source photos exist, use them as image-generation references so the product design, materials, colors, bead order, clasps, settings, scale, and wearable placement are preserved. If the generation tool needs images visible in context, inspect the local source files first. Do not fall back to pure text generation while source photos exist unless the user explicitly asks for a text-only concept.
 
 Generate the manifest:
 
@@ -152,38 +156,16 @@ Wearable shots must place the jewelry on the correct body part: bracelet on wris
 
 After generated files are reviewed, add approved generated local paths to the product media list. Never substitute raw supplier/source images for reviewed generated assets.
 
-If Jimeng/Dreamina is not installed, the user can install it with:
-
-```bash
-curl -s https://jimeng.jianying.com/cli | bash
-```
-
-Because the installer writes a `dreamina` binary, shell PATH updates, and login support outside this repo, do not run it silently. After installation, inspect the local CLI:
-
-```bash
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-status
-```
-
-Submit image jobs only with an explicit apply:
-
-```bash
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-generate --product <handle> --credit
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-generate --product <handle> --apply --credit
-```
-
-Jimeng/Dreamina generation consumes credits. Prefer generating one or two shots first with `--shot <shot_id>` before a full nine-shot batch. Query/download async results:
-
-```bash
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-query --product <handle>
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-query --product <handle> --apply
-```
+Generate and review images with the default image generation path first. Save approved generated files to the manifest `local_path` filenames under `data/shopify/catalog/assets/products/<handle>/`.
 
 ```bash
 python3 skills/askcrystal-shopify-coo/scripts/product_ops.py image-plan --product <handle> --force --update-product-media
 ```
 
 Shopify media sync uploads these reviewed local files through staged uploads and attaches them to the product. Shopify CDN URLs/media IDs are deployment artifacts, not hand-authored truth.
-Use `--skip-media` only when the user explicitly asks to defer media or perform a product-data-only sync, and state that no media will be uploaded. If Jimeng is unavailable, approval for credit spend is missing, or generated images cannot be reviewed, stop and report the blocker instead of uploading raw source photos or quietly omitting media.
+Use `--skip-media` only when the user explicitly asks to defer media or perform a product-data-only sync, and state that no media will be uploaded. If image generation is unavailable or generated images cannot be reviewed, stop and report the blocker instead of uploading raw source photos or quietly omitting media.
+
+Jimeng/Dreamina remains available only as an explicit user-requested provider. If the user asks for it, inspect `jimeng-status`, dry-run `jimeng-generate`, and submit real jobs only after explicit credit approval.
 
 ## Shopify Push Workflow
 
@@ -195,6 +177,14 @@ Always dry-run or check remote before writing.
 python3 scripts/build/provision_shopify_custom_data.py
 python3 scripts/build/provision_shopify_custom_data.py --apply
 ```
+
+If artist profile portraits changed, preview them in the dry run, then upload them explicitly:
+
+```bash
+python3 scripts/build/provision_shopify_custom_data.py --apply --sync-artist-assets
+```
+
+The artist asset path is local file -> Shopify staged upload -> Shopify Files -> `askcrystal_artist.profile_image`. Products still reference the artist through `askcrystal.artist`; do not paste Shopify CDN URLs into product JSON or artist seed fields.
 
 2. For the current CSV bridge, sync reviewed metafields and generated collection tags:
 
@@ -219,7 +209,8 @@ python3 skills/askcrystal-shopify-coo/scripts/product_ops.py product-upload --pr
 ```
 
 5. The upload command uses Shopify Admin GraphQL `productSet`, maps AskCrystal metafields, generates facet tags, sets product SEO, resolves collection and material references, stages local image files with `stagedUploadsCreate`, and writes deployment cache data to `data/shopify/generated/product-upload-cache.<handle>.json`.
-6. Never publish or upload an `ai_filled` product unless the user explicitly asks for that risk. Prefer `human_reviewed` or `approved`. If a deliberate test push is needed, pass `--include-unreviewed`.
+6. Product upload defaults to publishing the product to the Online Store publication/sales channel after `productSet`, while preserving the product's Shopify status from local JSON (`draft`, `active`, or `archived`). The helper uses `SHOPIFY_ONLINE_STORE_PUBLICATION_ID` when set, otherwise it auto-detects the publication named `Online Store`. Use `--skip-online-store-publication` only when the user explicitly wants to leave sales-channel assignment manual.
+7. Never upload an `ai_filled` product unless the user explicitly asks for that risk. Prefer `human_reviewed` or `approved`. If a deliberate test push is needed, pass `--include-unreviewed`.
 
 ## Quality Bar
 
@@ -244,10 +235,15 @@ python3 skills/askcrystal-shopify-coo/scripts/product_ops.py summary
 python3 skills/askcrystal-shopify-coo/scripts/product_ops.py validate
 python3 skills/askcrystal-shopify-coo/scripts/product_ops.py collection-plan
 python3 skills/askcrystal-shopify-coo/scripts/product_ops.py image-plan --product <handle>
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-status
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-generate --product <handle>
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-query --product <handle>
 python3 skills/askcrystal-shopify-coo/scripts/product_ops.py product-upload --product <handle> --show-payload
 ```
 
 Use it for scaffolding and checks, but still use judgment for merchandising, copy quality, and user-facing product positioning.
+
+Jimeng opt-in helpers:
+
+```bash
+python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-status
+python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-generate --product <handle>
+python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-query --product <handle>
+```

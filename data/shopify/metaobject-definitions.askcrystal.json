@@ -164,6 +164,85 @@
           "example": "For wellness and self-reflection only."
         }
       ]
+    },
+    {
+      "type": "askcrystal_artist",
+      "name": "AskCrystal Artist",
+      "description": "Limited reusable artist and studio profiles for premium product storytelling.",
+      "display_name_field": "name",
+      "fields": [
+        {
+          "key": "name",
+          "name": "Name",
+          "type": "single_line_text_field",
+          "required": true,
+          "example": "Elise Hartmann"
+        },
+        {
+          "key": "role_label",
+          "name": "Role Label",
+          "type": "single_line_text_field",
+          "required": true,
+          "example": "AskCrystal Studio Designer"
+        },
+        {
+          "key": "short_bio",
+          "name": "Short Bio",
+          "type": "multi_line_text_field",
+          "required": true,
+          "example": "Elise works with quiet symmetry and soft contrast, shaping premium crystal pieces that feel calm, precise, and easy to live with."
+        },
+        {
+          "key": "signature_style",
+          "name": "Signature Style",
+          "type": "multi_line_text_field",
+          "required": true,
+          "example": "Soft symmetry, luminous stones, and restrained details that keep the crystal at the center."
+        },
+        {
+          "key": "materials_focus",
+          "name": "Materials Focus",
+          "type": "list.single_line_text_field",
+          "required": false,
+          "example": [
+            "amethyst",
+            "moonstone",
+            "clear quartz"
+          ]
+        },
+        {
+          "key": "intention_focus",
+          "name": "Intention Focus",
+          "type": "list.single_line_text_field",
+          "required": false,
+          "example": [
+            "calm",
+            "intuition",
+            "self love"
+          ]
+        },
+        {
+          "key": "artist_note",
+          "name": "Artist Note",
+          "type": "multi_line_text_field",
+          "required": false,
+          "example": "Chosen for pieces that should feel like a small daily ceremony rather than a statement accessory."
+        },
+        {
+          "key": "profile_image",
+          "name": "Profile Image",
+          "type": "file_reference",
+          "required": false,
+          "example": "gid://shopify/MediaImage/..."
+        },
+        {
+          "key": "profile_image_alt",
+          "name": "Profile Image Alt",
+          "type": "single_line_text_field",
+          "required": false,
+          "example": "Black and white portrait of Elise Hartmann"
+        }
+      ]
     }
   ]
 }

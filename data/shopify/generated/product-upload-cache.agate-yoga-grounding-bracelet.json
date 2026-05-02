@@ -1,31 +1,132 @@
 {
   "schema_version": 1,
   "product_handle": "agate-yoga-grounding-bracelet",
-  "synced_at_unix": 1777565660,
+  "synced_at_unix": 1777691140,
   "operation": {
     "id": null,
     "status": null,
     "synchronous": true
   },
   "product": {
-    "id": "gid://shopify/Product/14960062857579",
+    "id": "gid://shopify/Product/14960251535723",
     "handle": "agate-yoga-grounding-bracelet",
     "title": "Agate Yoga Grounding Bracelet",
     "status": "DRAFT",
     "media": {
-      "nodes": []
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47779225502059",
+          "alt": "Agate Yoga Grounding Bracelet front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47779225534827",
+          "alt": "Agate Yoga Grounding Bracelet angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47779225567595",
+          "alt": "Agate Yoga Grounding Bracelet side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47779225600363",
+          "alt": "Agate Yoga Grounding Bracelet crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47779225633131",
+          "alt": "Agate Yoga Grounding Bracelet shown in hand for scale",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47779225665899",
+          "alt": "Agate Yoga Grounding Bracelet faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47779225698667",
+          "alt": "Agate Yoga Grounding Bracelet lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47779225731435",
+          "alt": "Agate Yoga Grounding Bracelet styled for meditation, daily wear, travel ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47779225764203",
+          "alt": "Agate Yoga Grounding Bracelet packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        }
+      ]
     },
     "variants": {
       "nodes": [
         {
-          "id": "gid://shopify/ProductVariant/53147044217195",
+          "id": "gid://shopify/ProductVariant/53148082995563",
           "sku": "CJZBLXSL03931-Picture color",
           "title": "Picture color"
         }
       ]
     }
   },
-  "staged_media": [],
+  "staged_media": [
+    {
+      "local_path": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/01-hero-front.webp",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/09c331ab-cf94-4dcf-9854-c43f8febd60c/01-hero-front.webp",
+      "alt": "Agate Yoga Grounding Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/02-three-quarter.webp",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/fc9954a2-67b6-477d-adc1-8d0332d2a5e0/02-three-quarter.webp",
+      "alt": "Agate Yoga Grounding Bracelet angled three-quarter product view"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/03-side-or-back-detail.webp",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/be1c29b5-48d4-4480-be8f-bd93cdc6787e/03-side-or-back-detail.webp",
+      "alt": "Agate Yoga Grounding Bracelet side or closure detail"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/04-macro-crystal.webp",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/584ce83b-dd4f-4ee2-9aba-f9479cc8528d/04-macro-crystal.webp",
+      "alt": "Agate Yoga Grounding Bracelet crystal texture close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/05-scale-in-hand.webp",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/ffb62b42-6e9d-443a-a837-10d7339a5b9d/05-scale-in-hand.webp",
+      "alt": "Agate Yoga Grounding Bracelet shown in hand for scale"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/06-faceless-wearing-closeup.webp",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/9cd29763-1aec-4914-bf9c-ad23ab8ce435/06-faceless-wearing-closeup.webp",
+      "alt": "Agate Yoga Grounding Bracelet faceless model close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/07-lifestyle-context.webp",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/f3cacfec-b040-496e-9bf9-b364990c6dc4/07-lifestyle-context.webp",
+      "alt": "Agate Yoga Grounding Bracelet lifestyle ritual context"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/08-ritual-still-life.webp",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/620e4299-f611-4d2b-9ee4-7c2e71d290a9/08-ritual-still-life.webp",
+      "alt": "Agate Yoga Grounding Bracelet styled for meditation, daily wear, travel ritual use"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/agate-yoga-grounding-bracelet/09-packaging-flatlay.webp",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/05d79957-ea0f-478e-b983-f3b052d02aa1/09-packaging-flatlay.webp",
+      "alt": "Agate Yoga Grounding Bracelet packaging flat lay"
+    }
+  ],
   "remote_url_media": [],
   "notes": [
     "Generated file is a Shopify deployment cache, not local source of truth.",

@@ -18,6 +18,13 @@
   assign ac_quality_notes = product.metafields.askcrystal.quality_notes.value
   assign ac_pairing_notes = product.metafields.askcrystal.pairing_notes.value
   assign ac_safety_note = product.metafields.askcrystal.safety_note.value
+  assign ac_artist = product.metafields.askcrystal.artist.value
+  assign ac_artist_image = blank
+  assign ac_artist_image_alt = blank
+  if ac_artist != blank
+    assign ac_artist_image = ac_artist.profile_image.value
+    assign ac_artist_image_alt = ac_artist.profile_image_alt.value | default: ac_artist.name.value
+  endif
 
   if ac_safety_note == blank and ac_primary_material != blank
     assign ac_safety_note = ac_primary_material.safety_note.value
@@ -211,6 +218,38 @@
           </li>
         </ul>
       </section>
+
+      {% if ac_artist != blank %}
+        <section class="askcrystal-product-story__artist" aria-labelledby="AskCrystalArtist-{{ section.id }}">
+          <div class="askcrystal-product-story__artist-row">
+            {% if ac_artist_image != blank %}
+              <span class="askcrystal-product-story__artist-media">
+                {{
+                  ac_artist_image
+                  | image_url: width: 320
+                  | image_tag:
+                    widths: '96, 160, 240, 320',
+                    sizes: '(min-width: 750px) 96px, 80px',
+                    loading: 'lazy',
+                    alt: ac_artist_image_alt
+                }}
+              </span>
+            {% endif %}
+            <span class="askcrystal-product-story__artist-copy">
+              {% if ac_artist.role_label.value != blank %}
+                <span class="askcrystal-product-story__artist-kicker">{{ ac_artist.role_label.value }}</span>
+              {% endif %}
+              <h2 id="AskCrystalArtist-{{ section.id }}">{{ ac_artist.name.value }}</h2>
+              {% if ac_artist.short_bio.value != blank %}
+                <span class="askcrystal-product-story__artist-bio">{{ ac_artist.short_bio.value }}</span>
+              {% endif %}
+            </span>
+          </div>
+          {% if ac_artist.artist_note.value != blank %}
+            <p>{{ ac_artist.artist_note.value }}</p>
+          {% endif %}
+        </section>
+      {% endif %}
 
       {% if ac_ritual_title != blank or ac_ritual_steps != blank %}
         <section class="askcrystal-product-story__section" aria-labelledby="AskCrystalRitual-{{ section.id }}">

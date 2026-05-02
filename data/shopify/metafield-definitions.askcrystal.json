@@ -53,6 +53,15 @@
       "example": ["amethyst"]
     },
     {
+      "key": "artist",
+      "name": "AskCrystal Artist",
+      "type": "metaobject_reference",
+      "metaobject_type": "askcrystal_artist",
+      "required_for_launch": false,
+      "ui_slot": "Premium product human story / artist card",
+      "example": "elise-hartmann"
+    },
+    {
       "key": "chakras",
       "name": "AskCrystal Chakras",
       "type": "list.single_line_text_field",

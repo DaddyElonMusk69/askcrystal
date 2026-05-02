@@ -2,7 +2,7 @@
 
 Use this reference when a user asks the Shopify COO skill to create product imagery, image prompts, local product assets, generated image sets, or Shopify media planning.
 
-AskCrystal uses Jimeng/Dreamina through the local `dreamina` CLI for generated product images. For products with source/reference photos, generation is part of the default product listing workflow and must not be skipped unless the user explicitly asks to defer media, skip generation, or use raw source images.
+AskCrystal uses the system `imagegen` skill and its default built-in image generation path for generated product images. For products with source/reference photos, generation is part of the default product listing workflow and must not be skipped unless the user explicitly asks to defer media, skip generation, or use raw source images. Use Jimeng/Dreamina only when the user explicitly asks for Jimeng, Dreamina, or 即梦.
 
 ## Canonical Asset Location
 
@@ -35,7 +35,7 @@ data/shopify/catalog/assets/products/<product-handle>/source/
 
 Files in `source/` are references for generation, not product media. Do not add them to product JSON `media` or upload them to Shopify unless the user explicitly asks to use raw source images.
 
-Jimeng generation must use these source images with `image2image` whenever available so the exact product design, materials, and colors are preserved.
+Generated images must use these source images as references whenever available so the exact product design, materials, colors, bead order, clasp/setting details, scale, and wearable placement are preserved.
 
 ## Required Shot Set
 
@@ -79,7 +79,7 @@ Apply a refined luxury grade: deep contrast, clean blacks, slightly cool shadows
 Keep composition clean, centered, and visually striking—realistic, but elevated and eye-catching.
 ```
 
-Because the base prompt says "provided image", use `dreamina image2image` when source images exist. Use `text2image` only for products without source photos or when the user explicitly asks for `--text-only`.
+Because the base prompt says "provided image", use source/reference images with the default image generation path when source photos exist. Use pure text generation only for products without source photos or when the user explicitly asks for a text-only concept.
 
 ## Negative Requirements
 
@@ -98,59 +98,20 @@ No text, no typography, no logo, no watermark, no price tag, no medical claims, 
 python3 skills/askcrystal-shopify-coo/scripts/product_ops.py image-plan --product <handle>
 ```
 
-3. Put product source/reference photos in `data/shopify/catalog/assets/products/<handle>/source/` when available. These files enable `image2image` preservation and are not product media.
-4. Make sure Jimeng/Dreamina is installed and available as `dreamina`.
-
-```bash
-curl -s https://jimeng.jianying.com/cli | bash
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-status
-```
-
-Do not run the installer silently; it writes outside the repo and may require a fresh shell/PATH update. If login is needed, use the Dreamina CLI login flow and reuse the saved local session.
-
-5. Dry-run the Jimeng command plan. Real generation consumes credits.
-
-```bash
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-generate --product <handle> --credit
-```
-
-6. For first style tests, submit one or two shots only:
-
-```bash
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-generate --product <handle> --shot 01_hero_front --apply --credit
-```
-
-7. After the style works, submit the full nine-shot set:
-
-```bash
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-generate --product <handle> --apply --credit
-```
-
-When source images exist, `jimeng-generate` uses `dreamina image2image --images <source> --ratio=3:4`. Without source images, it falls back to `dreamina text2image --ratio=3:4`. Do not force `--text-only` when source images exist unless the user explicitly asks.
-
-The command logs `submit_id`, shot id, generation settings, source images, and status to:
-
-```text
-data/shopify/generated/jimeng-tasks/<handle>.jsonl
-```
-
-8. Query/download async results into the product asset folder:
-
-```bash
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-query --product <handle> --apply
-```
-
-9. Rename or move downloaded files to match the manifest `shots[].local_path` filenames if the CLI downloads provider-generated names.
-10. Review images manually for product accuracy, scale, jewelry structure, and style fit.
-11. Only after approval, add generated local paths to product JSON media. Do not add raw source/reference paths. Either rerun:
+3. Put product source/reference photos in `data/shopify/catalog/assets/products/<handle>/source/` when available. These files enable reference-based generation and are not product media.
+4. Use the system `imagegen` skill with its default built-in generation path. If source images are local files, inspect them first so they are available as references.
+5. Generate one or two shots first, usually `01_hero_front`, and review product fidelity before generating the full nine-shot set.
+6. Save approved generated files to the manifest `shots[].local_path` filenames.
+7. Review images manually for product accuracy, scale, jewelry structure, and style fit.
+8. Only after approval, add generated local paths to product JSON media. Do not add raw source/reference paths. Either rerun:
 
 ```bash
 python3 skills/askcrystal-shopify-coo/scripts/product_ops.py image-plan --product <handle> --force --update-product-media
 ```
 
-or add equivalent media entries manually.
+or add equivalent media entries manually after the generated files exist.
 
-12. Shopify media sync uploads local files through staged uploads, attaches them to the product, and caches returned Shopify media IDs/CDN URLs in generated output.
+9. Shopify media sync uploads local files through staged uploads, attaches them to the product, and caches returned Shopify media IDs/CDN URLs in generated output.
 
 Current upload command:
 
@@ -161,9 +122,11 @@ python3 skills/askcrystal-shopify-coo/scripts/product_ops.py product-upload --pr
 
 Use `--skip-media` only when the user explicitly asks to sync product data before images are approved or to defer media. State that no media will be uploaded. Do not paste Shopify CDN URLs into source product JSON after upload.
 
-If Jimeng/Dreamina is unavailable, approval for credit spend is missing, or generated images cannot be reviewed, stop and report the blocker instead of uploading raw source photos or quietly omitting media.
+If the default image generation path is unavailable or generated images cannot be reviewed, stop and report the blocker instead of uploading raw source photos or quietly omitting media.
 
-## Jimeng/Dreamina Command Notes
+## Jimeng/Dreamina Opt-In Notes
+
+Use this section only when the user explicitly asks for Jimeng, Dreamina, or 即梦.
 
 - The local CLI executable is named `dreamina`, even though the user may call it Jimeng or 即梦.
 - Check CLI help when behavior changes:
@@ -180,6 +143,7 @@ dreamina query_result -h
 - Use `--model-version` only after checking `dreamina text2image -h`; do not hardcode future model availability.
 - Submit success requires a `submit_id` and non-fail `gen_status`, not just exit code 0.
 - If Jimeng reports `AigcComplianceConfirmationRequired`, ask the user to complete Dreamina web-side authorization and retry.
+- If Jimeng reports missing `dreamina_cli` permission or `current account is not maestro vip`, do not retry it. Use the default image generation path or ask the user for a product-data-only sync.
 
 ## Accuracy Rules
 

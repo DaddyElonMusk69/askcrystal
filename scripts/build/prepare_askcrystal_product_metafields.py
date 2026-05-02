@@ -20,6 +20,7 @@ REQUIRED_COLUMNS = [
     "primary_intention",
     "secondary_intentions_json",
     "crystal_material_handles_json",
+    "artist_handle",
     "chakra_keys_json",
     "color_families_json",
     "ritual_uses_json",
@@ -113,6 +114,10 @@ SHOPIFY_COLUMNS = [
     ("Metafield: askcrystal.data_status [single_line_text_field]", "data_status"),
 ]
 
+OPTIONAL_COLUMNS = {
+    "artist_handle",
+}
+
 
 def load_rows(path: Path) -> list[dict[str, str]]:
     with path.open(newline="", encoding="utf-8") as handle:
@@ -149,7 +154,7 @@ def validate_rows(rows: list[dict[str, str]]) -> None:
         seen_handles.add(handle)
 
         for column in REQUIRED_COLUMNS:
-            if not row.get(column, "").strip():
+            if column not in OPTIONAL_COLUMNS and not row.get(column, "").strip():
                 raise ValueError(f"row {index}: {column} is required")
 
         for column in JSON_LIST_COLUMNS:

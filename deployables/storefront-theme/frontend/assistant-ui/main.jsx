@@ -1570,16 +1570,121 @@ function getProgressExpectation(elapsedMs) {
   return 'The first signs are arriving.';
 }
 
-function ProgressCard({
+const READING_PROGRESS_DEEPENING_LINES = [
+  'Reading the pattern field...',
+  'Following the strongest thread...',
+  'Cross-checking the signals...',
+  'Letting the guidance take shape...',
+];
+
+function getReadingFocusLabel({ userPrompt = '', statusText = '', progressLabel = '' }) {
+  const context = normalizeProgressSearchText(`${userPrompt} ${statusText} ${progressLabel}`);
+
+  if (/horoscope|zodiac|aries|taurus|gemini|cancer|leo|virgo|libra|scorpio|sagittarius|capricorn|aquarius|pisces|daily|weekly|monthly/.test(context)) {
+    return 'Daily guidance';
+  }
+
+  if (/bazi|four pillars|day master|element|heavenly stem|earthly branch|birth time|birthday/.test(context)) {
+    return 'Elemental structure';
+  }
+
+  if (/tarot|card|spread|draw/.test(context)) {
+    return 'Symbolic spread';
+  }
+
+  if (/fengshui|feng shui|room|desk|bedroom|home|space|placement/.test(context)) {
+    return 'Space harmony';
+  }
+
+  if (/relationship|love|partner|match|compatib|marriage|yinyuan|connection|dating/.test(context)) {
+    return 'Relationship pattern';
+  }
+
+  if (/numerology|number|shushu|life path|name/.test(context)) {
+    return 'Number pattern';
+  }
+
+  if (/crystal|stone|necklace|bracelet|ring|earring|shop|product|gift|buy|cart/.test(context)) {
+    return 'Crystal match';
+  }
+
+  if (/sleep|rest|dream|insomnia|calm|anxiety|stress|peace/.test(context)) {
+    return 'Rest & calm';
+  }
+
+  if (/protect|protection|ground|grounding|safe|stability|negative/.test(context)) {
+    return 'Grounding & protection';
+  }
+
+  if (/career|work|job|business|direction|decision|choice|path|future/.test(context)) {
+    return 'Direction & momentum';
+  }
+
+  if (/money|abundance|wealth|prosperity|success|confidence/.test(context)) {
+    return 'Abundance focus';
+  }
+
+  if (/heart|heal|healing|emotion|clarity|grief|breakup/.test(context)) {
+    return 'Emotional clarity';
+  }
+
+  return 'Current question';
+}
+
+function getReadingSignalPhase({ elapsedMs = 0, statusStage = '', hasProgress = false }) {
+  if (statusStage === 'compose' || elapsedMs >= 20000) return 'materializing';
+  if (hasProgress || statusStage === 'tool') return 'tool-aware';
+  if (elapsedMs >= 1800) return 'deepening';
+  return 'settling';
+}
+
+function getReadingSignalIntensity(phase) {
+  if (phase === 'tool-aware') return 'focused';
+  if (phase === 'materializing') return 'resolving';
+  if (phase === 'deepening') return 'active';
+  return 'quiet';
+}
+
+function getReadingSignalLines({ phase, elapsedMs = 0, progressLabel = '' }) {
+  if (phase === 'materializing') {
+    return elapsedMs >= 32000 ? ['Almost ready'] : ['Shaping your guidance...'];
+  }
+
+  if (phase === 'tool-aware' && progressLabel) {
+    return [
+      progressLabel,
+      'Cross-checking the strongest signal...',
+      'Letting the pattern resolve...',
+    ];
+  }
+
+  if (phase === 'deepening') {
+    return READING_PROGRESS_DEEPENING_LINES;
+  }
+
+  return ['Tuning into your current state...'];
+}
+
+function ReadingProgressExperience({
   statusText,
   statusHistoryText = '',
   statusStage = '',
   statusTool = '',
   ambientStatusText = '',
   statusElapsedMs = 0,
+  progressEntries = [],
+  userPrompt = '',
+  isExiting = false,
 }) {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const startedAtRef = useRef(Date.now());
   const [localElapsedMs, setLocalElapsedMs] = useState(0);
+  const [lineIndex, setLineIndex] = useState(0);
+  const [lineTransition, setLineTransition] = useState({
+    current: 'Tuning into your current state...',
+    previous: '',
+    key: 0,
+  });
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -1590,99 +1695,132 @@ function ProgressCard({
   }, []);
 
   const elapsedMs = Math.max(Number(statusElapsedMs) || 0, localElapsedMs);
-  const expectationTone = elapsedMs >= 30000 ? 'long' : elapsedMs >= 12000 ? 'deep' : 'early';
-  const showDetailedMilestones = elapsedMs >= 4000 || statusStage === 'tool' || statusStage === 'compose';
+  const normalizedProgressEntries = useMemo(
+    () => normalizeMaskedProgressEntries(progressEntries),
+    [progressEntries],
+  );
+  const latestProgress = normalizedProgressEntries.find(entry => entry.isCurrent)
+    || normalizedProgressEntries[normalizedProgressEntries.length - 1]
+    || null;
   const statusHistory = parseStatusHistory(statusHistoryText);
-  const activeStatus = statusText || 'Opening the thread beneath your question...';
-  const readingPathLabel = 'Choosing the strongest reading path';
-  const oldReadingPathLabel = 'Choosing the right reading path';
-  const toolMilestones = statusHistory.filter((label) => label !== readingPathLabel && label !== oldReadingPathLabel);
+  const latestHistoryLine = statusHistory[statusHistory.length - 1] || '';
+  const safeProgressLabel = latestProgress?.label || latestHistoryLine || '';
+  const hasProgress = Boolean(safeProgressLabel);
+  const phase = getReadingSignalPhase({ elapsedMs, statusStage, hasProgress });
+  const visualIntensity = getReadingSignalIntensity(phase);
+  const signalLines = useMemo(
+    () => getReadingSignalLines({ phase, elapsedMs, progressLabel: safeProgressLabel }),
+    [elapsedMs, phase, safeProgressLabel],
+  );
+  const focusLabel = getReadingFocusLabel({
+    userPrompt,
+    statusText: ambientStatusText || statusText,
+    progressLabel: safeProgressLabel,
+  });
+  const showFocus = elapsedMs >= 6500 || hasProgress;
+  const currentLine = signalLines[Math.min(lineIndex, signalLines.length - 1)] || signalLines[0] || 'Tuning into your current state...';
 
-  if (
-    statusStage === 'tool'
-    && activeStatus
-    && activeStatus !== readingPathLabel
-    && activeStatus !== oldReadingPathLabel
-    && !toolMilestones.includes(activeStatus)
-  ) {
-    toolMilestones.push(activeStatus);
-  }
+  useEffect(() => {
+    setLineIndex(0);
+  }, [phase, safeProgressLabel]);
 
-  const latestToolMilestones = toolMilestones.slice(-1);
-  const milestones = [
-    {
-      label: 'Your question has entered the reading',
-      state: 'done',
-    },
-  ];
+  useEffect(() => {
+    if (prefersReducedMotion || signalLines.length <= 1) return undefined;
 
-  if (showDetailedMilestones) {
-    const hasReadingPathMoved = latestToolMilestones.length > 0 || statusStage === 'compose';
-    milestones.push({
-      label: hasReadingPathMoved ? 'The strongest reading path is chosen' : readingPathLabel,
-      state: hasReadingPathMoved ? 'done' : 'current',
+    const timeoutId = window.setTimeout(() => {
+      setLineIndex((currentIndex) => (currentIndex + 1) % signalLines.length);
+    }, 2200);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [lineIndex, prefersReducedMotion, signalLines.length]);
+
+  useEffect(() => {
+    setLineTransition((currentTransition) => {
+      if (currentTransition.current === currentLine) return currentTransition;
+
+      return {
+        current: currentLine,
+        previous: prefersReducedMotion ? '' : currentTransition.current,
+        key: currentTransition.key + 1,
+      };
     });
+  }, [currentLine, prefersReducedMotion]);
 
-    latestToolMilestones.forEach((label, index) => {
-      const isLastToolLine = index === latestToolMilestones.length - 1;
-      milestones.push({
-        label,
-        state: statusStage === 'tool' && isLastToolLine ? 'current' : 'done',
-      });
-    });
+  useEffect(() => {
+    if (!lineTransition.previous) return undefined;
 
-    milestones.push({
-      label: 'Shaping the guidance into a clear answer',
-      state: statusStage === 'compose' ? 'current' : 'pending',
-    });
-  } else {
-    milestones.push({
-      label: activeStatus,
-      state: 'current',
-    });
-  }
-  const visibleMilestones = milestones.slice(0, 4);
+    const timeoutId = window.setTimeout(() => {
+      setLineTransition((currentTransition) => (
+        currentTransition.key === lineTransition.key
+          ? { ...currentTransition, previous: '' }
+          : currentTransition
+      ));
+    }, 560);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [lineTransition.key, lineTransition.previous]);
 
   return (
-    <div className="ac-progress-card" role="status" aria-live="polite">
-      <div className="ac-progress-card__header">
-        <div className="ac-progress-card__heading">
-          <p className="ac-progress-card__eyebrow">AskCrystal is listening</p>
-          <h3>
-            Reading the signs
-            <span className="ac-progress-card__heading-dots" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </span>
-          </h3>
-        </div>
+    <div
+      className={[
+        'ac-reading-progress',
+        `ac-reading-progress--${phase}`,
+        `ac-reading-progress--${visualIntensity}`,
+        isExiting ? 'ac-reading-progress--exiting' : '',
+      ].join(' ')}
+      role="status"
+      aria-live="polite"
+    >
+      <span className="visually-hidden">{currentLine}</span>
+      <div className="ac-reading-progress__header" aria-hidden="true">
+        <p>✦ Interpreting your energy</p>
+        <span>{phase === 'materializing' ? 'Signal resolving' : 'Reading session'}</span>
       </div>
 
-      <ol className="ac-progress-card__steps ac-progress-card__steps--lyric" aria-label="Reading progress">
-        {visibleMilestones.map((milestone, index) => (
-          <li
-            key={`${milestone.label}-${index}`}
-            className={`ac-progress-card__step ac-progress-card__step--${milestone.state}`}
-            style={{ '--ac-progress-step-index': index }}
+      <div className="ac-reading-progress__instrument" aria-hidden="true">
+        <span className="ac-reading-progress__aurora" />
+        <span className="ac-reading-progress__goldfield" />
+        <span className="ac-reading-progress__ring ac-reading-progress__ring--outer" />
+        <span className="ac-reading-progress__ring ac-reading-progress__ring--middle" />
+        <span className="ac-reading-progress__ring ac-reading-progress__ring--inner" />
+        <span className="ac-reading-progress__constellation">
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+        </span>
+        <span className="ac-reading-progress__beam ac-reading-progress__beam--one" />
+        <span className="ac-reading-progress__beam ac-reading-progress__beam--two" />
+        <span className="ac-reading-progress__aperture">
+          <span />
+        </span>
+      </div>
+
+      <div className="ac-reading-progress__copy">
+        <p className="ac-reading-progress__line" aria-hidden="true">
+          {lineTransition.previous ? (
+            <span
+              key={`previous-${lineTransition.key}`}
+              className="ac-reading-progress__line-text ac-reading-progress__line-text--previous"
+            >
+              {lineTransition.previous}
+            </span>
+          ) : null}
+          <span
+            key={`current-${lineTransition.key}`}
+            className="ac-reading-progress__line-text ac-reading-progress__line-text--current"
           >
-            <span className="ac-progress-card__step-marker" aria-hidden="true" />
-            <span className="ac-progress-card__step-label">{milestone.label}</span>
-          </li>
-        ))}
-      </ol>
-
-      <AmbientProgressLine
-        statusText={statusText}
-        statusStage={statusStage}
-        statusTool={statusTool}
-        ambientStatusText={ambientStatusText}
-      />
-
-      <div className="ac-progress-card__footer">
-        <p className={`ac-progress-card__expectation ac-progress-card__expectation--${expectationTone}`}>
-          {getProgressExpectation(elapsedMs)}
+            {lineTransition.current}
+          </span>
         </p>
+        {showFocus ? (
+          <div className="ac-reading-progress__focus" aria-hidden="true">
+            <span>Signal focus</span>
+            <strong>{focusLabel}</strong>
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -2547,6 +2685,7 @@ function createAssistantMessage({
   ambientStatusText = '',
   statusElapsedMs = null,
   thoughts = [],
+  userPrompt = '',
 }) {
   const statusHistoryText = parseStatusHistory(statusHistory).join('\n');
   const normalizedStatusElapsedMs = Number(statusElapsedMs);
@@ -2576,6 +2715,7 @@ function createAssistantMessage({
         ...(ambientStatusText ? { ambientStatusText } : {}),
         ...(Number.isFinite(normalizedStatusElapsedMs) ? { statusElapsedMs: Math.max(0, normalizedStatusElapsedMs) } : {}),
         ...(maskedProgressEntries.length ? { difyProgressEntries: maskedProgressEntries } : {}),
+        ...(userPrompt ? { userPrompt } : {}),
       },
     },
   };
@@ -3091,6 +3231,7 @@ function useAskCrystalRuntime(config) {
         statusHistory: [],
         ambientStatusText: 'Settling into your energy...',
         statusElapsedMs: 0,
+        userPrompt: userMessage.content ? extractTextFromParts(userMessage.content) : '',
       });
       const conversationForReply = [...messagesRef.current, userMessage];
 
@@ -3127,7 +3268,7 @@ function useAskCrystalRuntime(config) {
                 ? message.metadata.unstable_data
                 : [];
               const currentComponents = existingComponents;
-              const hasVisibleAnswer = Boolean(currentText.trim() || currentComponents.length || streamedThoughts.length);
+              const hasVisibleAnswer = Boolean(currentText.trim() || currentComponents.length);
 
               return createAssistantMessage({
                 id: assistantId,
@@ -3152,6 +3293,7 @@ function useAskCrystalRuntime(config) {
                     ? (message.metadata?.custom?.ambientStatusText || 'Settling into your energy...')
                     : normalizedStatus.message,
                 statusElapsedMs: hasVisibleAnswer ? null : normalizedStatus.elapsedMs,
+                userPrompt: message.metadata?.custom?.userPrompt || '',
               });
             });
           },
@@ -3184,6 +3326,7 @@ function useAskCrystalRuntime(config) {
                 statusStage: '',
                 statusTool: '',
                 statusHistory: [],
+                userPrompt: message.metadata?.custom?.userPrompt || '',
               });
             });
           },
@@ -3194,7 +3337,7 @@ function useAskCrystalRuntime(config) {
               activeTaskIdRef.current = nextTaskId;
             }
             streamedAnswer = nextAnswer;
-            updateAssistantMessage(assistantId, () =>
+            updateAssistantMessage(assistantId, (message) =>
               createAssistantMessage({
                 id: assistantId,
                 parts: buildAssistantParts({
@@ -3209,6 +3352,7 @@ function useAskCrystalRuntime(config) {
                 statusStage: '',
                 statusTool: '',
                 statusHistory: [],
+                userPrompt: message.metadata?.custom?.userPrompt || '',
               }),
             );
           },
@@ -3854,7 +3998,7 @@ function getMaskedToolProgressLabel(toolName = '', context = '') {
   const normalizedContext = normalizeProgressSearchText(`${toolName} ${context}`);
 
   if (/search catalog|catalog|collection|product search|shopify search/.test(normalizedContext)) {
-    return 'Checking the crystal shelf...';
+    return 'Looking for a crystal match...';
   }
 
   if (/get product details|product details|variant|inventory|price/.test(normalizedContext)) {
@@ -3872,27 +4016,27 @@ function getMaskedToolProgressLabel(toolName = '', context = '') {
   }
 
   if (/horoscope|zodiac|astrology|planet|daily guidance|star/.test(normalizedContext)) {
-    return 'Reading the sky pattern...';
+    return 'Aligning today’s sky pattern...';
   }
 
   if (/bazi|four pillars|day master|heavenly stem|earthly branch/.test(normalizedContext)) {
-    return 'Mapping the elemental chart...';
+    return 'Mapping the elemental structure...';
   }
 
   if (/tarot|spread|card/.test(normalizedContext)) {
-    return 'Laying out the spread...';
+    return 'Drawing the symbolic spread...';
   }
 
   if (/fengshui|feng shui|space audit|room|placement/.test(normalizedContext)) {
-    return 'Reading the room’s flow...';
+    return 'Tracing the room’s energy flow...';
   }
 
   if (/yinyuan|matchmaking|relationship|compatib|connection/.test(normalizedContext)) {
-    return 'Tracing the connection pattern...';
+    return 'Reading the connection pattern...';
   }
 
   if (/numerology|shushu|number profile/.test(normalizedContext)) {
-    return 'Reducing the numbers...';
+    return 'Following the number pattern...';
   }
 
   if (/taibu|router|structured divination|route/.test(normalizedContext)) {
@@ -3900,7 +4044,7 @@ function getMaskedToolProgressLabel(toolName = '', context = '') {
   }
 
   if (/crystal|stone|chakra|ritual|intention|energy/.test(normalizedContext)) {
-    return 'Matching the energy to a crystal...';
+    return 'Looking for a crystal match...';
   }
 
   return toolName ? 'Consulting the right tool...' : '';
@@ -4030,6 +4174,14 @@ function DifyProgressStream({ entries = [] }) {
   );
 }
 
+function ReadingReadyMarker() {
+  return (
+    <div className="ac-message__ready">
+      ✦ Your reading is ready
+    </div>
+  );
+}
+
 function AssistantMessage() {
   const assistantParts = useMessage((message) => message.content || message.parts || EMPTY_ARRAY);
   const assistantText = extractTextFromParts(assistantParts);
@@ -4042,6 +4194,7 @@ function AssistantMessage() {
   const ambientStatusText = useMessage((message) => message.metadata?.custom?.ambientStatusText || '');
   const statusElapsedMs = useMessage((message) => message.metadata?.custom?.statusElapsedMs || 0);
   const rawProgressEntries = useMessage((message) => message.metadata?.custom?.difyProgressEntries);
+  const userPrompt = useMessage((message) => message.metadata?.custom?.userPrompt || '');
   const difyProgressEntries = useMemo(() => normalizeMaskedProgressEntries(rawProgressEntries), [rawProgressEntries]);
   const hasProgress = difyProgressEntries.length > 0;
   const isThinking = isRunning && !assistantText && !hasToolParts && !hasProgress;
@@ -4050,23 +4203,112 @@ function AssistantMessage() {
   const latestDifyProgress = difyProgressEntries.find(entry => entry.isCurrent) || difyProgressEntries[difyProgressEntries.length - 1] || null;
   const progressHistoryText = statusHistoryText || difyProgressEntries.map(entry => entry.label).join('\n');
   const progressStatusText = statusText || latestDifyProgress?.label || '';
+  const progressProps = useMemo(() => ({
+    statusText: progressStatusText,
+    statusHistoryText: progressHistoryText,
+    statusStage: statusStage || (hasProgress ? 'tool' : 'listen'),
+    statusTool,
+    ambientStatusText,
+    statusElapsedMs,
+    progressEntries: difyProgressEntries,
+    userPrompt,
+  }), [
+    ambientStatusText,
+    difyProgressEntries,
+    hasProgress,
+    progressHistoryText,
+    progressStatusText,
+    statusElapsedMs,
+    statusStage,
+    statusTool,
+    userPrompt,
+  ]);
+  const [progressPresentation, setProgressPresentation] = useState({
+    isVisible: shouldShowProgress,
+    isExiting: false,
+    props: progressProps,
+  });
+  const progressWasVisibleRef = useRef(shouldShowProgress);
+  const progressExitTimeoutRef = useRef(null);
+  const progressPropsRef = useRef(progressProps);
+
+  useEffect(() => {
+    progressPropsRef.current = progressProps;
+  }, [progressProps]);
+
+  useEffect(() => {
+    if (!shouldShowProgress) return;
+
+    if (progressExitTimeoutRef.current) {
+      window.clearTimeout(progressExitTimeoutRef.current);
+      progressExitTimeoutRef.current = null;
+    }
+
+    progressWasVisibleRef.current = true;
+    setProgressPresentation({
+      isVisible: true,
+      isExiting: false,
+      props: progressProps,
+    });
+  }, [progressProps, shouldShowProgress]);
+
+  useEffect(() => {
+    if (shouldShowProgress) return undefined;
+
+    if (!progressWasVisibleRef.current) {
+      setProgressPresentation({
+        isVisible: false,
+        isExiting: false,
+        props: progressProps,
+      });
+      return undefined;
+    }
+
+    if (progressExitTimeoutRef.current) return undefined;
+
+    progressWasVisibleRef.current = false;
+    setProgressPresentation((currentPresentation) => ({
+      ...currentPresentation,
+      isExiting: true,
+    }));
+
+    progressExitTimeoutRef.current = window.setTimeout(() => {
+      setProgressPresentation({
+        isVisible: false,
+        isExiting: false,
+        props: progressPropsRef.current,
+      });
+      progressExitTimeoutRef.current = null;
+    }, 280);
+
+    return () => {
+      if (progressExitTimeoutRef.current) {
+        window.clearTimeout(progressExitTimeoutRef.current);
+        progressExitTimeoutRef.current = null;
+      }
+    };
+  }, [shouldShowProgress]);
+
+  useEffect(() => () => {
+    if (progressExitTimeoutRef.current) {
+      window.clearTimeout(progressExitTimeoutRef.current);
+      progressExitTimeoutRef.current = null;
+    }
+  }, []);
 
   return (
     <MessagePrimitive.Root className="ac-message ac-message--assistant">
       <div className="ac-message__label">AskCrystal Guide</div>
       <div className="ac-message__bubble ac-message__bubble--assistant">
-        {shouldShowProgress ? (
-          <ProgressCard
-            statusText={progressStatusText}
-            statusHistoryText={progressHistoryText}
-            statusStage={statusStage || (hasProgress ? 'tool' : 'listen')}
-            statusTool={statusTool}
-            ambientStatusText={ambientStatusText}
-            statusElapsedMs={statusElapsedMs}
+        {progressPresentation.isVisible ? (
+          <ReadingProgressExperience
+            {...progressPresentation.props}
+            isExiting={progressPresentation.isExiting}
           />
         ) : null}
         {hasAssistantContent ? (
           <div className="ac-message__content-layer">
+            <ReadingReadyMarker />
             <MessagePrimitive.Parts
               components={{
                 Text: ({ text }) => <MarkdownContent text={text} />,
@@ -4115,28 +4357,6 @@ function ChatPageHeader({ config }) {
   );
 }
 
-function CrystalBallScene({ className = '' }) {
-  const sceneClassName = ['ac-chat-page__crystal-scene', className].filter(Boolean).join(' ');
-
-  return (
-    <div className={sceneClassName} aria-hidden="true">
-      <span className="ac-chat-page__crystal-arc ac-chat-page__crystal-arc--left" />
-      <span className="ac-chat-page__crystal-arc ac-chat-page__crystal-arc--right" />
-      <span className="ac-chat-page__crystal-star ac-chat-page__crystal-star--one" />
-      <span className="ac-chat-page__crystal-star ac-chat-page__crystal-star--two" />
-      <span className="ac-chat-page__crystal-star ac-chat-page__crystal-star--three" />
-      <div className="ac-chat-page__crystal-orb">
-        <span className="ac-chat-page__crystal-orb-shine" />
-        <span className="ac-chat-page__crystal-orb-star" />
-      </div>
-      <div className="ac-chat-page__crystal-base">
-        <span />
-        <span />
-      </div>
-    </div>
-  );
-}
-
 function ChatWelcomeMessage() {
   const capabilities = [
     'Bazi',
@@ -4170,14 +4390,18 @@ function ChatWelcomeMessage() {
 function ChatReadingRoomHero({ hasUserMessages = false }) {
   return (
     <section className="ac-chat-page__hero" aria-label="AskCrystal reading room">
-      <div className="ac-chat-page__hero-backdrop" aria-hidden="true" />
-      <div className="ac-chat-page__hero-rule" aria-hidden="true" />
       <div className="ac-chat-page__hero-copy">
         <h1>Hi, I’m AskCrystal</h1>
         <p>Your guide for readings, crystals, rituals, and clarity.</p>
       </div>
+      <div className="ac-chat-page__orb" aria-hidden="true">
+        <span className="ac-chat-page__orb-field" />
+        <span className="ac-chat-page__orb-ring ac-chat-page__orb-ring--outer" />
+        <span className="ac-chat-page__orb-ring ac-chat-page__orb-ring--inner" />
+        <span className="ac-chat-page__orb-aperture" />
+        <span className="ac-chat-page__orb-horizon" />
+      </div>
       {!hasUserMessages ? <ChatWelcomeMessage /> : null}
-      <CrystalBallScene />
     </section>
   );
 }
@@ -4268,9 +4492,10 @@ function AskCrystalThread({ config }) {
         return;
       }
 
+      const chatBgBaseOffset = 18;
       const nextChatBgOffset = reduceMotionMedia?.matches
-        ? 0
-        : Math.min(260, scrollTop * 0.34);
+        ? chatBgBaseOffset
+        : chatBgBaseOffset + Math.min(260, scrollTop * 0.34);
 
       setCssVar('--ac-chat-bg-offset', `${roundPx(nextChatBgOffset)}px`);
       setCssVar('--ac-chat-bg-opacity', String(roundOpacity(nextOpacity)));

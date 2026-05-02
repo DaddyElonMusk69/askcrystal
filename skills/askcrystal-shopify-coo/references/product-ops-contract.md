@@ -6,8 +6,10 @@ AskCrystal manages product/catalog data locally and deploys to Shopify. Shopify 
 
 Product imagery is also repo-owned. Local image assets and prompt manifests live under `data/shopify/catalog/assets/products/<handle>/`. Shopify CDN URLs/media IDs are deployment artifacts.
 Image SEO metadata is repo-owned too. Store shot-level titles, descriptions, captions, and keywords in the product asset manifest; Shopify media upload currently consumes the `alt` text.
-Image generation is powered by Jimeng/Dreamina through the local `dreamina` CLI. Generated task logs live under `data/shopify/generated/jimeng-tasks/`.
-Raw/provided product source photos live under `data/shopify/catalog/assets/products/<handle>/source/` and must be used for Jimeng `image2image` whenever available. They are references, not product media, unless the user explicitly asks to upload raw source images.
+Image generation uses the system `imagegen` skill and its default built-in generation path unless the user explicitly asks for Jimeng/Dreamina. Jimeng task logs, when explicitly used, live under `data/shopify/generated/jimeng-tasks/`.
+Raw/provided product source photos live under `data/shopify/catalog/assets/products/<handle>/source/` and must be used as image-generation references whenever available. They are references, not product media, unless the user explicitly asks to upload raw source images.
+Premium product artist metadata is repo-owned too. Products priced at `$99.99+` must set `askcrystal.artist_handle` to one seeded `askcrystal_artist` handle. Artist profiles are curated brand/studio story objects, not proof of handmade production.
+Artist profile portraits are local assets referenced from `data/shopify/metaobject-entries.askcrystal.json` as `assets.profile_image.local_path`. Shopify file IDs and CDN URLs are written only to `data/shopify/generated/artist-profile-images.askcrystal.json`.
 
 ## Product Lifecycle
 
@@ -49,6 +51,7 @@ Optional but useful:
 - `western_elements`
 - `five_elements`
 - `zodiac_signs`
+- `artist_handle`; required by validation for products priced at `$99.99+`
 - `archetype_name`
 - `pairing_notes`
 
@@ -90,6 +93,9 @@ Gift fit:
 
 Crystal material handles come from `data/shopify/metaobject-entries.askcrystal.json`; do not invent them without adding a matching metaobject seed and definition-safe fields.
 
+Artist handles also come from `data/shopify/metaobject-entries.askcrystal.json`; do not invent artist handles, biographies, or maker claims. Use artist language as premium human storytelling: "curated by", "styled by", or "studio artist", unless product provenance explicitly proves handmade authorship.
+Artist profile images are attached to the seeded artist metaobject, not to each product. Sync path: local portrait file -> Shopify staged upload -> Shopify Files `fileCreate` -> `askcrystal_artist.profile_image`.
+
 ## Copy Rules
 
 - Use wellness and self-reflection language only.
@@ -97,6 +103,13 @@ Crystal material handles come from `data/shopify/metaobject-entries.askcrystal.j
 - Keep product claims grounded in tradition, form factor, and customer use.
 - Avoid mystical overpromising. Tone can be cosmic, but not fatalistic.
 - Write descriptions as customer-facing commerce copy; do not hide structured JSON in descriptions.
+
+## Pricing Rules
+
+- Use at least a 7x markup on supplier item cost unless the user explicitly gives a different pricing rule.
+- Round upward to the nearest psychological `.99` ending without going below the 7x floor.
+- Example: `$0.64 * 7 = $4.48`; list at `$4.99`.
+- Do not include shipping cost in item markup unless the user explicitly asks for landed-cost pricing.
 
 ## Product Image Rules
 
@@ -110,8 +123,8 @@ Crystal material handles come from `data/shopify/metaobject-entries.askcrystal.j
 - Add only reviewed/approved generated local paths to product JSON media.
 - Do not add files from `source/` to product JSON media or upload them to Shopify unless the user explicitly asks for raw source images.
 - Do not hand-maintain Shopify CDN URLs in source product JSON.
-- Use Jimeng/Dreamina via `product_ops.py jimeng-generate` and `product_ops.py jimeng-query`; use `image2image` with source photos, falling back to `text2image` only when source photos are absent or the user explicitly asks for `--text-only`.
-- Real Jimeng generation consumes credits, so dry-run first and use `--apply` only when the user has approved generation.
+- Use the system `imagegen` skill by default. Use Jimeng/Dreamina only when the user explicitly asks for it.
+- If Jimeng is explicitly requested, dry-run first and use `--apply` only when the user has approved credit consumption.
 - Wearable model shots must place jewelry correctly: bracelet on wrist, necklace on neck/collarbone, ring on finger, earrings on ear, anklet on ankle, pendant on chain/chest.
 - Include image metadata for every generated shot:
   - `alt`: accessibility text and Shopify media alt.
@@ -129,6 +142,7 @@ Crystal material handles come from `data/shopify/metaobject-entries.askcrystal.j
 - Do not delete remote products/collections unless the user explicitly asks and the deletion path is reviewed.
 - Use `product_ops.py product-upload` or the repo catalog CLI for product sync. Do not write ad hoc one-off GraphQL mutations for product uploads.
 - Upload local image files through Shopify staged uploads; never paste Shopify CDN URLs back into source product JSON as truth.
+- Product uploads should assign the product to the Online Store sales channel by default through Shopify `publishablePublish`. The upload helper resolves `SHOPIFY_ONLINE_STORE_PUBLICATION_ID` first, then falls back to the publication named `Online Store`. Use `--skip-online-store-publication` only for an explicitly requested manual-channel workflow.
 - Use `--skip-media` only when the user explicitly asks for product-data-only sync or media deferral. State that no media will be uploaded.
 - Generated sync caches under `data/shopify/generated/` may contain Shopify product IDs, media IDs, and staged resource URLs.
 
@@ -140,9 +154,7 @@ For local product drafting:
 python3 skills/askcrystal-shopify-coo/scripts/product_ops.py summary
 python3 skills/askcrystal-shopify-coo/scripts/product_ops.py draft-product ...
 python3 skills/askcrystal-shopify-coo/scripts/product_ops.py image-plan --product <handle>
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-generate --product <handle>
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-generate --product <handle> --shot 01_hero_front --apply --credit
-python3 skills/askcrystal-shopify-coo/scripts/product_ops.py jimeng-query --product <handle> --apply
+# Generate reviewed product images with the system imagegen skill, then save them to manifest local_path filenames.
 python3 scripts/askcrystal_shopify.py catalog validate
 python3 skills/askcrystal-shopify-coo/scripts/product_ops.py product-upload --product <handle> --show-payload
 ```
@@ -151,6 +163,7 @@ For custom data and collections:
 
 ```bash
 python3 scripts/build/provision_shopify_custom_data.py --apply
+python3 scripts/build/provision_shopify_custom_data.py --apply --sync-artist-assets
 python3 scripts/askcrystal_shopify.py catalog provision-collections
 python3 scripts/askcrystal_shopify.py catalog provision-collections --apply
 ```
@@ -164,6 +177,8 @@ python3 scripts/build/prepare_askcrystal_product_metafields.py \
 python3 scripts/build/sync_askcrystal_product_metafields.py --check-remote
 python3 scripts/build/sync_askcrystal_product_metafields.py --apply --sync-facet-tags
 ```
+
+The enrichment bridge stores `artist_handle` as a stable handle. Like material handles, `askcrystal.artist` must be synced through `sync_askcrystal_product_metafields.py` so the script resolves the handle to a Shopify metaobject ID.
 
 For product upload from local JSON:
 

@@ -499,6 +499,296 @@
         ],
         "safety_note": "For wellness and self-reflection only."
       }
+    },
+    {
+      "type": "askcrystal_artist",
+      "handle": "elise-hartmann",
+      "fields": {
+        "name": "Elise Hartmann",
+        "role_label": "AskCrystal Studio Designer",
+        "short_bio": "Elise works with quiet symmetry and soft contrast, shaping premium crystal pieces that feel calm, precise, and easy to live with.",
+        "signature_style": "Balanced bead rhythm, pale stones, brushed metal details, and restrained compositions that keep the material visible.",
+        "materials_focus": [
+          "amethyst",
+          "moonstone",
+          "clear quartz",
+          "selenite"
+        ],
+        "intention_focus": [
+          "calm",
+          "intuition",
+          "sleep"
+        ],
+        "artist_note": "Use when a premium product needs a composed, meditative point of view without feeling ornate.",
+        "profile_image_alt": "Black and white portrait of Elise Hartmann"
+      },
+      "assets": {
+        "profile_image": {
+          "local_path": "data/shopify/catalog/assets/artists/elise-hartmann/profile.png",
+          "alt": "Black and white portrait of Elise Hartmann"
+        }
+      }
+    },
+    {
+      "type": "askcrystal_artist",
+      "handle": "naomi-watanabe",
+      "fields": {
+        "name": "Naomi Watanabe",
+        "role_label": "AskCrystal Studio Designer",
+        "short_bio": "Naomi brings a spare, tactile approach to crystal styling, favoring pieces that feel intentional rather than decorative.",
+        "signature_style": "Clean spacing, translucent stones, subtle asymmetry, and details that make everyday ritual feel considered.",
+        "materials_focus": [
+          "clear quartz",
+          "moonstone",
+          "green aventurine",
+          "selenite"
+        ],
+        "intention_focus": [
+          "clarity",
+          "emotional balance",
+          "intuition"
+        ],
+        "artist_note": "Best for products where restraint, texture, and a gentle sense of order are part of the appeal.",
+        "profile_image_alt": "Black and white portrait of Naomi Watanabe"
+      },
+      "assets": {
+        "profile_image": {
+          "local_path": "data/shopify/catalog/assets/artists/naomi-watanabe/profile.png",
+          "alt": "Black and white portrait of Naomi Watanabe"
+        }
+      }
+    },
+    {
+      "type": "askcrystal_artist",
+      "handle": "mara-kessler",
+      "fields": {
+        "name": "Mara Kessler",
+        "role_label": "AskCrystal Studio Designer",
+        "short_bio": "Mara studies color temperature and stone variation, building pieces that feel warm, personal, and quietly expressive.",
+        "signature_style": "Rose tones, soft gold accents, rounded silhouettes, and gentle transitions between crystal textures.",
+        "materials_focus": [
+          "rose quartz",
+          "citrine",
+          "moonstone",
+          "copper"
+        ],
+        "intention_focus": [
+          "love",
+          "self love",
+          "confidence"
+        ],
+        "artist_note": "Use for premium gifts and heart-led pieces that need warmth without slipping into sentimentality.",
+        "profile_image_alt": "Black and white portrait of Mara Kessler"
+      },
+      "assets": {
+        "profile_image": {
+          "local_path": "data/shopify/catalog/assets/artists/mara-kessler/profile.png",
+          "alt": "Black and white portrait of Mara Kessler"
+        }
+      }
+    },
+    {
+      "type": "askcrystal_artist",
+      "handle": "daniel-moreau",
+      "fields": {
+        "name": "Daniel Moreau",
+        "role_label": "AskCrystal Studio Designer",
+        "short_bio": "Daniel approaches crystal objects through proportion and utility, giving grounding pieces a quiet architectural presence.",
+        "signature_style": "Strong contrast, matte black stones, measured spacing, and clean silhouettes that feel steady on the body.",
+        "materials_focus": [
+          "black tourmaline",
+          "agate",
+          "tiger's eye",
+          "clear quartz"
+        ],
+        "intention_focus": [
+          "grounding",
+          "protection",
+          "focus"
+        ],
+        "artist_note": "Use for grounding or protection products where structure, weight, and restraint matter most.",
+        "profile_image_alt": "Black and white portrait of Daniel Moreau"
+      },
+      "assets": {
+        "profile_image": {
+          "local_path": "data/shopify/catalog/assets/artists/daniel-moreau/profile.png",
+          "alt": "Black and white portrait of Daniel Moreau"
+        }
+      }
+    },
+    {
+      "type": "askcrystal_artist",
+      "handle": "priya-nair",
+      "fields": {
+        "name": "Priya Nair",
+        "role_label": "AskCrystal Studio Designer",
+        "short_bio": "Priya focuses on pieces that move easily between work, ritual, and gifting, with a preference for clarity and wearable polish.",
+        "signature_style": "Fine-scale details, luminous stones, warm metal notes, and compositions that look refined without becoming formal.",
+        "materials_focus": [
+          "citrine",
+          "clear quartz",
+          "green aventurine",
+          "copper"
+        ],
+        "intention_focus": [
+          "abundance",
+          "clarity",
+          "confidence"
+        ],
+        "artist_note": "Best for premium pieces tied to momentum, visibility, and everyday confidence.",
+        "profile_image_alt": "Black and white portrait of Priya Nair"
+      },
+      "assets": {
+        "profile_image": {
+          "local_path": "data/shopify/catalog/assets/artists/priya-nair/profile.png",
+          "alt": "Black and white portrait of Priya Nair"
+        }
+      }
+    },
+    {
+      "type": "askcrystal_artist",
+      "handle": "sofia-lind",
+      "fields": {
+        "name": "Sofia Lind",
+        "role_label": "AskCrystal Studio Designer",
+        "short_bio": "Sofia favors pale palettes and practical details, creating pieces that feel light, calm, and quietly durable.",
+        "signature_style": "Nordic minimalism, cool-toned stones, smooth finishes, and a preference for honest material contrast.",
+        "materials_focus": [
+          "selenite",
+          "clear quartz",
+          "moonstone",
+          "amethyst"
+        ],
+        "intention_focus": [
+          "calm",
+          "clarity",
+          "sleep"
+        ],
+        "artist_note": "Use when a product should feel minimal, fresh, and easy to pair with a quiet daily routine.",
+        "profile_image_alt": "Black and white portrait of Sofia Lind"
+      },
+      "assets": {
+        "profile_image": {
+          "local_path": "data/shopify/catalog/assets/artists/sofia-lind/profile.png",
+          "alt": "Black and white portrait of Sofia Lind"
+        }
+      }
+    },
+    {
+      "type": "askcrystal_artist",
+      "handle": "amina-darzi",
+      "fields": {
+        "name": "Amina Darzi",
+        "role_label": "AskCrystal Studio Designer",
+        "short_bio": "Amina works with saturated color and tactile rhythm, bringing a collected, travel-worn sensibility to expressive pieces.",
+        "signature_style": "Deep blues, warm metals, layered stone textures, and details that make premium pieces feel found rather than staged.",
+        "materials_focus": [
+          "lapis lazuli",
+          "tiger's eye",
+          "copper",
+          "agate"
+        ],
+        "intention_focus": [
+          "confidence",
+          "communication",
+          "grounding"
+        ],
+        "artist_note": "Use for products that need color, presence, and a grounded sense of personal style.",
+        "profile_image_alt": "Black and white portrait of Amina Darzi"
+      },
+      "assets": {
+        "profile_image": {
+          "local_path": "data/shopify/catalog/assets/artists/amina-darzi/profile.png",
+          "alt": "Black and white portrait of Amina Darzi"
+        }
+      }
+    },
+    {
+      "type": "askcrystal_artist",
+      "handle": "julian-becker",
+      "fields": {
+        "name": "Julian Becker",
+        "role_label": "AskCrystal Studio Designer",
+        "short_bio": "Julian builds from simple geometry and visible structure, giving crystal pieces a practical, modern edge.",
+        "signature_style": "Modular spacing, dark grounding stones, crisp metal contrast, and pieces that feel direct rather than mystical.",
+        "materials_focus": [
+          "black tourmaline",
+          "clear quartz",
+          "agate",
+          "copper"
+        ],
+        "intention_focus": [
+          "focus",
+          "protection",
+          "clarity"
+        ],
+        "artist_note": "Use for clean, contemporary products where the story should feel practical and deliberate.",
+        "profile_image_alt": "Black and white portrait of Julian Becker"
+      },
+      "assets": {
+        "profile_image": {
+          "local_path": "data/shopify/catalog/assets/artists/julian-becker/profile.png",
+          "alt": "Black and white portrait of Julian Becker"
+        }
+      }
+    },
+    {
+      "type": "askcrystal_artist",
+      "handle": "mei-chen",
+      "fields": {
+        "name": "Mei Chen",
+        "role_label": "AskCrystal Studio Designer",
+        "short_bio": "Mei designs for small daily gestures, choosing stones and finishes that feel personal at close range.",
+        "signature_style": "Delicate scale, thoughtful negative space, soft reflective surfaces, and details that reward a second look.",
+        "materials_focus": [
+          "rose quartz",
+          "moonstone",
+          "green aventurine",
+          "clear quartz"
+        ],
+        "intention_focus": [
+          "emotional balance",
+          "self love",
+          "new beginning"
+        ],
+        "artist_note": "Best for pieces that need intimacy, softness, and a quietly personal gift story.",
+        "profile_image_alt": "Black and white portrait of Mei Chen"
+      },
+      "assets": {
+        "profile_image": {
+          "local_path": "data/shopify/catalog/assets/artists/mei-chen/profile.png",
+          "alt": "Black and white portrait of Mei Chen"
+        }
+      }
+    },
+    {
+      "type": "askcrystal_artist",
+      "handle": "rafael-ortega",
+      "fields": {
+        "name": "Rafael Ortega",
+        "role_label": "AskCrystal Studio Designer",
+        "short_bio": "Rafael works with movement, contrast, and small flashes of brightness, creating pieces that feel confident without being loud.",
+        "signature_style": "Polished dark stones, warm highlights, rhythmic repetition, and wearable forms with a subtle sense of motion.",
+        "materials_focus": [
+          "tiger's eye",
+          "citrine",
+          "black tourmaline",
+          "agate"
+        ],
+        "intention_focus": [
+          "confidence",
+          "grounding",
+          "abundance"
+        ],
+        "artist_note": "Use for premium products that need energy, contrast, and a little visual momentum.",
+        "profile_image_alt": "Black and white portrait of Rafael Ortega"
+      },
+      "assets": {
+        "profile_image": {
+          "local_path": "data/shopify/catalog/assets/artists/rafael-ortega/profile.png",
+          "alt": "Black and white portrait of Rafael Ortega"
+        }
+      }
     }
   ]
 }

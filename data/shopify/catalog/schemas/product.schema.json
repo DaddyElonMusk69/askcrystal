@@ -230,6 +230,10 @@
           "minItems": 1,
           "uniqueItems": true
         },
+        "artist_handle": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
         "chakras": {
           "type": "array",
           "items": {

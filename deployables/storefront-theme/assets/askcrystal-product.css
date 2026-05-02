@@ -340,6 +340,7 @@ main[data-template^='product'] .text-block--ac_shipping_note p {
 
 .askcrystal-product-story__group,
 .askcrystal-product-story__panel,
+.askcrystal-product-story__artist,
 .askcrystal-product-story__integrity,
 .askcrystal-product-story__reviews,
 .askcrystal-product-story__confidence,
@@ -414,6 +415,7 @@ main[data-template^='product'] .text-block--ac_shipping_note p {
 .askcrystal-product-story__muted,
 .askcrystal-product-story__section p,
 .askcrystal-product-story__panel p,
+.askcrystal-product-story__artist p,
 .askcrystal-product-story__review p,
 .askcrystal-product-story__confidence p,
 .askcrystal-product-story__help p {
@@ -495,6 +497,54 @@ main[data-template^='product'] .text-block--ac_shipping_note p {
     radial-gradient(circle at 78% 0%, rgb(185 149 96 / 0.1), transparent 42%),
     var(--ac-product-card);
   box-shadow: 0 18px 44px rgb(0 0 0 / 0.22);
+}
+
+.askcrystal-product-story__artist {
+  padding: 20px 0;
+  border-top: 1px solid var(--ac-product-line-soft);
+  border-bottom: 1px solid var(--ac-product-line-soft);
+}
+
+.askcrystal-product-story__artist-row {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.askcrystal-product-story__artist-media {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 1;
+  border: 1px solid rgb(185 149 96 / 0.42);
+  border-radius: 50%;
+  background: var(--ac-product-card);
+}
+
+.askcrystal-product-story__artist-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.askcrystal-product-story__artist-copy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.askcrystal-product-story__artist-kicker {
+  color: var(--ac-product-gold-bright);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.askcrystal-product-story__artist-bio {
+  color: var(--ac-product-muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
 }
 
 .askcrystal-product-story__panel-list {
@@ -970,6 +1020,7 @@ main[data-template^='product'] .product-recommendations .product-card__content .
 
   .askcrystal-product-story__group,
   .askcrystal-product-story__panel,
+  .askcrystal-product-story__artist,
   .askcrystal-product-story__reviews,
   .askcrystal-product-story__confidence,
   .askcrystal-product-story__help,

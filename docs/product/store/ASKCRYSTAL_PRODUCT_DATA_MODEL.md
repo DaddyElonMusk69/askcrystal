@@ -26,7 +26,7 @@ The repo owns:
 - Variant definitions such as SKU, option values, price, compare-at price, taxable status, and requires-shipping flags.
 - Product media references and alt text.
 - AskCrystal enrichment fields under the `askcrystal` namespace.
-- Crystal material and ritual references by stable handle.
+- Crystal material, ritual, and premium artist references by stable handle.
 - Human/AI review workflow statuses.
 
 Shopify owns:
@@ -48,7 +48,7 @@ Inventory quantities should not appear in local catalog product files. If invent
 
 - `data/shopify/metafield-definitions.askcrystal.json`: product metafield definitions to create in Shopify.
 - `data/shopify/metaobject-definitions.askcrystal.json`: reusable metaobject definitions.
-- `data/shopify/metaobject-entries.askcrystal.json`: seed material and ritual metaobject entries.
+- `data/shopify/metaobject-entries.askcrystal.json`: seed material, ritual, and artist metaobject entries.
 - `data/shopify/catalog/`: planned local source of truth for products, collections, media references, and schemas.
 - `data/shopify/catalog/facets.askcrystal.json`: canonical collection facets and generated Shopify tag/collection rules.
 - `data/shopify/catalog/schemas/product.schema.json`: local product catalog schema, intentionally excluding inventory quantities.
@@ -70,6 +70,7 @@ Required launch fields:
 - `secondary_intentions`: JSON list of supporting intents.
 - `product_form`: one canonical form key, such as `bracelet`, `necklace`, `ring`, `earrings`, `anklet`, `pendant`, `tumbled_stone`, `raw_stone`, `set`, or `ritual_kit`.
 - `crystal_materials`: references to `askcrystal_crystal_material` metaobjects.
+- `artist`: optional reference to an `askcrystal_artist` metaobject; required by local validation for products priced at `$99.99+`.
 - `chakras`: JSON list using canonical chakra keys.
 - `color_families`: JSON list using canonical color-family keys.
 - `ritual_uses`: JSON list using canonical ritual-use keys.
@@ -147,6 +148,14 @@ Reusable ritual profile for common patterns such as sleep, self-love, protection
 
 Product-specific ritual metafields can override or specialize this content. The reusable ritual object gives us a scalable library for the assistant and future bundles.
 
+### `askcrystal_artist`
+
+Limited artist/studio profile for premium product storytelling. Products priced at `$99.99+` reference one artist by stable handle through `askcrystal.artist`.
+
+Artist copy should add human taste and curation, not unverifiable provenance. Do not imply handmade authorship, local production, certifications, or exclusive collaboration unless those facts are explicitly verified.
+
+Artist profile images are repo-owned local assets until synced. Store local portrait paths in the seed entry `assets.profile_image.local_path`, upload them through `scripts/build/provision_shopify_custom_data.py --apply --sync-artist-assets`, and let the script write the Shopify file reference into the artist metaobject `profile_image` field. Shopify file IDs/CDN URLs are cached under `data/shopify/generated/artist-profile-images.askcrystal.json` and are not source-of-truth catalog data.
+
 ## Product Detail UI Mapping
 
 Current and planned product detail elements should read data in this order:
@@ -170,6 +179,7 @@ Mapping:
 | Care guide | `askcrystal.care_steps` | Material metaobject care notes |
 | Included card | `askcrystal.included_items` | Store default inclusion copy |
 | Integrity badges | `askcrystal.quality_notes` | Store default trust badges |
+| Premium artist story | `askcrystal.artist` metaobject fields: `name`, `role_label`, `short_bio`, `artist_note`, `profile_image` | Hide below premium threshold or when no seeded artist exists |
 | Agent recommendation grounding | `askcrystal.agent_summary` and `askcrystal.agent_tags` | Product tags and material metaobject |
 
 ## Shopify Provisioning Workflow
@@ -179,6 +189,16 @@ Run a no-network dry run first:
 ```bash
 python3 scripts/build/provision_shopify_custom_data.py
 ```
+
+Preview artist profile image asset sync at the same time. Missing local portrait files are reported in dry-run output without writing to Shopify.
+
+Upload local artist portraits to Shopify Files and attach them to artist metaobjects only after dry-run review:
+
+```bash
+python3 scripts/build/provision_shopify_custom_data.py --apply --sync-artist-assets
+```
+
+The asset sync path is local file -> Shopify staged upload -> Shopify Files `fileCreate` -> `askcrystal_artist.profile_image` file reference. The generated cache records Shopify file IDs and CDN URLs for operational inspection; products continue to reference only `askcrystal.artist`.
 
 Apply to Shopify after confirming `.env` or `.env.local` contains:
 
@@ -308,7 +328,7 @@ python3 scripts/build/sync_askcrystal_product_metafields.py --apply --sync-facet
 
 Generated CSVs under `data/shopify/generated/` are intentionally ignored by git. The templates, definitions, validator, and reviewed enrichment rows are the durable source of truth.
 
-Note: `crystal_material_handles_json` is required in the enrichment sheet. The generated CSV remains useful for simple product metafield imports, but metaobject reference fields such as `askcrystal.crystal_materials` should be written through `scripts/build/sync_askcrystal_product_metafields.py`, which resolves stable handles such as `amethyst` to Shopify metaobject IDs before calling the Admin API.
+Note: `crystal_material_handles_json` is required in the enrichment sheet. `artist_handle` is optional in enrichment rows, but required by product JSON validation for products priced at `$99.99+`. The generated CSV remains useful for simple product metafield imports, but metaobject reference fields such as `askcrystal.crystal_materials` and `askcrystal.artist` should be written through `scripts/build/sync_askcrystal_product_metafields.py`, which resolves stable handles such as `amethyst` and `elise-hartmann` to Shopify metaobject IDs before calling the Admin API.
 
 ## Future AI Skill Shape
 

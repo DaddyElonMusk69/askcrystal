@@ -89,6 +89,7 @@ METAFIELD_SOURCES = {
     "secondary_intentions": "secondary_intentions_json",
     "product_form": "product_form",
     "crystal_materials": "crystal_material_handles_json",
+    "artist": "artist_handle",
     "chakras": "chakra_keys_json",
     "color_families": "color_families_json",
     "ritual_uses": "ritual_uses_json",
@@ -114,6 +115,7 @@ METAFIELD_SOURCES = {
 }
 
 REVIEWED_STATUSES = {"human_reviewed", "approved"}
+SINGLE_METAOBJECT_REFS = {"artist": "askcrystal_artist"}
 
 
 @dataclass
@@ -259,6 +261,33 @@ def resolve_material_ids(
     return json.dumps(material_ids, ensure_ascii=False)
 
 
+def resolve_single_metaobject_id(
+    client: ShopifyAdminClient | None,
+    *,
+    handle: str,
+    metafield_key: str,
+    metaobject_type: str,
+    row_number: int,
+    check_remote: bool,
+    metaobject_cache: dict[tuple[str, str], str],
+) -> str:
+    normalized_handle = handle.strip()
+    if not check_remote:
+        return json.dumps(normalized_handle, ensure_ascii=False)
+
+    assert client is not None
+    cache_key = (metaobject_type, normalized_handle)
+    if cache_key not in metaobject_cache:
+        metaobject_id = get_metaobject_id(client, metaobject_type, normalized_handle)
+        if metaobject_id:
+            metaobject_cache[cache_key] = metaobject_id
+    if cache_key not in metaobject_cache:
+        raise ProvisioningError(
+            f"row {row_number}: {metafield_key} metaobject handle not found in Shopify: {normalized_handle}"
+        )
+    return metaobject_cache[cache_key]
+
+
 def build_metafields_for_row(
     row: dict[str, str],
     *,
@@ -269,6 +298,7 @@ def build_metafields_for_row(
     client: ShopifyAdminClient | None,
     check_remote: bool,
     material_cache: dict[str, str],
+    metaobject_cache: dict[tuple[str, str], str],
 ) -> list[dict[str, str]]:
     metafields: list[dict[str, str]] = []
     for key, source_column in METAFIELD_SOURCES.items():
@@ -284,6 +314,7 @@ def build_metafields_for_row(
             "gift_for_json",
             "archetype_name",
             "pairing_notes",
+            "artist_handle",
         }:
             raise ProvisioningError(f"row {row_number}: {source_column} is required for {namespace}.{key}")
 
@@ -297,6 +328,16 @@ def build_metafields_for_row(
                 row_number=row_number,
                 check_remote=check_remote,
                 material_cache=material_cache,
+            )
+        elif key in SINGLE_METAOBJECT_REFS:
+            value = resolve_single_metaobject_id(
+                client,
+                handle=raw_value,
+                metafield_key=key,
+                metaobject_type=SINGLE_METAOBJECT_REFS[key],
+                row_number=row_number,
+                check_remote=check_remote,
+                metaobject_cache=metaobject_cache,
             )
         elif metafield_type.startswith("list."):
             value = list_source_value(raw_value, row_number, source_column)
@@ -329,6 +370,7 @@ def build_plans(
 ) -> list[ProductPlan]:
     plans: list[ProductPlan] = []
     material_cache: dict[str, str] = {}
+    metaobject_cache: dict[tuple[str, str], str] = {}
 
     selected_rows = rows[:limit] if limit else rows
     counts.rows_total = len(selected_rows)
@@ -361,6 +403,7 @@ def build_plans(
             client=client,
             check_remote=check_remote,
             material_cache=material_cache,
+            metaobject_cache=metaobject_cache,
         )
         facet_tags = row_facet_tags(row, offset)
         plans.append(

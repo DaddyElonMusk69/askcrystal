@@ -46,12 +46,14 @@ if str(BUILD_SCRIPTS_DIR) not in sys.path:
 from provision_shopify_custom_data import (  # noqa: E402
     ShopifyAdminClient,
     ProvisioningError,
+    build_ssl_context,
     graphql_user_error_message,
     load_project_env,
     resolve_admin_access_token,
 )
 
 JEWELRY_FORMS = {"bracelet", "necklace", "ring", "earrings", "anklet", "pendant"}
+PREMIUM_ARTIST_PRICE_THRESHOLD = 99.99
 PORTRAIT_ASPECT_RATIO = "3:4 portrait"
 JIMENG_RATIO = "3:4"
 IMAGE_EXTENSIONS = {".avif", ".gif", ".jpeg", ".jpg", ".png", ".webp"}
@@ -102,6 +104,7 @@ ASKCRYSTAL_METAFIELD_SOURCES = {
     "secondary_intentions": ("secondary_intentions", "list"),
     "product_form": ("product_form", "scalar"),
     "crystal_materials": ("crystal_material_handles", "material_refs"),
+    "artist": ("artist_handle", "artist_ref_optional"),
     "chakras": ("chakras", "list"),
     "color_families": ("color_families", "list"),
     "ritual_uses": ("ritual_uses", "list"),
@@ -127,6 +130,7 @@ ASKCRYSTAL_METAFIELD_SOURCES = {
 }
 
 OPTIONAL_LIST_FIELDS = {"gift_for", "western_elements", "five_elements", "zodiac_signs"}
+SINGLE_METAOBJECT_REF_MODES = {"artist_ref_optional": "askcrystal_artist"}
 REVIEWED_PRODUCT_STATUSES = {"human_reviewed", "approved"}
 
 STAGED_UPLOADS_CREATE = """
@@ -164,6 +168,34 @@ query AskCrystalMetaobjectByHandle($type: String!, $handle: String!) {
     id
     handle
     type
+  }
+}
+"""
+
+PUBLICATIONS = """
+query AskCrystalPublications {
+  publications(first: 50) {
+    nodes {
+      id
+      name
+    }
+  }
+}
+"""
+
+PUBLISHABLE_PUBLISH = """
+mutation AskCrystalPublishProduct($id: ID!, $input: [PublicationInput!]!) {
+  publishablePublish(id: $id, input: $input) {
+    publishable {
+      ... on Product {
+        id
+      }
+    }
+    userErrors {
+      field
+      message
+      code
+    }
   }
 }
 """
@@ -210,6 +242,15 @@ def material_handles() -> list[str]:
         entry["handle"]
         for entry in entries
         if entry.get("type") == "askcrystal_crystal_material" and entry.get("handle")
+    )
+
+
+def artist_handles() -> list[str]:
+    entries = load_json(MATERIALS_PATH).get("entries", [])
+    return sorted(
+        entry["handle"]
+        for entry in entries
+        if entry.get("type") == "askcrystal_artist" and entry.get("handle")
     )
 
 
@@ -525,6 +566,46 @@ def resolve_shopify_client(args: argparse.Namespace) -> ShopifyAdminClient:
     return ShopifyAdminClient(store_domain=args.store_domain, access_token=access_token, api_version=args.api_version)
 
 
+def normalize_publication_name(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", value.lower())
+
+
+def online_store_publication_id(client: ShopifyAdminClient) -> str | None:
+    result = client.graphql(PUBLICATIONS)["publications"]
+    publications = result.get("nodes") or []
+    for publication in publications:
+        if normalize_publication_name(str(publication.get("name") or "")) == "onlinestore":
+            return str(publication.get("id") or "")
+    return None
+
+
+def resolve_product_publication_id(client: ShopifyAdminClient, args: argparse.Namespace) -> str | None:
+    explicit = str(args.publication_id or os.getenv("SHOPIFY_ONLINE_STORE_PUBLICATION_ID", "")).strip()
+    if explicit:
+        return explicit
+    return online_store_publication_id(client)
+
+
+def publish_product_to_publication(
+    client: ShopifyAdminClient,
+    *,
+    product_id: str,
+    publication_id: str,
+) -> None:
+    result = client.graphql(
+        PUBLISHABLE_PUBLISH,
+        {
+            "id": product_id,
+            "input": [{"publicationId": publication_id}],
+        },
+    )["publishablePublish"]
+    if result.get("userErrors"):
+        raise SystemExit(
+            f"failed to publish product {product_id} to publication {publication_id}: "
+            f"{graphql_user_error_message(result['userErrors'])}"
+        )
+
+
 def text_to_description_html(value: str) -> str:
     paragraphs = [paragraph.strip() for paragraph in re.split(r"\n{2,}", value or "") if paragraph.strip()]
     if not paragraphs:
@@ -597,6 +678,21 @@ def remote_metaobject_id_by_handle(client: ShopifyAdminClient, metaobject_type: 
     return str(result["id"])
 
 
+def resolve_metaobject_id(
+    *,
+    client: ShopifyAdminClient,
+    metaobject_type: str,
+    handle: str,
+    cache: dict[tuple[str, str], str],
+) -> str | None:
+    key = (metaobject_type, handle)
+    if key not in cache:
+        metaobject_id = remote_metaobject_id_by_handle(client, metaobject_type, handle)
+        if metaobject_id:
+            cache[key] = metaobject_id
+    return cache.get(key)
+
+
 def remote_collection_id_by_handle(client: ShopifyAdminClient, handle: str) -> str | None:
     try:
         result = client.graphql(COLLECTION_BY_IDENTIFIER, {"handle": handle})["collection"]
@@ -615,6 +711,7 @@ def metafield_value_for_product(
     mode: str,
     material_cache: dict[str, str],
     resolve_remote_refs: bool,
+    metaobject_cache: dict[tuple[str, str], str] | None = None,
 ) -> str | None:
     value = askcrystal.get(local_key)
     if mode == "scalar_optional":
@@ -646,6 +743,24 @@ def metafield_value_for_product(
         if missing:
             raise SystemExit(f"material metaobject handles not found in Shopify: {', '.join(missing)}")
         return json.dumps(material_ids, ensure_ascii=False)
+    if mode in SINGLE_METAOBJECT_REF_MODES:
+        handle = str(value or "").strip()
+        if not handle:
+            return None
+        if not resolve_remote_refs:
+            return json.dumps(handle, ensure_ascii=False)
+        assert client is not None
+        metaobject_type = SINGLE_METAOBJECT_REF_MODES[mode]
+        cache = metaobject_cache if metaobject_cache is not None else {}
+        metaobject_id = resolve_metaobject_id(
+            client=client,
+            metaobject_type=metaobject_type,
+            handle=handle,
+            cache=cache,
+        )
+        if not metaobject_id:
+            raise SystemExit(f"{metaobject_type} metaobject handle not found in Shopify: {handle}")
+        return metaobject_id
     return str(value or "")
 
 
@@ -655,6 +770,7 @@ def product_metafields_input(
     product: dict[str, Any],
     material_cache: dict[str, str],
     resolve_remote_refs: bool,
+    metaobject_cache: dict[tuple[str, str], str] | None = None,
 ) -> list[dict[str, str]]:
     askcrystal = product.get("askcrystal") or {}
     type_by_key = {
@@ -671,6 +787,7 @@ def product_metafields_input(
             mode=mode,
             material_cache=material_cache,
             resolve_remote_refs=resolve_remote_refs,
+            metaobject_cache=metaobject_cache,
         )
         if value is None:
             continue
@@ -731,6 +848,15 @@ def jimeng_binary(explicit_path: str | None = None) -> str:
 
 def run_capture(command: list[str], *, cwd: Path = REPO_ROOT) -> subprocess.CompletedProcess[str]:
     return subprocess.run(command, cwd=cwd, text=True, capture_output=True, check=False)
+
+
+def run_dreamina_capture(command: list[str], *, cwd: Path = REPO_ROOT) -> subprocess.CompletedProcess[str]:
+    env = os.environ.copy()
+    godebug_parts = [part for part in env.get("GODEBUG", "").split(",") if part]
+    if "http2client=0" not in godebug_parts:
+        godebug_parts.append("http2client=0")
+    env["GODEBUG"] = ",".join(godebug_parts)
+    return subprocess.run(command, cwd=cwd, env=env, text=True, capture_output=True, check=False)
 
 
 def print_completed_process(result: subprocess.CompletedProcess[str]) -> None:
@@ -863,7 +989,7 @@ def upload_to_staged_target(target: dict[str, Any], file_path: Path, *, http_met
     for attempt in range(1, 4):
         try:
             request = staged_target_request(target, file_path, http_method=http_method)
-            with urllib.request.urlopen(request, timeout=60) as response:
+            with urllib.request.urlopen(request, timeout=60, context=build_ssl_context()) as response:
                 response.read()
             return
         except urllib.error.HTTPError as exc:
@@ -979,6 +1105,7 @@ def product_set_input(
     material_cache: dict[str, str],
     resolve_remote_refs: bool,
     files: list[dict[str, Any]] | None,
+    metaobject_cache: dict[tuple[str, str], str] | None = None,
 ) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "handle": product["handle"],
@@ -995,6 +1122,7 @@ def product_set_input(
             product=product,
             material_cache=material_cache,
             resolve_remote_refs=resolve_remote_refs,
+            metaobject_cache=metaobject_cache,
         ),
         "seo": product_seo_input(product),
     }
@@ -1054,7 +1182,7 @@ def cmd_image_plan(args: argparse.Namespace) -> int:
             missing_list = "\n".join(f"  - {display_path(path)}" for path in missing_generated)
             raise SystemExit(
                 "Refusing to update product media before generated files exist.\n"
-                "Run image-plan without --update-product-media, generate/review Jimeng images, then update media.\n"
+                "Run image-plan without --update-product-media, generate/review images, then update media.\n"
                 f"Missing generated file(s):\n{missing_list}"
             )
 
@@ -1063,8 +1191,8 @@ def cmd_image_plan(args: argparse.Namespace) -> int:
         "product_handle": handle,
         "product_title": product.get("title"),
         "aspect_ratio": PORTRAIT_ASPECT_RATIO,
-        "generation_provider": "jimeng_dreamina",
-        "preferred_generation_mode": "image2image_with_source_photos",
+        "generation_provider": "default_imagegen",
+        "preferred_generation_mode": "reference_image_generation_with_source_photos",
         "source_image_dir": str((asset_dir / "source").relative_to(REPO_ROOT)),
         "style_status": "askcrystal_luxury_base_prompt_v1",
         "style_prompt": generic_image_style_prompt(),
@@ -1072,8 +1200,8 @@ def cmd_image_plan(args: argparse.Namespace) -> int:
         "notes": [
             "Generate exactly these nine images unless the user asks for a different shot list.",
             "Use the local_path value as the canonical repo asset path after image generation.",
-            "Put raw/provided product reference photos in source_image_dir so Jimeng can preserve exact design, materials, and colors.",
-            "Jimeng image2image is required when source photos exist unless the user explicitly chooses a product-data-only or text-only workflow.",
+            "Put raw/provided product reference photos in source_image_dir so image generation can preserve exact design, materials, and colors.",
+            "Use the system imagegen skill by default; use Jimeng/Dreamina only when the user explicitly requests it.",
             "Never add files from source_image_dir to product JSON media unless the user explicitly requests raw source media.",
             "Generated images require human review before Shopify upload or product publish.",
         ],
@@ -1111,7 +1239,7 @@ def cmd_jimeng_status(args: argparse.Namespace) -> int:
     if args.credit:
         print("")
         print(f"$ {binary} user_credit")
-        result = run_capture([binary, "user_credit"])
+        result = run_dreamina_capture([binary, "user_credit"])
         print_completed_process(result)
         return result.returncode
 
@@ -1151,7 +1279,7 @@ def cmd_jimeng_generate(args: argparse.Namespace) -> int:
     if args.credit:
         print("")
         print(f"$ {binary} user_credit")
-        credit_result = run_capture([binary, "user_credit"])
+        credit_result = run_dreamina_capture([binary, "user_credit"])
         print_completed_process(credit_result)
         if credit_result.returncode != 0:
             return credit_result.returncode
@@ -1183,7 +1311,7 @@ def cmd_jimeng_generate(args: argparse.Namespace) -> int:
         if not args.apply:
             continue
 
-        result = run_capture(command)
+        result = run_dreamina_capture(command)
         print_completed_process(result)
         combined_output = f"{result.stdout}\n{result.stderr}"
         submit_id = extract_submit_id(combined_output)
@@ -1285,7 +1413,7 @@ def cmd_jimeng_query(args: argparse.Namespace) -> int:
             continue
 
         before = {path.name for path in (ASSET_PRODUCTS_DIR / handle).glob("*") if path.is_file()}
-        result = run_capture(command)
+        result = run_dreamina_capture(command)
         print_completed_process(result)
         after_paths = [path for path in (ASSET_PRODUCTS_DIR / handle).glob("*") if path.is_file() and path.name not in before]
         combined_output = f"{result.stdout}\n{result.stderr}"
@@ -1360,7 +1488,7 @@ def cmd_product_upload(args: argparse.Namespace) -> int:
         source_list = "\n".join(f"  - {display_path(path)}" for path in source_media)
         raise SystemExit(
             "Refusing to upload raw source/reference images as product media.\n"
-            "Run Jimeng image2image from the source photos, review the generated files, then update product media.\n"
+            "Generate reviewed product images from the source photos, then update product media.\n"
             "Use --skip-media only for an explicit product-data-only sync, or --allow-source-media only if the user explicitly requested raw source media.\n"
             f"Source media reference(s):\n{source_list}"
         )
@@ -1368,7 +1496,7 @@ def cmd_product_upload(args: argparse.Namespace) -> int:
     if source_images and not args.skip_media and not args.allow_source_media and not reviewed_local_media and not remote_media:
         raise SystemExit(
             "Source/reference photos exist, but no reviewed generated media is attached to the product.\n"
-            "Run the Jimeng image workflow and update product media, or pass --skip-media for an explicit product-data-only sync."
+            "Run the product image generation workflow and update product media, or pass --skip-media for an explicit product-data-only sync."
         )
 
     dry_run_payload = product_set_input(
@@ -1391,6 +1519,12 @@ def cmd_product_upload(args: argparse.Namespace) -> int:
     print(f"  source/reference media refs: {len(source_media)}")
     print(f"  remote URL media refs: {len(remote_media)}")
     print(f"  collections: {', '.join(product.get('collections') or []) or '(none)'}")
+    if args.skip_online_store_publication:
+        print("  online store publication: skipped")
+    elif args.publication_id or os.getenv("SHOPIFY_ONLINE_STORE_PUBLICATION_ID", ""):
+        print(f"  online store publication: {args.publication_id or os.getenv('SHOPIFY_ONLINE_STORE_PUBLICATION_ID', '')}")
+    else:
+        print("  online store publication: auto-detect Online Store on apply")
 
     if args.show_payload:
         print("\nProductSet preview")
@@ -1409,12 +1543,14 @@ def cmd_product_upload(args: argparse.Namespace) -> int:
         media_files.extend(remote_media)
 
     material_cache: dict[str, str] = {}
+    metaobject_cache: dict[tuple[str, str], str] = {}
     payload = product_set_input(
         client=client,
         product=product,
         material_cache=material_cache,
         resolve_remote_refs=True,
         files=media_files,
+        metaobject_cache=metaobject_cache,
     )
     result = client.graphql(
         PRODUCT_SET,
@@ -1433,6 +1569,24 @@ def cmd_product_upload(args: argparse.Namespace) -> int:
         )
 
     product_result = result.get("product") or {}
+    publication_result: dict[str, Any] = {
+        "skipped": bool(args.skip_online_store_publication),
+        "publication_id": None,
+        "published": False,
+    }
+    product_id = str(product_result.get("id") or "")
+    if not args.skip_online_store_publication:
+        publication_id = resolve_product_publication_id(client, args)
+        publication_result["publication_id"] = publication_id
+        if publication_id and product_id:
+            publish_product_to_publication(client, product_id=product_id, publication_id=publication_id)
+            publication_result["published"] = True
+        elif not publication_id:
+            publication_result["warning"] = (
+                "Online Store publication was not found. Set SHOPIFY_ONLINE_STORE_PUBLICATION_ID "
+                "or pass --publication-id."
+            )
+
     cache = {
         "schema_version": 1,
         "product_handle": handle,
@@ -1442,6 +1596,7 @@ def cmd_product_upload(args: argparse.Namespace) -> int:
             "status": operation.get("status"),
             "synchronous": args.synchronous,
         },
+        "publication": publication_result,
         "product": product_result,
         "staged_media": staged_cache,
         "remote_url_media": remote_media,
@@ -1457,8 +1612,14 @@ def cmd_product_upload(args: argparse.Namespace) -> int:
     print(f"  uploaded {product_result.get('handle') or handle} -> {product_result.get('id', 'unknown-id')}")
     print(f"  status: {product_result.get('status', product.get('shopify_status'))}")
     print(f"  media attached/requested: {len(media_files)}")
+    if publication_result.get("published"):
+        print(f"  published to Online Store publication: {publication_result.get('publication_id')}")
+    elif publication_result.get("skipped"):
+        print("  online store publication: skipped")
+    else:
+        print(f"  online store publication warning: {publication_result.get('warning')}")
     print(f"  cache: {display_path(cache_path)}")
-    print("\nNote: product upload does not publish products separately or mutate inventory.")
+    print("\nNote: product upload defaults to Online Store sales-channel publication and does not mutate inventory.")
     return 0
 
 
@@ -1493,6 +1654,14 @@ def cmd_draft_product(args: argparse.Namespace) -> int:
         ensure_allowed("gift_for", gift_for, axis_allowed("gift_for"))
     if zodiac_signs:
         ensure_allowed("zodiac_sign", zodiac_signs, axis_allowed("zodiac_signs"))
+    artist_handle = snake(args.artist_handle).replace("_", "-") if args.artist_handle else None
+    if artist_handle:
+        ensure_allowed("artist_handle", [artist_handle], artist_handles())
+    elif float(args.price) >= PREMIUM_ARTIST_PRICE_THRESHOLD:
+        raise SystemExit(
+            f"Products priced at ${PREMIUM_ARTIST_PRICE_THRESHOLD:.2f}+ require --artist-handle. "
+            f"Allowed: {', '.join(artist_handles())}"
+        )
 
     benefit_defaults = [
         f"Supports {primary_intention.replace('_', ' ')} through a simple daily ritual",
@@ -1521,6 +1690,7 @@ def cmd_draft_product(args: argparse.Namespace) -> int:
         "secondary_intentions": secondary_intentions,
         "product_form": product_form,
         "crystal_material_handles": materials,
+        "artist_handle": artist_handle,
         "chakras": chakras,
         "color_families": color_families,
         "ritual_uses": ritual_uses,
@@ -1667,6 +1837,16 @@ def build_parser() -> argparse.ArgumentParser:
         default=True,
         help="Run Shopify productSet synchronously when possible. Use --no-synchronous for async operation.",
     )
+    upload.add_argument(
+        "--publication-id",
+        default=os.getenv("SHOPIFY_ONLINE_STORE_PUBLICATION_ID", ""),
+        help="Shopify publication ID for product sales-channel availability. Defaults to SHOPIFY_ONLINE_STORE_PUBLICATION_ID or auto-detected Online Store.",
+    )
+    upload.add_argument(
+        "--skip-online-store-publication",
+        action="store_true",
+        help="Do not publish the uploaded product to the Online Store publication.",
+    )
     upload.add_argument("--show-payload", action="store_true", help="Print a compact ProductSet payload preview.")
     upload.add_argument("--store-domain", default="", help="Shopify myshopify domain. Defaults to SHOPIFY_STORE_DOMAIN.")
     upload.add_argument("--access-token", default="", help="Shopify Admin API access token. Defaults to SHOPIFY_ADMIN_ACCESS_TOKEN.")
@@ -1686,6 +1866,7 @@ def build_parser() -> argparse.ArgumentParser:
     draft.add_argument("--compare-at-price")
     draft.add_argument("--sku", required=True)
     draft.add_argument("--barcode")
+    draft.add_argument("--artist-handle", help="Required for products priced at $99.99+; must match an askcrystal_artist seed handle.")
     draft.add_argument("--not-taxable", action="store_true")
     draft.add_argument("--no-shipping", action="store_true")
     draft.add_argument("--material", action="append", required=True, help="Repeat or comma-separate material handles")
