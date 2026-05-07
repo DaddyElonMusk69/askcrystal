@@ -297,6 +297,81 @@
     },
     {
       "type": "askcrystal_crystal_material",
+      "handle": "malachite",
+      "fields": {
+        "name": "Malachite",
+        "short_meaning": "A rich green stone traditionally associated with emotional courage, protection through change, and heart-led transformation.",
+        "primary_intentions": [
+          "protection",
+          "emotional healing",
+          "growth"
+        ],
+        "chakras": [
+          "heart"
+        ],
+        "western_elements": [
+          "earth",
+          "water"
+        ],
+        "five_elements": [
+          "wood",
+          "earth"
+        ],
+        "zodiac_signs": [
+          "scorpio",
+          "capricorn",
+          "taurus"
+        ],
+        "care_notes": "Avoid soaking, harsh chemicals, and abrasive contact. Clean gently with a soft dry cloth.",
+        "cleansing_methods": [
+          "sound",
+          "selenite",
+          "moonlight"
+        ],
+        "pairing_notes": "Pairs well with lapis lazuli for clearer expression or pearl for a softer heart-centered tone.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "turquoise",
+      "fields": {
+        "name": "Turquoise",
+        "short_meaning": "A blue-green stone traditionally connected with honest communication, calm protection, and an easier flow between heart and voice.",
+        "primary_intentions": [
+          "communication",
+          "protection",
+          "calm"
+        ],
+        "chakras": [
+          "throat",
+          "heart"
+        ],
+        "western_elements": [
+          "air",
+          "water"
+        ],
+        "five_elements": [
+          "water",
+          "wood"
+        ],
+        "zodiac_signs": [
+          "sagittarius",
+          "pisces",
+          "taurus"
+        ],
+        "care_notes": "Keep away from harsh chemicals, perfume, and prolonged water exposure. Wipe gently after wear.",
+        "cleansing_methods": [
+          "sound",
+          "moonlight",
+          "selenite"
+        ],
+        "pairing_notes": "Pairs well with lapis lazuli for thoughtful communication or pearl when the energy needs to stay softer and more soothing.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
       "handle": "tigers_eye",
       "fields": {
         "name": "Tiger's Eye",
@@ -366,6 +441,231 @@
         ],
         "pairing_notes": "Pairs well with citrine for abundance work or rose quartz for heart softness.",
         "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "amazonite",
+      "fields": {
+        "name": "Amazonite",
+        "short_meaning": "A soft blue-green feldspar traditionally associated with calm communication, perspective, and emotional steadiness.",
+        "primary_intentions": [
+          "calm",
+          "clarity",
+          "emotional balance"
+        ],
+        "chakras": [
+          "throat",
+          "heart"
+        ],
+        "western_elements": [
+          "water",
+          "air"
+        ],
+        "five_elements": [
+          "water",
+          "wood"
+        ],
+        "zodiac_signs": [
+          "virgo",
+          "aquarius",
+          "libra"
+        ],
+        "care_notes": "Clean gently with a soft dry cloth. Avoid harsh chemicals and prolonged soaking.",
+        "cleansing_methods": [
+          "moonlight",
+          "sound",
+          "selenite"
+        ],
+        "pairing_notes": "Pairs well with clear quartz for cleaner focus or moonstone for a softer emotional tone.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "prehnite",
+      "fields": {
+        "name": "Prehnite",
+        "short_meaning": "A pale green stone traditionally associated with emotional clarity, gentle intuition, and a calmer heart-led perspective.",
+        "primary_intentions": [
+          "clarity",
+          "emotional balance",
+          "intuition"
+        ],
+        "chakras": [
+          "heart",
+          "crown"
+        ],
+        "western_elements": [
+          "water",
+          "earth"
+        ],
+        "five_elements": [
+          "wood",
+          "water"
+        ],
+        "zodiac_signs": [
+          "libra",
+          "pisces",
+          "virgo"
+        ],
+        "care_notes": "Clean gently with a soft cloth. Avoid harsh chemicals, hard impact, and prolonged soaking around metal findings.",
+        "cleansing_methods": [
+          "moonlight",
+          "sound",
+          "selenite"
+        ],
+        "pairing_notes": "Pairs well with citrine for brighter momentum or clear quartz for a cleaner, more spacious intention.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "blue_onyx",
+      "fields": {
+        "name": "Blue Onyx",
+        "short_meaning": "A cool blue chalcedony traditionally associated with calm speech, emotional steadiness, and composed reflection.",
+        "primary_intentions": [
+          "calm",
+          "clarity",
+          "emotional balance"
+        ],
+        "chakras": [
+          "throat",
+          "heart"
+        ],
+        "western_elements": [
+          "water",
+          "air"
+        ],
+        "five_elements": [
+          "water",
+          "metal"
+        ],
+        "zodiac_signs": [
+          "libra",
+          "aquarius",
+          "pisces"
+        ],
+        "care_notes": "Clean gently with a soft dry cloth. Avoid harsh chemicals, prolonged soaking, and abrasive storage.",
+        "cleansing_methods": [
+          "sound",
+          "moonlight",
+          "selenite"
+        ],
+        "pairing_notes": "Pairs well with clear quartz for clarity or moonstone for a softer emotional rhythm.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "baroque_pearl",
+      "fields": {
+        "name": "Baroque Pearl",
+        "short_meaning": "An organically shaped pearl traditionally associated with emotional softness, natural confidence, and imperfect beauty.",
+        "primary_intentions": [
+          "love",
+          "confidence",
+          "emotional balance"
+        ],
+        "chakras": [
+          "heart",
+          "crown"
+        ],
+        "western_elements": [
+          "water"
+        ],
+        "five_elements": [
+          "water",
+          "metal"
+        ],
+        "zodiac_signs": [
+          "cancer",
+          "pisces",
+          "libra"
+        ],
+        "care_notes": "Pearl is delicate. Wipe gently with a soft dry cloth after wear and avoid perfume, harsh chemicals, soaking, and abrasive storage.",
+        "cleansing_methods": [
+          "moonlight",
+          "sound",
+          "dry cloth"
+        ],
+        "pairing_notes": "Pairs well with agate for grounded warmth or clear quartz when the intention is soft clarity.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice. Remove if the piece feels tight or uncomfortable."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "smoky_quartz",
+      "fields": {
+        "name": "Smoky Quartz",
+        "short_meaning": "A translucent brown quartz traditionally associated with grounding, release, and calm practical focus.",
+        "primary_intentions": [
+          "grounding",
+          "protection",
+          "focus"
+        ],
+        "chakras": [
+          "root",
+          "solar_plexus"
+        ],
+        "western_elements": [
+          "earth"
+        ],
+        "five_elements": [
+          "earth",
+          "water"
+        ],
+        "zodiac_signs": [
+          "capricorn",
+          "scorpio",
+          "sagittarius"
+        ],
+        "care_notes": "Clean with a soft dry cloth. Avoid harsh chemicals, hard impact, and prolonged direct sunlight.",
+        "cleansing_methods": [
+          "sound",
+          "selenite",
+          "moonlight"
+        ],
+        "pairing_notes": "Pairs well with black tourmaline for steadier grounding or citrine for practical confidence.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice."
+      }
+    },
+    {
+      "type": "askcrystal_crystal_material",
+      "handle": "sterling_silver",
+      "fields": {
+        "name": "Sterling Silver",
+        "short_meaning": "A bright precious metal traditionally associated with clarity, refinement, and everyday ritual polish.",
+        "primary_intentions": [
+          "clarity",
+          "calm",
+          "focus"
+        ],
+        "chakras": [
+          "throat",
+          "crown"
+        ],
+        "western_elements": [
+          "air",
+          "water"
+        ],
+        "five_elements": [
+          "metal"
+        ],
+        "zodiac_signs": [
+          "cancer",
+          "libra",
+          "aquarius"
+        ],
+        "care_notes": "Wipe with a soft polishing cloth after wear and keep away from perfumes, chlorinated water, and abrasive surfaces.",
+        "cleansing_methods": [
+          "sound",
+          "dry cloth",
+          "moonlight"
+        ],
+        "pairing_notes": "Pairs well with clear quartz, moonstone, and blue stones when a cooler, quieter finish is desired.",
+        "safety_note": "For wellness and self-reflection only. Not medical advice. Remove if you have a known silver sensitivity."
       }
     },
     {

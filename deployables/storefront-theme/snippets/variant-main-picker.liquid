@@ -9,7 +9,7 @@
 
 {% assign block_settings = block.settings %}
 
-{% unless product_resource.has_only_default_variant %}
+{% if product_resource.variants.size > 1 %}
   {% liquid
     assign button_background_brightness = section.settings.color_scheme.settings.foreground | color_brightness
     if button_background_brightness < 105
@@ -222,7 +222,7 @@
       </script>
     </form>
   </variant-picker>
-{% endunless %}
+{% endif %}
 
 {% stylesheet %}
   /* Variant picker container styles - unique to main variant picker */

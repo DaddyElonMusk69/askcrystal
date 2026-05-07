@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "product_handle": "red-tide-baroque-pearl-bracelet",
+  "synced_at_unix": 1777896074,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "publication": {
+    "skipped": false,
+    "publication_id": "gid://shopify/Publication/303037448555",
+    "published": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14962061050219",
+    "handle": "red-tide-baroque-pearl-bracelet",
+    "title": "Red Tide Baroque Pearl Bracelet",
+    "status": "DRAFT",
+    "media": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47786013884779",
+          "alt": "Red Tide Baroque Pearl Bracelet front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786013917547",
+          "alt": "Red Tide Baroque Pearl Bracelet angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786013950315",
+          "alt": "Red Tide Baroque Pearl Bracelet side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786013983083",
+          "alt": "Red Tide Baroque Pearl Bracelet crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786014015851",
+          "alt": "Red Tide Baroque Pearl Bracelet shown in hand for scale",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786014048619",
+          "alt": "Red Tide Baroque Pearl Bracelet faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786014081387",
+          "alt": "Red Tide Baroque Pearl Bracelet lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786014114155",
+          "alt": "Red Tide Baroque Pearl Bracelet styled for daily wear, travel, meditation ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786014146923",
+          "alt": "Red Tide Baroque Pearl Bracelet packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        }
+      ]
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53156637999467",
+          "sku": "AC-RTBP-14.5CM",
+          "title": "14.5 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53156638032235",
+          "sku": "AC-RTBP-15CM",
+          "title": "15 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53156638065003",
+          "sku": "AC-RTBP-16CM",
+          "title": "16 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53156638097771",
+          "sku": "AC-RTBP-17CM",
+          "title": "17 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53156638130539",
+          "sku": "AC-RTBP-18CM",
+          "title": "18 cm"
+        }
+      ]
+    }
+  },
+  "staged_media": [
+    {
+      "local_path": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/01-hero-front.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/3cd93e86-4bed-42e6-9aaf-670aedb6cc0b/01-hero-front.png",
+      "alt": "Red Tide Baroque Pearl Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/02-three-quarter.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/8a136a68-371c-448d-b4b7-778c1385ff0b/02-three-quarter.png",
+      "alt": "Red Tide Baroque Pearl Bracelet angled three-quarter product view"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/03-side-or-back-detail.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/cb7e8de8-b157-4a69-a208-9b6cf11f2b10/03-side-or-back-detail.png",
+      "alt": "Red Tide Baroque Pearl Bracelet side or closure detail"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/04-macro-crystal.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/a50b38af-5db6-4414-b05c-1351f093629c/04-macro-crystal.png",
+      "alt": "Red Tide Baroque Pearl Bracelet crystal texture close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/05-scale-in-hand.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/0f7a4556-6a2b-4cf9-95c1-4a88b654ccb9/05-scale-in-hand.png",
+      "alt": "Red Tide Baroque Pearl Bracelet shown in hand for scale"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/06-faceless-wearing-closeup.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/f9bb3c00-69aa-4c7d-8518-cfb740d4c73e/06-faceless-wearing-closeup.png",
+      "alt": "Red Tide Baroque Pearl Bracelet faceless model close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/07-lifestyle-context.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/446c1c4c-5f57-4b87-9523-db98c427bfc7/07-lifestyle-context.png",
+      "alt": "Red Tide Baroque Pearl Bracelet lifestyle ritual context"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/08-ritual-still-life.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/827914c1-e08a-4bb7-a587-43d2fba116f0/08-ritual-still-life.png",
+      "alt": "Red Tide Baroque Pearl Bracelet styled for daily wear, travel, meditation ritual use"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/09-packaging-flatlay.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/cad5a0d8-5e68-4fdd-a995-abff247aa806/09-packaging-flatlay.png",
+      "alt": "Red Tide Baroque Pearl Bracelet packaging flat lay"
+    }
+  ],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ]
+}

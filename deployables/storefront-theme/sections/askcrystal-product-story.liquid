@@ -1,26 +1,19 @@
 {% liquid
-  assign selected_variant = product.selected_or_first_available_variant
-
-  assign ac_primary_intention = product.metafields.askcrystal.primary_intention.value
-  assign ac_secondary_intentions = product.metafields.askcrystal.secondary_intentions.value
-  assign ac_product_form = product.metafields.askcrystal.product_form.value
   assign ac_crystal_materials = product.metafields.askcrystal.crystal_materials.value
   assign ac_primary_material = ac_crystal_materials | first
-  assign ac_color_families = product.metafields.askcrystal.color_families.value
+  assign ac_material_images = product.media | where: 'media_type', 'image'
   assign ac_ritual_uses = product.metafields.askcrystal.ritual_uses.value
-  assign ac_gift_for = product.metafields.askcrystal.gift_for.value
   assign ac_archetype_name = product.metafields.askcrystal.archetype_name.value
   assign ac_story_headline = product.metafields.askcrystal.story_headline.value
   assign ac_story_summary = product.metafields.askcrystal.story_summary.value
   assign ac_ritual_title = product.metafields.askcrystal.ritual_title.value
   assign ac_ritual_steps = product.metafields.askcrystal.ritual_steps.value
-  assign ac_included_items = product.metafields.askcrystal.included_items.value
-  assign ac_quality_notes = product.metafields.askcrystal.quality_notes.value
   assign ac_pairing_notes = product.metafields.askcrystal.pairing_notes.value
   assign ac_safety_note = product.metafields.askcrystal.safety_note.value
   assign ac_artist = product.metafields.askcrystal.artist.value
   assign ac_artist_image = blank
   assign ac_artist_image_alt = blank
+
   if ac_artist != blank
     assign ac_artist_image = ac_artist.profile_image.value
     assign ac_artist_image_alt = ac_artist.profile_image_alt.value | default: ac_artist.name.value
@@ -30,76 +23,64 @@
     assign ac_safety_note = ac_primary_material.safety_note.value
   endif
 
-  assign why_heading = section.settings.why_heading
-  if ac_story_headline != blank
-    assign why_heading = ac_story_headline
-  endif
-
-  assign why_copy = ac_story_summary
-  if why_copy == blank
-    assign why_copy = product.description | strip_html | strip
-    if why_copy == blank
-      assign why_copy = section.settings.why_fallback
-    endif
-  endif
-
-  assign benefits = product.metafields.askcrystal.benefits.value
-  if benefits == blank
-    assign benefits = section.settings.benefits | newline_to_br | split: '<br />'
-  endif
-
-  assign care_steps = product.metafields.askcrystal.care_steps.value
-  if care_steps == blank and ac_primary_material != blank and ac_primary_material.care_notes.value != blank
-    assign care_steps = ac_primary_material.care_notes.value | newline_to_br | split: '<br />'
-  endif
-  if care_steps == blank
-    assign care_steps = section.settings.care_steps | newline_to_br | split: '<br />'
+  assign ac_benefits = product.metafields.askcrystal.benefits.value
+  assign ac_care_steps = product.metafields.askcrystal.care_steps.value
+  if ac_care_steps == blank and ac_primary_material != blank and ac_primary_material.care_notes.value != blank
+    assign ac_care_steps = ac_primary_material.care_notes.value | newline_to_br | split: '<br />'
   endif
 
   assign ac_energetic_properties = product.metafields.askcrystal.energetic_properties.value
-  if ac_energetic_properties != blank
-    assign property_text = ac_energetic_properties | join: ', '
-  elsif ac_primary_material != blank and ac_primary_material.short_meaning.value != blank
-    assign property_text = ac_primary_material.short_meaning.value
-  else
-    assign property_text = product.metafields.custom.energetic_properties.value | default: section.settings.property_text
-  endif
-
   assign ac_chakras = product.metafields.askcrystal.chakras.value
   if ac_chakras == blank and ac_primary_material != blank
     assign ac_chakras = ac_primary_material.chakras.value
-  endif
-  if ac_chakras != blank
-    assign chakra_text = ac_chakras | join: ', ' | replace: 'solar_plexus', 'solar plexus' | replace: 'third_eye', 'third eye'
-  else
-    assign chakra_text = product.metafields.custom.chakra.value | default: section.settings.chakra_text
   endif
 
   assign ac_zodiac_signs = product.metafields.askcrystal.zodiac_signs.value
   if ac_zodiac_signs == blank and ac_primary_material != blank
     assign ac_zodiac_signs = ac_primary_material.zodiac_signs.value
   endif
-  if ac_zodiac_signs != blank
-    assign zodiac_text = ac_zodiac_signs | join: ', '
-  else
-    assign zodiac_text = product.metafields.custom.zodiac.value | default: section.settings.zodiac_text
-  endif
 
   assign ac_western_elements = product.metafields.askcrystal.western_elements.value
   if ac_western_elements == blank and ac_primary_material != blank
     assign ac_western_elements = ac_primary_material.western_elements.value
   endif
-  assign ac_western_elements_text = ac_western_elements | join: ', '
 
   assign ac_five_elements = product.metafields.askcrystal.five_elements.value
   if ac_five_elements == blank and ac_primary_material != blank
     assign ac_five_elements = ac_primary_material.five_elements.value
   endif
-  assign ac_five_elements_text = ac_five_elements | join: ', '
 
-  assign ac_color_families_text = ac_color_families | join: ', '
-  assign ac_ritual_uses_text = ac_ritual_uses | join: ', '
-  assign ac_gift_for_text = ac_gift_for | join: ', '
+  capture ac_material_names
+    if ac_crystal_materials != blank
+      for material in ac_crystal_materials
+        assign material_name = material.name.value
+        if material_name == blank
+          assign material_name = material.system.handle | replace: '_', ' '
+        endif
+        echo material_name
+        unless forloop.last
+          echo ', '
+        endunless
+      endfor
+    endif
+  endcapture
+  assign ac_material_names = ac_material_names | strip
+
+  assign ac_ritual_uses_text = ac_ritual_uses | join: ', ' | replace: '_', ' '
+  assign ac_energetic_properties_text = ac_energetic_properties | join: ', ' | replace: '_', ' '
+  if ac_energetic_properties_text == blank and ac_primary_material != blank
+    assign ac_energetic_properties_text = ac_primary_material.short_meaning.value
+  endif
+  assign ac_chakras_text = ac_chakras | join: ', ' | replace: '_', ' '
+  assign ac_zodiac_signs_text = ac_zodiac_signs | join: ', ' | replace: '_', ' '
+  assign ac_western_elements_text = ac_western_elements | join: ', ' | replace: '_', ' '
+  assign ac_five_elements_text = ac_five_elements | join: ', ' | replace: '_', ' '
+
+  assign why_heading = ac_story_headline | default: 'Why this piece'
+  assign why_copy = ac_story_summary
+  if why_copy == blank
+    assign why_copy = product.description | strip_html | strip
+  endif
 
   assign bundle_collection = section.settings.bundle_collection
   if bundle_collection == blank and product.collections.first != blank
@@ -108,325 +89,478 @@
   if bundle_collection == blank
     assign bundle_collection = collections.all
   endif
+
+  assign ac_product_url = canonical_url
+  if ac_product_url == blank
+    assign ac_product_url = shop.url | append: product.url
+  endif
+
+  capture ac_fit_prompt
+    echo "I'm considering "
+    echo product.title
+    echo ". Is this piece suitable for me based on my current energy, and what should I know before buying it? Product link: "
+    echo ac_product_url
+  endcapture
+  assign ac_fit_prompt = ac_fit_prompt | strip
+
+  capture ac_energy_prompt
+    echo "I'm considering "
+    echo product.title
+    echo ". What energy does this support, and how should I work with it? Product link: "
+    echo ac_product_url
+  endcapture
+  assign ac_energy_prompt = ac_energy_prompt | strip
 %}
 
 <section class="askcrystal-product-story color-{{ section.settings.color_scheme }}" {{ section.shopify_attributes }}>
   <div class="askcrystal-product-story__inner">
-    <div class="askcrystal-product-story__group">
-      <section class="askcrystal-product-story__section" aria-labelledby="AskCrystalWhy-{{ section.id }}">
-        <div class="askcrystal-product-story__section-head">
-          <h2 id="AskCrystalWhy-{{ section.id }}"><span class="askcrystal-product-story__star">*</span> {{ why_heading }}</h2>
-        </div>
-        <p class="askcrystal-product-story__copy">{{ why_copy | truncatewords: 58 }}</p>
+    {% if why_copy != blank or ac_archetype_name != blank %}
+      <section class="askcrystal-product-story__card askcrystal-product-story__card--why" aria-labelledby="AskCrystalWhy-{{ section.id }}">
+        <p class="askcrystal-product-story__eyebrow">Why this piece</p>
+        {% if why_heading != blank %}
+          <h2 id="AskCrystalWhy-{{ section.id }}">{{ why_heading }}</h2>
+        {% endif %}
+        {% if why_copy != blank %}
+          <p class="askcrystal-product-story__lead">{{ why_copy }}</p>
+        {% endif %}
+        {% if ac_archetype_name != blank %}
+          <span class="askcrystal-product-story__archetype">Archetype: {{ ac_archetype_name }}</span>
+        {% endif %}
       </section>
+    {% endif %}
 
-      <section class="askcrystal-product-story__section" aria-labelledby="AskCrystalBenefits-{{ section.id }}">
-        <div class="askcrystal-product-story__section-head">
-          <h2 id="AskCrystalBenefits-{{ section.id }}">{{ section.settings.benefits_heading }}</h2>
-          <span class="askcrystal-product-story__chevron" aria-hidden="true">^</span>
-        </div>
-        <ul class="askcrystal-product-story__list">
-          {% for benefit in benefits %}
+    {% if ac_benefits != blank %}
+      <section class="askcrystal-product-story__card" aria-labelledby="AskCrystalBenefits-{{ section.id }}">
+        <p class="askcrystal-product-story__eyebrow">Key benefits</p>
+        <h2 id="AskCrystalBenefits-{{ section.id }}">What it supports</h2>
+        <ul class="askcrystal-product-story__benefits">
+          {% for benefit in ac_benefits %}
             {% assign benefit_text = benefit | strip %}
             {% if benefit_text != blank %}
-              <li>{{ benefit_text }}</li>
+              <li>
+                <span class="askcrystal-product-story__benefit-mark" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M12 3.2 17.9 6.5v11L12 20.8 6.1 17.5v-11L12 3.2Z"></path>
+                    <path d="M12 7.3v9.4"></path>
+                    <path d="M8.7 11.6h6.6"></path>
+                  </svg>
+                </span>
+                <span>{{ benefit_text }}</span>
+              </li>
             {% endif %}
           {% endfor %}
         </ul>
       </section>
+    {% endif %}
 
-      <section class="askcrystal-product-story__section" aria-labelledby="AskCrystalDetails-{{ section.id }}">
-        <div class="askcrystal-product-story__section-head">
-          <h2 id="AskCrystalDetails-{{ section.id }}">{{ section.settings.details_heading }}</h2>
-          <span class="askcrystal-product-story__chevron" aria-hidden="true">^</span>
+    {% if ac_energetic_properties_text != blank or ac_chakras_text != blank or ac_zodiac_signs_text != blank or ac_western_elements_text != blank or ac_five_elements_text != blank %}
+      <section class="askcrystal-product-story__card askcrystal-product-story__card--energy" aria-labelledby="AskCrystalEnergy-{{ section.id }}">
+        <div class="askcrystal-product-story__energy-heading">
+          <span class="askcrystal-product-story__energy-heading-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M12 4.2 19 8v8l-7 3.8L5 16V8l7-3.8Z"></path>
+              <path d="M12 7.5v9"></path>
+              <path d="M8 10.1c1.2 1.4 2.5 2.1 4 2.1s2.8-.7 4-2.1"></path>
+              <path d="M8 13.9c1.2-1.4 2.5-2.1 4-2.1s2.8.7 4 2.1"></path>
+            </svg>
+          </span>
+          <h2 id="AskCrystalEnergy-{{ section.id }}">Energy Profile</h2>
         </div>
-        <ul class="askcrystal-product-story__details-list">
-          {% if ac_crystal_materials != blank %}
-            <li>
-              <span>Material:</span>
-              {% for material in ac_crystal_materials %}
-                {% liquid
-                  assign material_name = material.name.value
-                  if material_name == blank
-                    assign material_name = material.system.handle
-                  endif
-                %}
-                {{ material_name }}{% unless forloop.last %}, {% endunless %}
-              {% endfor %}
-            </li>
+        <div class="askcrystal-product-story__energy-shell">
+          {% if ac_energetic_properties_text != blank %}
+            <article class="askcrystal-product-story__energy-signature">
+              <h3>Energetic properties</h3>
+              <ul class="askcrystal-product-story__energy-signature-list">
+                {% if ac_energetic_properties != blank %}
+                  {% for property in ac_energetic_properties %}
+                    {% assign property_text = property | strip | replace: '_', ' ' %}
+                    {% if property_text != blank %}
+                      <li>{{ property_text }}</li>
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+                  <li>{{ ac_energetic_properties_text }}</li>
+                {% endif %}
+              </ul>
+            </article>
           {% endif %}
-          {% if ac_primary_intention != blank %}
-            <li><span>Intention:</span> {{ ac_primary_intention | replace: '_', ' ' | capitalize }}</li>
-          {% endif %}
-          {% if ac_secondary_intentions != blank %}
-            <li><span>Supports:</span> {{ ac_secondary_intentions | join: ', ' | replace: '_', ' ' }}</li>
-          {% endif %}
-          {% if ac_product_form != blank %}
-            <li><span>Form:</span> {{ ac_product_form | replace: '_', ' ' | capitalize }}</li>
-          {% endif %}
-          {% if ac_color_families_text != blank %}
-            <li><span>Color family:</span> {{ ac_color_families_text | replace: '_', ' ' }}</li>
-          {% endif %}
-          {% if ac_archetype_name != blank %}
-            <li><span>Archetype:</span> {{ ac_archetype_name }}</li>
-          {% endif %}
-          {% if product.type != blank %}
-            <li><span>Type:</span> {{ product.type }}</li>
-          {% endif %}
-          {% if product.collections.first != blank %}
-            <li><span>Collection:</span> {{ product.collections.first.title }}</li>
-          {% endif %}
-          {% if selected_variant.sku != blank %}
-            <li><span>SKU:</span> {{ selected_variant.sku }}</li>
-          {% endif %}
-          <li><span>Piece:</span> Natural variations make each one unique.</li>
-          <li><span>Availability:</span> {% if selected_variant.available %}Ready to add to cart{% else %}Currently unavailable{% endif %}</li>
-        </ul>
-      </section>
 
-      <div class="askcrystal-product-story__policies" aria-label="Product policies">
-        <span class="askcrystal-product-story__policy"><span class="askcrystal-product-story__gold" aria-hidden="true">o</span> 30-Day Returns</span>
-        <span class="askcrystal-product-story__policy"><span class="askcrystal-product-story__gold" aria-hidden="true">o</span> Quality Checked</span>
-      </div>
-    </div>
-
-    <div class="askcrystal-product-story__group">
-      <section class="askcrystal-product-story__panel" aria-labelledby="AskCrystalTheDetails-{{ section.id }}">
-        <div class="askcrystal-product-story__panel-head">
-          <h2 id="AskCrystalTheDetails-{{ section.id }}">{{ section.settings.panel_heading }}</h2>
-          <span class="askcrystal-product-story__chevron" aria-hidden="true">^</span>
-        </div>
-        <p>{{ section.settings.panel_copy | replace: '[product]', product.title }}</p>
-        <ul class="askcrystal-product-story__panel-list">
-          <li>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M6 8c4 0 6 2 6 6-4 0-6-2-6-6ZM18 8c-4 0-6 2-6 6 4 0 6-2 6-6Z" /></svg>
-            <span>{{ section.settings.detail_point_1 }}</span>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 7 4v7c0 4-3 6-7 7-4-1-7-3-7-7V7l7-4Z" /><path d="m9 12 2 2 4-5" /></svg>
-            <span>{{ section.settings.detail_point_2 }}</span>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 7l8 15 8-15-8-5Z" /><path d="M4 7h16M8 7l4 15 4-15" /></svg>
-            <span>
-              {% if ac_pairing_notes != blank %}
-                {{ ac_pairing_notes }}
-              {% else %}
-                {{ section.settings.detail_point_3 }}
-              {% endif %}
-            </span>
-          </li>
-        </ul>
-      </section>
-
-      {% if ac_artist != blank %}
-        <section class="askcrystal-product-story__artist" aria-labelledby="AskCrystalArtist-{{ section.id }}">
-          <div class="askcrystal-product-story__artist-row">
-            {% if ac_artist_image != blank %}
-              <span class="askcrystal-product-story__artist-media">
-                {{
-                  ac_artist_image
-                  | image_url: width: 320
-                  | image_tag:
-                    widths: '96, 160, 240, 320',
-                    sizes: '(min-width: 750px) 96px, 80px',
-                    loading: 'lazy',
-                    alt: ac_artist_image_alt
-                }}
-              </span>
+          <div class="askcrystal-product-story__energy-rows">
+            {% if ac_chakras_text != blank %}
+              <article class="askcrystal-product-story__energy-row askcrystal-product-story__energy-row--chakras">
+                <span class="askcrystal-product-story__energy-emblem askcrystal-product-story__energy-emblem--chakra" aria-hidden="true">
+                  <svg viewBox="0 0 40 40" focusable="false">
+                    <path d="M20 5.5v29"></path>
+                    <path d="M5.5 20h29"></path>
+                    <path d="M9.8 9.8 30.2 30.2"></path>
+                    <path d="M30.2 9.8 9.8 30.2"></path>
+                    <circle cx="20" cy="20" r="10.2"></circle>
+                    <circle cx="20" cy="20" r="4.1"></circle>
+                  </svg>
+                </span>
+                <div class="askcrystal-product-story__energy-row-copy">
+                  <h3>Chakras</h3>
+                  <ul class="askcrystal-product-story__energy-values">
+                    {% if ac_chakras != blank %}
+                      {% for chakra in ac_chakras %}
+                        {% assign chakra_text = chakra | strip | replace: '_', ' ' %}
+                        {% if chakra_text != blank %}
+                          <li>{{ chakra_text }}</li>
+                        {% endif %}
+                      {% endfor %}
+                    {% else %}
+                      <li>{{ ac_chakras_text }}</li>
+                    {% endif %}
+                  </ul>
+                </div>
+              </article>
             {% endif %}
-            <span class="askcrystal-product-story__artist-copy">
-              {% if ac_artist.role_label.value != blank %}
-                <span class="askcrystal-product-story__artist-kicker">{{ ac_artist.role_label.value }}</span>
-              {% endif %}
-              <h2 id="AskCrystalArtist-{{ section.id }}">{{ ac_artist.name.value }}</h2>
-              {% if ac_artist.short_bio.value != blank %}
-                <span class="askcrystal-product-story__artist-bio">{{ ac_artist.short_bio.value }}</span>
-              {% endif %}
-            </span>
+
+            {% if ac_zodiac_signs_text != blank %}
+              <article class="askcrystal-product-story__energy-row askcrystal-product-story__energy-row--zodiac">
+                <span class="askcrystal-product-story__energy-emblem askcrystal-product-story__energy-emblem--zodiac" aria-hidden="true">
+                  <svg viewBox="0 0 40 40" focusable="false">
+                    <path d="M20 6.6 23.2 16.8 33.8 16.8 25.2 23 28.5 33.4 20 27 11.5 33.4 14.8 23 6.2 16.8 16.8 16.8 20 6.6Z"></path>
+                    <path d="M20 12.9v14.2"></path>
+                    <path d="M12.9 20h14.2"></path>
+                  </svg>
+                </span>
+                <div class="askcrystal-product-story__energy-row-copy">
+                  <h3>Zodiac signs</h3>
+                  <ul class="askcrystal-product-story__energy-values">
+                    {% if ac_zodiac_signs != blank %}
+                      {% for zodiac_sign in ac_zodiac_signs %}
+                        {% assign zodiac_text = zodiac_sign | strip | replace: '_', ' ' %}
+                        {% if zodiac_text != blank %}
+                          <li>{{ zodiac_text }}</li>
+                        {% endif %}
+                      {% endfor %}
+                    {% else %}
+                      <li>{{ ac_zodiac_signs_text }}</li>
+                    {% endif %}
+                  </ul>
+                </div>
+              </article>
+            {% endif %}
+
+            {% if ac_western_elements_text != blank %}
+              <article class="askcrystal-product-story__energy-row askcrystal-product-story__energy-row--western">
+                <span class="askcrystal-product-story__energy-emblem askcrystal-product-story__energy-emblem--western" aria-hidden="true">
+                  <svg viewBox="0 0 40 40" focusable="false">
+                    <path d="M20 6.5 31.7 13.3v13.4L20 33.5 8.3 26.7V13.3L20 6.5Z"></path>
+                    <path d="M20 6.5v27"></path>
+                    <path d="M8.3 13.3 20 20l11.7-6.7"></path>
+                    <path d="M8.3 26.7 20 20l11.7 6.7"></path>
+                  </svg>
+                </span>
+                <div class="askcrystal-product-story__energy-row-copy">
+                  <h3>Western element</h3>
+                  <ul class="askcrystal-product-story__energy-values">
+                    {% if ac_western_elements != blank %}
+                      {% for element in ac_western_elements %}
+                        {% assign element_text = element | strip | replace: '_', ' ' %}
+                        {% if element_text != blank %}
+                          <li>{{ element_text }}</li>
+                        {% endif %}
+                      {% endfor %}
+                    {% else %}
+                      <li>{{ ac_western_elements_text }}</li>
+                    {% endif %}
+                  </ul>
+                </div>
+              </article>
+            {% endif %}
+
+            {% if ac_five_elements_text != blank %}
+              <article class="askcrystal-product-story__energy-row askcrystal-product-story__energy-row--five">
+                <span class="askcrystal-product-story__energy-emblem askcrystal-product-story__energy-emblem--five" aria-hidden="true">
+                  <svg viewBox="0 0 40 40" focusable="false">
+                    <path d="M20 5.8 33.5 15.6 28.3 31.4H11.7L6.5 15.6 20 5.8Z"></path>
+                    <path d="M20 5.8v25.6"></path>
+                    <path d="M6.5 15.6h27"></path>
+                    <path d="M11.7 31.4 20 15.6l8.3 15.8"></path>
+                  </svg>
+                </span>
+                <div class="askcrystal-product-story__energy-row-copy">
+                  <h3>Five elements</h3>
+                  <ul class="askcrystal-product-story__energy-values">
+                    {% if ac_five_elements != blank %}
+                      {% for element in ac_five_elements %}
+                        {% assign element_text = element | strip | replace: '_', ' ' %}
+                        {% if element_text != blank %}
+                          <li>{{ element_text }}</li>
+                        {% endif %}
+                      {% endfor %}
+                    {% else %}
+                      <li>{{ ac_five_elements_text }}</li>
+                    {% endif %}
+                  </ul>
+                </div>
+              </article>
+            {% endif %}
           </div>
-          {% if ac_artist.artist_note.value != blank %}
-            <p>{{ ac_artist.artist_note.value }}</p>
-          {% endif %}
-        </section>
-      {% endif %}
-
-      {% if ac_ritual_title != blank or ac_ritual_steps != blank %}
-        <section class="askcrystal-product-story__section" aria-labelledby="AskCrystalRitual-{{ section.id }}">
-          <h2 id="AskCrystalRitual-{{ section.id }}">{{ ac_ritual_title | default: 'Simple ritual' }}</h2>
-          {% if ac_ritual_steps != blank %}
-            <ul class="askcrystal-product-story__list">
-              {% for step in ac_ritual_steps %}
-                {% assign ritual_step_text = step | strip %}
-                {% if ritual_step_text != blank %}
-                  <li>{{ ritual_step_text }}</li>
-                {% endif %}
-              {% endfor %}
-            </ul>
-          {% endif %}
-        </section>
-      {% endif %}
-
-      <section class="askcrystal-product-story__section" aria-labelledby="AskCrystalCare-{{ section.id }}">
-        <h2 id="AskCrystalCare-{{ section.id }}">{{ section.settings.care_heading }}</h2>
-        <p>{{ section.settings.care_intro }}</p>
-        <ul class="askcrystal-product-story__list">
-          {% for step in care_steps %}
-            {% assign step_text = step | strip %}
-            {% if step_text != blank %}
-              <li>{{ step_text }}</li>
-            {% endif %}
-          {% endfor %}
-        </ul>
+        </div>
       </section>
+    {% endif %}
 
-      <section class="askcrystal-product-story__included" aria-labelledby="AskCrystalIncluded-{{ section.id }}">
-        <div>
-          <p class="askcrystal-product-story__muted">{{ section.settings.included_kicker }}</p>
-          <h3 id="AskCrystalIncluded-{{ section.id }}">
-            {% if ac_included_items != blank %}
-              What's included
-            {% else %}
-              {{ section.settings.included_heading }}
+    {% if ac_material_names != blank or product.featured_media.preview_image != blank %}
+      <section class="askcrystal-product-story__card askcrystal-product-story__card--materials" aria-labelledby="AskCrystalMaterials-{{ section.id }}">
+        <p class="askcrystal-product-story__eyebrow" id="AskCrystalMaterials-{{ section.id }}">Materials</p>
+        <div class="askcrystal-product-story__materials-layout">
+          <div class="askcrystal-product-story__materials-copy">
+            {% if ac_crystal_materials != blank %}
+              <div class="askcrystal-product-story__material-list" aria-label="Crystal materials">
+                {% for material in ac_crystal_materials %}
+                  {% liquid
+                    assign material_name = material.name.value
+                    if material_name == blank
+                      assign material_name = material.system.handle | replace: '_', ' '
+                    endif
+                    assign material_meaning = material.short_meaning.value
+                  %}
+                  {% if material_name != blank %}
+                    <article class="askcrystal-product-story__material-item">
+                      <span class="askcrystal-product-story__material-index">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+                      <span class="askcrystal-product-story__material-copy">
+                        <strong>{{ material_name }}</strong>
+                        {% if material_meaning != blank %}
+                          <span>{{ material_meaning }}</span>
+                        {% endif %}
+                      </span>
+                    </article>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% elsif ac_material_names != blank %}
+              <div class="askcrystal-product-story__material-list" aria-label="Crystal materials">
+                <article class="askcrystal-product-story__material-item">
+                  <span class="askcrystal-product-story__material-index">01</span>
+                  <span class="askcrystal-product-story__material-copy">
+                    <strong>{{ ac_material_names }}</strong>
+                  </span>
+                </article>
+              </div>
             {% endif %}
-          </h3>
-          {% if ac_included_items != blank %}
-            <ul class="askcrystal-product-story__list askcrystal-product-story__included-list">
-              {% for item in ac_included_items %}
-                {% assign included_item_text = item | strip %}
-                {% if included_item_text != blank %}
-                  <li>{{ included_item_text }}</li>
-                {% endif %}
+          </div>
+
+          {% if ac_material_images != blank %}
+            <div class="askcrystal-product-story__material-gallery" role="list" aria-label="Material study images">
+              {% for media in ac_material_images limit: 6 %}
+                <figure class="askcrystal-product-story__material-study" role="listitem">
+                  {{
+                    media.preview_image
+                    | image_url: width: 720
+                    | image_tag:
+                      widths: '240, 360, 480, 640, 720',
+                      sizes: '(min-width: 750px) 10rem, 36vw',
+                      loading: 'lazy',
+                      alt: media.alt | default: product.title
+                  }}
+                </figure>
               {% endfor %}
-            </ul>
-          {% else %}
-            <p>{{ section.settings.included_copy }}</p>
+            </div>
           {% endif %}
         </div>
-        <span class="askcrystal-product-story__included-visual" aria-hidden="true"></span>
       </section>
+    {% endif %}
 
-      <section class="askcrystal-product-story__properties" aria-labelledby="AskCrystalProperties-{{ section.id }}">
-        <h2 id="AskCrystalProperties-{{ section.id }}">{{ section.settings.properties_heading }}</h2>
-        <div class="askcrystal-product-story__property-row">
-          <span class="askcrystal-product-story__property-label">Energetic properties</span>
-          <span class="askcrystal-product-story__property-value">{{ property_text }}</span>
-        </div>
-        <div class="askcrystal-product-story__property-row">
-          <span class="askcrystal-product-story__property-label">Associated chakra</span>
-          <span class="askcrystal-product-story__property-value">{{ chakra_text }}</span>
-          <span class="askcrystal-product-story__symbol-row" aria-hidden="true">
-            {% if ac_chakras != blank %}
-              {% for chakra in ac_chakras limit: 4 %}
-                {% liquid
-                  assign chakra_symbol = chakra | slice: 0, 2 | upcase
-                  case chakra
-                    when 'root'
-                      assign chakra_symbol = 'I'
-                    when 'sacral'
-                      assign chakra_symbol = 'II'
-                    when 'solar_plexus'
-                      assign chakra_symbol = 'III'
-                    when 'heart'
-                      assign chakra_symbol = 'IV'
-                    when 'throat'
-                      assign chakra_symbol = 'V'
-                    when 'third_eye'
-                      assign chakra_symbol = 'VI'
-                    when 'crown'
-                      assign chakra_symbol = 'VII'
-                  endcase
-                %}
-                <span class="askcrystal-product-story__symbol">{{ chakra_symbol }}</span>
-              {% endfor %}
-            {% else %}
-              <span class="askcrystal-product-story__symbol">VI</span>
-              <span class="askcrystal-product-story__symbol">VII</span>
+    {% if ac_artist != blank %}
+      <section class="askcrystal-product-story__card askcrystal-product-story__artist" aria-labelledby="AskCrystalArtist-{{ section.id }}">
+        <div class="askcrystal-product-story__artist-head">
+          {% if ac_artist_image != blank %}
+            <span class="askcrystal-product-story__artist-media">
+              {{
+                ac_artist_image
+                | image_url: width: 320
+                | image_tag:
+                  widths: '96, 160, 240, 320',
+                  sizes: '(min-width: 750px) 112px, 84px',
+                  loading: 'lazy',
+                  alt: ac_artist_image_alt
+              }}
+            </span>
+          {% endif %}
+          <span class="askcrystal-product-story__artist-copy">
+            <p class="askcrystal-product-story__eyebrow">Artist card</p>
+            <h2 id="AskCrystalArtist-{{ section.id }}">{{ ac_artist.name.value }}</h2>
+            {% if ac_artist.role_label.value != blank %}
+              <span class="askcrystal-product-story__artist-role">{{ ac_artist.role_label.value }}</span>
             {% endif %}
           </span>
         </div>
-        <div class="askcrystal-product-story__property-row">
-          <span class="askcrystal-product-story__property-label">Associated zodiac</span>
-          <span class="askcrystal-product-story__property-value">{{ zodiac_text }}</span>
-          <span class="askcrystal-product-story__symbol-row" aria-hidden="true">
-            {% if ac_zodiac_signs != blank %}
-              {% for sign in ac_zodiac_signs limit: 4 %}
-                <span class="askcrystal-product-story__symbol">{{ sign | slice: 0, 2 | capitalize }}</span>
-              {% endfor %}
-            {% else %}
-              <span class="askcrystal-product-story__symbol">Sc</span>
-              <span class="askcrystal-product-story__symbol">Sg</span>
-              <span class="askcrystal-product-story__symbol">Pi</span>
-            {% endif %}
-          </span>
-        </div>
-        {% if ac_western_elements_text != blank %}
-          <div class="askcrystal-product-story__property-row">
-            <span class="askcrystal-product-story__property-label">Western element</span>
-            <span class="askcrystal-product-story__property-value">{{ ac_western_elements_text | replace: '_', ' ' }}</span>
-          </div>
+        {% if ac_artist.short_bio.value != blank %}
+          <p>{{ ac_artist.short_bio.value }}</p>
         {% endif %}
-        {% if ac_five_elements_text != blank %}
-          <div class="askcrystal-product-story__property-row">
-            <span class="askcrystal-product-story__property-label">Five Element resonance</span>
-            <span class="askcrystal-product-story__property-value">{{ ac_five_elements_text | replace: '_', ' ' }}</span>
-          </div>
+        {% if ac_artist.artist_note.value != blank %}
+          <blockquote>{{ ac_artist.artist_note.value }}</blockquote>
+        {% endif %}
+      </section>
+    {% endif %}
+
+    <section class="askcrystal-product-story__card askcrystal-product-story__oracle" aria-labelledby="AskCrystalOracle-{{ section.id }}">
+      <span class="askcrystal-product-story__oracle-emblem" aria-hidden="true">
+        <svg viewBox="0 0 48 48" focusable="false">
+          <path d="M24 5.8 35.4 12.4v13.2L24 42.2 12.6 25.6V12.4L24 5.8Z"></path>
+          <path d="M24 12.2v23.6"></path>
+          <path d="M15.8 17.3 24 22.1l8.2-4.8"></path>
+          <path d="M15.8 25.3 24 30.1l8.2-4.8"></path>
+          <circle cx="24" cy="24" r="3.4"></circle>
+        </svg>
+      </span>
+      <div class="askcrystal-product-story__oracle-copy">
+        <p class="askcrystal-product-story__eyebrow">Ask Crystal</p>
+        <h2 id="AskCrystalOracle-{{ section.id }}">Still deciding?</h2>
+        <p>Bring this exact piece into the reading room and let AskCrystal help you read fit, timing, and energetic support.</p>
+      </div>
+      <div class="askcrystal-product-story__oracle-actions">
+        <a
+          class="askcrystal-product-story__oracle-action askcrystal-product-story__oracle-action--primary"
+          href="/pages/askcrystal"
+          data-askcrystal-product-prompt="{{ ac_fit_prompt | escape }}"
+        >
+          Ask if it suits me
+        </a>
+        <a
+          class="askcrystal-product-story__oracle-action"
+          href="/pages/askcrystal"
+          data-askcrystal-product-prompt="{{ ac_energy_prompt | escape }}"
+        >
+          Ask what it supports
+        </a>
+      </div>
+    </section>
+
+    {% if ac_ritual_title != blank or ac_ritual_steps != blank or ac_ritual_uses_text != blank %}
+      <section class="askcrystal-product-story__card" aria-labelledby="AskCrystalRitual-{{ section.id }}">
+        <p class="askcrystal-product-story__eyebrow">Simple ritual</p>
+        <h2 id="AskCrystalRitual-{{ section.id }}">{{ ac_ritual_title | default: 'A simple ritual' }}</h2>
+        {% if ac_ritual_steps != blank %}
+          <ol class="askcrystal-product-story__steps">
+            {% for step in ac_ritual_steps %}
+              {% assign step_text = step | strip %}
+              {% if step_text != blank %}
+                <li><span>{{ step_text }}</span></li>
+              {% endif %}
+            {% endfor %}
+          </ol>
         {% endif %}
         {% if ac_ritual_uses_text != blank %}
-          <div class="askcrystal-product-story__property-row">
-            <span class="askcrystal-product-story__property-label">Ritual use</span>
-            <span class="askcrystal-product-story__property-value">{{ ac_ritual_uses_text | replace: '_', ' ' }}</span>
-          </div>
-        {% endif %}
-        {% if ac_gift_for_text != blank %}
-          <div class="askcrystal-product-story__property-row">
-            <span class="askcrystal-product-story__property-label">Gift fit</span>
-            <span class="askcrystal-product-story__property-value">{{ ac_gift_for_text | replace: '_', ' ' }}</span>
+          <div class="askcrystal-product-story__uses">
+            <span>Best used for</span>
+            <strong>{{ ac_ritual_uses_text }}</strong>
           </div>
         {% endif %}
       </section>
+    {% endif %}
 
-      <section class="askcrystal-product-story__integrity" aria-labelledby="AskCrystalIntegrity-{{ section.id }}">
-        <h2 id="AskCrystalIntegrity-{{ section.id }}">{{ section.settings.integrity_heading }}</h2>
-        {% if ac_quality_notes != blank %}
-          <ul class="askcrystal-product-story__list askcrystal-product-story__quality-list">
-            {% for note in ac_quality_notes %}
-              {% assign quality_note_text = note | strip %}
-              {% if quality_note_text != blank %}
-                <li>{{ quality_note_text }}</li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p>{{ section.settings.integrity_copy }}</p>
-        {% endif %}
-        {% if ac_safety_note != blank %}
-          <p class="askcrystal-product-story__safety">{{ ac_safety_note }}</p>
-        {% endif %}
-        <div class="askcrystal-product-story__seals{% if ac_quality_notes != blank %} askcrystal-product-story__seals--notes{% endif %}" aria-hidden="true">
-          {% if ac_quality_notes != blank %}
-            {% for note in ac_quality_notes limit: 3 %}
-              <span class="askcrystal-product-story__seal">{{ note }}</span>
-            {% endfor %}
-          {% else %}
-            <span class="askcrystal-product-story__seal">Ethically<br>Sourced</span>
-            <span class="askcrystal-product-story__seal">Energy<br>Cleansed</span>
-            <span class="askcrystal-product-story__seal">Quality<br>Checked</span>
+    {% if ac_care_steps != blank or ac_safety_note != blank %}
+      <section class="askcrystal-product-story__card" aria-labelledby="AskCrystalCare-{{ section.id }}">
+        <p class="askcrystal-product-story__eyebrow">Care &amp; safety</p>
+        <h2 id="AskCrystalCare-{{ section.id }}">Keep the piece clear and protected</h2>
+        <div class="askcrystal-product-story__split">
+          {% if ac_care_steps != blank %}
+            <div>
+              <h3>Care steps</h3>
+              <ul class="askcrystal-product-story__list">
+                {% for step in ac_care_steps %}
+                  {% assign step_text = step | strip %}
+                  {% if step_text != blank %}
+                    <li>{{ step_text }}</li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+          {% if ac_safety_note != blank %}
+            <div>
+              <h3>Safety note</h3>
+              <p>{{ ac_safety_note }}</p>
+            </div>
           {% endif %}
         </div>
       </section>
+    {% endif %}
 
-      {% if bundle_collection != blank and bundle_collection.products_count > 0 %}
-        <section class="askcrystal-product-story__bundle" aria-labelledby="AskCrystalBundle-{{ section.id }}">
-          <h2 id="AskCrystalBundle-{{ section.id }}">{{ section.settings.bundle_heading }}</h2>
-          <div class="askcrystal-product-story__bundle-products" role="list">
+    <section class="askcrystal-product-story__card askcrystal-product-story__card--integrity" aria-labelledby="AskCrystalIntegrity-{{ section.id }}">
+      <div class="askcrystal-product-story__integrity-head">
+        <span class="askcrystal-product-story__integrity-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="M12 3.2 18.5 5.8v5.2c0 4.1-2.2 7.8-6.5 9.8C7.7 18.8 5.5 15.1 5.5 11V5.8L12 3.2Z"></path>
+            <path d="M12 8.6a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2Z"></path>
+          </svg>
+        </span>
+        <h2 id="AskCrystalIntegrity-{{ section.id }}">Trust / Integrity</h2>
+      </div>
+      <div class="askcrystal-product-story__integrity-grid">
+        <article class="askcrystal-product-story__integrity-item">
+          <span class="askcrystal-product-story__integrity-emblem" aria-hidden="true">
+            <svg viewBox="0 0 32 32" focusable="false">
+              <path d="M16 5.5c1.8 4.7 4.8 7.8 9.1 9.4-1.5 6.6-5 10.9-9.1 12.8-4.1-1.9-7.6-6.2-9.1-12.8C11.2 13.3 14.2 10.2 16 5.5Z"></path>
+              <path d="M16 12.2v10.1"></path>
+              <path d="M11.7 16.5c1.2 1.4 2.7 2.1 4.3 2.1 1.6 0 3.1-.7 4.3-2.1"></path>
+            </svg>
+          </span>
+          <div>
+            <h3>100% Natural Crystals</h3>
+            <p>Ethically sourced, high quality gemstones.</p>
+          </div>
+        </article>
+        <article class="askcrystal-product-story__integrity-item">
+          <span class="askcrystal-product-story__integrity-emblem" aria-hidden="true">
+            <svg viewBox="0 0 32 32" focusable="false">
+              <path d="M16 5.5c2.4 4 5.7 6.5 10 7.6-1.6 6.9-5 11.3-10 13.4-5-2.1-8.4-6.5-10-13.4 4.3-1.1 7.6-3.6 10-7.6Z"></path>
+              <path d="M16 11v11"></path>
+              <path d="M10.2 17.2h11.6"></path>
+            </svg>
+          </span>
+          <div>
+            <h3>Handmade with Care</h3>
+            <p>Thoughtfully designed and handcrafted.</p>
+          </div>
+        </article>
+        <article class="askcrystal-product-story__integrity-item">
+          <span class="askcrystal-product-story__integrity-emblem" aria-hidden="true">
+            <svg viewBox="0 0 32 32" focusable="false">
+              <path d="M16 25.4 7.5 17.1a5.4 5.4 0 0 1 0-7.7 5.5 5.5 0 0 1 7.8 0L16 10l.7-.6a5.5 5.5 0 0 1 7.8 0 5.4 5.4 0 0 1 0 7.7L16 25.4Z"></path>
+            </svg>
+          </span>
+          <div>
+            <h3>Heart-Centered Business</h3>
+            <p>We donate a portion of proceeds to crystal education.</p>
+          </div>
+        </article>
+        <article class="askcrystal-product-story__integrity-item">
+          <span class="askcrystal-product-story__integrity-emblem" aria-hidden="true">
+            <svg viewBox="0 0 32 32" focusable="false">
+              <path d="M10.2 14.3V11a5.8 5.8 0 0 1 11.6 0v3.3"></path>
+              <rect x="8.2" y="14.3" width="15.6" height="12.2" rx="2.2"></rect>
+              <path d="M16 18.3v4.3"></path>
+            </svg>
+          </span>
+          <div>
+            <h3>Secure &amp; Private</h3>
+            <p>Your data and privacy protected.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    {% if ac_pairing_notes != blank or bundle_collection != blank and bundle_collection.products_count > 1 %}
+      <section class="askcrystal-product-story__card askcrystal-product-story__card--pairing" aria-labelledby="AskCrystalPairing-{{ section.id }}">
+        <p class="askcrystal-product-story__eyebrow">Pairing / bundle prompt</p>
+        <h2 id="AskCrystalPairing-{{ section.id }}">Complete the ritual</h2>
+        {% if ac_pairing_notes != blank %}
+          <p class="askcrystal-product-story__lead">{{ ac_pairing_notes }}</p>
+        {% endif %}
+        {% if bundle_collection != blank and bundle_collection.products_count > 1 %}
+          <div class="askcrystal-product-story__bundle-products" role="list" aria-label="Related products">
             {% assign bundle_count = 0 %}
             {% for bundle_product in bundle_collection.products limit: 8 %}
               {% if bundle_product.id == product.id %}
                 {% continue %}
               {% endif %}
               {% assign bundle_count = bundle_count | plus: 1 %}
-              {% if bundle_count > 3 %}
+              {% if bundle_count > 4 %}
                 {% break %}
               {% endif %}
               <a class="askcrystal-product-story__bundle-card" href="{{ bundle_product.url }}" role="listitem" aria-label="{{ bundle_product.title | escape }}">
@@ -434,10 +568,10 @@
                   {% if bundle_product.featured_media.preview_image != blank %}
                     {{
                       bundle_product.featured_media.preview_image
-                      | image_url: width: 320
+                      | image_url: width: 360
                       | image_tag:
-                        widths: '160, 240, 320',
-                        sizes: '132px',
+                        widths: '180, 260, 360',
+                        sizes: '138px',
                         loading: 'lazy',
                         alt: bundle_product.title
                     }}
@@ -450,71 +584,39 @@
               </a>
             {% endfor %}
           </div>
-        </section>
-      {% endif %}
-    </div>
-
-    <div class="askcrystal-product-story__group">
-      <section class="askcrystal-product-story__reviews" id="shopify-product-reviews" aria-labelledby="AskCrystalReviews-{{ section.id }}">
-        <div class="askcrystal-product-story__panel-head">
-          <h2 id="AskCrystalReviews-{{ section.id }}">{{ section.settings.reviews_heading }}</h2>
-          <span class="askcrystal-product-story__chevron" aria-hidden="true">^</span>
-        </div>
-        <div class="askcrystal-product-story__rating">
-          <span class="askcrystal-product-story__rating-score">{{ section.settings.review_score }}</span>
-          <span class="askcrystal-product-story__rating-meta">
-            <span class="askcrystal-product-story__stars" aria-label="Five star rating">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-            <span>({{ section.settings.review_count }} reviews)</span>
-          </span>
-        </div>
-        <article class="askcrystal-product-story__review">
-          <strong>{{ section.settings.review_title_1 }}</strong>
-          <span class="askcrystal-product-story__stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-          <p>{{ section.settings.review_copy_1 }}</p>
-          <span class="askcrystal-product-story__review-author">{{ section.settings.review_author_1 }}</span>
-        </article>
-        <article class="askcrystal-product-story__review">
-          <strong>{{ section.settings.review_title_2 }}</strong>
-          <span class="askcrystal-product-story__stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-          <p>{{ section.settings.review_copy_2 }}</p>
-          <span class="askcrystal-product-story__review-author">{{ section.settings.review_author_2 }}</span>
-        </article>
-        <a class="askcrystal-product-story__outline-button" href="#shopify-product-reviews">{{ section.settings.reviews_button_label }}</a>
-      </section>
-
-      <section class="askcrystal-product-story__confidence" aria-labelledby="AskCrystalConfidence-{{ section.id }}">
-        <h2 id="AskCrystalConfidence-{{ section.id }}">{{ section.settings.confidence_heading }}</h2>
-        <ul class="askcrystal-product-story__confidence-list">
-          <li>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 7 4v6c0 4-3 7-7 8-4-1-7-4-7-8V7l7-4Z" /><path d="m9 12 2 2 4-5" /></svg>
-            <span><strong>Secure checkout</strong><p>Your payment is protected.</p></span>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Z" /><path d="M3 7v10l9 4 9-4V7M12 11v10" /></svg>
-            <span><strong>Insured shipping</strong><p>Careful packing for delicate pieces.</p></span>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2-5.3" /><path d="M4 4v5h5" /></svg>
-            <span><strong>Easy returns</strong><p>Love it or return it hassle-free.</p></span>
-          </li>
-        </ul>
-      </section>
-
-      <section class="askcrystal-product-story__help" aria-labelledby="AskCrystalHelp-{{ section.id }}">
-        <div class="askcrystal-product-story__help-row">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.3A8.5 8.5 0 1 1 21 11.5Z" /><path d="M8 11h.01M12 11h.01M16 11h.01" /></svg>
-          <span>
-            <strong>{{ section.settings.help_heading }}</strong>
-            <p>{{ section.settings.help_copy }}</p>
-          </span>
-        </div>
-        {% if section.settings.help_link != blank %}
-          <a class="askcrystal-product-story__outline-button" href="{{ section.settings.help_link }}">{{ section.settings.help_button_label }}</a>
         {% endif %}
       </section>
-    </div>
+    {% endif %}
   </div>
 </section>
+
+<script>
+  (() => {
+    const pendingPromptKey = 'askcrystal-theme-pending-prompt-v1';
+
+    document.addEventListener('click', (event) => {
+      const trigger = event.target.closest('[data-askcrystal-product-prompt]');
+      if (!trigger) return;
+
+      const prompt = trigger.getAttribute('data-askcrystal-product-prompt') || '';
+      const targetUrl = trigger.getAttribute('href') || '/pages/askcrystal';
+      if (!prompt.trim()) return;
+
+      event.preventDefault();
+
+      try {
+        window.sessionStorage.setItem(pendingPromptKey, JSON.stringify({
+          prompt: prompt.trim(),
+          createdAt: Date.now(),
+        }));
+      } catch (error) {
+        // If storage is unavailable, the reading room still opens normally.
+      }
+
+      window.location.assign(targetUrl);
+    });
+  })();
+</script>
 
 {% schema %}
 {
@@ -527,242 +629,9 @@
       "default": "scheme-1"
     },
     {
-      "type": "text",
-      "id": "why_heading",
-      "label": "Why heading",
-      "default": "Why this piece?"
-    },
-    {
-      "type": "textarea",
-      "id": "why_fallback",
-      "label": "Why fallback copy",
-      "default": "Selected for its visual presence, everyday wearability, and steady ritual energy. Let this piece become a small anchor for your intention."
-    },
-    {
-      "type": "text",
-      "id": "benefits_heading",
-      "label": "Benefits heading",
-      "default": "Key benefits"
-    },
-    {
-      "type": "textarea",
-      "id": "benefits",
-      "label": "Benefits",
-      "default": "Supports mindful intention setting\nAdds a refined crystal accent to daily rituals\nMakes a thoughtful gift for a new chapter\nPairs easily with meditation, journaling, or breathwork"
-    },
-    {
-      "type": "text",
-      "id": "details_heading",
-      "label": "Details heading",
-      "default": "Details"
-    },
-    {
-      "type": "text",
-      "id": "panel_heading",
-      "label": "Panel heading",
-      "default": "The details"
-    },
-    {
-      "type": "textarea",
-      "id": "panel_copy",
-      "label": "Panel copy",
-      "default": "Each [product] is naturally unique. Subtle shifts in tone, texture, and flash are part of the stone's character."
-    },
-    {
-      "type": "text",
-      "id": "detail_point_1",
-      "label": "Detail point 1",
-      "default": "Hand-selected with intention"
-    },
-    {
-      "type": "text",
-      "id": "detail_point_2",
-      "label": "Detail point 2",
-      "default": "Natural stones, never synthetic"
-    },
-    {
-      "type": "text",
-      "id": "detail_point_3",
-      "label": "Detail point 3",
-      "default": "Small batch and quality inspected"
-    },
-    {
-      "type": "text",
-      "id": "care_heading",
-      "label": "Care heading",
-      "default": "Care instructions"
-    },
-    {
-      "type": "textarea",
-      "id": "care_intro",
-      "label": "Care intro",
-      "default": "To keep your piece beautiful and energetically clear:"
-    },
-    {
-      "type": "textarea",
-      "id": "care_steps",
-      "label": "Care steps",
-      "default": "Avoid prolonged exposure to water and harsh chemicals\nCleanse regularly with smoke, sound, or selenite\nStore in a soft pouch when not in use"
-    },
-    {
-      "type": "text",
-      "id": "included_kicker",
-      "label": "Included kicker",
-      "default": "This piece comes with a"
-    },
-    {
-      "type": "text",
-      "id": "included_heading",
-      "label": "Included heading",
-      "default": "Silk pouch and care card"
-    },
-    {
-      "type": "textarea",
-      "id": "included_copy",
-      "label": "Included copy",
-      "default": "Thoughtful packaging for you or a loved one."
-    },
-    {
-      "type": "text",
-      "id": "properties_heading",
-      "label": "Properties heading",
-      "default": "Energetic properties"
-    },
-    {
-      "type": "text",
-      "id": "property_text",
-      "label": "Property text",
-      "default": "Protection, intuition, transformation, awareness, clarity"
-    },
-    {
-      "type": "text",
-      "id": "chakra_text",
-      "label": "Chakra text",
-      "default": "Third Eye and Crown"
-    },
-    {
-      "type": "text",
-      "id": "zodiac_text",
-      "label": "Zodiac text",
-      "default": "Scorpio, Sagittarius, Pisces"
-    },
-    {
-      "type": "text",
-      "id": "integrity_heading",
-      "label": "Integrity heading",
-      "default": "Hand-selected for energetic integrity"
-    },
-    {
-      "type": "textarea",
-      "id": "integrity_copy",
-      "label": "Integrity copy",
-      "default": "Our team selects each piece for beauty, resonance, and authenticity, then prepares it for your ritual practice."
-    },
-    {
       "type": "collection",
       "id": "bundle_collection",
-      "label": "Frequently bought together collection"
-    },
-    {
-      "type": "text",
-      "id": "bundle_heading",
-      "label": "Bundle heading",
-      "default": "Frequently bought together"
-    },
-    {
-      "type": "text",
-      "id": "reviews_heading",
-      "label": "Reviews heading",
-      "default": "What others say"
-    },
-    {
-      "type": "text",
-      "id": "review_score",
-      "label": "Review score",
-      "default": "New"
-    },
-    {
-      "type": "text",
-      "id": "review_count",
-      "label": "Review count",
-      "default": "0"
-    },
-    {
-      "type": "text",
-      "id": "review_title_1",
-      "label": "Review title 1",
-      "default": "Review widget placeholder"
-    },
-    {
-      "type": "textarea",
-      "id": "review_copy_1",
-      "label": "Review copy 1",
-      "default": "Customer reviews will appear here once the dynamic review widget is connected."
-    },
-    {
-      "type": "text",
-      "id": "review_author_1",
-      "label": "Review author 1",
-      "default": "- AskCrystal"
-    },
-    {
-      "type": "text",
-      "id": "review_title_2",
-      "label": "Review title 2",
-      "default": "Ready for social proof"
-    },
-    {
-      "type": "textarea",
-      "id": "review_copy_2",
-      "label": "Review copy 2",
-      "default": "This panel keeps the page composition close to the design without showing fabricated reviews."
-    },
-    {
-      "type": "text",
-      "id": "review_author_2",
-      "label": "Review author 2",
-      "default": "- Coming soon"
-    },
-    {
-      "type": "text",
-      "id": "reviews_button_label",
-      "label": "Reviews button label",
-      "default": "View all reviews"
-    },
-    {
-      "type": "text",
-      "id": "confidence_heading",
-      "label": "Confidence heading",
-      "default": "Shop with confidence"
-    },
-    {
-      "type": "text",
-      "id": "help_heading",
-      "label": "Help heading",
-      "default": "We're here for you"
-    },
-    {
-      "type": "textarea",
-      "id": "help_copy",
-      "label": "Help copy",
-      "default": "Have a question? Ask Crystal for guidance."
-    },
-    {
-      "type": "url",
-      "id": "help_link",
-      "label": "Help link",
-      "default": "/"
-    },
-    {
-      "type": "text",
-      "id": "help_button_label",
-      "label": "Help button label",
-      "default": "Ask Crystal"
-    }
-  ],
-  "presets": [
-    {
-      "name": "AskCrystal product story"
+      "label": "Pairing collection"
     }
   ]
 }

@@ -1179,11 +1179,11 @@ function buildThinkingTheme({ statusStage = '', statusTool = '', statusText = ''
 
   if (/shopify|catalog|product|variant|collection|cart|storefront|inventory|shelf/.test(context)) {
     return [
-      'Walking the crystal shelves for a close match...',
+      'Browsing the crystal edit for a close match...',
       'Comparing a few pieces against your question...',
       'Checking which crystal pieces answer most clearly...',
       'Looking for a match that feels chosen, not generic...',
-      'Following the pull toward the clearest shelf match...',
+      'Following the pull toward the clearest piece...',
     ];
   }
 
@@ -1242,7 +1242,7 @@ function buildThinkingTheme({ statusStage = '', statusTool = '', statusText = ''
       'The pattern is surfacing...',
       'Gathering the clearest strand before I speak...',
       'Letting the reading take its proper shape...',
-      'Joining symbol, shelf, and guidance...',
+      'Joining symbol, selection, and guidance...',
       'Settling into plain language...',
     ];
   }
@@ -1556,7 +1556,7 @@ function getProgressExpectation(elapsedMs) {
   }
 
   if (elapsedMs >= 30000) {
-    return 'Detailed chart work can need a fuller minute to cross-check timing, symbols, and shelf.';
+    return 'Detailed chart work can need a fuller minute to cross-check timing, symbols, and selection.';
   }
 
   if (elapsedMs >= 12000) {
@@ -2684,10 +2684,17 @@ function createAssistantMessage({
   statusHistory = [],
   ambientStatusText = '',
   statusElapsedMs = null,
+  continuationStatusText = '',
+  continuationStatusStage = '',
+  continuationStatusTool = '',
+  continuationStatusHistory = [],
+  continuationProgressEntries = [],
   thoughts = [],
   userPrompt = '',
 }) {
   const statusHistoryText = parseStatusHistory(statusHistory).join('\n');
+  const continuationStatusHistoryText = parseStatusHistory(continuationStatusHistory).join('\n');
+  const normalizedContinuationProgressEntries = normalizeMaskedProgressEntries(continuationProgressEntries);
   const normalizedStatusElapsedMs = Number(statusElapsedMs);
   const normalizedThoughts = normalizeDifyThoughtList(thoughts);
   const maskedProgressEntries = buildMaskedProgressEntries(
@@ -2715,6 +2722,11 @@ function createAssistantMessage({
         ...(ambientStatusText ? { ambientStatusText } : {}),
         ...(Number.isFinite(normalizedStatusElapsedMs) ? { statusElapsedMs: Math.max(0, normalizedStatusElapsedMs) } : {}),
         ...(maskedProgressEntries.length ? { difyProgressEntries: maskedProgressEntries } : {}),
+        ...(continuationStatusText ? { continuationStatusText } : {}),
+        ...(continuationStatusStage ? { continuationStatusStage } : {}),
+        ...(continuationStatusTool ? { continuationStatusTool } : {}),
+        ...(continuationStatusHistoryText ? { continuationStatusHistoryText } : {}),
+        ...(normalizedContinuationProgressEntries.length ? { continuationProgressEntries: normalizedContinuationProgressEntries } : {}),
         ...(userPrompt ? { userPrompt } : {}),
       },
     },
@@ -2841,6 +2853,53 @@ function appendStatusHistory(history, nextStatus) {
   const dedupedHistory = existingHistory.filter(entry => entry !== normalizedMessage);
   dedupedHistory.push(normalizedMessage);
   return dedupedHistory.slice(-4);
+}
+
+function appendContinuationStatusHistory(history, nextLabel) {
+  const normalizedLabel = typeof nextLabel === 'string' ? nextLabel.trim() : '';
+  const existingHistory = parseStatusHistory(history);
+
+  if (!normalizedLabel) return existingHistory;
+
+  if (existingHistory[existingHistory.length - 1] === normalizedLabel) {
+    return existingHistory;
+  }
+
+  const dedupedHistory = existingHistory.filter(entry => entry !== normalizedLabel);
+  dedupedHistory.push(normalizedLabel);
+  return dedupedHistory.slice(-3);
+}
+
+function getSafeContinuationStatusLabel(status) {
+  const normalizedStatus = normalizeStatusPayload(status);
+  const context = [
+    normalizedStatus.stage,
+    normalizedStatus.tool,
+    normalizedStatus.message,
+  ].filter(Boolean).join(' ');
+
+  if (!context.trim()) return '';
+
+  const maskedToolLabel = getMaskedToolProgressLabel(normalizedStatus.tool, context);
+
+  if (maskedToolLabel) return maskedToolLabel;
+
+  if (normalizedStatus.stage === 'compose') {
+    return 'Bringing the guidance back into focus...';
+  }
+
+  if (normalizedStatus.stage === 'recover') {
+    return 'Reconnecting to your reading...';
+  }
+
+  const rawMessage = normalizedStatus.message.trim();
+  const looksInternal = looksLikeReactTrace(rawMessage) || looksLikeInternalReasoningParagraph(rawMessage);
+
+  if (rawMessage && !looksInternal) {
+    return rawMessage;
+  }
+
+  return 'The reading is still moving...';
 }
 
 function createCancelledAssistantMessage({ id, text = '', components = [], thoughts = [] }) {
@@ -3269,6 +3328,15 @@ function useAskCrystalRuntime(config) {
                 : [];
               const currentComponents = existingComponents;
               const hasVisibleAnswer = Boolean(currentText.trim() || currentComponents.length);
+              const continuationLabel = hasVisibleAnswer
+                ? getSafeContinuationStatusLabel(normalizedStatus)
+                : '';
+              const continuationHistory = hasVisibleAnswer
+                ? appendContinuationStatusHistory(
+                    message.metadata?.custom?.continuationStatusHistoryText,
+                    continuationLabel,
+                  )
+                : [];
 
               return createAssistantMessage({
                 id: assistantId,
@@ -3293,6 +3361,10 @@ function useAskCrystalRuntime(config) {
                     ? (message.metadata?.custom?.ambientStatusText || 'Settling into your energy...')
                     : normalizedStatus.message,
                 statusElapsedMs: hasVisibleAnswer ? null : normalizedStatus.elapsedMs,
+                continuationStatusText: continuationLabel,
+                continuationStatusStage: hasVisibleAnswer ? normalizedStatus.stage : '',
+                continuationStatusTool: hasVisibleAnswer ? normalizedStatus.tool : '',
+                continuationStatusHistory: continuationHistory,
                 userPrompt: message.metadata?.custom?.userPrompt || '',
               });
             });
@@ -3310,6 +3382,20 @@ function useAskCrystalRuntime(config) {
                 : [];
               const currentComponents = existingComponents;
               const currentText = extractTextFromParts(message.content || message.parts || []) || streamedAnswer;
+              const hasVisibleAnswer = Boolean(currentText.trim() || currentComponents.length);
+              const thoughtProgressEntries = buildMaskedProgressEntries([thoughtPayload], true);
+              const latestThoughtProgress = thoughtProgressEntries.find(entry => entry.isCurrent)
+                || thoughtProgressEntries[thoughtProgressEntries.length - 1]
+                || null;
+              const continuationLabel = hasVisibleAnswer
+                ? latestThoughtProgress?.label || ''
+                : '';
+              const continuationHistory = hasVisibleAnswer
+                ? appendContinuationStatusHistory(
+                    message.metadata?.custom?.continuationStatusHistoryText,
+                    continuationLabel,
+                  )
+                : [];
 
               return createAssistantMessage({
                 id: assistantId,
@@ -3326,6 +3412,11 @@ function useAskCrystalRuntime(config) {
                 statusStage: '',
                 statusTool: '',
                 statusHistory: [],
+                continuationStatusText: continuationLabel,
+                continuationStatusStage: continuationLabel ? 'tool' : '',
+                continuationStatusTool: latestThoughtProgress?.id || '',
+                continuationStatusHistory: continuationHistory,
+                continuationProgressEntries: thoughtProgressEntries,
                 userPrompt: message.metadata?.custom?.userPrompt || '',
               });
             });
@@ -3548,11 +3639,102 @@ function ProductCard({ product }) {
         )}
       </div>
       <div className="ac-homepage__product-copy">
-        <p className="ac-homepage__product-meta">{product.badge || 'Bestseller'}</p>
+        <p className="ac-homepage__product-meta">{product.badge || 'AskCrystal edit'}</p>
         <h3>{product.title}</h3>
-        <span className="ac-homepage__product-link">View product</span>
+        {product.summary ? <p className="ac-homepage__product-summary">{product.summary}</p> : null}
+        {product.price ? <p className="ac-homepage__product-price">{product.price}</p> : null}
+        <span className="ac-homepage__product-link">View the piece</span>
       </div>
     </a>
+  );
+}
+
+function CatalogPreviewCard({ catalog }) {
+  const displayTitle = String(catalog.title || '').trim().toLowerCase() === 'products'
+    ? 'Curated crystal collection'
+    : catalog.title || 'Curated crystal collection';
+
+  return (
+    <a className="ac-homepage__catalog-card" href={catalog.url} role="listitem">
+      <div className="ac-homepage__catalog-card-media">
+        {catalog.image ? (
+          <img src={catalog.image} alt={displayTitle} loading="lazy" />
+        ) : (
+          <div className="ac-homepage__catalog-card-placeholder">Collection</div>
+        )}
+      </div>
+      <div className="ac-homepage__catalog-card-copy">
+        <p className="ac-homepage__catalog-card-meta">
+          {catalog.count ? `${catalog.count} artist-selected pieces` : 'Artist-selected collection'}
+        </p>
+        <h3>{displayTitle}</h3>
+        {catalog.description ? <p>{catalog.description}</p> : null}
+      </div>
+      <div className="ac-homepage__catalog-card-products" aria-label={`${displayTitle} preview products`}>
+        {(catalog.previewProducts || []).map((product) => (
+          <span className="ac-homepage__catalog-card-product" key={product.id}>
+            {product.image ? (
+              <img src={product.image} alt={product.title} loading="lazy" />
+            ) : (
+              <span className="ac-homepage__catalog-card-product-placeholder" aria-hidden="true">✦</span>
+            )}
+          </span>
+        ))}
+      </div>
+      <span className="ac-homepage__catalog-card-link">View collection</span>
+    </a>
+  );
+}
+
+function QuickCatalogs({ config }) {
+  const quickCatalogs = Array.isArray(config.quickCatalogs) ? config.quickCatalogs.slice(0, 4) : EMPTY_ARRAY;
+  if (!quickCatalogs.length) return null;
+
+  return (
+    <section className="ac-homepage__catalog-band" aria-labelledby="ac-homepage-quick-catalogs-title">
+      <div className="ac-homepage__guide-shelf-header">
+        <div>
+          <p className="ac-homepage__shelf-kicker">Collections</p>
+          <h2 id="ac-homepage-quick-catalogs-title">{config.quickCatalogsHeading || 'Curated collections'}</h2>
+        </div>
+        {config.quickCatalogsBrowseLabel ? (
+          <a className="ac-homepage__browse-link" href={config.browseUrl || '/collections'}>
+            {config.quickCatalogsBrowseLabel}
+          </a>
+        ) : null}
+      </div>
+
+      {config.quickCatalogsDescription ? <p className="ac-homepage__catalog-band-note">{config.quickCatalogsDescription}</p> : null}
+
+      <div className="ac-homepage__catalog-rail" role="list" aria-label={config.quickCatalogsHeading || 'Curated collections'}>
+        {quickCatalogs.map((catalog, index) => (
+          <CatalogPreviewCard key={`${catalog.id || catalog.url || 'catalog'}-${index}`} catalog={catalog} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FeaturedArtistCard() {
+  return (
+    <aside className="ac-homepage__artist-card" aria-labelledby="ac-homepage-featured-artist-title">
+      <div className="ac-homepage__artist-media">
+        <img
+          src="https://cdn.shopify.com/s/files/1/0981/4786/0843/files/askcrystal-artist-daniel-moreau-profile.png?v=1777688900"
+          alt="Black and white portrait of Daniel Moreau"
+          loading="lazy"
+        />
+      </div>
+      <div className="ac-homepage__artist-copy">
+        <p className="ac-homepage__shelf-kicker">Featured artist</p>
+        <h2 id="ac-homepage-featured-artist-title">Daniel Moreau</h2>
+        <p className="ac-homepage__artist-role">AskCrystal Studio Designer</p>
+        <p>
+          Daniel approaches crystal objects through proportion and utility, giving grounding pieces a quiet architectural presence.
+        </p>
+        <a className="ac-homepage__artist-link" href="/collections/best-sellers">Explore his edit</a>
+      </div>
+    </aside>
   );
 }
 
@@ -3562,9 +3744,11 @@ function WelcomeShelf({ config }) {
       <div className="ac-homepage__guide-shelf-header">
         <div>
           <p className="ac-homepage__shelf-kicker">Best sellers</p>
-          <h2>{config.shelfHeading}</h2>
+          <h2>{config.shelfHeading || 'Best sellers'}</h2>
         </div>
       </div>
+
+      {config.shelfNote ? <p className="ac-homepage__shelf-note">{config.shelfNote}</p> : null}
 
       {config.products.length ? (
         <div className="ac-homepage__product-carousel" role="list" aria-label="Featured store products">
@@ -3574,7 +3758,7 @@ function WelcomeShelf({ config }) {
         </div>
       ) : (
         <div className="ac-homepage__empty-shelf">
-          Add a featured collection in the section settings to populate the welcome shelf.
+          Add a best sellers collection in the section settings to populate this edit.
         </div>
       )}
     </div>
@@ -3705,7 +3889,7 @@ function WelcomeState({ config }) {
       title: 'Today’s zodiac weather',
       description: 'Get daily sign guidance, timing notes, and crystal support.',
       cta: 'Read today',
-      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_2.png?v=1777105421',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/horosope.webp?v=1777770463',
       prompt: 'Give me today\'s horoscope guidance. Ask for my zodiac sign if you need it.',
     },
     {
@@ -3715,7 +3899,7 @@ function WelcomeState({ config }) {
       title: 'Enter the reading room',
       description: 'Open a blank conversation and start with anything when you are ready.',
       cta: 'Open chat',
-      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_3.png?v=1777105421',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/open_chat.webp?v=1777770463',
       href: getChatPageUrl(config),
     },
     {
@@ -3725,7 +3909,7 @@ function WelcomeState({ config }) {
       title: 'Four Pillars birth chart',
       description: 'Read elemental balance, timing, and life patterns from birth details.',
       cta: 'Start Bazi',
-      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_1.png?v=1777105421',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/bazi.webp?v=1777770463',
       prompt: 'I want a Bazi Four Pillars reading. Ask me for the birth details you need.',
     },
     {
@@ -3735,7 +3919,7 @@ function WelcomeState({ config }) {
       title: 'Space energy audit',
       description: 'Read a room layout for flow, blocked areas, and practical placement shifts.',
       cta: 'Audit my room',
-      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_5.png?v=1777105421',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/fengshui.webp?v=1777770463',
       prompt: 'Audit the feng shui of my room. Ask me for the room layout details you need.',
     },
     {
@@ -3745,7 +3929,7 @@ function WelcomeState({ config }) {
       title: 'Shushu number profile',
       description: 'Use birth numbers for personality themes, cycles, and current emphasis.',
       cta: 'Read numbers',
-      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_1.png?v=1777105421',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/numerology.webp?v=1777770463',
       prompt: 'Create a Shushu numerology profile. Ask me for the birth date if you need it.',
     },
     {
@@ -3755,7 +3939,7 @@ function WelcomeState({ config }) {
       title: 'Choose the right reading',
       description: 'Describe the situation and AskCrystal will choose the cleanest divination path.',
       cta: 'Help me choose',
-      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_2.png?v=1777105421',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/choose_reading.webp?v=1777770463',
       prompt: 'Help me choose the right reading method for my situation.',
     },
     {
@@ -3765,7 +3949,7 @@ function WelcomeState({ config }) {
       title: 'Find one shop piece',
       description: 'Turn a feeling, intention, or reading into a grounded jewelry recommendation.',
       cta: 'Match me',
-      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_4.png?v=1777105421',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/crystal_match.webp?v=1777770463',
       prompt: 'Recommend one crystal jewelry piece from the shop for my current need.',
     },
     {
@@ -3775,7 +3959,7 @@ function WelcomeState({ config }) {
       title: 'Browse by intention',
       description: 'Calm, protection, love, focus, abundance, sleep, or grounding.',
       cta: 'Shop intent',
-      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_5.png?v=1777105421',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/shop_intent.webp?v=1777770463',
       prompt: 'Help me shop crystals by intention. Ask me which intention I want to focus on.',
     },
     {
@@ -3785,7 +3969,7 @@ function WelcomeState({ config }) {
       title: 'Crystal care practice',
       description: 'Learn a simple way to cleanse, charge, wear, or place a stone.',
       cta: 'Create ritual',
-      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_1.png?v=1777105421',
+      emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/ritual.webp?v=1777770463',
       prompt: 'Teach me a simple crystal care ritual for a stone I own.',
     },
   ];
@@ -3796,7 +3980,7 @@ function WelcomeState({ config }) {
     title: 'Product, policy, and cart questions',
     description: 'Ask about a product, compare options, or check shop guidance.',
     cta: 'Ask store',
-    emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/emblem_2.png?v=1777105421',
+    emblemUrl: 'https://cdn.shopify.com/s/files/1/0981/4786/0843/files/policy.webp?v=1777770463',
     prompt: 'I have a store or product question. Help me find the answer.',
   };
 
@@ -3832,6 +4016,8 @@ function WelcomeState({ config }) {
           {guidedCards.map(card => (
             <WelcomeGuideCard key={card.id} card={card} />
           ))}
+          <QuickCatalogs config={config} />
+          <FeaturedArtistCard />
           <WelcomeShelf config={config} />
           <WelcomeGuideCard card={storeHelpCard} />
         </div>
@@ -4062,7 +4248,7 @@ function getMaskedThoughtProgressLabel(thought, index = 0) {
 
   const normalizedContext = normalizeProgressSearchText(context);
   if (/search|look up|find|catalog|product|shop|store|inventory/.test(normalizedContext)) {
-    return 'Checking the crystal shelf...';
+    return 'Checking the crystal edit...';
   }
   if (/chart|zodiac|horoscope|planet|bazi|tarot|feng|numerology|relationship|compatib/.test(normalizedContext)) {
     return 'Reading the pattern...';
@@ -4144,6 +4330,47 @@ function DifyPendingLine({ statusText = '' }) {
   );
 }
 
+function ContinuationProgressSignal({
+  statusText = '',
+  statusHistoryText = '',
+  statusStage = '',
+  statusTool = '',
+  progressEntries = [],
+}) {
+  const normalizedEntries = useMemo(
+    () => normalizeMaskedProgressEntries(progressEntries),
+    [progressEntries],
+  );
+  const latestEntry = normalizedEntries.find(entry => entry.isCurrent)
+    || normalizedEntries[normalizedEntries.length - 1]
+    || null;
+  const history = parseStatusHistory(statusHistoryText);
+  const latestHistoryLine = history[history.length - 1] || '';
+  const displayLine = statusText || latestEntry?.label || latestHistoryLine || 'The reading is still moving...';
+  const normalizedContext = normalizeProgressSearchText(`${statusStage} ${statusTool} ${displayLine}`);
+  const signalKind = /shopify|catalog|product|crystal|cart|store|shelf|match/.test(normalizedContext)
+    ? 'shop'
+    : /horoscope|zodiac|bazi|tarot|feng|yinyuan|numerology|shushu|reading|chart|pattern/.test(normalizedContext)
+      ? 'reading'
+      : 'general';
+
+  return (
+    <div
+      className={`ac-continuation-signal ac-continuation-signal--${signalKind}`}
+      role="status"
+      aria-live="polite"
+    >
+      <span className="ac-continuation-signal__glyph" aria-hidden="true">
+        <span />
+      </span>
+      <span className="ac-continuation-signal__copy">
+        <span className="ac-continuation-signal__eyebrow">Signal still moving</span>
+        <span className="ac-continuation-signal__line">{displayLine}</span>
+      </span>
+    </div>
+  );
+}
+
 function DifyProgressStream({ entries = [] }) {
   const progressEntries = normalizeMaskedProgressEntries(entries);
   if (!progressEntries.length) return null;
@@ -4194,12 +4421,24 @@ function AssistantMessage() {
   const ambientStatusText = useMessage((message) => message.metadata?.custom?.ambientStatusText || '');
   const statusElapsedMs = useMessage((message) => message.metadata?.custom?.statusElapsedMs || 0);
   const rawProgressEntries = useMessage((message) => message.metadata?.custom?.difyProgressEntries);
+  const continuationStatusText = useMessage((message) => message.metadata?.custom?.continuationStatusText || '');
+  const continuationStatusStage = useMessage((message) => message.metadata?.custom?.continuationStatusStage || '');
+  const continuationStatusTool = useMessage((message) => message.metadata?.custom?.continuationStatusTool || '');
+  const continuationStatusHistoryText = useMessage((message) => message.metadata?.custom?.continuationStatusHistoryText || '');
+  const rawContinuationProgressEntries = useMessage((message) => message.metadata?.custom?.continuationProgressEntries);
   const userPrompt = useMessage((message) => message.metadata?.custom?.userPrompt || '');
   const difyProgressEntries = useMemo(() => normalizeMaskedProgressEntries(rawProgressEntries), [rawProgressEntries]);
+  const continuationProgressEntries = useMemo(
+    () => normalizeMaskedProgressEntries(rawContinuationProgressEntries),
+    [rawContinuationProgressEntries],
+  );
   const hasProgress = difyProgressEntries.length > 0;
   const isThinking = isRunning && !assistantText && !hasToolParts && !hasProgress;
   const hasAssistantContent = Boolean(assistantText) || hasToolParts;
   const shouldShowProgress = isRunning && !hasAssistantContent;
+  const shouldShowContinuationProgress = isRunning
+    && hasAssistantContent
+    && Boolean(continuationStatusText || continuationStatusHistoryText || continuationProgressEntries.length);
   const latestDifyProgress = difyProgressEntries.find(entry => entry.isCurrent) || difyProgressEntries[difyProgressEntries.length - 1] || null;
   const progressHistoryText = statusHistoryText || difyProgressEntries.map(entry => entry.label).join('\n');
   const progressStatusText = statusText || latestDifyProgress?.label || '';
@@ -4315,6 +4554,15 @@ function AssistantMessage() {
                 ...askCrystalMessagePartComponents,
               }}
             />
+            {shouldShowContinuationProgress ? (
+              <ContinuationProgressSignal
+                statusText={continuationStatusText}
+                statusHistoryText={continuationStatusHistoryText}
+                statusStage={continuationStatusStage}
+                statusTool={continuationStatusTool}
+                progressEntries={continuationProgressEntries}
+              />
+            ) : null}
           </div>
         ) : isThinking && !shouldShowProgress ? (
           <DifyPendingLine statusText={statusText} />

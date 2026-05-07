@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "handle": "red-tide-baroque-pearl-bracelet",
+  "workflow_status": "human_reviewed",
+  "shopify_status": "draft",
+  "title": "Red Tide Baroque Pearl Bracelet",
+  "description": "A bracelet with a warmer pulse: red agate forms, black tourmaline chips, smoky quartz spacers, and baroque pearl gathered into a composition that feels tactile, grounded, and quietly expressive.\n\nThe contrast is the point. Glossy black stones give the bracelet weight, red agate brings a deep ember tone, and the irregular baroque pearl softens the whole piece so it feels personal rather than severe. It is a bracelet for days when you want jewelry to carry presence without becoming loud.\n\nCurated for the AskCrystal artist edit by Rafael Ortega, this piece leans into movement, contrast, and small flashes of brightness. Wear it as a steadying daily anchor, a confidence ritual, or a meaningful gift for someone entering a new season with more fire than certainty.",
+  "vendor": "AskCrystal",
+  "product_type": "Bracelet",
+  "tags": [
+    "source:rmb",
+    "source:screenshot-2026-05-04-164708",
+    "test-import"
+  ],
+  "collections": [],
+  "options": [
+    {
+      "name": "Size",
+      "values": [
+        "14.5 cm",
+        "15 cm",
+        "16 cm",
+        "17 cm",
+        "18 cm"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "AC-RTBP-14.5CM",
+      "price": "241.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "14.5 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-RTBP-15CM",
+      "price": "241.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "15 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-RTBP-16CM",
+      "price": "241.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "16 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-RTBP-17CM",
+      "price": "247.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "17 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-RTBP-18CM",
+      "price": "247.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "18 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/01-hero-front.png",
+      "alt": "Red Tide Baroque Pearl Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/02-three-quarter.png",
+      "alt": "Red Tide Baroque Pearl Bracelet angled three-quarter product view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/03-side-or-back-detail.png",
+      "alt": "Red Tide Baroque Pearl Bracelet side or closure detail"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/04-macro-crystal.png",
+      "alt": "Red Tide Baroque Pearl Bracelet crystal texture close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/05-scale-in-hand.png",
+      "alt": "Red Tide Baroque Pearl Bracelet shown in hand for scale"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/06-faceless-wearing-closeup.png",
+      "alt": "Red Tide Baroque Pearl Bracelet faceless model close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/07-lifestyle-context.png",
+      "alt": "Red Tide Baroque Pearl Bracelet lifestyle ritual context"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/08-ritual-still-life.png",
+      "alt": "Red Tide Baroque Pearl Bracelet styled for daily wear, travel, meditation ritual use"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/red-tide-baroque-pearl-bracelet/09-packaging-flatlay.png",
+      "alt": "Red Tide Baroque Pearl Bracelet packaging flat lay"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "confidence",
+    "secondary_intentions": [
+      "grounding",
+      "protection"
+    ],
+    "product_form": "bracelet",
+    "crystal_material_handles": [
+      "agate",
+      "baroque_pearl",
+      "black_tourmaline",
+      "smoky_quartz",
+      "sterling_silver"
+    ],
+    "artist_handle": "rafael-ortega",
+    "chakras": [
+      "root",
+      "solar_plexus",
+      "heart"
+    ],
+    "color_families": [
+      "black",
+      "gold",
+      "white"
+    ],
+    "ritual_uses": [
+      "daily_wear",
+      "travel",
+      "meditation"
+    ],
+    "gift_for": [
+      "friend",
+      "birthday",
+      "new_beginning"
+    ],
+    "western_elements": [
+      "earth",
+      "fire",
+      "water"
+    ],
+    "five_elements": [
+      "earth",
+      "fire",
+      "water",
+      "metal"
+    ],
+    "zodiac_signs": [
+      "leo",
+      "capricorn",
+      "scorpio"
+    ],
+    "energetic_properties": [
+      "grounded confidence",
+      "warm protection",
+      "expressive steadiness"
+    ],
+    "archetype_name": "The Ember Current",
+    "story_headline": "A warm contrast bracelet for grounded confidence",
+    "story_summary": "This bracelet brings red agate, black tourmaline, smoky quartz, baroque pearl, and silver spacer details into a bold but wearable ritual piece for confidence, grounding, and expressive daily wear.",
+    "benefits": [
+      "Keeps a tactile confidence reminder close to the wrist",
+      "Pairs grounding black stones with warmer red agate tones",
+      "Softens contrast with an irregular baroque pearl focal note",
+      "Works as a premium gift for fresh starts, birthdays, or personal momentum"
+    ],
+    "ritual_title": "Ember Grounding Ritual",
+    "ritual_steps": [
+      "Fasten the bracelet and let the red stones face outward on the wrist.",
+      "Take three grounded breaths while touching one black stone for steadiness.",
+      "Name one action you can take today with calm confidence rather than urgency."
+    ],
+    "care_steps": [
+      "Wipe gently with a soft dry cloth after wear.",
+      "Keep pearls and silver away from perfume, harsh cleaners, and prolonged soaking.",
+      "Store separately from harder jewelry to protect the pearl surface and polished stones.",
+      "Refresh with sound, selenite, or soft moonlight when the ritual feels complete."
+    ],
+    "included_items": [
+      "Red agate, black tourmaline, smoky quartz, baroque pearl, and silver-detail bracelet",
+      "Protective gift-ready packaging"
+    ],
+    "quality_notes": [
+      "Supplier sheet lists sizes 14.5 cm, 15 cm, 16 cm, 17 cm, and 18 cm",
+      "Supplier sheet lists 9-10 mm baroque pearl, red Persian agate irregular forms, black tourmaline chips, smoky quartz abacus spacers, sterling silver spacers, Thai silver-style round spacer beads, spotted stone chips, and a small engravable silver charm plate",
+      "Natural variation in baroque pearl shape, red agate pattern, and spotted stone inclusions is expected",
+      "Local catalog pricing converted from CNY source cost into USD and rounded upward to premium .99 pricing"
+    ],
+    "pairing_notes": "Pair with tiger's eye for stronger confidence work, clear quartz for focus, or rose quartz when the boldness needs a softer emotional edge.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice. Remove before swimming, showering, or strenuous activity if the bracelet feels delicate or tight.",
+    "agent_summary": "Recommend this bracelet for users asking for grounded confidence, bold warm-toned jewelry, protective daily wear, premium birthday gifting, or contrast-rich bracelet styling with pearl softness.",
+    "agent_tags": [
+      "agate",
+      "baroque_pearl",
+      "birthday",
+      "black",
+      "black_tourmaline",
+      "bracelet",
+      "capricorn",
+      "confidence",
+      "daily_wear",
+      "friend",
+      "gold",
+      "grounding",
+      "heart",
+      "leo",
+      "meditation",
+      "new_beginning",
+      "premium",
+      "protection",
+      "rafael_ortega",
+      "root",
+      "scorpio",
+      "smoky_quartz",
+      "solar_plexus",
+      "sterling_silver",
+      "travel",
+      "white"
+    ],
+    "data_status": "human_reviewed"
+  }
+}

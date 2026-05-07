@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "product_handle": "solar-thread-citrine-pearl-necklace",
+  "synced_at_unix": 1778038756,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "publication": {
+    "skipped": false,
+    "publication_id": "gid://shopify/Publication/303037448555",
+    "published": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14965634761067",
+    "handle": "solar-thread-citrine-pearl-necklace",
+    "title": "Solar Thread Citrine Pearl Necklace",
+    "status": "ACTIVE",
+    "media": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47794362220907",
+          "alt": "Solar Thread Citrine Pearl Necklace front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794362253675",
+          "alt": "Solar Thread Citrine Pearl Necklace angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794362286443",
+          "alt": "Solar Thread Citrine Pearl Necklace side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794362319211",
+          "alt": "Solar Thread Citrine Pearl Necklace crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794362384747",
+          "alt": "Solar Thread Citrine Pearl Necklace faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794362417515",
+          "alt": "Solar Thread Citrine Pearl Necklace lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794362450283",
+          "alt": "Solar Thread Citrine Pearl Necklace styled for daily wear, manifestation, work desk ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794362483051",
+          "alt": "Solar Thread Citrine Pearl Necklace packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        }
+      ]
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53175651598699",
+          "sku": "AC-STCPN-51CM",
+          "title": "51 cm"
+        }
+      ]
+    }
+  },
+  "staged_media": [],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ],
+  "deleted_media": [
+    {
+      "id": "gid://shopify/MediaImage/47794362351979",
+      "alt": "Solar Thread Citrine Pearl Necklace shown in hand for scale"
+    }
+  ]
+}

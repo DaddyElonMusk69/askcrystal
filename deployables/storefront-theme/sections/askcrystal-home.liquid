@@ -1,10 +1,86 @@
 {% liquid
   assign featured_collection = section.settings.featured_collection
   assign shelf_collection = featured_collection
+  assign quick_collection_1 = section.settings.quick_collection_1
+  assign quick_collection_2 = section.settings.quick_collection_2
+  assign quick_collection_3 = section.settings.quick_collection_3
+  assign quick_collection_4 = section.settings.quick_collection_4
   assign browse_url = section.settings.browse_url
+
+  if shelf_collection == blank and collections['best-sellers'] != blank
+    assign shelf_collection = collections['best-sellers']
+  endif
 
   if shelf_collection == blank
     assign shelf_collection = collections.all
+  endif
+
+  if quick_collection_1 == blank and collections['best-sellers'] != blank
+    assign quick_collection_1 = collections['best-sellers']
+  endif
+
+  if quick_collection_1 == blank
+    assign quick_collection_1 = collections.all
+  endif
+
+  if quick_collection_2 == blank and collections['bracelets'] != blank
+    assign quick_collection_2 = collections['bracelets']
+  endif
+
+  if quick_collection_2 == blank and collections['necklaces'] != blank
+    assign quick_collection_2 = collections['necklaces']
+  endif
+
+  if quick_collection_2 == blank
+    assign quick_collection_2 = collections.all
+  endif
+
+  if quick_collection_3 == blank and collections['necklaces'] != blank
+    assign quick_collection_3 = collections['necklaces']
+  endif
+
+  if quick_collection_3 == blank and collections['calm-crystals'] != blank
+    assign quick_collection_3 = collections['calm-crystals']
+  endif
+
+  if quick_collection_3 == blank
+    assign quick_collection_3 = collections.all
+  endif
+
+  if quick_collection_4 == blank and collections['calm-crystals'] != blank
+    assign quick_collection_4 = collections['calm-crystals']
+  endif
+
+  if quick_collection_4 == blank and collections['abundance-crystals'] != blank
+    assign quick_collection_4 = collections['abundance-crystals']
+  endif
+
+  if quick_collection_4 == blank and collections['clear-quartz-crystals'] != blank
+    assign quick_collection_4 = collections['clear-quartz-crystals']
+  endif
+
+  if quick_collection_4 == blank
+    assign quick_collection_4 = collections.all
+  endif
+
+  assign quick_collection_1_image = quick_collection_1.featured_image
+  if quick_collection_1_image == blank and quick_collection_1.products.first != blank
+    assign quick_collection_1_image = quick_collection_1.products.first.featured_media.preview_image
+  endif
+
+  assign quick_collection_2_image = quick_collection_2.featured_image
+  if quick_collection_2_image == blank and quick_collection_2.products.first != blank
+    assign quick_collection_2_image = quick_collection_2.products.first.featured_media.preview_image
+  endif
+
+  assign quick_collection_3_image = quick_collection_3.featured_image
+  if quick_collection_3_image == blank and quick_collection_3.products.first != blank
+    assign quick_collection_3_image = quick_collection_3.products.first.featured_media.preview_image
+  endif
+
+  assign quick_collection_4_image = quick_collection_4.featured_image
+  if quick_collection_4_image == blank and quick_collection_4.products.first != blank
+    assign quick_collection_4_image = quick_collection_4.products.first.featured_media.preview_image
   endif
 
   if browse_url == blank
@@ -13,11 +89,18 @@
 %}
 
 {% capture products_json %}
-[
+[ 
   {% if shelf_collection != blank %}
     {% for product in shelf_collection.products limit: section.settings.product_limit %}
       {% liquid
         assign product_image = product.featured_media.preview_image | default: product.featured_image
+        assign product_artist = product.metafields.askcrystal.artist.value
+        assign product_story_summary = product.metafields.askcrystal.story_summary.value
+        assign product_badge = 'AskCrystal edit'
+
+        if product_artist != blank and product_artist.name.value != blank
+          assign product_badge = product_artist.name.value | append: ' edit'
+        endif
       %}
       {
         "id": {{ product.id | json }},
@@ -25,8 +108,84 @@
         "url": {{ product.url | json }},
         "image": {% if product_image != blank %}{{ product_image | image_url: width: 960 | json }}{% else %}null{% endif %},
         "price": {{ product.price | money_without_trailing_zeros | json }},
-        "badge": {{ product.type | default: product.vendor | default: 'Featured Crystal' | json }},
-        "summary": {{ product.description | strip_html | replace: '"', '' | strip | truncatewords: 16 | json }}
+        "badge": {{ product_badge | json }},
+        "summary": {{ product_story_summary | default: product.description | strip_html | replace: '"', '' | strip | truncatewords: 18 | json }}
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  {% endif %}
+]
+{% endcapture %}
+
+{% capture quick_collection_3_products_json %}
+[
+  {% if quick_collection_3 != blank %}
+    {% for product in quick_collection_3.products limit: 3 %}
+      {% liquid
+        assign quick_product_image = product.featured_media.preview_image | default: product.featured_image
+      %}
+      {
+        "id": {{ product.id | json }},
+        "title": {{ product.title | json }},
+        "url": {{ product.url | json }},
+        "image": {% if quick_product_image != blank %}{{ quick_product_image | image_url: width: 560 | json }}{% else %}null{% endif %},
+        "price": {{ product.price | money_without_trailing_zeros | json }}
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  {% endif %}
+]
+{% endcapture %}
+
+{% capture quick_collection_4_products_json %}
+[
+  {% if quick_collection_4 != blank %}
+    {% for product in quick_collection_4.products limit: 3 %}
+      {% liquid
+        assign quick_product_image = product.featured_media.preview_image | default: product.featured_image
+      %}
+      {
+        "id": {{ product.id | json }},
+        "title": {{ product.title | json }},
+        "url": {{ product.url | json }},
+        "image": {% if quick_product_image != blank %}{{ quick_product_image | image_url: width: 560 | json }}{% else %}null{% endif %},
+        "price": {{ product.price | money_without_trailing_zeros | json }}
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  {% endif %}
+]
+{% endcapture %}
+
+{% capture quick_collection_1_products_json %}
+[
+  {% if quick_collection_1 != blank %}
+    {% for product in quick_collection_1.products limit: 3 %}
+      {% liquid
+        assign quick_product_image = product.featured_media.preview_image | default: product.featured_image
+      %}
+      {
+        "id": {{ product.id | json }},
+        "title": {{ product.title | json }},
+        "url": {{ product.url | json }},
+        "image": {% if quick_product_image != blank %}{{ quick_product_image | image_url: width: 560 | json }}{% else %}null{% endif %},
+        "price": {{ product.price | money_without_trailing_zeros | json }}
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  {% endif %}
+]
+{% endcapture %}
+
+{% capture quick_collection_2_products_json %}
+[
+  {% if quick_collection_2 != blank %}
+    {% for product in quick_collection_2.products limit: 3 %}
+      {% liquid
+        assign quick_product_image = product.featured_media.preview_image | default: product.featured_image
+      %}
+      {
+        "id": {{ product.id | json }},
+        "title": {{ product.title | json }},
+        "url": {{ product.url | json }},
+        "image": {% if quick_product_image != blank %}{{ quick_product_image | image_url: width: 560 | json }}{% else %}null{% endif %},
+        "price": {{ product.price | money_without_trailing_zeros | json }}
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
   {% endif %}
@@ -65,7 +224,49 @@
       "description": {{ section.settings.description | json }},
       "note": {{ section.settings.note | json }},
       "shelfHeading": {{ section.settings.shelf_heading | json }},
+      "shelfNote": {{ section.settings.shelf_note | json }},
       "browseUrl": {{ browse_url | json }},
+      "quickCatalogsHeading": {{ section.settings.quick_catalogs_heading | json }},
+      "quickCatalogsDescription": {{ section.settings.quick_catalogs_description | json }},
+      "quickCatalogsBrowseLabel": {{ section.settings.quick_catalogs_browse_label | json }},
+      "quickCatalogs": [
+        {
+          "id": {{ quick_collection_1.id | json }},
+          "title": {{ quick_collection_1.title | json }},
+          "url": {{ quick_collection_1.url | json }},
+          "description": {{ quick_collection_1.description | strip_html | replace: '"', '' | strip | truncatewords: 18 | json }},
+          "count": {{ quick_collection_1.products_count | json }},
+          "image": {% if quick_collection_1_image != blank %}{{ quick_collection_1_image | image_url: width: 720 | json }}{% else %}null{% endif %},
+          "previewProducts": {{ quick_collection_1_products_json | strip }}
+        },
+        {
+          "id": {{ quick_collection_2.id | json }},
+          "title": {{ quick_collection_2.title | json }},
+          "url": {{ quick_collection_2.url | json }},
+          "description": {{ quick_collection_2.description | strip_html | replace: '"', '' | strip | truncatewords: 18 | json }},
+          "count": {{ quick_collection_2.products_count | json }},
+          "image": {% if quick_collection_2_image != blank %}{{ quick_collection_2_image | image_url: width: 720 | json }}{% else %}null{% endif %},
+          "previewProducts": {{ quick_collection_2_products_json | strip }}
+        },
+        {
+          "id": {{ quick_collection_3.id | json }},
+          "title": {{ quick_collection_3.title | json }},
+          "url": {{ quick_collection_3.url | json }},
+          "description": {{ quick_collection_3.description | strip_html | replace: '"', '' | strip | truncatewords: 18 | json }},
+          "count": {{ quick_collection_3.products_count | json }},
+          "image": {% if quick_collection_3_image != blank %}{{ quick_collection_3_image | image_url: width: 720 | json }}{% else %}null{% endif %},
+          "previewProducts": {{ quick_collection_3_products_json | strip }}
+        },
+        {
+          "id": {{ quick_collection_4.id | json }},
+          "title": {{ quick_collection_4.title | json }},
+          "url": {{ quick_collection_4.url | json }},
+          "description": {{ quick_collection_4.description | strip_html | replace: '"', '' | strip | truncatewords: 18 | json }},
+          "count": {{ quick_collection_4.products_count | json }},
+          "image": {% if quick_collection_4_image != blank %}{{ quick_collection_4_image | image_url: width: 720 | json }}{% else %}null{% endif %},
+          "previewProducts": {{ quick_collection_4_products_json | strip }}
+        }
+      ],
       "suggestions": [
         {{ section.settings.suggestion_1 | json }},
         {{ section.settings.suggestion_2 | json }},
@@ -138,24 +339,68 @@
       "type": "textarea",
       "id": "description",
       "label": "Description",
-      "default": "A guided crystal boutique with a resident spiritual companion. Begin with a feeling, a question, or a life situation, and let the storefront respond with care and curation."
+      "default": "A guided crystal boutique with readings, artist-curated collections, and distinctive pieces selected for material character, ritual use, and personal resonance."
     },
     {
       "type": "textarea",
       "id": "note",
       "label": "Guide note",
-      "default": "This scaffold keeps the store visible from the first screen. The guide can listen first, recommend later, and eventually hand off to richer catalog and ritual surfaces."
+      "default": "Start with a reading, browse curated collections, or explore best sellers selected from the AskCrystal artist edit."
     },
     {
       "type": "text",
       "id": "shelf_heading",
-      "label": "Shelf heading",
-      "default": "Start with the shelf"
+      "label": "Best sellers heading",
+      "default": "Best sellers"
+    },
+    {
+      "type": "textarea",
+      "id": "shelf_note",
+      "label": "Best sellers note",
+      "default": "Customer favorites from the AskCrystal artist edit, chosen for distinctive materials, wearable ritual use, and a point of view you will only find here."
+    },
+    {
+      "type": "text",
+      "id": "quick_catalogs_heading",
+      "label": "Collections heading",
+      "default": "Curated collections"
+    },
+    {
+      "type": "textarea",
+      "id": "quick_catalogs_description",
+      "label": "Collections description",
+      "default": "Browse by form, intention, or material direction. Each collection gathers pieces selected for a sharper point of view than a standard product grid."
+    },
+    {
+      "type": "text",
+      "id": "quick_catalogs_browse_label",
+      "label": "Collections browse label",
+      "default": "View all collections"
     },
     {
       "type": "collection",
       "id": "featured_collection",
       "label": "Featured collection"
+    },
+    {
+      "type": "collection",
+      "id": "quick_collection_1",
+      "label": "Collection card 1"
+    },
+    {
+      "type": "collection",
+      "id": "quick_collection_2",
+      "label": "Collection card 2"
+    },
+    {
+      "type": "collection",
+      "id": "quick_collection_3",
+      "label": "Collection card 3"
+    },
+    {
+      "type": "collection",
+      "id": "quick_collection_4",
+      "label": "Collection card 4"
     },
     {
       "type": "range",

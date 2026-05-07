@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "handle": "amber-drift-agate-pearl-bracelet",
+  "workflow_status": "human_reviewed",
+  "shopify_status": "draft",
+  "title": "Amber Drift Agate Pearl Bracelet",
+  "description": "A bracelet with warmth built into the rhythm: faceted amber-toned agate, irregular baroque pearls, and sterling silver details arranged in a silhouette that feels personal, luminous, and easy to keep close.\n\nThe contrast here is softer than dramatic. The warm agate brings a steady ember glow, while the drop-shaped pearls keep the piece tactile and human rather than overly polished. It feels collected with care, the kind of bracelet that reads special without needing to become formal.\n\nCurated for the AskCrystal artist edit by Mara Kessler, this piece leans into warmth, confidence, and a gentler kind of self-trust. Wear it as a daily anchor, a small manifestation ritual, or a gift for someone stepping into a season that asks for more heart-led clarity.",
+  "vendor": "AskCrystal",
+  "product_type": "Bracelet",
+  "tags": [
+    "source:rmb",
+    "source:screenshot-2026-05-05-110844",
+    "test-import"
+  ],
+  "collections": [],
+  "options": [
+    {
+      "name": "Size",
+      "values": [
+        "14.5 cm",
+        "15 cm",
+        "16 cm",
+        "17 cm",
+        "18 cm"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "AC-ADAPB-14.5CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "14.5 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-ADAPB-15CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "15 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-ADAPB-16CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "16 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-ADAPB-17CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "17 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-ADAPB-18CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "18 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/01-hero-front.png",
+      "alt": "Amber Drift Agate Pearl Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/02-three-quarter.png",
+      "alt": "Amber Drift Agate Pearl Bracelet angled three-quarter product view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/03-side-or-back-detail.png",
+      "alt": "Amber Drift Agate Pearl Bracelet side or closure detail"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/04-macro-crystal.png",
+      "alt": "Amber Drift Agate Pearl Bracelet crystal texture close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/05-scale-in-hand.png",
+      "alt": "Amber Drift Agate Pearl Bracelet shown in hand for scale"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/06-faceless-wearing-closeup.png",
+      "alt": "Amber Drift Agate Pearl Bracelet faceless model close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/07-lifestyle-context.png",
+      "alt": "Amber Drift Agate Pearl Bracelet lifestyle ritual context"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/08-ritual-still-life.png",
+      "alt": "Amber Drift Agate Pearl Bracelet styled for daily wear, manifestation, travel ritual use"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/09-packaging-flatlay.png",
+      "alt": "Amber Drift Agate Pearl Bracelet packaging flat lay"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "confidence",
+    "secondary_intentions": [
+      "self_love",
+      "emotional_balance"
+    ],
+    "product_form": "bracelet",
+    "crystal_material_handles": [
+      "agate",
+      "baroque_pearl",
+      "sterling_silver"
+    ],
+    "artist_handle": "mara-kessler",
+    "chakras": [
+      "sacral",
+      "solar_plexus",
+      "heart"
+    ],
+    "color_families": [
+      "gold",
+      "white"
+    ],
+    "ritual_uses": [
+      "daily_wear",
+      "manifestation",
+      "travel"
+    ],
+    "gift_for": [
+      "partner",
+      "friend",
+      "birthday"
+    ],
+    "western_elements": [
+      "fire",
+      "water"
+    ],
+    "five_elements": [
+      "fire",
+      "earth",
+      "metal",
+      "water"
+    ],
+    "zodiac_signs": [
+      "leo",
+      "libra",
+      "cancer"
+    ],
+    "energetic_properties": [
+      "warm confidence",
+      "soft self-trust",
+      "heart-led steadiness"
+    ],
+    "archetype_name": "The Amber Drift",
+    "story_headline": "A warm agate-and-pearl bracelet for confidence with a softer edge",
+    "story_summary": "This bracelet pairs amber-toned agate, baroque pearl, and sterling silver into a warm, luminous composition designed for confidence, emotional balance, and quietly expressive daily wear.",
+    "benefits": [
+      "Keeps a warm confidence ritual close to the wrist throughout the day",
+      "Balances faceted agate brightness with the tactile softness of irregular pearls",
+      "Feels premium and personal without tipping into overt statement jewelry",
+      "Makes a thoughtful gift for birthdays, partnership, or seasons of renewed self-trust"
+    ],
+    "ritual_title": "Amber Drift Ritual",
+    "ritual_steps": [
+      "Fasten the bracelet and let the warm agate stones settle along the top of the wrist.",
+      "Take three steady breaths and name one way you want to show up with more confidence today.",
+      "Touch one pearl and one agate stone in sequence, then carry that balance of warmth and steadiness into the next part of your day."
+    ],
+    "care_steps": [
+      "Wipe gently with a soft dry cloth after wear.",
+      "Keep pearls and sterling silver away from perfume, harsh cleaners, and prolonged soaking.",
+      "Store separately from harder jewelry to protect the pearl surface and polished agate.",
+      "Refresh with sound, selenite, or soft moonlight when the piece starts to feel energetically crowded."
+    ],
+    "included_items": [
+      "Amber-toned agate, baroque pearl, and sterling silver bracelet",
+      "Protective gift-ready packaging"
+    ],
+    "quality_notes": [
+      "Supplier sheet lists sizes 14.5 cm, 15 cm, 16 cm, 17 cm, and 18 cm",
+      "Supplier components list red Persian agate irregular forms, drop baroque pearls, Thai silver-style hook hardware, and a small sterling silver logo charm",
+      "Natural variation in agate tone, pearl shape, and surface texture is expected",
+      "Local catalog pricing converted from CNY source cost into USD, held above the 7x markup floor, and rounded upward to premium .99 pricing"
+    ],
+    "pairing_notes": "Pair with citrine when you want more outward momentum, or keep rose quartz nearby when the ritual leans more toward softness and emotional warmth.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice. Remove before swimming, showering, or strenuous activity if the bracelet feels delicate or tight.",
+    "agent_summary": "Recommend this bracelet for users asking for warm-toned premium jewelry, confidence with softness, pearl-forward gifting, expressive daily wear, or a bracelet that feels intimate rather than severe.",
+    "agent_tags": [
+      "agate",
+      "baroque_pearl",
+      "birthday",
+      "bracelet",
+      "cancer",
+      "confidence",
+      "daily_wear",
+      "emotional_balance",
+      "friend",
+      "gold",
+      "heart",
+      "leo",
+      "libra",
+      "mara_kessler",
+      "manifestation",
+      "partner",
+      "premium",
+      "sacral",
+      "self_love",
+      "solar_plexus",
+      "sterling_silver",
+      "travel",
+      "white"
+    ],
+    "data_status": "human_reviewed"
+  }
+}

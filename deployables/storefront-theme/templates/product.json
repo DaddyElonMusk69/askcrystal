@@ -178,32 +178,6 @@
                   },
                   "blocks": {}
                 },
-                "ac_product_promise": {
-                  "type": "text",
-                  "name": "Product promise",
-                  "settings": {
-                    "text": "<p>A refined crystal piece for daily intention, gifting, and ritual care.</p>",
-                    "width": "100%",
-                    "max_width": "normal",
-                    "alignment": "left",
-                    "type_preset": "paragraph",
-                    "font": "var(--font-body--family)",
-                    "font_size": "",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "color": "",
-                    "background": false,
-                    "background_color": "#00000026",
-                    "corner_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                },
                 "ac_product_installments": {
                   "type": "text",
                   "name": "Installments",
@@ -229,41 +203,13 @@
                     "padding-inline-end": 0
                   },
                   "blocks": {}
-                },
-                "ac_product_trust_strip": {
-                  "type": "text",
-                  "name": "Trust strip",
-                  "settings": {
-                    "text": "<ul><li>◇ Ethically sourced</li><li>☽ Energetically cleansed</li><li>◎ Secure packaging</li></ul>",
-                    "width": "100%",
-                    "max_width": "normal",
-                    "alignment": "left",
-                    "type_preset": "paragraph",
-                    "font": "var(--font-body--family)",
-                    "font_size": "",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "color": "",
-                    "background": false,
-                    "background_color": "#00000026",
-                    "corner_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
                 }
               },
               "block_order": [
                 "ac_product_badge",
                 "text_xrnftG",
-                "ac_product_promise",
                 "price_tVjtKg",
-                "ac_product_installments",
-                "ac_product_trust_strip"
+                "ac_product_installments"
               ]
             },
             "divider_VJhene": {
@@ -290,6 +236,61 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
+            },
+            "ac_native_facts": {
+              "type": "group",
+              "name": "Native product facts",
+              "settings": {
+                "open_in_new_tab": false,
+                "content_direction": "row",
+                "vertical_on_mobile": false,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "center",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 12,
+                "width": "fill",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "inherit_color_scheme": true,
+                "color_scheme": "",
+                "background_media": "none",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "ac_product_inventory": {
+                  "type": "product-inventory",
+                  "settings": {
+                    "inventory_threshold": 10,
+                    "show_inventory_quantity": false,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "ac_product_inventory"
+              ]
             },
             "buy_buttons_eYQEYi": {
               "type": "buy-buttons",
@@ -375,7 +376,7 @@
                   "name": "Description",
                   "settings": {
                     "heading": "Description",
-                    "open_by_default": false,
+                    "open_by_default": true,
                     "icon": "none",
                     "image_upload": "",
                     "width": 20
@@ -422,6 +423,7 @@
             "group_icgrde",
             "divider_VJhene",
             "variant_picker_R3rGDr",
+            "ac_native_facts",
             "buy_buttons_eYQEYi",
             "ac_shipping_note",
             "ac_product_description_accordion"

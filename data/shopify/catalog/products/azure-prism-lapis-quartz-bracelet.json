@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "handle": "azure-prism-lapis-quartz-bracelet",
+  "workflow_status": "human_reviewed",
+  "shopify_status": "active",
+  "title": "Azure Prism Lapis Quartz Bracelet",
+  "description": "A bracelet built from cool contrast and quiet structure: patterned lapis, clear quartz forms, smoky quartz, pale green crystal accents, and sterling silver details arranged into a silhouette that feels collected, luminous, and composed on the wrist.\n\nWhat makes the piece memorable is the asymmetry. The lapis focal stone gives it a darker mineral pulse, translucent quartz keeps the composition open, and the silver hardware adds a clean architectural line that stops the bracelet from feeling overly delicate. It reads expressive without becoming loud, and premium without slipping into stiffness.\n\nCurated for the AskCrystal artist edit by Amina Darzi, this bracelet is designed for people who want clarity with personality and a steadier tone in the way they move through the day. Wear it as a workday anchor, a travel ritual, or a premium gift for someone entering a sharper, calmer season of self-expression.",
+  "vendor": "AskCrystal",
+  "product_type": "Bracelet",
+  "tags": [
+    "source:rmb",
+    "source:screenshot-2026-05-05-204653",
+    "test-import"
+  ],
+  "collections": [],
+  "options": [
+    {
+      "name": "Size",
+      "values": [
+        "14.5 cm",
+        "15 cm",
+        "16 cm",
+        "17 cm",
+        "18 cm"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "AC-APLQB-14.5CM",
+      "price": "279.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "14.5 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-APLQB-15CM",
+      "price": "279.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "15 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-APLQB-16CM",
+      "price": "279.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "16 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-APLQB-17CM",
+      "price": "289.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "17 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-APLQB-18CM",
+      "price": "289.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "18 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/products/azure-prism-lapis-quartz-bracelet/01-hero-front.png",
+      "alt": "Azure Prism Lapis Quartz Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/azure-prism-lapis-quartz-bracelet/02-three-quarter.png",
+      "alt": "Azure Prism Lapis Quartz Bracelet angled three-quarter product view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/azure-prism-lapis-quartz-bracelet/03-side-or-back-detail.png",
+      "alt": "Azure Prism Lapis Quartz Bracelet side or closure detail"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/azure-prism-lapis-quartz-bracelet/04-macro-crystal.png",
+      "alt": "Azure Prism Lapis Quartz Bracelet crystal texture close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/azure-prism-lapis-quartz-bracelet/05-scale-in-hand.png",
+      "alt": "Azure Prism Lapis Quartz Bracelet shown in hand for scale"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/azure-prism-lapis-quartz-bracelet/06-faceless-wearing-closeup.png",
+      "alt": "Azure Prism Lapis Quartz Bracelet faceless model close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/azure-prism-lapis-quartz-bracelet/07-lifestyle-context.png",
+      "alt": "Azure Prism Lapis Quartz Bracelet lifestyle ritual context"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/azure-prism-lapis-quartz-bracelet/08-ritual-still-life.png",
+      "alt": "Azure Prism Lapis Quartz Bracelet styled for daily wear, travel, work desk ritual use"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/azure-prism-lapis-quartz-bracelet/09-packaging-flatlay.png",
+      "alt": "Azure Prism Lapis Quartz Bracelet packaging flat lay"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "clarity",
+    "secondary_intentions": [
+      "focus",
+      "protection"
+    ],
+    "product_form": "bracelet",
+    "crystal_material_handles": [
+      "lapis_lazuli",
+      "clear_quartz",
+      "smoky_quartz",
+      "green_aventurine",
+      "amethyst",
+      "sterling_silver"
+    ],
+    "artist_handle": "amina-darzi",
+    "chakras": [
+      "throat",
+      "third_eye",
+      "crown"
+    ],
+    "color_families": [
+      "blue",
+      "clear",
+      "green",
+      "white"
+    ],
+    "ritual_uses": [
+      "daily_wear",
+      "travel",
+      "work_desk"
+    ],
+    "gift_for": [
+      "friend",
+      "birthday",
+      "new_beginning"
+    ],
+    "western_elements": [
+      "water",
+      "air"
+    ],
+    "five_elements": [
+      "water",
+      "metal",
+      "wood"
+    ],
+    "zodiac_signs": [
+      "aquarius",
+      "libra",
+      "sagittarius"
+    ],
+    "energetic_properties": [
+      "clear communication",
+      "structured calm",
+      "cool-toned focus"
+    ],
+    "archetype_name": "The Azure Prism",
+    "story_headline": "A lapis-and-quartz bracelet for clarity with a cooler, structured rhythm",
+    "story_summary": "This bracelet layers lapis lazuli, clear quartz, smoky quartz, pale green crystal accents, and sterling silver into a cool asymmetrical composition designed for clarity, focus, and quietly expressive daily wear.",
+    "benefits": [
+      "Keeps a cool, clarifying visual rhythm close to the wrist throughout the day",
+      "Balances saturated lapis contrast with translucent quartz and silver structure",
+      "Feels premium, architectural, and personal rather than overly ornate",
+      "Makes a thoughtful gift for birthdays, fresh starts, or calmer workday routines"
+    ],
+    "ritual_title": "Azure Prism Ritual",
+    "ritual_steps": [
+      "Fasten the bracelet and let one clear quartz form settle where it can catch light easily.",
+      "Take three slower breaths and name the tone you want your words to carry today: clear, steady, or calm.",
+      "Touch the lapis focal stone before work, travel, or conversation, and let that cooler focus guide your response."
+    ],
+    "care_steps": [
+      "Wipe gently with a soft dry cloth after wear.",
+      "Keep sterling silver away from perfume, harsh cleaners, and prolonged soaking.",
+      "Store separately from harder jewelry so the polished quartz and lapis surfaces stay protected.",
+      "Refresh with sound, selenite, or soft moonlight when the piece starts to feel energetically crowded."
+    ],
+    "included_items": [
+      "Lapis, quartz, and sterling silver bracelet",
+      "Protective gift-ready packaging"
+    ],
+    "quality_notes": [
+      "Supplier sheet lists sizes 14.5 cm, 15 cm, 16 cm, 17 cm, and 18 cm",
+      "Supplier component list shows lapis freeform and column accents, green crystal and clear quartz freeforms, 8 mm smoky quartz cube, white seed beads, amethyst chips, silver spacer beads, an S925 silver clasp, and a small engravable silver round tag",
+      "Visible source pricing shows 256 CNY and 271 CNY size bands plus 15 CNY shipping, converted to USD, held above the 7x markup floor, and rounded upward to premium .99 pricing",
+      "Natural variation in lapis pattern, quartz clarity, and green accent tone is expected"
+    ],
+    "pairing_notes": "Pair with clear quartz when the ritual needs even sharper focus, or add moonstone nearby when the energy should stay softer and more emotionally spacious.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice. Remove before swimming, showering, or strenuous activity if the bracelet feels delicate or tight.",
+    "agent_summary": "Recommend this bracelet for users asking for cool-toned premium jewelry, lapis-led clarity rituals, expressive but structured daily wear, or a bracelet that feels crisp, calm, and quietly distinctive.",
+    "agent_tags": [
+      "chakra:crown",
+      "chakra:third_eye",
+      "chakra:throat",
+      "color:blue",
+      "color:clear",
+      "color:white",
+      "form:bracelet",
+      "gift:birthday",
+      "gift:friend",
+      "gift:new_beginning",
+      "intention:clarity",
+      "intention:focus",
+      "intention:protection",
+      "material:amethyst",
+      "material:clear_quartz",
+      "material:green_aventurine",
+      "material:lapis_lazuli",
+      "material:smoky_quartz",
+      "material:sterling_silver",
+      "ritual:daily_wear",
+      "ritual:travel",
+      "ritual:work_desk",
+      "zodiac:aquarius",
+      "zodiac:libra",
+      "zodiac:sagittarius"
+    ],
+    "data_status": "human_reviewed"
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "product_handle": "forest-isle-silver-sequence-necklace",
+  "synced_at_unix": 1777949949,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "publication": {
+    "skipped": false,
+    "publication_id": "gid://shopify/Publication/303037448555",
+    "published": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14963969458539",
+    "handle": "forest-isle-silver-sequence-necklace",
+    "title": "Forest Isle Silver Sequence Necklace",
+    "status": "DRAFT",
+    "media": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47789471793515",
+          "alt": "Forest Isle Silver Sequence Necklace front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789471826283",
+          "alt": "Forest Isle Silver Sequence Necklace angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789471859051",
+          "alt": "Forest Isle Silver Sequence Necklace side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789471891819",
+          "alt": "Forest Isle Silver Sequence Necklace crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789471924587",
+          "alt": "Forest Isle Silver Sequence Necklace shown in hand for scale",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789471957355",
+          "alt": "Forest Isle Silver Sequence Necklace faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789471990123",
+          "alt": "Forest Isle Silver Sequence Necklace lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789472022891",
+          "alt": "Forest Isle Silver Sequence Necklace styled for daily wear, travel, work desk ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789472055659",
+          "alt": "Forest Isle Silver Sequence Necklace packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        }
+      ]
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53170502107499",
+          "sku": "AC-FISSN-48CM",
+          "title": "48 cm"
+        }
+      ]
+    }
+  },
+  "staged_media": [
+    {
+      "local_path": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/01-hero-front.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/89edbc40-2841-4857-ad04-934830b66746/01-hero-front.png",
+      "alt": "Forest Isle Silver Sequence Necklace front view on a dark atmospheric backdrop"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/02-three-quarter.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/4b8326d2-deb3-44b1-ac84-d02d31bb835c/02-three-quarter.png",
+      "alt": "Forest Isle Silver Sequence Necklace angled three-quarter product view"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/03-side-or-back-detail.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/c6f0d72e-0cc6-4828-bc70-21ee4bf0ba41/03-side-or-back-detail.png",
+      "alt": "Forest Isle Silver Sequence Necklace side or closure detail"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/04-macro-crystal.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/2fc38f6d-1ed3-4d7f-878b-2d2b43911389/04-macro-crystal.png",
+      "alt": "Forest Isle Silver Sequence Necklace crystal texture close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/05-scale-in-hand.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/20500a19-f1f0-43d5-a5de-250936339d55/05-scale-in-hand.png",
+      "alt": "Forest Isle Silver Sequence Necklace shown in hand for scale"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/06-faceless-wearing-closeup.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/3968cd31-e947-45b2-8b1d-4f21d4744e6f/06-faceless-wearing-closeup.png",
+      "alt": "Forest Isle Silver Sequence Necklace faceless model close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/07-lifestyle-context.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/5e325f38-be61-4efe-85d5-4ec62c58b3a5/07-lifestyle-context.png",
+      "alt": "Forest Isle Silver Sequence Necklace lifestyle ritual context"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/08-ritual-still-life.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/468bf3cd-8877-4932-ac39-0e3e63f6a25f/08-ritual-still-life.png",
+      "alt": "Forest Isle Silver Sequence Necklace styled for daily wear, travel, work desk ritual use"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/09-packaging-flatlay.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/1508290b-d886-4f1c-9d1f-7514e32b7a9e/09-packaging-flatlay.png",
+      "alt": "Forest Isle Silver Sequence Necklace packaging flat lay"
+    }
+  ],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ]
+}

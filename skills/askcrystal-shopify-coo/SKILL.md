@@ -152,7 +152,18 @@ The manifest contains exactly 9 portrait 3:4 prompts using the AskCrystal luxury
 - packaging flat lay
 
 Each shot includes `alt`, `seo_title`, `seo_description`, `caption`, and `keywords`. Shopify upload uses `alt`; the other metadata stays local for SEO/content workflows and future storefront use.
-Wearable shots must place the jewelry on the correct body part: bracelet on wrist, necklace on neck/collarbone, ring on finger, earrings on ear, anklet on ankle, pendant on chain/chest.
+Wearable shots must place the jewelry on the correct body part, show it being actually worn there, and keep the item scaled like real jewelry on a real person, not an oversized product render.
+Before composing a wearable shot, infer the product's real-world wearable size from the source image and product type, then calibrate it to the body part an average adult would wear it on.
+Valid wear means the product is structurally in use:
+
+- bracelet: infer the bracelet's inner diameter from the source image, resize it to fit an average adult wrist, encircle the wrist with the clasp/elastic closure functioning around the wrist, compose from a side or oblique wrist angle so the far half is naturally hidden behind the wrist or crop, and avoid large flat full-circle loops on top of the forearm
+- necklace: infer strand/chain length and pendant size, resize to a human neck/collarbone, drape with gravity from the chain, and avoid loose flat-lay placement on skin
+- ring: infer band diameter, resize to fit a finger, and wrap the band fully around the finger instead of resting on top
+- earrings: infer earring drop/stud size, scale to the ear, and attach/hang from the ear instead of resting on cheek, hair, or shoulder
+- anklet: infer anklet diameter/length, resize to fit an ankle, encircle the ankle/lower leg, and avoid loose placement on top of the foot or skin
+- pendant: infer pendant size and chain length, resize to chest/collarbone scale, and hang from a worn chain instead of resting loose on the body
+
+If a wearing-context image does not show the item being actually worn in a physically plausible way or shows the jewelry at unrealistic body scale, treat it as a failed generation and regenerate it before upload.
 
 After generated files are reviewed, add approved generated local paths to the product media list. Never substitute raw supplier/source images for reviewed generated assets.
 

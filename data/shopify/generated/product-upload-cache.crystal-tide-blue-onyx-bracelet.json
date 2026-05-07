@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "product_handle": "crystal-tide-blue-onyx-bracelet",
+  "synced_at_unix": 1777895928,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "publication": {
+    "skipped": false,
+    "publication_id": "gid://shopify/Publication/303037448555",
+    "published": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14961669046635",
+    "handle": "crystal-tide-blue-onyx-bracelet",
+    "title": "Crystal Tide Blue Onyx Bracelet",
+    "status": "DRAFT",
+    "media": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47786008805739",
+          "alt": "Crystal Tide Blue Onyx Bracelet front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786008838507",
+          "alt": "Crystal Tide Blue Onyx Bracelet angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786008871275",
+          "alt": "Crystal Tide Blue Onyx Bracelet side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786008904043",
+          "alt": "Crystal Tide Blue Onyx Bracelet crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786008936811",
+          "alt": "Crystal Tide Blue Onyx Bracelet shown in hand for scale",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786008969579",
+          "alt": "Crystal Tide Blue Onyx Bracelet faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786009002347",
+          "alt": "Crystal Tide Blue Onyx Bracelet lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786009035115",
+          "alt": "Crystal Tide Blue Onyx Bracelet styled for daily wear, meditation, travel ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47786009067883",
+          "alt": "Crystal Tide Blue Onyx Bracelet packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        }
+      ]
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53155472245099",
+          "sku": "PS2508258-14.5CM",
+          "title": "14.5 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53155472277867",
+          "sku": "PS2508258-15CM",
+          "title": "15 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53155472310635",
+          "sku": "PS2508258-16CM",
+          "title": "16 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53155472343403",
+          "sku": "PS2508258-17CM",
+          "title": "17 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53155472376171",
+          "sku": "PS2508258-18CM",
+          "title": "18 cm"
+        }
+      ]
+    }
+  },
+  "staged_media": [
+    {
+      "local_path": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/01-hero-front.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/91889781-ebad-45bc-8c66-f60cadde9182/01-hero-front.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/02-three-quarter.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/7e914f3c-3fe4-494b-85f3-2e0a6adb4c78/02-three-quarter.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet angled three-quarter product view"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/03-side-or-back-detail.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/f5d6623f-2b92-46fb-83f5-f73799ed7af1/03-side-or-back-detail.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet side or closure detail"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/04-macro-crystal.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/865685a4-71be-4b08-97ed-482a34702675/04-macro-crystal.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet crystal texture close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/05-scale-in-hand.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/e678cb58-8340-4522-8ddb-823c97100db6/05-scale-in-hand.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet shown in hand for scale"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/06-faceless-wearing-closeup.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/00040155-68ef-4bc6-b1fa-afe0eeb3bb8b/06-faceless-wearing-closeup.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet faceless model close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/07-lifestyle-context.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/7fa533c3-03f8-4e02-8f92-da2ac93a0a77/07-lifestyle-context.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet lifestyle ritual context"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/08-ritual-still-life.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/4b70d1c9-b7ba-4b24-b48d-3ccb92167d55/08-ritual-still-life.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet styled for daily wear, meditation, travel ritual use"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/09-packaging-flatlay.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/9a15c044-5e77-4e9e-bf86-466ad3853f7e/09-packaging-flatlay.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet packaging flat lay"
+    }
+  ],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ]
+}

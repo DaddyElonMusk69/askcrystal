@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "handle": "forest-isle-silver-sequence-necklace",
+  "workflow_status": "human_reviewed",
+  "shopify_status": "draft",
+  "title": "Forest Isle Silver Sequence Necklace",
+  "description": "A necklace composed like a quiet shoreline: baroque pearl, lapis, blue-green stone accents, and sterling silver details arranged into a 48 cm strand that feels airy, collected, and softly luminous at the collarbone.\n\nThe rhythm is what makes it memorable. Irregular pearls keep the piece personal, silver elements give it a crisp structure, and the smaller blue and green stones move through the strand like brief color notes rather than a single loud statement. It feels polished without becoming formal, and expressive without tipping into ornament for ornament's sake.\n\nCurated for the AskCrystal artist edit by Naomi Watanabe, this necklace is designed for people who want clarity and composed self-expression with a gentler hand. Wear it as a daily tone-setter, a travel piece that still feels special, or a premium gift for someone entering a clearer season of their life.",
+  "vendor": "AskCrystal",
+  "product_type": "Necklace",
+  "tags": [
+    "source:rmb",
+    "source:screenshot-2026-05-05-095427",
+    "test-import"
+  ],
+  "collections": [],
+  "options": [
+    {
+      "name": "Size",
+      "values": [
+        "48 cm"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "AC-FISSN-48CM",
+      "price": "399.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "48 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/01-hero-front.png",
+      "alt": "Forest Isle Silver Sequence Necklace front view on a dark atmospheric backdrop"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/02-three-quarter.png",
+      "alt": "Forest Isle Silver Sequence Necklace angled three-quarter product view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/03-side-or-back-detail.png",
+      "alt": "Forest Isle Silver Sequence Necklace side or closure detail"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/04-macro-crystal.png",
+      "alt": "Forest Isle Silver Sequence Necklace crystal texture close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/05-scale-in-hand.png",
+      "alt": "Forest Isle Silver Sequence Necklace shown in hand for scale"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/06-faceless-wearing-closeup.png",
+      "alt": "Forest Isle Silver Sequence Necklace faceless model close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/07-lifestyle-context.png",
+      "alt": "Forest Isle Silver Sequence Necklace lifestyle ritual context"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/08-ritual-still-life.png",
+      "alt": "Forest Isle Silver Sequence Necklace styled for daily wear, travel, work desk ritual use"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/forest-isle-silver-sequence-necklace/09-packaging-flatlay.png",
+      "alt": "Forest Isle Silver Sequence Necklace packaging flat lay"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "clarity",
+    "secondary_intentions": [
+      "emotional_balance",
+      "protection"
+    ],
+    "product_form": "necklace",
+    "crystal_material_handles": [
+      "baroque_pearl",
+      "lapis_lazuli",
+      "malachite",
+      "turquoise",
+      "sterling_silver"
+    ],
+    "artist_handle": "naomi-watanabe",
+    "chakras": [
+      "throat",
+      "heart",
+      "crown"
+    ],
+    "color_families": [
+      "blue",
+      "green",
+      "white"
+    ],
+    "ritual_uses": [
+      "daily_wear",
+      "travel",
+      "work_desk"
+    ],
+    "gift_for": [
+      "friend",
+      "birthday",
+      "new_beginning"
+    ],
+    "western_elements": [
+      "water",
+      "air"
+    ],
+    "five_elements": [
+      "water",
+      "wood",
+      "metal"
+    ],
+    "zodiac_signs": [
+      "libra",
+      "pisces",
+      "sagittarius"
+    ],
+    "energetic_properties": [
+      "collected clarity",
+      "calm expression",
+      "soft protective rhythm"
+    ],
+    "archetype_name": "The Forest Line",
+    "story_headline": "A pearl-and-silver necklace for calm clarity and softer expression",
+    "story_summary": "This 48 cm necklace layers baroque pearl, lapis, blue-green accent stones, and sterling silver into a light but structured composition designed for clarity, emotional balance, and quietly expressive daily wear.",
+    "benefits": [
+      "Keeps clarity and composed expression close without feeling severe",
+      "Balances luminous pearl softness with cooler blue-green mineral accents",
+      "Sits lightly at the collarbone and layers easily into daily wear",
+      "Makes a premium gift for birthdays, fresh starts, or quieter confidence"
+    ],
+    "ritual_title": "Forest Line Ritual",
+    "ritual_steps": [
+      "Fasten the necklace and let the larger pearl and silver notes settle naturally along the collarbone.",
+      "Take three slower breaths and name the tone you want your words to carry today: clear, calm, or steady.",
+      "Touch one blue accent stone before work, travel, or conversation, and let the necklace hold that intention close."
+    ],
+    "care_steps": [
+      "Wipe gently with a soft dry cloth after wear.",
+      "Keep pearl and sterling silver away from perfume, harsh cleaners, and prolonged soaking.",
+      "Store flat or hung separately so the strand and pearls do not rub against harder jewelry.",
+      "Refresh with sound, selenite, or soft moonlight when the piece starts to feel energetically crowded."
+    ],
+    "included_items": [
+      "Baroque pearl, blue-green stone, and sterling silver necklace",
+      "Protective gift-ready packaging"
+    ],
+    "quality_notes": [
+      "Supplier sheet lists a fixed 48 cm necklace length",
+      "Supplier components include multiple baroque pearl forms, white seed pearls, lapis column accents, malachite disc and faceted accents, turquoise flat chips, silver bubble beads, large-hole sterling silver round beads, and a sterling silver T-clasp",
+      "Natural variation in pearl shape, lapis tone, and blue-green accent stone pattern is expected",
+      "Local catalog pricing converted from CNY source cost into USD, held above the 7x markup floor, and rounded upward to premium .99 pricing"
+    ],
+    "pairing_notes": "Pair with clear quartz when you want a cleaner mental edge nearby, or keep pearl-forward pieces close when the mood needs to stay softer and more emotionally spacious.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice. Remove before swimming, showering, or sleeping if the necklace feels delicate or catches easily.",
+    "agent_summary": "Recommend this necklace for users asking for calm clarity, pearl-and-silver premium jewelry, softer self-expression, travel-friendly statement pieces, or a collarbone necklace with blue-green mineral accents.",
+    "agent_tags": [
+      "baroque_pearl",
+      "birthday",
+      "blue",
+      "clarity",
+      "color:blue",
+      "color:green",
+      "color:white",
+      "daily_wear",
+      "emotional_balance",
+      "friend",
+      "green",
+      "lapis_lazuli",
+      "malachite",
+      "material:baroque_pearl",
+      "material:lapis_lazuli",
+      "material:malachite",
+      "material:sterling_silver",
+      "material:turquoise",
+      "naomi_watanabe",
+      "necklace",
+      "new_beginning",
+      "pisces",
+      "premium",
+      "protection",
+      "sagittarius",
+      "sterling_silver",
+      "throat",
+      "travel",
+      "turquoise",
+      "white",
+      "work_desk",
+      "zodiac:libra",
+      "zodiac:pisces",
+      "zodiac:sagittarius"
+    ],
+    "data_status": "human_reviewed"
+  }
+}

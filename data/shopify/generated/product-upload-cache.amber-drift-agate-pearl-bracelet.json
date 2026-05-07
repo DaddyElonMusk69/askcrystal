@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "product_handle": "amber-drift-agate-pearl-bracelet",
+  "synced_at_unix": 1777956416,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "publication": {
+    "skipped": false,
+    "publication_id": "gid://shopify/Publication/303037448555",
+    "published": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14964141719915",
+    "handle": "amber-drift-agate-pearl-bracelet",
+    "title": "Amber Drift Agate Pearl Bracelet",
+    "status": "DRAFT",
+    "media": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47789959020907",
+          "alt": "Amber Drift Agate Pearl Bracelet front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789959053675",
+          "alt": "Amber Drift Agate Pearl Bracelet angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789959086443",
+          "alt": "Amber Drift Agate Pearl Bracelet side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789959119211",
+          "alt": "Amber Drift Agate Pearl Bracelet crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789959151979",
+          "alt": "Amber Drift Agate Pearl Bracelet shown in hand for scale",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789959184747",
+          "alt": "Amber Drift Agate Pearl Bracelet faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789959217515",
+          "alt": "Amber Drift Agate Pearl Bracelet lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789959250283",
+          "alt": "Amber Drift Agate Pearl Bracelet styled for daily wear, manifestation, travel ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47789959283051",
+          "alt": "Amber Drift Agate Pearl Bracelet packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        }
+      ]
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53171325829483",
+          "sku": "AC-ADAPB-14.5CM",
+          "title": "14.5 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53171325862251",
+          "sku": "AC-ADAPB-15CM",
+          "title": "15 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53171325895019",
+          "sku": "AC-ADAPB-16CM",
+          "title": "16 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53171325927787",
+          "sku": "AC-ADAPB-17CM",
+          "title": "17 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53171325960555",
+          "sku": "AC-ADAPB-18CM",
+          "title": "18 cm"
+        }
+      ]
+    }
+  },
+  "staged_media": [
+    {
+      "local_path": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/01-hero-front.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/ad0fa01d-ba5d-4b35-8e9e-ea4b14ea7b01/01-hero-front.png",
+      "alt": "Amber Drift Agate Pearl Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/02-three-quarter.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/496e2dfd-2fd9-42eb-bcf5-de36a5c6f9a8/02-three-quarter.png",
+      "alt": "Amber Drift Agate Pearl Bracelet angled three-quarter product view"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/03-side-or-back-detail.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/11f23d06-5016-4d71-836f-4b70b251c5ab/03-side-or-back-detail.png",
+      "alt": "Amber Drift Agate Pearl Bracelet side or closure detail"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/04-macro-crystal.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/1d4d1afd-29ac-4a7a-92e1-9fdba43ffbe8/04-macro-crystal.png",
+      "alt": "Amber Drift Agate Pearl Bracelet crystal texture close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/05-scale-in-hand.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/6a81a5ce-5a34-4e49-a98b-0095183cff06/05-scale-in-hand.png",
+      "alt": "Amber Drift Agate Pearl Bracelet shown in hand for scale"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/06-faceless-wearing-closeup.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/21c656b0-81dc-4bbd-bcef-d6b4cafaaf4b/06-faceless-wearing-closeup.png",
+      "alt": "Amber Drift Agate Pearl Bracelet faceless model close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/07-lifestyle-context.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/f5d44116-bb2d-4b7f-8f6f-dde628f97113/07-lifestyle-context.png",
+      "alt": "Amber Drift Agate Pearl Bracelet lifestyle ritual context"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/08-ritual-still-life.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/653719e8-027f-4b9f-8e2a-eb5df4a29762/08-ritual-still-life.png",
+      "alt": "Amber Drift Agate Pearl Bracelet styled for daily wear, manifestation, travel ritual use"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/amber-drift-agate-pearl-bracelet/09-packaging-flatlay.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/d86bf6dc-8e6b-44ed-9b3c-593bdd51d9dc/09-packaging-flatlay.png",
+      "alt": "Amber Drift Agate Pearl Bracelet packaging flat lay"
+    }
+  ],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ]
+}

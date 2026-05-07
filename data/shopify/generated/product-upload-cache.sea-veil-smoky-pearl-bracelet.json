@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "product_handle": "sea-veil-smoky-pearl-bracelet",
+  "synced_at_unix": 1778044221,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "publication": {
+    "skipped": false,
+    "publication_id": "gid://shopify/Publication/303037448555",
+    "published": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14966980510059",
+    "handle": "sea-veil-smoky-pearl-bracelet",
+    "title": "Sea Veil Smoky Pearl Bracelet",
+    "status": "DRAFT",
+    "media": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47797423833451",
+          "alt": "Sea Veil Smoky Pearl Bracelet front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797423866219",
+          "alt": "Sea Veil Smoky Pearl Bracelet angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797423898987",
+          "alt": "Sea Veil Smoky Pearl Bracelet side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797423931755",
+          "alt": "Sea Veil Smoky Pearl Bracelet crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797423964523",
+          "alt": "Sea Veil Smoky Pearl Bracelet shown in hand for scale",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797423997291",
+          "alt": "Sea Veil Smoky Pearl Bracelet faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797424030059",
+          "alt": "Sea Veil Smoky Pearl Bracelet lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797424062827",
+          "alt": "Sea Veil Smoky Pearl Bracelet styled for daily wear, travel, bedside ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797424095595",
+          "alt": "Sea Veil Smoky Pearl Bracelet packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        }
+      ]
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53179782431083",
+          "sku": "AC-SVSPB-14.5CM",
+          "title": "14.5 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53179782463851",
+          "sku": "AC-SVSPB-15CM",
+          "title": "15 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53179782496619",
+          "sku": "AC-SVSPB-16CM",
+          "title": "16 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53179782529387",
+          "sku": "AC-SVSPB-17CM",
+          "title": "17 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53179782562155",
+          "sku": "AC-SVSPB-18CM",
+          "title": "18 cm"
+        }
+      ]
+    }
+  },
+  "staged_media": [
+    {
+      "local_path": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/01-hero-front.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/b9f3c675-1b57-4db1-8095-2c841f60b97b/01-hero-front.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/02-three-quarter.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/bfc15efc-0aa4-4206-9300-4189a25f42ce/02-three-quarter.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet angled three-quarter product view"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/03-side-or-back-detail.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/24cd0596-d671-4b17-a908-340a3b23ee1c/03-side-or-back-detail.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet side or closure detail"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/04-macro-crystal.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/7686872c-75cb-47e6-9265-ede17fde5a48/04-macro-crystal.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet crystal texture close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/05-scale-in-hand.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/7d3e6994-2047-43f0-b9ce-6561669ee114/05-scale-in-hand.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet shown in hand for scale"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/06-faceless-wearing-closeup.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/43d13f60-322a-423a-b342-072f834feb0d/06-faceless-wearing-closeup.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet faceless model close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/07-lifestyle-context.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/6364aab0-8252-4d97-834c-1127d2465a83/07-lifestyle-context.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet lifestyle ritual context"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/08-ritual-still-life.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/44a3c502-7ed6-4f14-a5a4-8738987083e2/08-ritual-still-life.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet styled for daily wear, travel, bedside ritual use"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/09-packaging-flatlay.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/4078d215-17f3-4a9b-9922-69f617571aad/09-packaging-flatlay.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet packaging flat lay"
+    }
+  ],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ]
+}

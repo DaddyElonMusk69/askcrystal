@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "handle": "sea-veil-smoky-pearl-bracelet",
+  "workflow_status": "human_reviewed",
+  "shopify_status": "draft",
+  "title": "Sea Veil Smoky Pearl Bracelet",
+  "description": "A bracelet built around sea-toned softness and darker weight: smoky quartz drops, ocean-pattern blue stone accents, baroque pearls, and sterling silver details arranged into a silhouette that feels fluid, protective, and quietly personal on the wrist.\n\nThe emotional texture here is cool but not distant. The darker smoky stones give the piece grounding and contour, the pale blue accents open it up with a lighter tide-like note, and the irregular pearls keep the bracelet from feeling too polished or severe. It reads expressive and premium, but still intimate enough for everyday wear.\n\nCurated for the AskCrystal artist edit by Mei Chen, this bracelet is designed for people who want calm with a little boundary around it. Wear it as a travel companion, a softer daily protection ritual, or a gift for someone moving through a season that asks for steadier emotions and clearer inner space.",
+  "vendor": "AskCrystal",
+  "product_type": "Bracelet",
+  "tags": [
+    "source:rmb",
+    "source:screenshot-2026-05-06-120539",
+    "listed"
+  ],
+  "collections": [],
+  "options": [
+    {
+      "name": "Size",
+      "values": [
+        "14.5 cm",
+        "15 cm",
+        "16 cm",
+        "17 cm",
+        "18 cm"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "AC-SVSPB-14.5CM",
+      "price": "241.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "14.5 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-SVSPB-15CM",
+      "price": "241.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "15 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-SVSPB-16CM",
+      "price": "241.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "16 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-SVSPB-17CM",
+      "price": "255.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "17 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-SVSPB-18CM",
+      "price": "255.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "18 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/01-hero-front.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/02-three-quarter.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet angled three-quarter product view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/03-side-or-back-detail.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet side or closure detail"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/04-macro-crystal.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet crystal texture close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/05-scale-in-hand.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet shown in hand for scale"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/06-faceless-wearing-closeup.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet faceless model close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/07-lifestyle-context.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet lifestyle ritual context"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/08-ritual-still-life.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet styled for daily wear, travel, bedside ritual use"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/sea-veil-smoky-pearl-bracelet/09-packaging-flatlay.png",
+      "alt": "Sea Veil Smoky Pearl Bracelet packaging flat lay"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "calm",
+    "secondary_intentions": [
+      "protection",
+      "emotional_healing"
+    ],
+    "product_form": "bracelet",
+    "crystal_material_handles": [
+      "smoky_quartz",
+      "turquoise",
+      "baroque_pearl",
+      "sterling_silver"
+    ],
+    "artist_handle": "mei-chen",
+    "chakras": [
+      "root",
+      "throat",
+      "heart"
+    ],
+    "color_families": [
+      "black",
+      "blue",
+      "white"
+    ],
+    "ritual_uses": [
+      "daily_wear",
+      "travel",
+      "bedside"
+    ],
+    "gift_for": [
+      "friend",
+      "stress_relief",
+      "new_beginning"
+    ],
+    "western_elements": [
+      "water",
+      "earth"
+    ],
+    "five_elements": [
+      "water",
+      "earth",
+      "metal"
+    ],
+    "zodiac_signs": [
+      "cancer",
+      "pisces",
+      "scorpio"
+    ],
+    "energetic_properties": [
+      "cool composure",
+      "soft protection",
+      "emotional steadiness"
+    ],
+    "archetype_name": "The Sea Veil",
+    "story_headline": "A smoky-and-pearl bracelet for calm with softer protective edges",
+    "story_summary": "This bracelet layers smoky quartz, sea-toned blue stone accents, baroque pearls, and sterling silver into a cool, organic composition designed for calm, emotional steadiness, and gentle protection in daily wear.",
+    "benefits": [
+      "Keeps a cooler, softer calming ritual close to the wrist throughout the day",
+      "Balances the grounding weight of smoky quartz with airy blue accents and irregular pearl texture",
+      "Feels expressive and premium without becoming overly formal or sharp",
+      "Makes a thoughtful gift for travel, stress-heavy seasons, or a quieter kind of emotional reset"
+    ],
+    "ritual_title": "Sea Veil Ritual",
+    "ritual_steps": [
+      "Fasten the bracelet and let the darker smoky stones settle along the top of the wrist.",
+      "Take three slower breaths and name the feeling or situation you want to meet with more calm today.",
+      "Touch one blue accent and one smoky stone in sequence before travel, rest, or a difficult conversation, and carry that steadier rhythm forward."
+    ],
+    "care_steps": [
+      "Wipe gently with a soft dry cloth after wear.",
+      "Keep pearls and sterling silver away from perfume, harsh cleaners, and prolonged soaking.",
+      "Store separately from harder jewelry so the pearl surface and polished stones stay protected.",
+      "Refresh with sound, selenite, or soft moonlight when the piece starts to feel energetically crowded."
+    ],
+    "included_items": [
+      "Smoky quartz, sea-toned stone, baroque pearl, and sterling silver bracelet",
+      "Protective gift-ready packaging"
+    ],
+    "quality_notes": [
+      "Supplier sheet lists sizes 14.5 cm, 15 cm, 16 cm, 17 cm, and 18 cm.",
+      "Supplier component list names smoky crystal drops, 10 mm sea-pattern blue stone, baroque pearl, and a pure silver small engravable round tag.",
+      "Visible source pricing shows 241 CNY and 255 CNY size bands plus 15 CNY shipping, converted to USD, held above the 7x markup floor, and rounded upward to premium .99 pricing.",
+      "Natural variation in smoky stone depth, blue patterning, and baroque pearl surface is expected."
+    ],
+    "pairing_notes": "Pair with clear quartz when the ritual needs more mental spaciousness, or keep black tourmaline nearby when the day calls for firmer boundaries.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice. Remove before swimming, showering, or strenuous activity if the bracelet feels delicate or tight.",
+    "agent_summary": "Recommend this bracelet for users asking for cool-toned premium jewelry, softer protection rituals, travel calm, emotional steadiness, or a pearl-and-smoky bracelet that feels intimate rather than ornate.",
+    "agent_tags": [
+      "chakra:heart",
+      "chakra:root",
+      "chakra:throat",
+      "color:black",
+      "color:blue",
+      "color:white",
+      "form:bracelet",
+      "gift:friend",
+      "gift:new_beginning",
+      "gift:stress_relief",
+      "intention:calm",
+      "intention:emotional_healing",
+      "intention:protection",
+      "material:baroque_pearl",
+      "material:smoky_quartz",
+      "material:sterling_silver",
+      "material:turquoise",
+      "ritual:bedside",
+      "ritual:daily_wear",
+      "ritual:travel",
+      "zodiac:cancer",
+      "zodiac:pisces",
+      "zodiac:scorpio"
+    ],
+    "data_status": "human_reviewed"
+  }
+}

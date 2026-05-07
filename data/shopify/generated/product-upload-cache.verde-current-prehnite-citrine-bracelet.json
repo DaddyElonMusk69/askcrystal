@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "product_handle": "verde-current-prehnite-citrine-bracelet",
+  "synced_at_unix": 1777917777,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "publication": {
+    "skipped": false,
+    "publication_id": "gid://shopify/Publication/303037448555",
+    "published": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14962946933099",
+    "handle": "verde-current-prehnite-citrine-bracelet",
+    "title": "Verde Current Prehnite Citrine Bracelet",
+    "status": "DRAFT",
+    "media": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47787578392939",
+          "alt": "Verde Current Prehnite Citrine Bracelet front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787578425707",
+          "alt": "Verde Current Prehnite Citrine Bracelet angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787578458475",
+          "alt": "Verde Current Prehnite Citrine Bracelet side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787578491243",
+          "alt": "Verde Current Prehnite Citrine Bracelet crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787578524011",
+          "alt": "Verde Current Prehnite Citrine Bracelet shown in hand for scale",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787578556779",
+          "alt": "Verde Current Prehnite Citrine Bracelet faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787578589547",
+          "alt": "Verde Current Prehnite Citrine Bracelet lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787578622315",
+          "alt": "Verde Current Prehnite Citrine Bracelet styled for daily wear, travel, meditation ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787578655083",
+          "alt": "Verde Current Prehnite Citrine Bracelet packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        }
+      ]
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53162458218859",
+          "sku": "AC-VCPCB-14.5CM",
+          "title": "14.5 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53162458251627",
+          "sku": "AC-VCPCB-15CM",
+          "title": "15 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53162458284395",
+          "sku": "AC-VCPCB-16CM",
+          "title": "16 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53162458317163",
+          "sku": "AC-VCPCB-17CM",
+          "title": "17 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53162458349931",
+          "sku": "AC-VCPCB-18CM",
+          "title": "18 cm"
+        }
+      ]
+    }
+  },
+  "staged_media": [
+    {
+      "local_path": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/01-hero-front.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/22e16a4b-224b-4253-a2ee-c95adc3c6656/01-hero-front.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/02-three-quarter.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/98e5a594-a315-4f7c-b37d-6bd086ed227a/02-three-quarter.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet angled three-quarter product view"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/03-side-or-back-detail.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/7666a336-bb8b-4b25-81f9-d4049a0eb8a1/03-side-or-back-detail.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet side or closure detail"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/04-macro-crystal.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/bfa1d47b-84ff-4731-aa73-dc4733a936dd/04-macro-crystal.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet crystal texture close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/05-scale-in-hand.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/e0d7a41c-2ae9-4d2e-ba0f-205e83b33afa/05-scale-in-hand.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet shown in hand for scale"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/06-faceless-wearing-closeup.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/4efeef1e-e65a-494b-a194-07d94d827c4d/06-faceless-wearing-closeup.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet faceless model close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/07-lifestyle-context.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/810b0d7b-d76e-45bd-9c05-b872919b4ad1/07-lifestyle-context.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet lifestyle ritual context"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/08-ritual-still-life.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/17578602-4476-454b-b240-e1e338c13726/08-ritual-still-life.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet styled for daily wear, travel, meditation ritual use"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/09-packaging-flatlay.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/b7444ba7-6ced-423c-955f-389f76c4c6c7/09-packaging-flatlay.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet packaging flat lay"
+    }
+  ],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ]
+}

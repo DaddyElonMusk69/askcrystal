@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "handle": "verde-current-prehnite-citrine-bracelet",
+  "workflow_status": "human_reviewed",
+  "shopify_status": "draft",
+  "title": "Verde Current Prehnite Citrine Bracelet",
+  "description": "A pale green bracelet with a quieter kind of brightness: freeform prehnite, citrine accents, baroque pearl, and sterling silver details arranged in a silhouette that feels airy, personal, and lightly luminous on the wrist.\n\nThe mix is soft but not sleepy. Prehnite brings a washed green translucence that feels calm and open, citrine lifts the composition with a warmer note, and the irregular pearl keeps the piece from feeling too polished or too perfect. It reads like something collected with intention rather than overly styled.\n\nCurated for the AskCrystal artist edit by Naomi Watanabe, this bracelet is designed for people who want clarity with a gentler emotional tone. Wear it as a small daily reset, a travel companion for steadier mornings, or a premium gift for someone moving into a season that asks for softness without drift.",
+  "vendor": "AskCrystal",
+  "product_type": "Bracelet",
+  "tags": [
+    "source:rmb",
+    "source:screenshot-2026-05-05-003435",
+    "test-import"
+  ],
+  "collections": [],
+  "options": [
+    {
+      "name": "Size",
+      "values": [
+        "14.5 cm",
+        "15 cm",
+        "16 cm",
+        "17 cm",
+        "18 cm"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "AC-VCPCB-14.5CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "14.5 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-VCPCB-15CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "15 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-VCPCB-16CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "16 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-VCPCB-17CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "17 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-VCPCB-18CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "18 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/01-hero-front.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/02-three-quarter.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet angled three-quarter product view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/03-side-or-back-detail.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet side or closure detail"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/04-macro-crystal.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet crystal texture close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/05-scale-in-hand.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet shown in hand for scale"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/06-faceless-wearing-closeup.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet faceless model close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/07-lifestyle-context.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet lifestyle ritual context"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/08-ritual-still-life.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet styled for daily wear, travel, meditation ritual use"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/verde-current-prehnite-citrine-bracelet/09-packaging-flatlay.png",
+      "alt": "Verde Current Prehnite Citrine Bracelet packaging flat lay"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "clarity",
+    "secondary_intentions": [
+      "emotional_balance",
+      "intuition"
+    ],
+    "product_form": "bracelet",
+    "crystal_material_handles": [
+      "prehnite",
+      "citrine",
+      "baroque_pearl",
+      "sterling_silver"
+    ],
+    "artist_handle": "naomi-watanabe",
+    "chakras": [
+      "heart",
+      "crown",
+      "solar_plexus"
+    ],
+    "color_families": [
+      "green",
+      "gold",
+      "white"
+    ],
+    "ritual_uses": [
+      "daily_wear",
+      "travel",
+      "meditation"
+    ],
+    "gift_for": [
+      "friend",
+      "birthday",
+      "new_beginning"
+    ],
+    "western_elements": [
+      "water",
+      "earth",
+      "fire"
+    ],
+    "five_elements": [
+      "wood",
+      "water",
+      "earth",
+      "metal"
+    ],
+    "zodiac_signs": [
+      "libra",
+      "pisces",
+      "virgo"
+    ],
+    "energetic_properties": [
+      "gentle clarity",
+      "heart-led composure",
+      "light intuitive steadiness"
+    ],
+    "archetype_name": "The Verde Current",
+    "story_headline": "A pale green bracelet for clarity with a softer emotional tone",
+    "story_summary": "This bracelet brings prehnite, citrine, baroque pearl, and sterling silver into a light-filled composition designed for clarity, emotional balance, and quietly intuitive daily wear.",
+    "benefits": [
+      "Keeps a calm, clarifying visual rhythm close to the wrist",
+      "Balances pale green translucence with a warmer citrine lift",
+      "Feels premium and personal without becoming ornate or heavy",
+      "Makes a thoughtful gift for new beginnings, birthdays, or quieter self-renewal rituals"
+    ],
+    "ritual_title": "Verde Current Ritual",
+    "ritual_steps": [
+      "Fasten the bracelet and let the palest green stones settle toward the top of the wrist.",
+      "Take three easy breaths and name the one feeling or thought you want to meet more clearly today.",
+      "Touch one prehnite stone and one citrine accent in sequence, then carry that calm-bright balance into the next part of your day."
+    ],
+    "care_steps": [
+      "Wipe gently with a soft dry cloth after wear.",
+      "Keep pearl and silver details away from perfume, harsh cleaners, and prolonged soaking.",
+      "Store separately from harder jewelry so the pearl surface and polished stones stay protected.",
+      "Refresh with sound, selenite, or soft moonlight when the piece starts to feel energetically crowded."
+    ],
+    "included_items": [
+      "Prehnite, citrine, baroque pearl, and sterling silver bracelet",
+      "Protective gift-ready packaging"
+    ],
+    "quality_notes": [
+      "Supplier sheet lists sizes 14.5 cm, 15 cm, 16 cm, 17 cm, and 18 cm",
+      "Supplier components list large freeform prehnite, large freeform citrine, prehnite chips, long baroque pearl accents, Thai silver-style hook hardware, and a small sterling silver logo charm",
+      "Natural variation in prehnite translucence, citrine tone, and baroque pearl shape is expected",
+      "Local catalog pricing converted from CNY source cost into USD, held above the 7x markup floor, and rounded upward to premium .99 pricing"
+    ],
+    "pairing_notes": "Pair with clear quartz when you want a cleaner mental edge nearby, or keep citrine-forward pieces close when the ritual needs a little more lift and outward momentum.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice. Remove before swimming, showering, or strenuous activity if the bracelet feels delicate or tight.",
+    "agent_summary": "Recommend this bracelet for users asking for gentle clarity, pale green premium jewelry, emotionally balanced daily wear, intuitive gifting, or a bracelet that feels airy and quietly collected.",
+    "agent_tags": [
+      "baroque_pearl",
+      "birthday",
+      "bracelet",
+      "chakra:crown",
+      "chakra:heart",
+      "chakra:solar_plexus",
+      "citrine",
+      "clarity",
+      "color:gold",
+      "color:green",
+      "color:white",
+      "daily_wear",
+      "emotional_balance",
+      "friend",
+      "gift:new_beginning",
+      "intuition",
+      "material:baroque_pearl",
+      "material:citrine",
+      "material:prehnite",
+      "material:sterling_silver",
+      "meditation",
+      "naomi_watanabe",
+      "new_beginning",
+      "pisces",
+      "premium",
+      "prehnite",
+      "sterling_silver",
+      "travel",
+      "virgo",
+      "zodiac:libra",
+      "zodiac:pisces",
+      "zodiac:virgo"
+    ],
+    "data_status": "human_reviewed"
+  }
+}

@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "handle": "crystal-tide-blue-onyx-bracelet",
+  "workflow_status": "human_reviewed",
+  "shopify_status": "draft",
+  "title": "Crystal Tide Blue Onyx Bracelet",
+  "description": "A cool-toned bracelet composed for quiet rhythm: pale blue onyx, clear quartz, and sterling silver details arranged in a silhouette that feels light on the wrist and easy to return to.\n\nThe palette leans watery and calm rather than ornate. Clear quartz catches the light, blue onyx brings a softened groundedness, and the silver findings keep the piece crisp and wearable for everyday ritual, gifting, or a small personal reset.\n\nCurated for the AskCrystal artist edit by Sofia Lind, this bracelet is designed for people who want their jewelry to feel reflective, minimal, and quietly present. Wear it when you want a calmer tone to the day without turning the ritual into performance.",
+  "vendor": "AskCrystal",
+  "product_type": "Bracelet",
+  "tags": [
+    "supplier-code:PS2508258",
+    "source:rmb",
+    "test-import"
+  ],
+  "collections": [],
+  "options": [
+    {
+      "name": "Size",
+      "values": [
+        "14.5 cm",
+        "15 cm",
+        "16 cm",
+        "17 cm",
+        "18 cm"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "PS2508258-14.5CM",
+      "price": "219.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "14.5 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "PS2508258-15CM",
+      "price": "219.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "15 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "PS2508258-16CM",
+      "price": "219.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "16 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "PS2508258-17CM",
+      "price": "227.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "17 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "PS2508258-18CM",
+      "price": "227.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "18 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/01-hero-front.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/02-three-quarter.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet angled three-quarter product view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/03-side-or-back-detail.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet side or closure detail"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/04-macro-crystal.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet crystal texture close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/05-scale-in-hand.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet shown in hand for scale"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/06-faceless-wearing-closeup.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet faceless model close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/07-lifestyle-context.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet lifestyle ritual context"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/08-ritual-still-life.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet styled for daily wear, meditation, travel ritual use"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/crystal-tide-blue-onyx-bracelet/09-packaging-flatlay.png",
+      "alt": "Crystal Tide Blue Onyx Bracelet packaging flat lay"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "calm",
+    "secondary_intentions": [
+      "clarity",
+      "emotional_balance"
+    ],
+    "product_form": "bracelet",
+    "crystal_material_handles": [
+      "blue_onyx",
+      "clear_quartz",
+      "sterling_silver"
+    ],
+    "artist_handle": "sofia-lind",
+    "chakras": [
+      "throat",
+      "crown"
+    ],
+    "color_families": [
+      "blue",
+      "clear",
+      "white"
+    ],
+    "ritual_uses": [
+      "daily_wear",
+      "meditation",
+      "travel"
+    ],
+    "gift_for": [
+      "friend",
+      "birthday",
+      "new_beginning"
+    ],
+    "western_elements": [
+      "water",
+      "air"
+    ],
+    "five_elements": [
+      "water",
+      "metal"
+    ],
+    "zodiac_signs": [
+      "aquarius",
+      "libra",
+      "pisces"
+    ],
+    "energetic_properties": [
+      "quiet clarity",
+      "calm communication",
+      "cool-toned emotional steadiness"
+    ],
+    "archetype_name": "The Quiet Current",
+    "story_headline": "A pale blue bracelet for calm clarity and quiet rhythm",
+    "story_summary": "This cool-toned bracelet pairs blue onyx, clear quartz, and sterling silver in a minimal silhouette designed for calm daily wear, reflective gifting, and small rituals of return.",
+    "benefits": [
+      "Keeps a calm visual rhythm close to the wrist throughout the day",
+      "Easy to wear with work, travel, or simple meditation routines",
+      "Offers a cool-toned alternative to warmer crystal jewelry stories",
+      "Makes a thoughtful premium gift when the intention is clarity, composure, or a fresh start"
+    ],
+    "ritual_title": "Quiet Current Ritual",
+    "ritual_steps": [
+      "Fasten the bracelet and take three slower-than-usual breaths before starting the next part of your day.",
+      "Touch one blue bead with your thumb and name the tone you want to carry: calm, clarity, or steadiness.",
+      "Let the bracelet stay visible on the wrist as a reminder to answer softly and move with intention."
+    ],
+    "care_steps": [
+      "Wipe the bracelet gently with a soft dry cloth after wear.",
+      "Keep away from perfume, harsh cleaners, and prolonged water exposure to protect the sterling silver details.",
+      "Store flat or in a soft pouch so the clear quartz and silver findings do not rub against harder jewelry.",
+      "Refresh with sound, moonlight, or selenite when the piece starts to feel energetically crowded."
+    ],
+    "included_items": [
+      "Blue onyx and clear quartz bracelet with sterling silver details",
+      "Protective gift-ready packaging"
+    ],
+    "quality_notes": [
+      "Supplier sheet lists sizes 14.5 cm, 15 cm, 16 cm, 17 cm, and 18 cm",
+      "Supplier components include clear quartz, blue onyx-style beads, S925 silver clasp hardware, and a small silver charm plate",
+      "Natural variation in quartz clarity and blue bead tone is expected",
+      "Local catalog pricing converted from CNY source cost into USD and rounded upward to premium .99 pricing"
+    ],
+    "pairing_notes": "Pair with moonstone when you want a softer emotional tone, or add amethyst nearby when the ritual leans more reflective and end-of-day.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice. Remove before swimming, showering, or strenuous activity if the bracelet feels delicate or tight.",
+    "agent_summary": "Recommend this bracelet for users asking for calm clarity, cool-toned premium jewelry, gentle travel rituals, refined gifting, or a minimal blue-and-silver piece that feels quietly composed.",
+    "agent_tags": [
+      "aquarius",
+      "birthday",
+      "blue",
+      "blue_onyx",
+      "bracelet",
+      "calm",
+      "clarity",
+      "clear",
+      "clear_quartz",
+      "crown",
+      "daily_wear",
+      "emotional_balance",
+      "friend",
+      "libra",
+      "meditation",
+      "new_beginning",
+      "pisces",
+      "premium",
+      "sofia_lind",
+      "sterling_silver",
+      "throat",
+      "travel",
+      "white"
+    ],
+    "data_status": "human_reviewed"
+  }
+}

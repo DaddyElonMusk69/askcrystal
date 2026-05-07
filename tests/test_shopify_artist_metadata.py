@@ -199,6 +199,69 @@ def test_file_create_payload_uses_staged_resource_url(tmp_path: Path) -> None:
     }
 
 
+def test_stage_local_media_namespaces_product_media_and_avoids_replace(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    product_dir = product_ops.CATALOG_DIR / "assets" / "products" / "stage-media-test"
+    product_dir.mkdir(parents=True, exist_ok=True)
+    image_path = product_dir / "01-hero-front.png"
+    image_path.write_bytes(b"fake image")
+
+    media_entries = [
+        {
+            "src": "data/shopify/catalog/assets/products/stage-media-test/01-hero-front.png",
+            "alt": "Stage Media Test front view",
+        }
+    ]
+
+    monkeypatch.setattr(product_ops, "upload_to_staged_target", lambda *args, **kwargs: None)
+    monkeypatch.setattr(
+        product_ops,
+        "staged_upload_input",
+        lambda path: {
+            "resource": "IMAGE",
+            "filename": path.name,
+            "mimeType": "image/png",
+            "httpMethod": "POST",
+        },
+    )
+
+    class Client:
+        def graphql(self, _query, variables):
+            assert len(variables["input"]) == 1
+            return {
+                "stagedUploadsCreate": {
+                    "stagedTargets": [
+                        {
+                            "url": "https://example.invalid/upload",
+                            "resourceUrl": "staged://stage-media-test/01-hero-front.png",
+                            "parameters": [],
+                        }
+                    ],
+                    "userErrors": [],
+                }
+            }
+
+    files, cache_items = product_ops.stage_local_media(Client(), media_entries)
+
+    assert files == [
+        {
+            "originalSource": "staged://stage-media-test/01-hero-front.png",
+            "alt": "Stage Media Test front view",
+            "filename": "stage-media-test-01-hero-front.png",
+            "contentType": "IMAGE",
+            "duplicateResolutionMode": "APPEND_UUID",
+        }
+    ]
+    assert cache_items == [
+        {
+            "local_path": "data/shopify/catalog/assets/products/stage-media-test/01-hero-front.png",
+            "resource_url": "staged://stage-media-test/01-hero-front.png",
+            "alt": "Stage Media Test front view",
+        }
+    ]
+
+
 def test_artist_profile_staged_upload_uses_image_resource(tmp_path: Path) -> None:
     image_path = tmp_path / "profile.webp"
     image_path.write_bytes(b"fake image")

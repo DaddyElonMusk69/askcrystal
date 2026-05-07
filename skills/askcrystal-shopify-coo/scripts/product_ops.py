@@ -99,6 +99,70 @@ mutation AskCrystalProductSet($identifier: ProductSetIdentifiers, $input: Produc
 }
 """
 
+PRODUCT_MEDIA_BY_IDENTIFIER = """
+query AskCrystalProductMediaByHandle($handle: String!) {
+  product: productByIdentifier(identifier: { handle: $handle }) {
+    id
+    handle
+    media(first: 100) {
+      nodes {
+        id
+        alt
+        mediaContentType
+        status
+      }
+    }
+  }
+}
+"""
+
+PRODUCT_DELETE_MEDIA = """
+mutation AskCrystalProductDeleteMedia($productId: ID!, $mediaIds: [ID!]!) {
+  productDeleteMedia(productId: $productId, mediaIds: $mediaIds) {
+    deletedMediaIds
+    deletedProductImageIds
+    mediaUserErrors {
+      field
+      message
+    }
+    product {
+      id
+      handle
+      media(first: 100) {
+        nodes {
+          id
+          alt
+          mediaContentType
+          status
+        }
+      }
+    }
+  }
+}
+"""
+
+FILE_UPDATE = """
+mutation AskCrystalFileUpdate($files: [FileUpdateInput!]!) {
+  fileUpdate(files: $files) {
+    files {
+      id
+      alt
+      fileStatus
+      ... on MediaImage {
+        image {
+          url
+        }
+      }
+    }
+    userErrors {
+      field
+      message
+      code
+    }
+  }
+}
+"""
+
 ASKCRYSTAL_METAFIELD_SOURCES = {
     "primary_intention": ("primary_intention", "scalar"),
     "secondary_intentions": ("secondary_intentions", "list"),
@@ -194,7 +258,6 @@ mutation AskCrystalPublishProduct($id: ID!, $input: [PublicationInput!]!) {
     userErrors {
       field
       message
-      code
     }
   }
 }
@@ -334,27 +397,48 @@ def product_image_facts(product: dict[str, Any]) -> dict[str, str]:
 def wearable_model_instruction(form_key: str, product_phrase: str) -> str:
     placements = {
         "bracelet": (
-            f"Faceless close-up of a model wearing {product_phrase} correctly on the wrist. "
-            "Show wrist and lower forearm only; never place a bracelet on the neck, ear, ankle, or finger."
+            f"Faceless close-up of a model actually wearing {product_phrase} around the wrist. "
+            "Infer the bracelet's real-world inner diameter from the source image, then resize it to fit an average adult wrist before rendering. "
+            "The bracelet must encircle the wrist naturally with visible side contour, contact, and believable tension, as if the closure or elastic is functioning around the wrist. "
+            "Compose from a true side or oblique wrist angle so only the near arc is prominently visible and the far half disappears naturally behind the wrist thickness or outside the frame. "
+            "Do not show a complete circular bracelet outline sitting neatly on top of the arm. "
+            "The entire bracelet must remain fully outside any sleeve, cuff, or clothing edge with full visual separation from fabric; no bead, clasp, or segment may disappear under a sleeve. "
+            "Keep it at real bracelet scale on a human wrist; the beads should look small enough to wear comfortably, not like an oversized flat product render. "
+            "Show wrist and lower forearm only; never lay the bracelet flat on top of the arm and never place a bracelet on the neck, ear, ankle, or finger."
         ),
         "necklace": (
-            f"Faceless close-up of a model wearing {product_phrase} correctly around the neck and collarbone. "
-            "Crop below the nose and above the torso; never place a necklace on the wrist, finger, ear, or ankle."
+            f"Faceless close-up of a model actually wearing {product_phrase} around the neck and collarbone. "
+            "Infer the necklace's source chain or strand length and pendant size, then resize it to human neck and collarbone scale before rendering. "
+            "The necklace must be supported by a chain or strand worn around the neck, with the piece hanging naturally from that support. "
+            "Keep it at real necklace scale on a human neck and let it drape with gravity. "
+            "Crop below the nose and above the torso; never place a necklace loose on skin and never place a necklace on the wrist, finger, ear, or ankle."
         ),
         "ring": (
-            f"Close-up of a model wearing {product_phrase} correctly on a finger. "
+            f"Close-up of a model actually wearing {product_phrase} around a finger. "
+            "Infer the ring's source band diameter, then resize it to fit a human finger before rendering. "
+            "The band must fully wrap the finger in a physically plausible way, not balance on top of the finger or hand. "
+            "Keep it at real ring scale for the finger. "
             "Show hand and fingers only; never place a ring on the neck, wrist, ear, or ankle."
         ),
         "earrings": (
-            f"Faceless side close-up of a model wearing {product_phrase} correctly on the ear. "
+            f"Faceless side close-up of a model actually wearing {product_phrase} attached on the ear. "
+            "Infer the earring's source stud, hoop, or drop size, then resize it to human ear scale before rendering. "
+            "The earrings must be physically attached through the ear as studs, hoops, or drops, not resting on hair, cheek, jaw, or shoulder. "
+            "Keep them at real earring scale for the ear. "
             "Show ear, jawline, and hair detail without a full face; never place earrings on the neck, wrist, finger, or ankle."
         ),
         "anklet": (
-            f"Close-up of a model wearing {product_phrase} correctly around the ankle. "
+            f"Close-up of a model actually wearing {product_phrase} around the ankle. "
+            "Infer the anklet's source diameter or length, then resize it to fit a human ankle before rendering. "
+            "The anklet must encircle the ankle naturally with visible contact and believable tension, not sit loose on top of the foot or skin. "
+            "Keep it at real anklet scale on a human ankle. "
             "Show ankle and lower leg only; never place an anklet on the neck, wrist, ear, or finger."
         ),
         "pendant": (
-            f"Faceless close-up of a model wearing {product_phrase} correctly as a pendant on a chain at the chest or collarbone. "
+            f"Faceless close-up of a model actually wearing {product_phrase} as a pendant hanging from a chain at the chest or collarbone. "
+            "Infer the pendant's source size and chain length, then resize it to human chest and collarbone scale before rendering. "
+            "The pendant must be visibly supported by a worn chain, not placed loose on the body without support. "
+            "Keep it at real pendant scale and let it hang with gravity from the chain. "
             "Crop below the nose and above the torso; never place a pendant on the wrist, finger, ear, or ankle."
         ),
     }
@@ -366,19 +450,61 @@ def wearable_model_instruction(form_key: str, product_phrase: str) -> str:
 
 def lifestyle_model_instruction(form_key: str, product_phrase: str) -> str:
     placements = {
-        "bracelet": "wrist and lower forearm",
-        "necklace": "neck and collarbone",
-        "ring": "hand and fingers",
-        "earrings": "ear and jawline",
-        "anklet": "ankle and lower leg",
-        "pendant": "chest and collarbone",
+        "bracelet": (
+            "around the wrist and lower forearm after inferring the bracelet's source inner diameter and resizing it to fit an average adult wrist, following the curved side contour of the wrist at real bracelet scale, clearly encircling the wrist rather than resting flat on top of it, composed from a side or oblique angle so the far half is naturally hidden behind the wrist or crop instead of forming a full visible loop, and staying fully outside any sleeve or cuff with no part tucked under clothing"
+        ),
+        "necklace": (
+            "around the neck and collarbone after inferring the source chain or strand length and resizing it to human neck scale, visibly worn from a supporting chain or strand and draping naturally with gravity"
+        ),
+        "ring": (
+            "around the finger after inferring the source band diameter and resizing it to finger scale, with the band fully worn rather than balanced on top"
+        ),
+        "earrings": (
+            "attached on the ear and jawline area after inferring the source earring size and resizing it to ear scale, physically hanging or sitting from the ear"
+        ),
+        "anklet": (
+            "around the ankle and lower leg after inferring the source anklet diameter or length and resizing it to fit the ankle, following the ankle contour and clearly encircling the ankle"
+        ),
+        "pendant": (
+            "at the chest and collarbone after inferring the source pendant size and chain length and resizing it to body scale, hanging with gravity from a chain worn around the neck"
+        ),
     }
     placement = placements.get(form_key)
     if not placement:
         return f"Ritual lifestyle scene with {product_phrase} placed in a calm intentional setting, product still the focal point."
     return (
-        f"Faceless lifestyle crop of a model wearing {product_phrase} correctly on the {placement} in a quiet ritual moment. "
-        "Product remains the focal point, no full face, realistic scale and placement."
+        f"Faceless lifestyle crop of a model actually wearing {product_phrase} {placement} in a quiet ritual moment. "
+        "Product remains the focal point, no full face, realistic body scale and placement, and never merely laid on the body for styling."
+    )
+
+
+def scale_in_hand_instruction(form_key: str, product_phrase: str) -> str:
+    placements = {
+        "bracelet": (
+            f"Scale reference shot of {product_phrase} resting in or near a hand, realistic size, product in focus."
+        ),
+        "necklace": (
+            f"Scale reference shot of {product_phrase} held lightly between both hands by the upper ends so the full strand hangs in a natural U-shape with enough visible length to read clearly as a necklace, not a bracelet. "
+            "Infer the necklace's full strand length from the source image and preserve that larger scale relationship to the hands. "
+            "Keep the strand extended and readable, with the original component spacing and sequence intact. "
+            "Do not coil, bunch, wrap, or compress it into the palm."
+        ),
+        "ring": (
+            f"Scale reference shot of {product_phrase} resting on fingertips or beside fingers, realistic ring size, product in focus."
+        ),
+        "earrings": (
+            f"Scale reference shot of {product_phrase} resting on fingers or hanging beside fingertips, realistic earring size, product in focus."
+        ),
+        "anklet": (
+            f"Scale reference shot of {product_phrase} held across an open hand or through both hands with enough visible length to read clearly as an anklet, realistic size, product in focus."
+        ),
+        "pendant": (
+            f"Scale reference shot of {product_phrase} held in a hand with the pendant and enough chain visible to read clearly as a pendant necklace, realistic size, product in focus."
+        ),
+    }
+    return placements.get(
+        form_key,
+        f"Scale reference shot of {product_phrase} resting in or near a hand, realistic size, product in focus.",
     )
 
 
@@ -419,15 +545,20 @@ def image_seo_metadata(product: dict[str, Any], shot: dict[str, str]) -> dict[st
 def generic_image_style_prompt() -> str:
     return (
         "Transform the provided image into a high-end luxury product photograph. Preserve the exact product design, "
-        "materials, and colors without alteration. Place it on a subtle dark mineral surface with a deep navy-to-black "
-        "gradient background and faint particle bokeh. Use controlled cinematic studio lighting: soft directional key "
-        "light, gentle fill, and a warm rim light for separation. Add subtle backlighting to enhance translucency and "
-        "internal glow in crystal materials. Emphasize material quality with crisp specular highlights, internal "
-        "reflections, and light scattering. Keep highlights sharp and premium, not blown out. Ensure the full product "
-        "is sharp and clearly visible, with a softly blurred background. Apply a refined luxury grade: deep contrast, "
-        "clean blacks, slightly cool shadows, warm highlights, enhanced micro-contrast, and a very subtle glow only in "
-        "highlights and translucent areas. Keep composition clean, centered, and visually striking, realistic but "
-        "elevated and eye-catching."
+        "materials, and colors without alteration. Preserve the exact product structure and component count from the "
+        "source image: keep the same number of beads, pearls, stones, links, spacers, pendants, chain segments, "
+        "clasps, and other product parts, with the same order, spacing rhythm, proportions, and focal arrangement. "
+        "Do not add, remove, merge, split, substitute, or reorder structural components. In wearable shots, maintain "
+        "that exact design fidelity even when some components are naturally hidden by perspective, body contour, "
+        "overlap, or crop; do not reveal the full loop unnaturally just to show every part. Place it on a "
+        "subtle dark mineral surface with a deep navy-to-black gradient background and faint particle bokeh. Use "
+        "controlled cinematic studio lighting: soft directional key light, gentle fill, and a warm rim light for "
+        "separation. Add subtle backlighting to enhance translucency and internal glow in crystal materials. "
+        "Emphasize material quality with crisp specular highlights, internal reflections, and light scattering. Keep "
+        "highlights sharp and premium, not blown out. Ensure the full product is sharp and clearly visible, with a "
+        "softly blurred background. Apply a refined luxury grade: deep contrast, clean blacks, slightly cool shadows, "
+        "warm highlights, enhanced micro-contrast, and a very subtle glow only in highlights and translucent areas. "
+        "Keep composition clean, centered, and visually striking, realistic but elevated and eye-catching."
     )
 
 
@@ -435,7 +566,8 @@ def negative_image_prompt() -> str:
     return (
         "No text, no typography, no logo, no watermark, no price tag, no medical claims, no extra unrelated products, "
         "no distorted jewelry structure, no broken chain, no deformed hands, no visible face for model shots, "
-        "no unrealistic oversized crystal unless explicitly part of the product."
+        "no unrealistic oversized crystal unless explicitly part of the product, no added, missing, merged, split, or "
+        "reordered product components."
     )
 
 
@@ -451,6 +583,7 @@ def image_shot_specs(product: dict[str, Any]) -> list[dict[str, str]]:
 
     wearing_closeup = wearable_model_instruction(facts["form_key"], product_phrase)
     lifestyle_model = lifestyle_model_instruction(facts["form_key"], product_phrase)
+    scale_in_hand = scale_in_hand_instruction(facts["form_key"], product_phrase)
     side_or_back = (
         f"Back or side detail view of {product_phrase}, showing clasp, band, setting, chain, hook, or closure construction where applicable."
         if is_jewelry
@@ -460,63 +593,63 @@ def image_shot_specs(product: dict[str, Any]) -> list[dict[str, str]]:
     shots = [
         {
             "id": "01_hero_front",
-            "filename": "01-hero-front.webp",
+            "filename": "01-hero-front.png",
             "role": "hero",
             "alt": f"{facts['title']} front view on a dark atmospheric backdrop",
             "brief": f"Front-facing ecommerce hero image of {product_phrase}, full product visible, centered, clean composition.",
         },
         {
             "id": "02_three_quarter",
-            "filename": "02-three-quarter.webp",
+            "filename": "02-three-quarter.png",
             "role": "alternate_angle",
             "alt": f"{facts['title']} angled three-quarter product view",
             "brief": f"Three-quarter angled view of {product_phrase}, full product visible, dimensional highlights, clear silhouette.",
         },
         {
             "id": "03_side_or_back_detail",
-            "filename": "03-side-or-back-detail.webp",
+            "filename": "03-side-or-back-detail.png",
             "role": "construction_detail",
             "alt": f"{facts['title']} side or closure detail",
             "brief": side_or_back,
         },
         {
             "id": "04_macro_crystal",
-            "filename": "04-macro-crystal.webp",
+            "filename": "04-macro-crystal.png",
             "role": "macro",
             "alt": f"{facts['title']} crystal texture close-up",
             "brief": f"Extreme macro close-up of the {facts['materials']} surface, natural texture, inclusions, polish or raw edges visible.",
         },
         {
             "id": "05_scale_in_hand",
-            "filename": "05-scale-in-hand.webp",
+            "filename": "05-scale-in-hand.png",
             "role": "scale",
             "alt": f"{facts['title']} shown in hand for scale",
-            "brief": f"Scale reference shot of {product_phrase} resting in or near a hand, realistic size, product in focus.",
+            "brief": scale_in_hand,
         },
         {
             "id": "06_faceless_wearing_closeup",
-            "filename": "06-faceless-wearing-closeup.webp",
+            "filename": "06-faceless-wearing-closeup.png",
             "role": "wearing_closeup" if is_jewelry else "hands_closeup",
             "alt": f"{facts['title']} faceless model close-up" if is_jewelry else f"{facts['title']} held in hands close-up",
             "brief": wearing_closeup,
         },
         {
             "id": "07_lifestyle_context",
-            "filename": "07-lifestyle-context.webp",
+            "filename": "07-lifestyle-context.png",
             "role": "lifestyle",
             "alt": f"{facts['title']} lifestyle ritual context",
             "brief": lifestyle_model,
         },
         {
             "id": "08_ritual_still_life",
-            "filename": "08-ritual-still-life.webp",
+            "filename": "08-ritual-still-life.png",
             "role": "ritual",
             "alt": f"{facts['title']} styled for {facts['ritual_uses']} ritual use",
             "brief": f"Still-life ritual scene for {facts['ritual_uses']} with {product_phrase}, product clearly dominant, minimal supporting props.",
         },
         {
             "id": "09_packaging_flatlay",
-            "filename": "09-packaging-flatlay.webp",
+            "filename": "09-packaging-flatlay.png",
             "role": "packaging",
             "alt": f"{facts['title']} packaging flat lay",
             "brief": f"Premium flat lay of {product_phrase} with simple pouch or care card styling, no readable text, ready-for-gift presentation.",
@@ -703,6 +836,13 @@ def remote_collection_id_by_handle(client: ShopifyAdminClient, handle: str) -> s
     return str(result["id"])
 
 
+def remote_product_media_by_handle(client: ShopifyAdminClient, handle: str) -> dict[str, Any] | None:
+    try:
+        return client.graphql(PRODUCT_MEDIA_BY_IDENTIFIER, {"handle": handle})["product"]
+    except ProvisioningError as exc:
+        raise SystemExit(f"error fetching product media for {handle}: {exc}") from exc
+
+
 def metafield_value_for_product(
     *,
     client: ShopifyAdminClient | None,
@@ -809,6 +949,18 @@ def display_path(path: Path) -> str:
         return str(path.relative_to(REPO_ROOT))
     except ValueError:
         return str(path)
+
+
+def shopify_media_filename(path: Path) -> str:
+    try:
+        relative = path.resolve().relative_to(ASSET_PRODUCTS_DIR.resolve())
+    except ValueError:
+        return path.name
+    parts = relative.parts
+    if len(parts) >= 2:
+        handle = parts[0]
+        return f"{handle}-{path.name}"
+    return path.name
 
 
 def image_manifest_path(handle: str) -> Path:
@@ -1042,13 +1194,85 @@ def stage_local_media(client: ShopifyAdminClient, media_entries: list[dict[str, 
             {
                 "originalSource": str(target["resourceUrl"]),
                 "alt": str(media.get("alt") or ""),
-                "filename": path.name,
+                "filename": shopify_media_filename(path),
                 "contentType": "IMAGE",
-                "duplicateResolutionMode": "REPLACE",
+                "duplicateResolutionMode": "APPEND_UUID",
             }
         )
         cache_items.append(
             {
+                "local_path": display_path(path),
+                "resource_url": str(target["resourceUrl"]),
+                "alt": str(media.get("alt") or ""),
+            }
+        )
+    return files, cache_items
+
+
+def stage_media_replacements(
+    client: ShopifyAdminClient,
+    media_entries: list[dict[str, str]],
+    remote_media_by_alt: dict[str, dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    upload_items: list[dict[str, Any]] = []
+    missing_remote_alts: list[str] = []
+    for media in media_entries:
+        alt = str(media.get("alt") or "")
+        src = str(media.get("src") or "")
+        if not alt:
+            continue
+        remote_media = remote_media_by_alt.get(alt)
+        if not remote_media:
+            missing_remote_alts.append(alt)
+            continue
+        path = local_media_path(src)
+        if path is None or not path.exists():
+            continue
+        upload_items.append(
+            {
+                "media": media,
+                "path": path,
+                "upload_input": staged_upload_input(path),
+                "remote_id": str(remote_media["id"]),
+            }
+        )
+
+    if missing_remote_alts:
+        missing = "\n".join(f"  - {alt}" for alt in missing_remote_alts)
+        raise SystemExit(
+            "Could not find matching remote media by alt text for replacement.\n"
+            f"Missing alt(s):\n{missing}"
+        )
+
+    if not upload_items:
+        return [], []
+
+    result = client.graphql(STAGED_UPLOADS_CREATE, {"input": [item["upload_input"] for item in upload_items]})[
+        "stagedUploadsCreate"
+    ]
+    if result.get("userErrors"):
+        raise SystemExit(f"failed to create staged uploads for replacement: {graphql_user_error_message(result['userErrors'])}")
+    targets = result.get("stagedTargets") or []
+    if len(targets) != len(upload_items):
+        raise SystemExit(f"Shopify returned {len(targets)} staged targets for {len(upload_items)} replacement media files")
+
+    files: list[dict[str, Any]] = []
+    cache_items: list[dict[str, Any]] = []
+    for item, target in zip(upload_items, targets):
+        upload_to_staged_target(target, item["path"], http_method=item["upload_input"]["httpMethod"])
+        media = item["media"]
+        path = item["path"]
+        files.append(
+            {
+                "id": item["remote_id"],
+                "originalSource": str(target["resourceUrl"]),
+                "alt": str(media.get("alt") or ""),
+                "filename": shopify_media_filename(path),
+            }
+        )
+        cache_items.append(
+            {
+                "remote_id": item["remote_id"],
                 "local_path": display_path(path),
                 "resource_url": str(target["resourceUrl"]),
                 "alt": str(media.get("alt") or ""),
@@ -1458,6 +1682,12 @@ def cmd_product_upload(args: argparse.Namespace) -> int:
         )
 
     media_entries = product.get("media") or []
+    replace_media_alts = [str(alt).strip() for alt in (args.replace_media_alt or []) if str(alt).strip()]
+    if replace_media_alts:
+        media_entries = [media for media in media_entries if str(media.get("alt") or "") in replace_media_alts]
+        if not media_entries:
+            requested = ", ".join(replace_media_alts)
+            raise SystemExit(f"No local media entries matched --replace-media-alt values: {requested}")
     remote_media = remote_url_media_files(product)
     source_images = product_source_image_paths(handle)
     local_media = []
@@ -1518,6 +1748,8 @@ def cmd_product_upload(args: argparse.Namespace) -> int:
     print(f"  local media files found: {len(local_media)}")
     print(f"  source/reference media refs: {len(source_media)}")
     print(f"  remote URL media refs: {len(remote_media)}")
+    if replace_media_alts:
+        print(f"  targeted media replacement alts: {', '.join(replace_media_alts)}")
     print(f"  collections: {', '.join(product.get('collections') or []) or '(none)'}")
     if args.skip_online_store_publication:
         print("  online store publication: skipped")
@@ -1538,9 +1770,26 @@ def cmd_product_upload(args: argparse.Namespace) -> int:
     media_files: list[dict[str, Any]] = []
     staged_cache: list[dict[str, Any]] = []
     if not args.skip_media:
-        staged_files, staged_cache = stage_local_media(client, media_entries)
-        media_files.extend(staged_files)
-        media_files.extend(remote_media)
+        if replace_media_alts:
+            remote_product = remote_product_media_by_handle(client, handle)
+            if not remote_product:
+                raise SystemExit(f"Could not load remote product media for handle {handle}")
+            remote_media_by_alt = {
+                str(node.get("alt") or ""): node
+                for node in ((remote_product.get("media") or {}).get("nodes") or [])
+                if str(node.get("alt") or "")
+            }
+            staged_files, staged_cache = stage_media_replacements(client, media_entries, remote_media_by_alt)
+            replace_result = client.graphql(FILE_UPDATE, {"files": staged_files})["fileUpdate"]
+            if replace_result.get("userErrors"):
+                raise SystemExit(
+                    f"failed to replace product media for {handle}: {graphql_user_error_message(replace_result['userErrors'])}"
+                )
+            media_files.extend(remote_media)
+        else:
+            staged_files, staged_cache = stage_local_media(client, media_entries)
+            media_files.extend(staged_files)
+            media_files.extend(remote_media)
 
     material_cache: dict[str, str] = {}
     metaobject_cache: dict[tuple[str, str], str] = {}
@@ -1620,6 +1869,112 @@ def cmd_product_upload(args: argparse.Namespace) -> int:
         print(f"  online store publication warning: {publication_result.get('warning')}")
     print(f"  cache: {display_path(cache_path)}")
     print("\nNote: product upload defaults to Online Store sales-channel publication and does not mutate inventory.")
+    return 0
+
+
+def cmd_product_media_remove(args: argparse.Namespace) -> int:
+    product_path, product = load_product(args.product)
+    handle = product["handle"]
+    requested_alts = [str(alt).strip() for alt in (args.media_alt or []) if str(alt).strip()]
+    requested_shot_ids = [str(shot_id).strip() for shot_id in (args.manifest_shot_id or []) if str(shot_id).strip()]
+    if not requested_alts and not requested_shot_ids:
+        raise SystemExit("Pass at least one --media-alt or --manifest-shot-id.")
+
+    removed_media_entries: list[dict[str, Any]] = []
+    if requested_alts:
+        existing_media = product.get("media") or []
+        kept_media: list[dict[str, Any]] = []
+        for entry in existing_media:
+            alt = str(entry.get("alt") or "")
+            if alt in requested_alts:
+                removed_media_entries.append(entry)
+            else:
+                kept_media.append(entry)
+        if removed_media_entries:
+            product["media"] = kept_media
+            write_json(product_path, product)
+
+    manifest_removed: list[dict[str, Any]] = []
+    manifest_path = image_manifest_path(handle)
+    if manifest_path.exists():
+        manifest = load_json(manifest_path)
+        manifest_shots = manifest.get("shots") or []
+        kept_shots: list[dict[str, Any]] = []
+        for shot in manifest_shots:
+            shot_id = str(shot.get("id") or "")
+            shot_alt = str(shot.get("alt") or "")
+            if shot_id in requested_shot_ids or (requested_alts and shot_alt in requested_alts):
+                manifest_removed.append(shot)
+            else:
+                kept_shots.append(shot)
+        if manifest_removed:
+            manifest["shots"] = kept_shots
+            write_json(manifest_path, manifest)
+
+    print("\nAskCrystal product media removal")
+    print(f"  mode: {'apply' if args.apply else 'local-only'}")
+    print(f"  product: {handle}")
+    print(f"  removed local product media entries: {len(removed_media_entries)}")
+    print(f"  removed manifest shots: {len(manifest_removed)}")
+    if requested_alts:
+        print(f"  target alt(s): {', '.join(requested_alts)}")
+    if requested_shot_ids:
+        print(f"  target shot id(s): {', '.join(requested_shot_ids)}")
+
+    if not args.apply:
+        print("\nNo Shopify calls were made. Pass --apply to delete matching remote product media too.")
+        return 0
+
+    client = resolve_shopify_client(args)
+    remote_product = remote_product_media_by_handle(client, handle)
+    if not remote_product:
+        raise SystemExit(f"Could not load remote product media for handle {handle}")
+
+    remote_nodes = ((remote_product.get("media") or {}).get("nodes") or [])
+    remote_matches = [node for node in remote_nodes if str(node.get("alt") or "") in requested_alts]
+    if not remote_matches:
+        requested = ", ".join(requested_alts) or "(no alt provided)"
+        raise SystemExit(f"No remote product media matched the requested alt(s): {requested}")
+
+    result = client.graphql(
+        PRODUCT_DELETE_MEDIA,
+        {
+            "productId": str(remote_product["id"]),
+            "mediaIds": [str(node["id"]) for node in remote_matches],
+        },
+    )["productDeleteMedia"]
+    if result.get("mediaUserErrors"):
+        raise SystemExit(
+            f"failed to delete product media for {handle}: {graphql_user_error_message(result['mediaUserErrors'])}"
+        )
+
+    cache_path = GENERATED_DIR / f"product-upload-cache.{handle}.json"
+    if cache_path.exists():
+        cache = load_json(cache_path)
+        deleted_ids = set(result.get("deletedMediaIds") or [])
+        product_media_nodes = (((cache.get("product") or {}).get("media") or {}).get("nodes") or [])
+        if product_media_nodes:
+            cache["product"]["media"]["nodes"] = [
+                node for node in product_media_nodes if str(node.get("id") or "") not in deleted_ids
+            ]
+        staged_media = cache.get("staged_media") or []
+        if staged_media:
+            cache["staged_media"] = [
+                item for item in staged_media if str(item.get("remote_id") or "") not in deleted_ids
+            ]
+        cache["deleted_media"] = [
+            {
+                "id": str(node.get("id") or ""),
+                "alt": str(node.get("alt") or ""),
+            }
+            for node in remote_matches
+        ]
+        write_json(cache_path, cache)
+
+    print(f"  deleted remote media: {len(result.get('deletedMediaIds') or [])}")
+    print(f"  remaining remote media: {len((((result.get('product') or {}).get('media') or {}).get('nodes') or []))}")
+    if cache_path.exists():
+        print(f"  cache: {display_path(cache_path)}")
     return 0
 
 
@@ -1847,6 +2202,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Do not publish the uploaded product to the Online Store publication.",
     )
+    upload.add_argument(
+        "--replace-media-alt",
+        action="append",
+        help="Replace only the remote media item(s) matching this alt text instead of appending all local media again. Repeat for multiple alts.",
+    )
     upload.add_argument("--show-payload", action="store_true", help="Print a compact ProductSet payload preview.")
     upload.add_argument("--store-domain", default="", help="Shopify myshopify domain. Defaults to SHOPIFY_STORE_DOMAIN.")
     upload.add_argument("--access-token", default="", help="Shopify Admin API access token. Defaults to SHOPIFY_ADMIN_ACCESS_TOKEN.")
@@ -1854,6 +2214,29 @@ def build_parser() -> argparse.ArgumentParser:
     upload.add_argument("--client-secret", default="", help="Shopify app Client secret. Defaults to SHOPIFY_CLIENT_SECRET or SHOPIFY_API_SECRET.")
     upload.add_argument("--api-version", default="2026-04", help="Shopify Admin API version.")
     upload.set_defaults(func=cmd_product_upload)
+
+    media_remove = subparsers.add_parser(
+        "product-media-remove",
+        help="Remove selected product media from local source-of-truth and optionally delete matching remote Shopify media",
+    )
+    media_remove.add_argument("--product", required=True, help="Product handle with a local catalog JSON file")
+    media_remove.add_argument(
+        "--media-alt",
+        action="append",
+        help="Remove product media entries and remote media matching this alt text. Repeat for multiple alts.",
+    )
+    media_remove.add_argument(
+        "--manifest-shot-id",
+        action="append",
+        help="Also remove manifest shot entries matching this shot id. Repeat as needed.",
+    )
+    media_remove.add_argument("--apply", action="store_true", help="Also delete matching remote media from Shopify.")
+    media_remove.add_argument("--store-domain", default="", help="Shopify myshopify domain. Defaults to SHOPIFY_STORE_DOMAIN.")
+    media_remove.add_argument("--access-token", default="", help="Shopify Admin API access token. Defaults to SHOPIFY_ADMIN_ACCESS_TOKEN.")
+    media_remove.add_argument("--client-id", default="", help="Shopify app Client ID. Defaults to SHOPIFY_CLIENT_ID or SHOPIFY_API_KEY.")
+    media_remove.add_argument("--client-secret", default="", help="Shopify app Client secret. Defaults to SHOPIFY_CLIENT_SECRET or SHOPIFY_API_SECRET.")
+    media_remove.add_argument("--api-version", default="2026-04", help="Shopify Admin API version.")
+    media_remove.set_defaults(func=cmd_product_media_remove)
 
     draft = subparsers.add_parser("draft-product", help="Create a valid local AskCrystal product JSON draft")
     draft.add_argument("--title", required=True)

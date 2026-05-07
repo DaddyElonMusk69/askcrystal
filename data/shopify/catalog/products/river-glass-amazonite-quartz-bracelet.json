@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "handle": "river-glass-amazonite-quartz-bracelet",
+  "workflow_status": "human_reviewed",
+  "shopify_status": "active",
+  "title": "River Glass Amazonite Quartz Bracelet",
+  "description": "A bracelet built from pale transparency and cooler green notes: oversized clear quartz forms, smooth amazonite accents, and sterling silver details gathered into a silhouette that feels fresh, airy, and quietly composed on the wrist.\n\nThe piece has a lighter emotional temperature than something overtly ceremonial. Clear quartz keeps the composition open and luminous, while the amazonite rounds soften it with a washed blue-green calm that feels easy to live with. It reads polished without becoming formal, and restorative without leaning too precious.\n\nCurated for the AskCrystal artist edit by Naomi Watanabe, this bracelet is designed for people who want clarity with gentleness and structure without heaviness. Wear it as a daily reset, a travel companion, or a premium gift for someone moving toward a calmer tone of voice and a steadier inner rhythm.",
+  "vendor": "AskCrystal",
+  "product_type": "Bracelet",
+  "tags": [
+    "source:rmb",
+    "source:screenshot-2026-05-05-150702",
+    "test-import"
+  ],
+  "collections": [],
+  "options": [
+    {
+      "name": "Size",
+      "values": [
+        "Small / Medium",
+        "Medium / Large"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "AC-RGAQB-SM",
+      "price": "299.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "Small / Medium"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-RGAQB-ML",
+      "price": "314.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "Medium / Large"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/01-hero-front.png",
+      "alt": "River Glass Amazonite Quartz Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/02-three-quarter.png",
+      "alt": "River Glass Amazonite Quartz Bracelet angled three-quarter product view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/03-side-or-back-detail.png",
+      "alt": "River Glass Amazonite Quartz Bracelet side or closure detail"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/04-macro-crystal.png",
+      "alt": "River Glass Amazonite Quartz Bracelet crystal texture close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/05-scale-in-hand.png",
+      "alt": "River Glass Amazonite Quartz Bracelet shown in hand for scale"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/06-faceless-wearing-closeup.png",
+      "alt": "River Glass Amazonite Quartz Bracelet faceless model close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/07-lifestyle-context.png",
+      "alt": "River Glass Amazonite Quartz Bracelet lifestyle ritual context"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/08-ritual-still-life.png",
+      "alt": "River Glass Amazonite Quartz Bracelet styled for daily wear, travel, work desk ritual use"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/09-packaging-flatlay.png",
+      "alt": "River Glass Amazonite Quartz Bracelet packaging flat lay"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "clarity",
+    "secondary_intentions": [
+      "calm",
+      "emotional_balance"
+    ],
+    "product_form": "bracelet",
+    "crystal_material_handles": [
+      "amazonite",
+      "clear_quartz",
+      "sterling_silver"
+    ],
+    "artist_handle": "naomi-watanabe",
+    "chakras": [
+      "throat",
+      "heart",
+      "crown"
+    ],
+    "color_families": [
+      "green",
+      "clear",
+      "white"
+    ],
+    "ritual_uses": [
+      "daily_wear",
+      "travel",
+      "work_desk"
+    ],
+    "gift_for": [
+      "friend",
+      "birthday",
+      "new_beginning"
+    ],
+    "western_elements": [
+      "water",
+      "air"
+    ],
+    "five_elements": [
+      "water",
+      "wood",
+      "metal"
+    ],
+    "zodiac_signs": [
+      "libra",
+      "aquarius",
+      "virgo"
+    ],
+    "energetic_properties": [
+      "clear composure",
+      "soft communication",
+      "cool-toned steadiness"
+    ],
+    "archetype_name": "The River Glass",
+    "story_headline": "A pale green quartz bracelet for calm clarity and softer communication",
+    "story_summary": "This bracelet layers clear quartz, amazonite, and sterling silver into a cool, airy composition designed for clarity, emotional balance, and quietly restorative daily wear.",
+    "benefits": [
+      "Keeps a light, clarifying visual rhythm close to the wrist throughout the day",
+      "Balances large clear quartz forms with softer amazonite calm and silver structure",
+      "Feels premium and breathable rather than heavy or overly ornamental",
+      "Makes a thoughtful gift for fresh starts, birthdays, and calmer workday routines"
+    ],
+    "ritual_title": "River Glass Ritual",
+    "ritual_steps": [
+      "Fasten the bracelet and let the clearest quartz forms settle where you can catch the light on them easily.",
+      "Take three slower breaths and name the tone you want to carry into the day: clear, calm, or steady.",
+      "Touch one amazonite bead before work, travel, or conversation, and let that cooler steadiness guide your response."
+    ],
+    "care_steps": [
+      "Wipe gently with a soft dry cloth after wear.",
+      "Keep sterling silver away from perfume, harsh cleaners, and prolonged soaking.",
+      "Store separately from harder jewelry so the polished quartz stays clear and bright.",
+      "Refresh with sound, selenite, or soft moonlight when the piece starts to feel energetically crowded."
+    ],
+    "included_items": [
+      "Clear quartz, amazonite, and sterling silver bracelet",
+      "Protective gift-ready packaging"
+    ],
+    "quality_notes": [
+      "Supplier sheet shows large 12 mm clear quartz round beads, additional clear quartz forms, small spacer beads, large-hole sterling silver round beads, and a sterling silver hook clasp.",
+      "Visible source pricing shows 285 CNY and 300 CNY size bands plus 15 CNY shipping, converted to USD, held above the 7x markup floor, and rounded upward to premium .99 pricing.",
+      "Natural variation in quartz clarity, internal inclusions, and amazonite tone is expected.",
+      "This product was modeled from a supplier screenshot, so the current size labels are conservative placeholder bands tied to the visible cost tiers rather than confirmed centimeter measurements."
+    ],
+    "pairing_notes": "Pair with moonstone when the mood needs to stay softer, or add clear quartz nearby when the ritual needs sharper focus and cleaner mental space.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice.",
+    "agent_summary": "Recommend this bracelet for users asking for calm clarity, pale green premium jewelry, softer communication support, cool-toned daily wear, or a bracelet that feels airy and quietly restorative.",
+    "agent_tags": [
+      "chakra:crown",
+      "chakra:heart",
+      "chakra:throat",
+      "color:clear",
+      "color:green",
+      "color:white",
+      "form:bracelet",
+      "gift:birthday",
+      "gift:friend",
+      "gift:new_beginning",
+      "intention:calm",
+      "intention:clarity",
+      "material:amazonite",
+      "material:clear_quartz",
+      "material:sterling_silver",
+      "ritual:daily_wear",
+      "ritual:travel",
+      "ritual:work_desk",
+      "zodiac:aquarius",
+      "zodiac:libra",
+      "zodiac:virgo"
+    ],
+    "data_status": "human_reviewed"
+  }
+}

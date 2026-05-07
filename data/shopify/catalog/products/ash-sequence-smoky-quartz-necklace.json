@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "handle": "ash-sequence-smoky-quartz-necklace",
+  "workflow_status": "human_reviewed",
+  "shopify_status": "draft",
+  "title": "Ash Sequence Smoky Quartz Necklace",
+  "description": "A necklace built around dark rhythm and clear spacing: smoky quartz drops and fang-like forms, black tourmaline chips, clear quartz accents, black agate cubes, and sterling silver hardware arranged into a long silhouette that feels collected rather than ornamental.\n\nThe contrast is deliberate. Smoky stones keep the piece rooted, clear quartz opens the composition, and the silver T-clasp gives it a clean line that reads more architectural than mystical. At 49 cm, it sits with enough length to feel present on the collarbone while staying easy to layer into everyday wear.\n\nCurated for the AskCrystal artist edit by Daniel Moreau, this necklace is designed for people who want protection and clarity without heaviness. Wear it as a steady travel companion, a workday boundary ritual, or a premium gift for someone rebuilding their sense of center.",
+  "vendor": "AskCrystal",
+  "product_type": "Necklace",
+  "tags": [
+    "source:rmb",
+    "source:screenshot-2026-05-04-220458",
+    "test-import"
+  ],
+  "collections": [],
+  "options": [
+    {
+      "name": "Size",
+      "values": [
+        "49 cm"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "AC-ASQN-49CM",
+      "price": "499.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "49 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/01-hero-front.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace front view on a dark atmospheric backdrop"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/02-three-quarter.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace angled three-quarter product view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/03-side-or-back-detail.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace side or closure detail"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/04-macro-crystal.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace crystal texture close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/05-scale-in-hand.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace shown in hand for scale"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/06-faceless-wearing-closeup.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace faceless model close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/07-lifestyle-context.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace lifestyle ritual context"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/08-ritual-still-life.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace styled for daily wear, travel, work desk ritual use"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/09-packaging-flatlay.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace packaging flat lay"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "grounding",
+    "secondary_intentions": [
+      "protection",
+      "clarity"
+    ],
+    "product_form": "necklace",
+    "crystal_material_handles": [
+      "smoky_quartz",
+      "clear_quartz",
+      "black_tourmaline",
+      "agate",
+      "sterling_silver"
+    ],
+    "artist_handle": "daniel-moreau",
+    "chakras": [
+      "root",
+      "throat",
+      "crown"
+    ],
+    "color_families": [
+      "black",
+      "clear",
+      "white"
+    ],
+    "ritual_uses": [
+      "daily_wear",
+      "travel",
+      "work_desk"
+    ],
+    "gift_for": [
+      "friend",
+      "birthday",
+      "new_beginning"
+    ],
+    "western_elements": [
+      "earth",
+      "air"
+    ],
+    "five_elements": [
+      "earth",
+      "metal"
+    ],
+    "zodiac_signs": [
+      "capricorn",
+      "scorpio",
+      "gemini"
+    ],
+    "energetic_properties": [
+      "quiet grounding",
+      "clear boundaries",
+      "architectural calm"
+    ],
+    "archetype_name": "The Ash Line",
+    "story_headline": "A smoky silver necklace for grounded clarity and quiet structure",
+    "story_summary": "This 49 cm necklace layers smoky quartz, clear quartz, black tourmaline, black agate, and sterling silver into a long, structured silhouette designed for grounding, clarity, and everyday protection rituals.",
+    "benefits": [
+      "Keeps grounding and clarity close without feeling heavy or ornate",
+      "Balances dark protective stones with bright quartz and silver contrast",
+      "Works for travel days, focused work blocks, and daily wear layering",
+      "Makes a premium gift for someone rebuilding steadiness after change"
+    ],
+    "ritual_title": "Ash Line Ritual",
+    "ritual_steps": [
+      "Fasten the necklace and let the darker stones settle toward the center of the chest.",
+      "Take three slower breaths and name the boundary or task you want to hold cleanly today.",
+      "Touch one clear quartz accent before entering work, travel, or a conversation that asks for steadiness."
+    ],
+    "care_steps": [
+      "Wipe gently with a soft dry cloth after wear.",
+      "Keep sterling silver away from perfume, harsh cleaners, and prolonged soaking.",
+      "Store flat or hung so the strand, chips, and silver clasp do not rub against harder jewelry.",
+      "Refresh with sound, selenite, or soft moonlight when the piece starts to feel energetically crowded."
+    ],
+    "included_items": [
+      "Smoky quartz, clear quartz, black tourmaline, black agate, and sterling silver necklace",
+      "Protective gift-ready packaging"
+    ],
+    "quality_notes": [
+      "Supplier sheet lists a fixed 49 cm necklace length.",
+      "Supplier components include smoky quartz drops, smoky quartz points, clear quartz points, clear quartz chips, black tourmaline chips and faceted accents, black agate cubes, sterling silver details, Thai silver-style spacer beads, and a sterling silver T-clasp.",
+      "Natural variation in quartz clarity, smoky tone, and dark stone shape is expected.",
+      "Local catalog pricing converted from CNY source cost into USD and rounded upward to premium .99 pricing."
+    ],
+    "pairing_notes": "Pair with black tourmaline when you want stronger boundary work nearby, or keep clear quartz close when the ritual needs a cleaner mental edge.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice. Remove before swimming, showering, or sleeping if the necklace feels delicate or catches easily.",
+    "agent_summary": "Recommend this necklace for users asking for grounding with clarity, structured dark-toned jewelry, premium protection gifts, travel steadiness, or a longer necklace that feels architectural rather than ornate.",
+    "agent_tags": [
+      "chakra:crown",
+      "chakra:root",
+      "chakra:throat",
+      "color:black",
+      "color:clear",
+      "color:white",
+      "form:necklace",
+      "gift:birthday",
+      "gift:friend",
+      "gift:new_beginning",
+      "intention:clarity",
+      "intention:grounding",
+      "intention:protection",
+      "material:agate",
+      "material:black_tourmaline",
+      "material:clear_quartz",
+      "material:smoky_quartz",
+      "material:sterling_silver",
+      "ritual:daily_wear",
+      "ritual:travel",
+      "ritual:work_desk",
+      "zodiac:capricorn",
+      "zodiac:gemini",
+      "zodiac:scorpio"
+    ],
+    "data_status": "human_reviewed"
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "product_handle": "ink-ridge-malachite-pearl-bracelet",
+  "synced_at_unix": 1778066626,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "publication": {
+    "skipped": false,
+    "publication_id": "gid://shopify/Publication/303037448555",
+    "published": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14967124230507",
+    "handle": "ink-ridge-malachite-pearl-bracelet",
+    "title": "Ink Ridge Malachite Pearl Bracelet",
+    "status": "DRAFT",
+    "media": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47797892350315",
+          "alt": "Ink Ridge Malachite Pearl Bracelet front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797892383083",
+          "alt": "Ink Ridge Malachite Pearl Bracelet angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797892415851",
+          "alt": "Ink Ridge Malachite Pearl Bracelet side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797892448619",
+          "alt": "Ink Ridge Malachite Pearl Bracelet crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797892481387",
+          "alt": "Ink Ridge Malachite Pearl Bracelet shown in hand for scale",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797892514155",
+          "alt": "Ink Ridge Malachite Pearl Bracelet faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797892546923",
+          "alt": "Ink Ridge Malachite Pearl Bracelet lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797892579691",
+          "alt": "Ink Ridge Malachite Pearl Bracelet styled for daily wear, travel, work desk ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47797892612459",
+          "alt": "Ink Ridge Malachite Pearl Bracelet packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        }
+      ]
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53180204745067",
+          "sku": "AC-IRMPB-14.5CM",
+          "title": "14.5 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53180204777835",
+          "sku": "AC-IRMPB-15CM",
+          "title": "15 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53180204810603",
+          "sku": "AC-IRMPB-16CM",
+          "title": "16 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53180204843371",
+          "sku": "AC-IRMPB-17CM",
+          "title": "17 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53180204876139",
+          "sku": "AC-IRMPB-18CM",
+          "title": "18 cm"
+        }
+      ]
+    }
+  },
+  "staged_media": [
+    {
+      "remote_id": "gid://shopify/MediaImage/47797892546923",
+      "local_path": "data/shopify/catalog/assets/products/ink-ridge-malachite-pearl-bracelet/07-lifestyle-context.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/eedf76a7-6496-4c16-b437-2d21bf8c0e3c/07-lifestyle-context.png",
+      "alt": "Ink Ridge Malachite Pearl Bracelet lifestyle ritual context"
+    }
+  ],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "handle": "ink-ridge-malachite-pearl-bracelet",
+  "workflow_status": "human_reviewed",
+  "shopify_status": "draft",
+  "title": "Ink Ridge Malachite Pearl Bracelet",
+  "description": "A bracelet built from darker contrast and greener movement: faceted black agate, malachite chips, clear quartz barrels, baroque pearls, and sterling silver details arranged into a silhouette that feels structured, grounded, and unexpectedly fluid on the wrist.\n\nThe rhythm is what makes it memorable. The black agate forms give the piece weight and contour, the malachite chips break that geometry with a livelier green edge, and the clear quartz plus pearl accents keep the bracelet from feeling too heavy or severe. It reads protective and premium, but still personal enough for everyday wear.\n\nCurated for the AskCrystal artist edit by Julian Becker, this bracelet is designed for people who want steadier boundaries with a clearer center. Wear it as a workday anchor, a travel companion, or a gift for someone moving through a transition that asks for both calm structure and a little renewal.",
+  "vendor": "AskCrystal",
+  "product_type": "Bracelet",
+  "tags": [
+    "source:rmb",
+    "source:screenshot-2026-05-06-132032",
+    "listed"
+  ],
+  "collections": [],
+  "options": [
+    {
+      "name": "Size",
+      "values": [
+        "14.5 cm",
+        "15 cm",
+        "16 cm",
+        "17 cm",
+        "18 cm"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "AC-IRMPB-14.5CM",
+      "price": "133.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "14.5 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-IRMPB-15CM",
+      "price": "133.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "15 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-IRMPB-16CM",
+      "price": "133.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "16 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-IRMPB-17CM",
+      "price": "140.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "17 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-IRMPB-18CM",
+      "price": "140.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "18 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/products/ink-ridge-malachite-pearl-bracelet/01-hero-front.png",
+      "alt": "Ink Ridge Malachite Pearl Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ink-ridge-malachite-pearl-bracelet/02-three-quarter.png",
+      "alt": "Ink Ridge Malachite Pearl Bracelet angled three-quarter product view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ink-ridge-malachite-pearl-bracelet/03-side-or-back-detail.png",
+      "alt": "Ink Ridge Malachite Pearl Bracelet side or closure detail"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ink-ridge-malachite-pearl-bracelet/04-macro-crystal.png",
+      "alt": "Ink Ridge Malachite Pearl Bracelet crystal texture close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ink-ridge-malachite-pearl-bracelet/05-scale-in-hand.png",
+      "alt": "Ink Ridge Malachite Pearl Bracelet shown in hand for scale"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ink-ridge-malachite-pearl-bracelet/06-faceless-wearing-closeup.png",
+      "alt": "Ink Ridge Malachite Pearl Bracelet faceless model close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ink-ridge-malachite-pearl-bracelet/07-lifestyle-context.png",
+      "alt": "Ink Ridge Malachite Pearl Bracelet lifestyle ritual context"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ink-ridge-malachite-pearl-bracelet/08-ritual-still-life.png",
+      "alt": "Ink Ridge Malachite Pearl Bracelet styled for daily wear, travel, work desk ritual use"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/ink-ridge-malachite-pearl-bracelet/09-packaging-flatlay.png",
+      "alt": "Ink Ridge Malachite Pearl Bracelet packaging flat lay"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "protection",
+    "secondary_intentions": [
+      "grounding",
+      "clarity"
+    ],
+    "product_form": "bracelet",
+    "crystal_material_handles": [
+      "agate",
+      "malachite",
+      "clear_quartz",
+      "baroque_pearl",
+      "sterling_silver"
+    ],
+    "artist_handle": "julian-becker",
+    "chakras": [
+      "root",
+      "heart",
+      "crown"
+    ],
+    "color_families": [
+      "black",
+      "green",
+      "clear",
+      "white"
+    ],
+    "ritual_uses": [
+      "daily_wear",
+      "travel",
+      "work_desk"
+    ],
+    "gift_for": [
+      "friend",
+      "new_beginning",
+      "stress_relief"
+    ],
+    "western_elements": [
+      "earth",
+      "water"
+    ],
+    "five_elements": [
+      "wood",
+      "water",
+      "earth",
+      "metal"
+    ],
+    "zodiac_signs": [
+      "capricorn",
+      "scorpio",
+      "virgo"
+    ],
+    "energetic_properties": [
+      "protective clarity",
+      "grounded composure",
+      "structured renewal"
+    ],
+    "archetype_name": "The Ink Ridge",
+    "story_headline": "A black-and-green bracelet for protection with clearer structure",
+    "story_summary": "This bracelet layers faceted black agate, malachite chips, clear quartz, baroque pearl, and sterling silver into a dark green composition designed for protection, grounding, and a cleaner sense of inner steadiness.",
+    "benefits": [
+      "Keeps a darker, more structured protection ritual close to the wrist throughout the day",
+      "Balances black agate weight with green malachite movement and clear quartz brightness",
+      "Feels premium and architectural without becoming cold or overly formal",
+      "Makes a thoughtful gift for travel, work transitions, or seasons that call for steadier boundaries"
+    ],
+    "ritual_title": "Ink Ridge Ritual",
+    "ritual_steps": [
+      "Fasten the bracelet and let the darker faceted agate stones settle along the top of the wrist.",
+      "Take three slower breaths and name the situation, room, or task where you want stronger boundaries and clearer focus today.",
+      "Touch one black agate stone and one green accent in sequence before work, travel, or a difficult conversation, and carry that steadier rhythm forward."
+    ],
+    "care_steps": [
+      "Wipe gently with a soft dry cloth after wear.",
+      "Keep pearls and sterling silver away from perfume, harsh cleaners, and prolonged soaking.",
+      "Store separately from harder jewelry so the pearl surface, quartz edges, and polished stones stay protected.",
+      "Refresh with sound, selenite, or soft moonlight when the piece starts to feel energetically crowded."
+    ],
+    "included_items": [
+      "Black agate, malachite, clear quartz, baroque pearl, and sterling silver bracelet",
+      "Protective gift-ready packaging"
+    ],
+    "quality_notes": [
+      "Supplier sheet lists sizes 14.5 cm, 15 cm, 16 cm, 17 cm, and 18 cm.",
+      "Visible component list names black agate faceted beads, malachite chips, clear quartz barrel beads, baroque pearl, spotted round disc accents, sterling silver large-hole round bead, and a small engravable sterling silver round tag.",
+      "Visible source pricing shows 133 CNY and 140 CNY size bands plus 15 CNY shipping; local catalog pricing converts the item cost to USD, holds above the 7x markup floor, and rounds upward to premium .99 pricing.",
+      "Natural variation in agate polish, malachite banding, quartz clarity, pearl surface, and spotted stone pattern is expected."
+    ],
+    "pairing_notes": "Pair with black tourmaline when the day needs firmer boundaries, or add clear quartz nearby when the ritual needs a cleaner mental edge and sharper focus.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice. Remove before swimming, showering, or strenuous activity if the bracelet feels delicate or tight.",
+    "agent_summary": "Recommend this bracelet for users asking for darker premium jewelry, black-and-green protection rituals, grounded daily wear, workday boundary support, or a bracelet that feels structured, personal, and quietly strong.",
+    "agent_tags": [
+      "chakra:crown",
+      "chakra:heart",
+      "chakra:root",
+      "color:black",
+      "color:clear",
+      "color:green",
+      "color:white",
+      "form:bracelet",
+      "gift:friend",
+      "gift:new_beginning",
+      "gift:stress_relief",
+      "intention:clarity",
+      "intention:grounding",
+      "intention:protection",
+      "material:agate",
+      "material:baroque_pearl",
+      "material:clear_quartz",
+      "material:malachite",
+      "material:sterling_silver",
+      "ritual:daily_wear",
+      "ritual:travel",
+      "ritual:work_desk",
+      "zodiac:capricorn",
+      "zodiac:scorpio",
+      "zodiac:virgo"
+    ],
+    "data_status": "human_reviewed"
+  }
+}

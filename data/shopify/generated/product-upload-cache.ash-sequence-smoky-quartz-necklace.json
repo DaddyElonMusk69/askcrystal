@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "product_handle": "ash-sequence-smoky-quartz-necklace",
+  "synced_at_unix": 1777911541,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "publication": {
+    "skipped": false,
+    "publication_id": "gid://shopify/Publication/303037448555",
+    "published": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14962734727531",
+    "handle": "ash-sequence-smoky-quartz-necklace",
+    "title": "Ash Sequence Smoky Quartz Necklace",
+    "status": "DRAFT",
+    "media": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47787125834091",
+          "alt": "Ash Sequence Smoky Quartz Necklace front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787125866859",
+          "alt": "Ash Sequence Smoky Quartz Necklace angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787125899627",
+          "alt": "Ash Sequence Smoky Quartz Necklace side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787125932395",
+          "alt": "Ash Sequence Smoky Quartz Necklace crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787125965163",
+          "alt": "Ash Sequence Smoky Quartz Necklace shown in hand for scale",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787125997931",
+          "alt": "Ash Sequence Smoky Quartz Necklace faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787126030699",
+          "alt": "Ash Sequence Smoky Quartz Necklace lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787126063467",
+          "alt": "Ash Sequence Smoky Quartz Necklace styled for daily wear, travel, work desk ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47787126096235",
+          "alt": "Ash Sequence Smoky Quartz Necklace packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        }
+      ]
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53161713107307",
+          "sku": "AC-ASQN-49CM",
+          "title": "49 cm"
+        }
+      ]
+    }
+  },
+  "staged_media": [
+    {
+      "local_path": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/01-hero-front.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/d7928eac-0c2a-4780-8724-02ba0d48cba8/01-hero-front.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace front view on a dark atmospheric backdrop"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/02-three-quarter.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/fefd0e2d-47a3-4485-8091-c8bb98d4621f/02-three-quarter.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace angled three-quarter product view"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/03-side-or-back-detail.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/11eb6889-b0d8-48e7-a4de-540095a0cd61/03-side-or-back-detail.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace side or closure detail"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/04-macro-crystal.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/94664cda-564b-457a-85da-ae6bba305ca7/04-macro-crystal.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace crystal texture close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/05-scale-in-hand.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/eedfd206-fcef-4ab1-961f-7d2a90ea86b5/05-scale-in-hand.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace shown in hand for scale"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/06-faceless-wearing-closeup.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/ef1de145-30f7-4ed0-850a-5474f9b0a726/06-faceless-wearing-closeup.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace faceless model close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/07-lifestyle-context.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/5258e016-a4a8-4512-ade5-0f60abb7fded/07-lifestyle-context.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace lifestyle ritual context"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/08-ritual-still-life.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/2d669cdb-cec5-4233-90e8-070f5762bd54/08-ritual-still-life.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace styled for daily wear, travel, work desk ritual use"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/ash-sequence-smoky-quartz-necklace/09-packaging-flatlay.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/33d06919-41d9-42f9-bd49-4f1f9bc22886/09-packaging-flatlay.png",
+      "alt": "Ash Sequence Smoky Quartz Necklace packaging flat lay"
+    }
+  ],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ]
+}

@@ -117,6 +117,8 @@ Artist profile images are attached to the seeded artist metaobject, not to each 
 - Use portrait 3:4 aspect ratio for every generated product image.
 - Include product angle views, crystal/material detail, scale context, ritual/lifestyle context, and packaging/gifting context.
 - For jewelry pieces, include a faceless close-up of a model wearing the product. Crop out identifiable faces.
+- "Wearing" means the product is structurally in use on the correct body part at believable human scale, not merely placed against skin for styling.
+- For wearable shots, infer the product's real-world wearable size from the source image and product type before placing it on a body. Match bracelet diameter to wrist scale, necklace chain length to neck/collarbone scale, ring diameter to finger scale, earring size to ear scale, anklet diameter to ankle scale, and pendant size to chest/collarbone scale.
 - Keep styling generic until the user provides the final brand prompt.
 - Save generated images under `data/shopify/catalog/assets/products/<handle>/`.
 - Save source/reference product photos under `data/shopify/catalog/assets/products/<handle>/source/`.
@@ -125,7 +127,8 @@ Artist profile images are attached to the seeded artist metaobject, not to each 
 - Do not hand-maintain Shopify CDN URLs in source product JSON.
 - Use the system `imagegen` skill by default. Use Jimeng/Dreamina only when the user explicitly asks for it.
 - If Jimeng is explicitly requested, dry-run first and use `--apply` only when the user has approved credit consumption.
-- Wearable model shots must place jewelry correctly: bracelet on wrist, necklace on neck/collarbone, ring on finger, earrings on ear, anklet on ankle, pendant on chain/chest.
+- Wearable model shots must place jewelry correctly and show it being actually worn at real body scale: bracelet resized from source diameter to fit the wrist contour, necklace resized from source chain/strand length to drape on neck/collarbone, ring resized from source band diameter to fit the finger, earrings scaled from source size to attach on ear, anklet resized from source diameter to fit the ankle contour, pendant resized from source pendant/chain proportions to hang at chest/collarbone.
+- If a wearable shot shows the product simply resting on the body, floating flat over the body, or scaled larger than real jewelry, reject it and regenerate before sync.
 - Include image metadata for every generated shot:
   - `alt`: accessibility text and Shopify media alt.
   - `seo_title`: concise title for future SEO/content surfaces.

@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "product_handle": "river-glass-amazonite-quartz-bracelet",
+  "synced_at_unix": 1777984209,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "publication": {
+    "skipped": false,
+    "publication_id": "gid://shopify/Publication/303037448555",
+    "published": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14965060370795",
+    "handle": "river-glass-amazonite-quartz-bracelet",
+    "title": "River Glass Amazonite Quartz Bracelet",
+    "status": "ACTIVE",
+    "media": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47793097605483",
+          "alt": "River Glass Amazonite Quartz Bracelet front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47793097638251",
+          "alt": "River Glass Amazonite Quartz Bracelet angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47793097671019",
+          "alt": "River Glass Amazonite Quartz Bracelet side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47793097703787",
+          "alt": "River Glass Amazonite Quartz Bracelet crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47793097736555",
+          "alt": "River Glass Amazonite Quartz Bracelet shown in hand for scale",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47793097769323",
+          "alt": "River Glass Amazonite Quartz Bracelet faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47793097802091",
+          "alt": "River Glass Amazonite Quartz Bracelet lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "PROCESSING"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47793097834859",
+          "alt": "River Glass Amazonite Quartz Bracelet styled for daily wear, travel, work desk ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47793097867627",
+          "alt": "River Glass Amazonite Quartz Bracelet packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        }
+      ]
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53174730490219",
+          "sku": "AC-RGAQB-SM",
+          "title": "Small / Medium"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53174730522987",
+          "sku": "AC-RGAQB-ML",
+          "title": "Medium / Large"
+        }
+      ]
+    }
+  },
+  "staged_media": [
+    {
+      "local_path": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/01-hero-front.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/1fe7dfbb-e1ef-4d27-875f-18516b4a794c/01-hero-front.png",
+      "alt": "River Glass Amazonite Quartz Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/02-three-quarter.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/c328c797-577d-4cbb-a28c-3d87d9ac9c0c/02-three-quarter.png",
+      "alt": "River Glass Amazonite Quartz Bracelet angled three-quarter product view"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/03-side-or-back-detail.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/b62abfb9-668e-4b7f-a494-d6c802fc3469/03-side-or-back-detail.png",
+      "alt": "River Glass Amazonite Quartz Bracelet side or closure detail"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/04-macro-crystal.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/6c819b45-e18d-48a3-b0ed-62a23419b279/04-macro-crystal.png",
+      "alt": "River Glass Amazonite Quartz Bracelet crystal texture close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/05-scale-in-hand.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/1a1157bb-c9e4-47bd-85a5-2b3035838427/05-scale-in-hand.png",
+      "alt": "River Glass Amazonite Quartz Bracelet shown in hand for scale"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/06-faceless-wearing-closeup.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/00f96b58-001d-4266-9cb8-199043b6cba6/06-faceless-wearing-closeup.png",
+      "alt": "River Glass Amazonite Quartz Bracelet faceless model close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/07-lifestyle-context.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/e61dcb4b-d4aa-4c51-a0b1-9fd2f8f5fe49/07-lifestyle-context.png",
+      "alt": "River Glass Amazonite Quartz Bracelet lifestyle ritual context"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/08-ritual-still-life.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/61761c5a-dd2c-48d5-9aeb-85ed5d3512a2/08-ritual-still-life.png",
+      "alt": "River Glass Amazonite Quartz Bracelet styled for daily wear, travel, work desk ritual use"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/river-glass-amazonite-quartz-bracelet/09-packaging-flatlay.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/7c11f94d-ca79-4d80-aaa9-174e5329c591/09-packaging-flatlay.png",
+      "alt": "River Glass Amazonite Quartz Bracelet packaging flat lay"
+    }
+  ],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ]
+}

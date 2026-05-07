@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "handle": "shadow-current-tigers-eye-bracelet",
+  "workflow_status": "human_reviewed",
+  "shopify_status": "active",
+  "title": "Shadow Current Tiger's Eye Bracelet",
+  "description": "A bracelet built around darker contrast and deliberate structure: faceted tiger's eye, striped agate forms, luminous gray baroque pearls, and sterling silver details gathered into a silhouette that feels grounded, polished, and quietly protective.\n\nThe piece has a steadier pulse than something overtly dramatic. Tiger's eye brings a warm golden-brown flash, agate adds weight and pattern, and the gray pearl notes soften the composition just enough to keep it personal rather than severe. It feels like jewelry for when you want confidence with a little boundary built into it.\n\nCurated for the AskCrystal artist edit by Daniel Moreau, this bracelet leans into restraint, contrast, and everyday resilience. Wear it as a workday anchor, a travel companion, or a premium gift for someone rebuilding steadiness without losing their edge.",
+  "vendor": "AskCrystal",
+  "product_type": "Bracelet",
+  "tags": [
+    "source:rmb",
+    "source:screenshot-2026-05-05-131517",
+    "test-import"
+  ],
+  "collections": [],
+  "options": [
+    {
+      "name": "Size",
+      "values": [
+        "14.5 cm",
+        "15 cm",
+        "16 cm",
+        "17 cm",
+        "18 cm"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "sku": "AC-SCTEB-14.5CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "14.5 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-SCTEB-15CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "15 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-SCTEB-16CM",
+      "price": "199.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "16 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-SCTEB-17CM",
+      "price": "209.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "17 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    },
+    {
+      "sku": "AC-SCTEB-18CM",
+      "price": "209.99",
+      "compare_at_price": null,
+      "barcode": null,
+      "option_values": [
+        "18 cm"
+      ],
+      "taxable": true,
+      "requires_shipping": true
+    }
+  ],
+  "media": [
+    {
+      "src": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/01-hero-front.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/02-three-quarter.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet angled three-quarter product view"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/03-side-or-back-detail.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet side or closure detail"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/04-macro-crystal.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet crystal texture close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/05-scale-in-hand.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet shown in hand for scale"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/06-faceless-wearing-closeup.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet faceless model close-up"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/07-lifestyle-context.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet lifestyle ritual context"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/08-ritual-still-life.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet styled for daily wear, travel, work desk ritual use"
+    },
+    {
+      "src": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/09-packaging-flatlay.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet packaging flat lay"
+    }
+  ],
+  "askcrystal": {
+    "primary_intention": "confidence",
+    "secondary_intentions": [
+      "protection",
+      "grounding"
+    ],
+    "product_form": "bracelet",
+    "crystal_material_handles": [
+      "tigers_eye",
+      "agate",
+      "baroque_pearl",
+      "sterling_silver"
+    ],
+    "artist_handle": "daniel-moreau",
+    "chakras": [
+      "root",
+      "solar_plexus",
+      "heart"
+    ],
+    "color_families": [
+      "black",
+      "gold",
+      "white"
+    ],
+    "ritual_uses": [
+      "daily_wear",
+      "travel",
+      "work_desk"
+    ],
+    "gift_for": [
+      "friend",
+      "birthday",
+      "new_beginning"
+    ],
+    "western_elements": [
+      "earth",
+      "fire",
+      "water"
+    ],
+    "five_elements": [
+      "earth",
+      "fire",
+      "metal",
+      "water"
+    ],
+    "zodiac_signs": [
+      "leo",
+      "capricorn",
+      "gemini"
+    ],
+    "energetic_properties": [
+      "grounded confidence",
+      "protective composure",
+      "measured forward motion"
+    ],
+    "archetype_name": "The Shadow Current",
+    "story_headline": "A darker tiger's eye bracelet for grounded confidence and steadier boundaries",
+    "story_summary": "This bracelet layers tiger's eye, striped agate, gray baroque pearl, and sterling silver into a darker, structured composition designed for confidence, protection, and practical daily wear.",
+    "benefits": [
+      "Keeps a tactile reminder of confidence and steadiness close to the wrist",
+      "Balances darker stone contrast with a warm tiger's eye flash and softer pearl notes",
+      "Works well for workdays, travel, and routines that need calm boundaries",
+      "Makes a premium gift for birthdays, fresh starts, or someone rebuilding momentum"
+    ],
+    "ritual_title": "Shadow Current Ritual",
+    "ritual_steps": [
+      "Fasten the bracelet and let the tiger's eye face outward on the wrist.",
+      "Take three slower breaths while touching one darker stone to name the boundary or task you want to hold clearly today.",
+      "Touch the warm brown tiger's eye once more before work, travel, or a difficult conversation, and carry that steadiness forward."
+    ],
+    "care_steps": [
+      "Wipe gently with a soft dry cloth after wear.",
+      "Keep pearls and sterling silver away from perfume, harsh cleaners, and prolonged soaking.",
+      "Store separately from harder jewelry so the pearl surface and polished stones stay protected.",
+      "Refresh with sound, selenite, or soft moonlight when the piece starts to feel energetically crowded."
+    ],
+    "included_items": [
+      "Tiger's eye, agate, gray baroque pearl, and sterling silver bracelet",
+      "Protective gift-ready packaging"
+    ],
+    "quality_notes": [
+      "Supplier sheet lists sizes 14.5 cm, 15 cm, 16 cm, 17 cm, and 18 cm",
+      "Supplier components list carved tiger's eye, irregular Persian agate, 9-10 mm gray baroque pearl, Thai silver-style hook hardware, and a small sterling silver logo charm",
+      "Natural variation in tiger's eye chatoyancy, agate banding, and baroque pearl surface is expected",
+      "Local catalog pricing converted from CNY source cost into USD, held above the 7x markup floor, and rounded upward to premium .99 pricing"
+    ],
+    "pairing_notes": "Pair with black tourmaline when you want stronger protection nearby, or add clear quartz when the ritual needs more focus and mental sharpness.",
+    "safety_note": "For wellness and self-reflection only. Crystal guidance is not medical advice. Remove before swimming, showering, or strenuous activity if the bracelet feels delicate or tight.",
+    "agent_summary": "Recommend this bracelet for users asking for grounded confidence, darker premium jewelry, practical protection rituals, workday steadiness, or a bracelet that feels structured rather than ornate.",
+    "agent_tags": [
+      "agate",
+      "baroque_pearl",
+      "birthday",
+      "black",
+      "bracelet",
+      "capricorn",
+      "confidence",
+      "daily_wear",
+      "friend",
+      "gemini",
+      "gold",
+      "grounding",
+      "heart",
+      "leo",
+      "premium",
+      "protection",
+      "daniel_moreau",
+      "root",
+      "solar_plexus",
+      "sterling_silver",
+      "tigers_eye",
+      "travel",
+      "white",
+      "work_desk"
+    ],
+    "data_status": "human_reviewed"
+  }
+}

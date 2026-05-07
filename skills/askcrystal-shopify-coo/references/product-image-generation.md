@@ -70,7 +70,7 @@ Shopify product upload currently sends `alt` with media. The other fields stay i
 Use this base prompt for every generated shot, then append the shot-specific angle/scenario instruction:
 
 ```text
-Transform the provided image into a high-end luxury product photograph. Preserve the exact product design, materials, and colors without alteration.
+Transform the provided image into a high-end luxury product photograph. Preserve the exact product design, materials, and colors without alteration. Preserve the exact product structure and component count from the source image: keep the same number of beads, pearls, stones, links, spacers, pendants, chain segments, clasps, and other product parts, with the same order, spacing rhythm, proportions, and focal arrangement. Do not add, remove, merge, split, substitute, or reorder structural components. In wearable shots, maintain that exact design fidelity even when some components are naturally hidden by perspective, body contour, overlap, or crop; do not reveal the full loop unnaturally just to show every part.
 Place it on a subtle dark mineral surface with a deep navy-to-black gradient background and faint particle bokeh.
 Use controlled cinematic studio lighting: soft directional key light, gentle fill, and a warm rim light for separation. Add subtle backlighting to enhance translucency and internal glow in crystal materials.
 Emphasize material quality with crisp specular highlights, internal reflections, and light scattering. Keep highlights sharp and premium, not blown out.
@@ -86,7 +86,7 @@ Because the base prompt says "provided image", use source/reference images with 
 Always include:
 
 ```text
-No text, no typography, no logo, no watermark, no price tag, no medical claims, no extra unrelated products, no distorted jewelry structure, no broken chain, no deformed hands, no visible face for model shots, no unrealistic oversized crystal unless explicitly part of the product, no changing the product design, no changing material color, no placing jewelry on the wrong body part.
+No text, no typography, no logo, no watermark, no price tag, no medical claims, no extra unrelated products, no distorted jewelry structure, no broken chain, no deformed hands, no visible face for model shots, no unrealistic oversized crystal unless explicitly part of the product, no changing the product design, no changing material color, no placing jewelry on the wrong body part, no added, missing, merged, split, or reordered product components.
 ```
 
 ## Workflow
@@ -151,10 +151,22 @@ dreamina query_result -h
 - For raw stones and unique pieces, prefer product-style/editorial imagery language and keep natural variation notes visible in product copy.
 - Faceless model crops are preferred for jewelry. Do not generate identifiable faces unless explicitly requested.
 - Keep the product physically plausible: clasp, hook, band, chain, beads, pendant loop, and scale must make sense.
-- Wearable placement must match product form:
-  - Bracelet: wrist/lower forearm only.
-  - Necklace: neck/collarbone only.
-  - Ring: finger only.
-  - Earrings: ear only, side crop without full face.
-  - Anklet: ankle/lower leg only.
-  - Pendant: chain at chest/collarbone only.
+- Wearable shots must be scale-conscious. The jewelry should look like a real object worn by a real person, not an oversized product render composited onto a body.
+- Before composing a wearable image, infer the product's real-world wearable size from the source image and product type, then calibrate that size to the intended body part.
+- Wearable placement must match product form and the piece must be actually worn, not simply resting against skin:
+  - Bracelet: infer bracelet inner diameter from the source image, resize to fit an average adult wrist, wrap around wrist/lower forearm with closure or band visibly functioning around the wrist, and compose from a side or oblique angle so the far half disappears naturally behind the wrist thickness or frame edge.
+  - Necklace: infer strand/chain length and pendant size from the source image, resize to neck/collarbone scale, and drape naturally with gravity from the supporting chain/strand.
+  - Ring: infer band diameter from the source image, resize to finger scale, and wrap fully around a finger.
+  - Earrings: infer drop/stud size from the source image, resize to ear scale, and attach on the ear in a side crop without full face.
+  - Anklet: infer anklet diameter/length from the source image, resize to fit an ankle, and wrap around ankle/lower leg with closure or band visibly functioning.
+  - Pendant: infer pendant size and chain length from the source image, resize to chest/collarbone scale, and hang from a worn chain.
+- Invalid wearable generations include:
+  - bracelet laid flat on top of a wrist
+  - bracelet shown as a neat full circular loop fully visible on top of the wrist instead of partly hidden behind the wrist
+  - necklace placed loose on skin without being worn around the neck
+  - ring balanced on top of a finger or hand
+  - earring resting on hair, cheek, or shoulder instead of attaching at the ear
+  - anklet placed on top of the ankle or foot without encircling it
+  - pendant resting on the body without a supporting chain
+  - jewelry that is obviously too large or too flat for the body part
+- Reject and regenerate wearable shots that fail these tests before product upload.

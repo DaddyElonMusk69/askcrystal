@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "product_handle": "shadow-current-tigers-eye-bracelet",
+  "synced_at_unix": 1777962650,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "publication": {
+    "skipped": false,
+    "publication_id": "gid://shopify/Publication/303037448555",
+    "published": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14964195098987",
+    "handle": "shadow-current-tigers-eye-bracelet",
+    "title": "Shadow Current Tiger's Eye Bracelet",
+    "status": "ACTIVE",
+    "media": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47790485242219",
+          "alt": "Shadow Current Tiger's Eye Bracelet front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47790485274987",
+          "alt": "Shadow Current Tiger's Eye Bracelet angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47790485307755",
+          "alt": "Shadow Current Tiger's Eye Bracelet side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47790485340523",
+          "alt": "Shadow Current Tiger's Eye Bracelet crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47790485373291",
+          "alt": "Shadow Current Tiger's Eye Bracelet shown in hand for scale",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47790485406059",
+          "alt": "Shadow Current Tiger's Eye Bracelet faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47790485438827",
+          "alt": "Shadow Current Tiger's Eye Bracelet lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47790485471595",
+          "alt": "Shadow Current Tiger's Eye Bracelet styled for daily wear, travel, work desk ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47790485504363",
+          "alt": "Shadow Current Tiger's Eye Bracelet packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "UPLOADED"
+        }
+      ]
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53171648266603",
+          "sku": "AC-SCTEB-14.5CM",
+          "title": "14.5 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53171648299371",
+          "sku": "AC-SCTEB-15CM",
+          "title": "15 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53171648332139",
+          "sku": "AC-SCTEB-16CM",
+          "title": "16 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53171648364907",
+          "sku": "AC-SCTEB-17CM",
+          "title": "17 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53171648397675",
+          "sku": "AC-SCTEB-18CM",
+          "title": "18 cm"
+        }
+      ]
+    }
+  },
+  "staged_media": [
+    {
+      "local_path": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/01-hero-front.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/7c99a969-3447-4bfa-93a0-0be0703ff4f6/01-hero-front.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet front view on a dark atmospheric backdrop"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/02-three-quarter.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/f38e04ab-4ba0-4787-9ed4-2ae5e175af6c/02-three-quarter.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet angled three-quarter product view"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/03-side-or-back-detail.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/64fefdd5-f10a-4897-b485-ac4cc02aa16c/03-side-or-back-detail.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet side or closure detail"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/04-macro-crystal.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/3de4aaf5-60a7-4fe7-aba1-68cfa1bca470/04-macro-crystal.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet crystal texture close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/05-scale-in-hand.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/2742fc2c-9ff4-489b-97d2-9d8f8594bbd7/05-scale-in-hand.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet shown in hand for scale"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/06-faceless-wearing-closeup.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/0e77a496-829c-4229-a005-c0af436bc9d9/06-faceless-wearing-closeup.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet faceless model close-up"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/07-lifestyle-context.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/05cd6336-fa9a-4571-84fd-7efa5ac652b1/07-lifestyle-context.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet lifestyle ritual context"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/08-ritual-still-life.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/4df0fc5d-971e-49df-87e2-f82eab2fbbe6/08-ritual-still-life.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet styled for daily wear, travel, work desk ritual use"
+    },
+    {
+      "local_path": "data/shopify/catalog/assets/products/shadow-current-tigers-eye-bracelet/09-packaging-flatlay.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/88f9e02e-8074-479f-8c48-73e3c58e191a/09-packaging-flatlay.png",
+      "alt": "Shadow Current Tiger's Eye Bracelet packaging flat lay"
+    }
+  ],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ]
+}

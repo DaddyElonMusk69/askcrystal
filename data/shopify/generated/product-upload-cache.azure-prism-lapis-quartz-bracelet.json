@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "product_handle": "azure-prism-lapis-quartz-bracelet",
+  "synced_at_unix": 1778033912,
+  "operation": {
+    "id": null,
+    "status": null,
+    "synchronous": true
+  },
+  "publication": {
+    "skipped": false,
+    "publication_id": "gid://shopify/Publication/303037448555",
+    "published": true
+  },
+  "product": {
+    "id": "gid://shopify/Product/14965514404203",
+    "handle": "azure-prism-lapis-quartz-bracelet",
+    "title": "Azure Prism Lapis Quartz Bracelet",
+    "status": "ACTIVE",
+    "media": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MediaImage/47794038374763",
+          "alt": "Azure Prism Lapis Quartz Bracelet front view on a dark atmospheric backdrop",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794038407531",
+          "alt": "Azure Prism Lapis Quartz Bracelet angled three-quarter product view",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794038440299",
+          "alt": "Azure Prism Lapis Quartz Bracelet side or closure detail",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794038473067",
+          "alt": "Azure Prism Lapis Quartz Bracelet crystal texture close-up",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794038505835",
+          "alt": "Azure Prism Lapis Quartz Bracelet shown in hand for scale",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794038538603",
+          "alt": "Azure Prism Lapis Quartz Bracelet faceless model close-up",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794038571371",
+          "alt": "Azure Prism Lapis Quartz Bracelet lifestyle ritual context",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794038604139",
+          "alt": "Azure Prism Lapis Quartz Bracelet styled for daily wear, travel, work desk ritual use",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        },
+        {
+          "id": "gid://shopify/MediaImage/47794038636907",
+          "alt": "Azure Prism Lapis Quartz Bracelet packaging flat lay",
+          "mediaContentType": "IMAGE",
+          "status": "READY"
+        }
+      ]
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/53175376413035",
+          "sku": "AC-APLQB-14.5CM",
+          "title": "14.5 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53175376445803",
+          "sku": "AC-APLQB-15CM",
+          "title": "15 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53175376478571",
+          "sku": "AC-APLQB-16CM",
+          "title": "16 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53175376511339",
+          "sku": "AC-APLQB-17CM",
+          "title": "17 cm"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/53175376544107",
+          "sku": "AC-APLQB-18CM",
+          "title": "18 cm"
+        }
+      ]
+    }
+  },
+  "staged_media": [
+    {
+      "remote_id": "gid://shopify/MediaImage/47794038538603",
+      "local_path": "data/shopify/catalog/assets/products/azure-prism-lapis-quartz-bracelet/06-faceless-wearing-closeup.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/26341555-09a4-4fd1-b5ff-94fea0cbf723/06-faceless-wearing-closeup.png",
+      "alt": "Azure Prism Lapis Quartz Bracelet faceless model close-up"
+    },
+    {
+      "remote_id": "gid://shopify/MediaImage/47794038571371",
+      "local_path": "data/shopify/catalog/assets/products/azure-prism-lapis-quartz-bracelet/07-lifestyle-context.png",
+      "resource_url": "https://shopify-staged-uploads.storage.googleapis.com/tmp/98147860843/files/2653518d-1728-4611-9ba1-385fc15e9336/07-lifestyle-context.png",
+      "alt": "Azure Prism Lapis Quartz Bracelet lifestyle ritual context"
+    }
+  ],
+  "remote_url_media": [],
+  "notes": [
+    "Generated file is a Shopify deployment cache, not local source of truth.",
+    "Keep product facts and local image paths in data/shopify/catalog/."
+  ]
+}
